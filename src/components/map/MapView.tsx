@@ -6,6 +6,7 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { LngLat, VenueId } from '../../data/types'
 import type { Snapshot } from '../../engine/occupancy'
+import { signalMapReady } from '../../lib/splash'
 import { STATUS } from '../../lib/status'
 import type { Route } from '../../store/ui'
 import { setMap, sheetPad } from './mapApi'
@@ -68,8 +69,12 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
           addOverlays(map!)
           setReady((n) => n + 1)
         })
+        map.once('load', signalMapReady)
       })
-      .catch(() => !cancelled && setFailed(true))
+      .catch(() => {
+        signalMapReady()
+        if (!cancelled) setFailed(true)
+      })
     return () => {
       cancelled = true
       setMap(null)

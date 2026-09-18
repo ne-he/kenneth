@@ -94,7 +94,7 @@ export function Explore() {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 overflow-hidden" data-map-slot>
       <Suspense fallback={<div className="absolute inset-0 bg-canvas" />}>
         <MapView
           theme={theme}
