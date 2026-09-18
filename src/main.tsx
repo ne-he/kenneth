@@ -43,6 +43,7 @@ function dismissSplash() {
     if (driving) return
     driving = true
     window.removeEventListener(MAP_READY, drive)
+    el.classList.add('driving')
     const length = Number.isFinite(video.duration) ? video.duration : 2
     const fadeOut = () => window.setTimeout(leave, Math.max(0, length - video.currentTime - FADE_LEAD) * 1000)
     video.addEventListener('playing', fadeOut, { once: true })
