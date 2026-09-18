@@ -28,7 +28,6 @@ desktop.ini
 *.sw?
 
 # tooling
-.vercel
 test-results
 playwright-report
 
