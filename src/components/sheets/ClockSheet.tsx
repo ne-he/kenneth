@@ -1,5 +1,6 @@
 import { Broadcast, CalendarBlank, Check } from '@phosphor-icons/react'
 import clsx from 'clsx'
+import { useState } from 'react'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { atWib, nextSaturdayAt, wib } from '../../lib/time'
@@ -8,8 +9,7 @@ import { useUi } from '../../store/ui'
 import { SheetHeader } from '../ui/Sheet'
 
 /** Upcoming occurrence of a WIB weekday at a given time. */
-function nextDayAt(day: number, hour: number, minute: number) {
-  const now = Date.now()
+function nextDayAt(now: number, day: number, hour: number, minute: number) {
   const ahead = (day - wib(now).day + 7) % 7
   return atWib(now + ahead * 86_400_000, hour, minute)
 }
@@ -21,11 +21,13 @@ export function ClockSheet() {
   const close = useUi((s) => s.close)
   const setPreview = useUi((s) => s.setPreview)
 
+  // Presets sit on the real calendar, read once when the sheet opens.
+  const [today] = useState(() => Date.now())
   const presets = [
-    { key: 'sat-peak', label: t.clockSheet.satPeak, ts: nextSaturdayAt(Date.now(), 14, 7) },
-    { key: 'sat-eve', label: t.clockSheet.satEvening, ts: nextSaturdayAt(Date.now(), 17, 0) },
-    { key: 'fri', label: t.clockSheet.fridayNight, ts: nextDayAt(5, 19, 0) },
-    { key: 'tue', label: t.clockSheet.tuesday, ts: nextDayAt(2, 10, 0) },
+    { key: 'sat-peak', label: t.clockSheet.satPeak, ts: nextSaturdayAt(today, 14, 7) },
+    { key: 'sat-eve', label: t.clockSheet.satEvening, ts: nextSaturdayAt(today, 17, 0) },
+    { key: 'fri', label: t.clockSheet.fridayNight, ts: nextDayAt(today, 5, 19, 0) },
+    { key: 'tue', label: t.clockSheet.tuesday, ts: nextDayAt(today, 2, 10, 0) },
   ]
 
   const pick = (mode: 'live' | 'scenario', ts?: number) => {
