@@ -54,15 +54,16 @@ function labelSprite(text: string, color: string, bg: string, scale = 1) {
   return sprite
 }
 
-function makeCar(color: number, glow = false) {
+function makeCar(color: number, glow = false, dark = false) {
   const g = new THREE.Group()
-  const bodyMat = new THREE.MeshStandardMaterial({ color, roughness: 0.45, metalness: 0.25 })
+  const bodyMat = new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0 })
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.42, 2.05), bodyMat)
   body.position.y = 0.36
   g.add(body)
   const cabin = new THREE.Mesh(
     new THREE.BoxGeometry(0.82, 0.34, 1.05),
-    new THREE.MeshStandardMaterial({ color: glow ? 0x0c0f0d : 0x1a1f1d, roughness: 0.2, metalness: 0.6 }),
+    // Tinted glass, light enough that a full car park does not read as a sea of black boxes from above.
+    new THREE.MeshStandardMaterial({ color: glow ? 0x0c0f0d : dark ? 0x121614 : 0x7d8884, roughness: 0.25, metalness: 0.1 }),
   )
   cabin.position.set(0, 0.72, -0.1)
   g.add(cabin)
@@ -163,7 +164,7 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
             continue
           }
           if (rand() < occupancy) {
-            const car = makeCar(carPalette[Math.floor(rand() * carPalette.length)])
+            const car = makeCar(carPalette[Math.floor(rand() * carPalette.length)], false, dark)
             car.rotation.y = side === 1 ? Math.PI / 2 : -Math.PI / 2
             car.position.set(bx, 0, bz)
             car.traverse((o) => ((o as THREE.Mesh).castShadow = true))
@@ -179,7 +180,7 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
         scene.add(p)
       }
       const zl = labelSprite(zone, dark ? '#f1f4f2' : '#111512', dark ? 'rgba(255,255,255,0.08)' : 'rgba(17,21,18,0.08)', 1.3)
-      zl.position.set(cx, 3.4, z0 - 1.2)
+      zl.position.set(cx, 3.4, z0 + rows * BAY_W + 1.6)
       scene.add(zl)
     })
 
@@ -227,10 +228,11 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
     let metres = 0
     for (let i = 1; i < pts.length; i++) metres += pts[i].distanceTo(pts[i - 1]) * 2
     onWalk?.(metres)
-    const curve = new THREE.CurvePath<THREE.Vector3>()
-    for (let i = 1; i < pts.length; i++) curve.add(new THREE.LineCurve3(pts[i - 1], pts[i]))
-    const pathMat = new THREE.MeshBasicMaterial({ color: 0x43ff9f, transparent: true, opacity: 0.95 })
-    const path = new THREE.Mesh(new THREE.TubeGeometry(curve as unknown as THREE.Curve<THREE.Vector3>, 220, 0.12, 8, false), pathMat)
+    // Catmull-Rom with low tension: corners get a slight walking curve, and
+    // getPointAt never returns null at the ends (CurvePath can, at u = 1).
+    const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.08)
+    const pathMat = new THREE.MeshBasicMaterial({ color: dark ? 0x43ff9f : 0x059669, transparent: true, opacity: 0.95 })
+    const path = new THREE.Mesh(new THREE.TubeGeometry(curve, 220, 0.2, 8, false), pathMat)
     path.geometry.setDrawRange(0, 0)
     scene.add(path)
     const totalIdx = path.geometry.index ? path.geometry.index.count : 0
@@ -239,9 +241,10 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
     const walker = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 20), new THREE.MeshBasicMaterial({ color: 0xffffff }))
     scene.add(walker)
 
-    // Light
-    scene.add(new THREE.HemisphereLight(0xffffff, dark ? 0x0b0e0d : 0xd8d4c8, dark ? 0.7 : 1.4))
-    const sun = new THREE.DirectionalLight(0xffffff, dark ? 1.1 : 1.6)
+    // Light. ACES tone mapping eats midtones, so light cars need more exposure than it seems.
+    renderer.toneMappingExposure = dark ? 1.1 : 1.35
+    scene.add(new THREE.HemisphereLight(0xffffff, dark ? 0x0b0e0d : 0xd8d4c8, dark ? 1.1 : 2.4))
+    const sun = new THREE.DirectionalLight(0xffffff, dark ? 1.4 : 2.2)
     sun.position.set(-14, 26, 18)
     sun.castShadow = true
     sun.shadow.mapSize.set(1024, 1024)
@@ -255,15 +258,17 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
     spot3.position.set(target.x, 2.2, target.z)
     scene.add(spot3)
 
-    // Camera: isometric-ish, framing the floor with the car in view.
+    // Camera: isometric-ish, framed on the walk (lobby to car), not the whole floor.
     const aspect = width / height
-    const span = Math.max(floorW, floorD * 0.7) * 0.62
+    const focus = new THREE.Box3().setFromPoints([...pts, target, lobbyPos]).expandByScalar(3.5)
+    const size = focus.getSize(new THREE.Vector3())
+    const center = focus.getCenter(new THREE.Vector3()).lerp(target, 0.3)
+    const span = Math.max(size.x / aspect, size.z * 0.8, 9) * 0.55
     const camera = new THREE.OrthographicCamera(-span * aspect, span * aspect, span, -span, 0.1, 200)
-    camera.position.set(target.x * 0.4 - 28, 30, target.z * 0.5 + 30)
-    camera.zoom = 1.25
+    camera.position.set(center.x - 24, 28, center.z + 26)
     camera.updateProjectionMatrix()
     const controls = new OrbitControls(camera, renderer.domElement)
-    controls.target.set(target.x * 0.5, 0, (target.z + lobbyPos.z) / 2)
+    controls.target.copy(center)
     controls.enableDamping = true
     controls.enablePan = false
     controls.minZoom = 0.8
@@ -276,11 +281,13 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
     const start = performance.now()
     let frame = 0
     const tick = (now: number) => {
-      const t = (now - start) / 1000
+      // The first rAF timestamp can be a hair earlier than performance.now() at
+      // setup, which would make t negative and send the walker off the curve.
+      const t = Math.max(0, (now - start) / 1000)
       const draw = Math.min(1, t / 1.6)
       path.geometry.setDrawRange(0, Math.floor(totalIdx * draw))
       const k = (t * 0.22) % 1
-      walker.position.copy(curve.getPointAt(k))
+      walker.position.copy(curve.getPointAt(Math.min(0.999, k)))
       walker.position.y = 0.34
       walker.visible = draw >= 1
       const pulse = (Math.sin(t * 3) + 1) / 2
