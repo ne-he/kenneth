@@ -7,6 +7,9 @@
 <p align="center"><b>Cek parkir semudah cek cuaca.</b><br/>
 Seberapa penuh, antri gerbang berapa menit, dan ke mana kalau penuh. Sebelum kamu berangkat.</p>
 
+<p align="center"><a href="https://kenneth-9339d.web.app"><b>kenneth-9339d.web.app</b></a><br/>
+Buka di HP untuk app-nya, atau di laptop untuk mode showcase dengan QR.</p>
+
 <p align="center">
   <img src="docs/screens/explore.png" width="200" alt="Layar Jelajah" />
   <img src="docs/screens/venue-led.png" width="200" alt="Detail lokasi dengan papan sisa slot" />
@@ -94,20 +97,20 @@ npm run lint      # oxlint
 ## Deploy ke Firebase Hosting
 
 Konfigurasi ada di [firebase.json](firebase.json): semua rute diarahkan ke `index.html` (app satu halaman),
-file di `assets/` di-cache setahun karena namanya selalu berubah tiap build, sedangkan `index.html` dan
-service worker selalu dicek ulang supaya versi baru langsung sampai. Paket gratis (Spark) sudah cukup.
+file di `assets/` di-cache setahun karena namanya selalu berubah tiap build, sedangkan semua rute, `index.html`,
+dan service worker selalu dicek ulang supaya versi baru langsung sampai. Paket gratis (Spark) sudah cukup.
 
-Sekali saja, untuk menghubungkan folder ini ke project Firebase:
+Folder ini sudah terhubung ke project `kenneth-9339d` lewat [.firebaserc](.firebaserc). Yang mau rilis harus
+ditambahkan dulu sebagai anggota project di Firebase console, lalu login sekali:
 
 ```bash
 npx firebase-tools login
-npx firebase-tools use --add
 ```
 
 Setelah itu setiap mau rilis:
 
 ```bash
-npm run deploy           # build lalu publish ke https://<project-id>.web.app
+npm run deploy           # build lalu publish ke https://kenneth-9339d.web.app
 npm run deploy:preview   # link uji coba terpisah, hangus sendiri setelah 7 hari
 ```
 
