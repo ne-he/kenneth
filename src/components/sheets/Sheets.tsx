@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useState } from 'react'
 import { useT } from '../../i18n'
 import { useUi } from '../../store/ui'
 import { Sheet } from '../ui/Sheet'
@@ -17,9 +17,9 @@ export function Sheets() {
   const current = useUi((s) => s.sheet)
   const close = useUi((s) => s.close)
   // Keep rendering the last sheet while it slides out, instead of an empty panel.
-  const last = useRef(current)
-  if (current) last.current = current
-  const sheet = current ?? last.current
+  const [last, setLast] = useState(current)
+  if (current && current !== last) setLast(current)
+  const sheet = current ?? last
 
   let body = null
   switch (sheet?.kind) {
