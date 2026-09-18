@@ -186,3 +186,15 @@ export function quietestHour(venue: Venue, ts: number, fromHour = 11, toHour = 2
     .filter((p) => p.hour >= fromHour && p.hour <= toHour)
     .reduce((a, b) => (b.queueMin < a.queueMin ? b : a))
 }
+
+/**
+ * Free reserved bays (disability, pregnancy, EV). They fill slower than
+ * normal bays but still follow the crowd. Deterministic per hour.
+ */
+export function reservedFree(total: number, occ: number, salt: string, ts: number): number {
+  if (total === 0) return 0
+  const hour = Math.floor(ts / 3_600_000)
+  const jitter = ((seedOf(salt) * 97 + hour) % 3) - 1
+  const share = Math.min(1, Math.max(0, (1 - occ) * 1.7))
+  return Math.min(total, Math.max(0, Math.round(total * share) + jitter))
+}
