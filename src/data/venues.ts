@@ -44,6 +44,7 @@ export const VENUES: Venue[] = [
     accessible: { difabel: 12, ibuHamil: 16 },
     ev: { chargers: 6, kw: 22 },
     tariff: { firstHour: 5000, nextHour: 4000, verified: false },
+    labelDir: 'sw',
     gageCorridor: false,
     walkLinks: [{ to: 'neo-soho', minutes: 4, via: 'jembatan penghubung lantai 1' }],
     tenants: [
@@ -75,6 +76,7 @@ export const VENUES: Venue[] = [
     accessible: { difabel: 6, ibuHamil: 8 },
     ev: { chargers: 4, kw: 22 },
     tariff: { firstHour: 5000, nextHour: 4000, verified: false },
+    labelDir: 'nw',
     gageCorridor: false,
     walkLinks: [{ to: 'central-park', minutes: 4, via: 'jembatan penghubung lantai 1' }],
     tenants: [
@@ -105,6 +107,7 @@ export const VENUES: Venue[] = [
     accessible: { difabel: 10, ibuHamil: 10 },
     ev: { chargers: 4, kw: 11 },
     tariff: { firstHour: 5000, nextHour: 4000, verified: false },
+    labelDir: 'se',
     gageCorridor: false,
     walkLinks: [],
     tenants: [
@@ -134,6 +137,7 @@ export const VENUES: Venue[] = [
     accessible: { difabel: 6, ibuHamil: 6 },
     ev: { chargers: 2, kw: 11 },
     tariff: { firstHour: 4000, nextHour: 3000, verified: false },
+    labelDir: 'ne',
     gageCorridor: false,
     walkLinks: [],
     tenants: [
@@ -162,6 +166,7 @@ export const VENUES: Venue[] = [
     accessible: { difabel: 10, ibuHamil: 12 },
     ev: { chargers: 6, kw: 22 },
     tariff: { firstHour: 5000, nextHour: 4000, verified: false },
+    labelDir: 'ne',
     gageCorridor: false,
     walkLinks: [],
     tenants: [
@@ -190,6 +195,7 @@ export const VENUES: Venue[] = [
     accessible: { difabel: 8, ibuHamil: 8 },
     ev: { chargers: 4, kw: 22 },
     tariff: { firstHour: 5000, nextHour: 4000, verified: false },
+    labelDir: 'sw',
     gageCorridor: false,
     walkLinks: [],
     tenants: [
@@ -219,6 +225,7 @@ export const VENUES: Venue[] = [
     accessible: { difabel: 14, ibuHamil: 14 },
     ev: { chargers: 8, kw: 50 },
     tariff: { firstHour: 5000, nextHour: 5000, verified: false },
+    labelDir: 'n',
     gageCorridor: true,
     walkLinks: [],
     tenants: [

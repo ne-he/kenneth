@@ -5,6 +5,8 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // MapLibre's worker is an ES module that imports a shared chunk.
+  worker: { format: 'es' },
   test: {
     include: ['src/**/*.test.ts'],
     environment: 'node',

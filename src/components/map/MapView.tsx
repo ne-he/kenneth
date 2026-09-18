@@ -1,13 +1,14 @@
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { AnimatePresence } from 'motion/react'
-import { Map as MLMap, Marker, type GeoJSONSource } from 'maplibre-gl'
+import { Map as MLMap, Marker, setWorkerUrl, type GeoJSONSource } from 'maplibre-gl'
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { LngLat, VenueId } from '../../data/types'
 import type { Snapshot } from '../../engine/occupancy'
 import { STATUS } from '../../lib/status'
 import type { Route } from '../../store/ui'
-import { setMap } from './mapApi'
+import { setMap, sheetPad } from './mapApi'
 import { GatePin, OriginPin, VenuePin } from './Pins'
 import { firstSymbolId, loadStyle } from './style'
 
@@ -22,6 +23,10 @@ interface Props {
 }
 
 const ROUTE_COLOR = '#059669'
+
+// MapLibre 6 finds its worker relative to its own module URL, which a bundler
+// cannot see. Hand it a bundled worker explicitly so dev and prod both work.
+setWorkerUrl(workerUrl)
 
 export function MapView({ theme, snapshots, selected, onSelect, origin, route, initialBounds }: Props) {
   const box = useRef<HTMLDivElement>(null)
@@ -42,7 +47,9 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
           container: box.current,
           style,
           bounds: boundsOf(initialBounds),
-          fitBoundsOptions: { padding: { top: 90, bottom: 330, left: 30, right: 30 } },
+          fitBoundsOptions: {
+            padding: { top: 110, bottom: sheetPad(box.current.clientHeight), left: 64, right: 64 },
+          },
           pitch: 46,
           bearing: -12,
           maxPitch: 70,
@@ -120,7 +127,7 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
     const map = mapRef.current
     if (!map) return
     const wanted = new Map<string, { at: LngLat; anchor: 'bottom' | 'center'; z: number }>()
-    snapshots.forEach((s) => wanted.set(`v:${s.venue.id}`, { at: s.venue.coords, anchor: 'bottom', z: s.venue.id === selected ? 3 : 2 }))
+    snapshots.forEach((s) => wanted.set(`v:${s.venue.id}`, { at: s.venue.coords, anchor: 'center', z: s.venue.id === selected ? 3 : 2 }))
     const sel = snapshots.find((s) => s.venue.id === selected)
     sel?.gates.forEach(({ gate }) => wanted.set(`g:${gate.id}`, { at: gate.coords, anchor: 'center', z: 1 }))
     wanted.set('origin', { at: origin, anchor: 'center', z: 1 })
@@ -150,7 +157,8 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
 
   return (
     <div className="absolute inset-0">
-      <div ref={box} className="absolute inset-0 bg-canvas" />
+      {/* maplibre forces position: relative on its container, so size it with h-full, not inset */}
+      <div ref={box} className="h-full w-full bg-canvas" />
       {failed && (
         <div className="absolute inset-0 grid place-items-center bg-canvas text-[13px] text-ink-3">
           Peta gagal dimuat. Cek koneksi internet.

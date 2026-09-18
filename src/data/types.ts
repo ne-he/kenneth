@@ -19,6 +19,8 @@ export type DataSource = 'palang' | 'estimasi'
 
 export type OccupancyStatus = 'lega' | 'ramai' | 'penuh'
 
+export type LabelDir = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
+
 export interface Gate {
   id: string
   name: string
@@ -65,6 +67,8 @@ export interface Venue {
   accessible: { difabel: number; ibuHamil: number }
   ev: { chargers: number; kw: number }
   tariff: Tariff
+  /** Where the map label sits relative to the point, so dense clusters stay readable. */
+  labelDir: LabelDir
   /** True when the access road is inside a ganjil-genap corridor. */
   gageCorridor: boolean
   walkLinks: { to: VenueId; minutes: number; via: string }[]

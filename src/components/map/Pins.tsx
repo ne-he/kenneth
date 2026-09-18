@@ -1,10 +1,26 @@
 import clsx from 'clsx'
 import { motion } from 'motion/react'
-import type { Gate } from '../../data/types'
+import type { Gate, LabelDir } from '../../data/types'
 import type { Snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { STATUS, formatMin } from '../../lib/status'
 
+const DIR: Record<LabelDir, [number, number]> = {
+  n: [0, -54],
+  s: [0, 54],
+  e: [72, 0],
+  w: [-72, 0],
+  ne: [58, -42],
+  nw: [-58, -42],
+  se: [58, 42],
+  sw: [-58, 42],
+}
+
+/**
+ * Callout pin: a dot on the exact spot, the label pushed out along a leader
+ * line. Central Park, Neo Soho and Taman Anggrek sit a couple hundred metres
+ * apart, so plain pins would pile on top of each other at city zoom.
+ */
 export function VenuePin({
   snap,
   selected,
@@ -18,47 +34,56 @@ export function VenuePin({
 }) {
   const t = useT()
   const s = STATUS[snap.status]
+  const [dx, dy] = DIR[snap.venue.labelDir]
   return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      aria-label={`${snap.venue.name} ${snap.pct}%`}
-      initial={{ scale: 0.4, opacity: 0, y: 8 }}
-      animate={{ scale: selected ? 1.08 : 1, opacity: dimmed ? 0.55 : 1, y: 0 }}
-      whileTap={{ scale: 0.94 }}
-      transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-      className={clsx(
-        'relative flex h-[34px] origin-bottom items-center gap-1.5 rounded-full pr-3 pl-1 whitespace-nowrap',
-        selected
-          ? 'bg-ink text-canvas shadow-[0_10px_24px_-6px_rgb(0_0_0/0.45)]'
-          : 'glass shadow-float text-ink',
-      )}
-    >
-      <span className="relative grid size-[26px] place-items-center rounded-full" style={{ background: s.hex }}>
-        {snap.status === 'penuh' && (
-          <span className="absolute inset-0 animate-ping rounded-full opacity-40" style={{ background: s.hex }} />
-        )}
-        <span className="text-[9px] font-extrabold tracking-tight text-white">P</span>
-      </span>
-      <span className="text-[11.5px] font-bold">{selected ? snap.venue.name : snap.venue.short}</span>
+    <div className="relative size-0">
+      <svg className="pointer-events-none absolute overflow-visible" width="1" height="1" aria-hidden="true">
+        <motion.line
+          x1={0}
+          y1={0}
+          initial={{ x2: 0, y2: 0 }}
+          animate={{ x2: dx, y2: dy, opacity: dimmed ? 0.35 : 0.9 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+          stroke={selected ? 'var(--ink)' : s.hex}
+          strokeWidth={selected ? 2 : 1.5}
+          strokeLinecap="round"
+        />
+      </svg>
       <span
-        className="text-[12.5px] font-extrabold tabular"
-        style={{ color: selected ? s.led : s.hex }}
+        className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_1px_4px_rgb(0_0_0/0.35)]"
+        style={{ background: s.hex }}
       >
-        {snap.pct}%
-      </span>
-      {selected && snap.queueMin >= 3 && (
-        <span className="text-[11px] font-semibold opacity-70">
-          {t.explore.queue} {formatMin(snap.queueMin)} {t.unit.min}
-        </span>
-      )}
-      <span
-        className={clsx(
-          'absolute -bottom-[5px] left-1/2 size-[10px] -translate-x-1/2 rotate-45 rounded-[2px]',
-          selected ? 'bg-ink' : 'bg-glass border-r border-b border-glass-line',
+        {snap.status === 'penuh' && (
+          <span className="absolute -inset-1 animate-ping rounded-full opacity-50" style={{ background: s.hex }} />
         )}
-      />
-    </motion.button>
+      </span>
+      <motion.button
+        type="button"
+        onClick={onClick}
+        aria-label={`${snap.venue.name} ${snap.pct}%`}
+        initial={{ scale: 0.3, opacity: 0, x: '-50%', y: '-50%', left: 0, top: 0 }}
+        animate={{ scale: selected ? 1.06 : 1, opacity: dimmed ? 0.5 : 1, left: dx, top: dy, x: '-50%', y: '-50%' }}
+        whileTap={{ scale: 0.94 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+        className={clsx(
+          'absolute flex h-[32px] items-center gap-1.5 rounded-full pr-2.5 pl-1 whitespace-nowrap',
+          selected ? 'bg-ink text-canvas shadow-[0_10px_24px_-6px_rgb(0_0_0/0.45)]' : 'glass shadow-float text-ink',
+        )}
+      >
+        <span
+          className="grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-[11px] font-extrabold text-white tabular"
+          style={{ background: s.hex }}
+        >
+          {snap.pct}%
+        </span>
+        <span className="text-[11.5px] font-bold">{selected ? snap.venue.name : snap.venue.short}</span>
+        {selected && snap.queueMin >= 3 && (
+          <span className="text-[11px] font-semibold opacity-70">
+            {t.explore.queue} {formatMin(snap.queueMin)} {t.unit.min}
+          </span>
+        )}
+      </motion.button>
+    </div>
   )
 }
 
