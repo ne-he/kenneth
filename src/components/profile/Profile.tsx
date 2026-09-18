@@ -59,7 +59,7 @@ export function Profile() {
           <span className="flex items-center gap-2">
             <span className="truncate text-[18px] font-extrabold">{name || t.profile.guest}</span>
             {plan === 'premium' && (
-              <span className="flex items-center gap-1 rounded-full bg-ink px-2 py-0.5 text-[10.5px] font-bold text-led-lega">
+              <span className="flex items-center gap-1 rounded-full bg-led-bg px-2 py-0.5 text-[10.5px] font-bold text-led-lega dark:ring-1 dark:ring-line-strong">
                 <Crown size={11} weight="fill" /> Premium
               </span>
             )}
