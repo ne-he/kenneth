@@ -117,7 +117,7 @@ function ReliefCard({ id, name, at }: { id: VenueId; name: string; at: number })
       exit={{ opacity: 0, height: 0 }}
       className="overflow-hidden"
     >
-      <div className="mb-2.5 flex items-center gap-3 rounded-[20px] bg-ink p-3 pl-3.5 text-canvas">
+      <div className="mb-2.5 flex items-center gap-3 rounded-[20px] bg-ink p-3 pl-3.5 text-canvas dark:border dark:border-line dark:bg-surface-3 dark:text-ink">
         <span className="grid size-9 shrink-0 place-items-center rounded-full bg-white/10">
           <BellSimple size={18} weight="fill" className="text-led-lega" />
         </span>
