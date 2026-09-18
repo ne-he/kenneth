@@ -18,8 +18,8 @@ import { VENUE_BY_ID } from '../../data/venues'
 import { impactOf, sumImpact } from '../../engine/impact'
 import { forecastDay, occupancyAt, quietestHour } from '../../engine/occupancy'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
-import { useLang, useT } from '../../i18n'
-import { clock, dayName, hourLabel, stopwatch, wib } from '../../lib/time'
+import { useDayLabel, useLang, useT } from '../../i18n'
+import { clock, dayDiff, dayName, hourLabel, stopwatch, wib } from '../../lib/time'
 import { useApp, type Visit } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
@@ -191,6 +191,7 @@ function EmptyParked() {
 
 function PassCard({ passId, now }: { passId: string; now: number }) {
   const t = useT()
+  const dayLabel = useDayLabel()
   const pass = useApp((s) => s.passes.find((p) => p.id === passId))!
   const plate = useApp((s) => s.vehicle.plate)
   const open = useUi((s) => s.open)
@@ -229,7 +230,9 @@ function PassCard({ passId, now }: { passId: string; now: number }) {
             {phase === 'upcoming' ? t.activity.upcoming : t.activity.open}
           </div>
           <div className={clsx('font-mono text-[15px] font-bold tabular', phase === 'open' && 'text-led-lega')}>
-            {stopwatch(phase === 'upcoming' ? pass.windowStart - now : end - now)}
+            {dayDiff(now, pass.windowStart) > 0
+              ? dayLabel(pass.windowStart, now)
+              : stopwatch(phase === 'upcoming' ? pass.windowStart - now : end - now)}
           </div>
         </div>
         <span className="rounded-full bg-led-lega px-3 py-1.5 text-[12px] font-extrabold text-[#0c0f0d]">{t.activity.showQr}</span>

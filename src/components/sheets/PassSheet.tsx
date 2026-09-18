@@ -3,8 +3,8 @@ import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import { WINDOW_MINUTES, formatRupiah } from '../../engine/pricing'
-import { useT } from '../../i18n'
-import { clock, stopwatch } from '../../lib/time'
+import { useDayLabel, useT } from '../../i18n'
+import { clock, dayDiff, stopwatch } from '../../lib/time'
 import { useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
@@ -24,6 +24,7 @@ export function passPhase(windowStart: number, now: number): PassPhase {
  */
 export function PassSheet({ passId }: { passId: string }) {
   const t = useT()
+  const dayLabel = useDayLabel()
   const now = useNow(1000)
   const pass = useApp((s) => s.passes.find((p) => p.id === passId))
   const plate = useApp((s) => s.vehicle.plate)
@@ -75,7 +76,13 @@ export function PassSheet({ passId }: { passId: string }) {
         <Cell label={t.activity.window} value={`${clock(pass.windowStart)}-${clock(end)}`} />
         <Cell
           label={phase === 'upcoming' ? t.activity.upcoming : phase === 'open' ? t.activity.open : t.activity.expired}
-          value={phase === 'expired' ? '--:--' : stopwatch(countdown)}
+          value={
+            phase === 'expired'
+              ? '--:--'
+              : dayDiff(now, pass.windowStart) > 0
+                ? dayLabel(pass.windowStart, now)
+                : stopwatch(countdown)
+          }
           accent={phase === 'open'}
         />
         <Cell label={t.book.price} value={formatRupiah(pass.price, true)} />
