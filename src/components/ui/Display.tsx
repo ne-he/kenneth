@@ -15,14 +15,17 @@ export function CountUp({
   value: number
   className?: string
   decimals?: number
-  /** Thousands separators, Indonesian style (14.663). */
+  /** Thousands separators (14.663). */
   grouped?: boolean
 }) {
   const mv = useMotionValue(value)
+  // Indonesian number style in both languages, the same as prices and distances: 0,83 and 14.663.
   const text = useTransform(mv, (v) =>
-    grouped
-      ? v.toLocaleString('id-ID', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
-      : v.toFixed(decimals),
+    v.toLocaleString('id-ID', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+      useGrouping: !!grouped,
+    }),
   )
   useEffect(() => {
     const c = animate(mv, value, { duration: 0.9, ease: [0.16, 1, 0.3, 1] })
