@@ -73,6 +73,19 @@ export function dayName(ts: number, lang: 'id' | 'en', short = true): string {
   return (lang === 'id' ? id : en)[wib(ts).day]
 }
 
+/** Whole WIB calendar days from `from` to `to`: 0 is the same day, 1 is tomorrow. */
+export function dayDiff(from: number, to: number): number {
+  const a = wib(from)
+  const b = wib(to)
+  return Math.round((Date.UTC(b.year, b.month, b.date) - Date.UTC(a.year, a.month, a.date)) / 86_400_000)
+}
+
+/** Sab 20/9 style date, read in WIB. */
+export function shortDate(ts: number, lang: 'id' | 'en'): string {
+  const p = wib(ts)
+  return `${dayName(ts, lang)} ${p.date}/${p.month + 1}`
+}
+
 /** mm:ss or h:mm:ss for running timers. */
 export function stopwatch(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000))
