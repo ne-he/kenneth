@@ -4,6 +4,7 @@ import { VENUE_BY_ID } from '../../data/venues'
 import { occupancyAt } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
+import { shareSpot } from '../../lib/share'
 import { useResolvedTheme } from '../../lib/theme'
 import { useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
@@ -12,23 +13,6 @@ import { Button } from '../ui/Button'
 import { SheetHeader } from '../ui/Sheet'
 
 const FloorScene = lazy(() => import('../park/FloorScene'))
-
-export async function shareSpot(text: string, onCopied: () => void) {
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: 'KENNETH', text })
-      return
-    }
-  } catch {
-    // Share sheet dismissed, fall through to copying.
-  }
-  try {
-    await navigator.clipboard.writeText(text)
-  } catch {
-    // Clipboard blocked, nothing else to try.
-  }
-  onCopied()
-}
 
 export function FindCarSheet() {
   const t = useT()
