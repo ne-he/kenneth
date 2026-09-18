@@ -56,9 +56,13 @@ export function laneSeatsLeft(venue: Venue, windowTs: number, occ: number): numb
 }
 
 export function formatRupiah(v: number, compact = false): string {
+  if (compact && v >= 1_000_000) {
+    const m = v / 1_000_000
+    return `Rp${Number.isInteger(m) ? m : m.toFixed(1).replace('.', ',')}jt`
+  }
   if (compact && v >= 1000) {
     const k = v / 1000
-    return `Rp${Number.isInteger(k) ? k : k.toFixed(1)}rb`
+    return `Rp${Number.isInteger(k) ? k : k.toFixed(1).replace('.', ',')}rb`
   }
   return `Rp${v.toLocaleString('id-ID')}`
 }
