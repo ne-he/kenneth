@@ -52,7 +52,7 @@ export function laneSeatsLeft(venue: Venue, windowTs: number, occ: number): numb
   const p = wib(windowTs)
   const salt = (venue.id.length * 7 + p.hour * 13 + Math.floor(p.minute / 15) * 5) % 9
   const demand = Math.round(LANE_SELLABLE * Math.min(1, Math.max(0, (occ - 0.7) / 0.28)))
-  return Math.max(0, LANE_SELLABLE - demand + (salt % 4))
+  return Math.min(LANE_SELLABLE, Math.max(0, LANE_SELLABLE - demand + (salt % 4)))
 }
 
 export function formatRupiah(v: number, compact = false): string {
