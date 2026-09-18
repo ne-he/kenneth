@@ -32,5 +32,8 @@ export function fitPoints(points: LngLat[], bottom = sheetPad(), maxZoom = 15.5)
     [Math.min(...lng), Math.min(...lat)],
     [Math.max(...lng), Math.max(...lat)],
   ]
+  // flyTo leaves its padding on the map, and fitBounds adds its own on top.
+  // Without this reset the two stack up and the camera zooms out to Java.
+  map.setPadding({ top: 0, right: 0, bottom: 0, left: 0 })
   map.fitBounds(bounds, { padding: padding(bottom), pitch: 45, bearing: -12, maxZoom, duration: 1300 })
 }
