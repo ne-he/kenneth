@@ -287,9 +287,9 @@ function ArtBarrier() {
 
 function Counter({ label, value, strong }: { label: string; value: number; strong?: boolean }) {
   return (
-    <div className={clsx('rounded-[16px] p-2.5', strong ? 'bg-ink text-canvas' : 'bg-surface-2')}>
+    <div className={clsx('rounded-[16px] p-2.5', strong ? 'bg-led-bg text-white' : 'bg-surface-2')}>
       <div className={clsx('font-led text-[24px] font-black tabular', strong && 'text-led-lega')}>{value}</div>
-      <div className={clsx('text-[11px] font-semibold', strong ? 'text-canvas/60' : 'text-ink-3')}>{label}</div>
+      <div className={clsx('text-[11px] font-semibold', strong ? 'text-white/60' : 'text-ink-3')}>{label}</div>
     </div>
   )
 }
