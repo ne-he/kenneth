@@ -6,9 +6,24 @@ import { useT } from '../../i18n'
 import { STATUS } from '../../lib/status'
 
 /** Number that rolls to its new value instead of jumping. */
-export function CountUp({ value, className, decimals = 0 }: { value: number; className?: string; decimals?: number }) {
+export function CountUp({
+  value,
+  className,
+  decimals = 0,
+  grouped,
+}: {
+  value: number
+  className?: string
+  decimals?: number
+  /** Thousands separators, Indonesian style (14.663). */
+  grouped?: boolean
+}) {
   const mv = useMotionValue(value)
-  const text = useTransform(mv, (v) => v.toFixed(decimals))
+  const text = useTransform(mv, (v) =>
+    grouped
+      ? v.toLocaleString('id-ID', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+      : v.toFixed(decimals),
+  )
   useEffect(() => {
     const c = animate(mv, value, { duration: 0.9, ease: [0.16, 1, 0.3, 1] })
     return () => c.stop()
@@ -120,7 +135,7 @@ export function Plate({ plate, className }: { plate: string; className?: string 
         className,
       )}
     >
-      <span className="text-[13px] font-bold tracking-[0.12em]">{plate || 'B ---- ---'}</span>
+      <span className="text-[13px] font-bold tracking-[0.12em] whitespace-nowrap">{plate || 'B ---- ---'}</span>
       <span className="mt-[2px] text-[6.5px] font-bold tracking-[0.3em] opacity-70">08 . 29</span>
     </span>
   )
