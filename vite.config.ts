@@ -9,7 +9,8 @@ import { VitePWA } from 'vite-plugin-pwa'
   Brand loading video for the splash. Drop public/brand/loading.mp4 (plus
   optional loading.webm and loading-poster.jpg, the first frame) in and the
   next build uses it. No file, no <video> tag and no wasted request: the
-  static logo splash stays.
+  static logo splash stays. The poster shows at once, main.tsx decides when
+  the clip plays.
 */
 function splashVideo(): Plugin {
   const has = (ext: string, prefix = 'loading.') => existsSync(new URL(`./public/brand/${prefix}${ext}`, import.meta.url))
@@ -26,9 +27,6 @@ function splashVideo(): Plugin {
         <script>
           if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
             document.getElementById('splash').classList.add('has-video')
-            document.getElementById('splash-video').play().catch(function () {
-              document.getElementById('splash').classList.remove('has-video')
-            })
           }
         </script>`
       return html.replace('<!--splash-video-->', video)
