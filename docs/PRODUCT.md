@@ -103,13 +103,15 @@ Sebelas risiko ini dari daftar risiko tim. Kolom terakhir menunjukkan di mana ja
 Halaman `/booth` dipakai di stan. Satu pengunjung mengisi satu kali, jawabannya tersimpan di perangkat
 dan bisa diunduh sebagai CSV atau JSON.
 
-Pertanyaannya:
+Pertanyaannya, dengan nomor yang sama seperti di layar:
 
-1. Kapan terakhir muter nyari parkir di mall, dan berapa lama.
-2. Kalau app kadang meleset 10 sampai 15 persen, masih mau pakai? Ini menguji risiko 5.
-3. Dua fitur yang paling dibutuhkan, dari 11 fitur.
-4. Mau bayar Rp15.000 sampai Rp30.000 buat masuk tanpa antri? Ini menguji harga jalur prioritas.
-5. Feedback grid: yang disuka, yang diharapkan, yang masih bikin bingung, ide.
+1. Kapan terakhir muter nyari parkir di mall.
+2. Waktu itu kira-kira berapa lama.
+3. Kalau app kadang meleset 10 sampai 15 persen, masih mau pakai? Ini menguji risiko 5.
+4. Dua fitur yang paling dibutuhkan, dari 11 fitur.
+5. Mau bayar Rp15.000 sampai Rp30.000 buat masuk tanpa antri? Ini menguji harga jalur prioritas.
+
+Setelah itu feedback grid: yang disuka, yang diharapkan, yang masih bikin bingung, ide.
 
 Kontak untuk follow up opsional dan hanya diisi dengan izin.
 
