@@ -1,4 +1,4 @@
-import { CheckCircle, CreditCard, Lightning, LockSimple, QrCode, Scales, Wallet } from '@phosphor-icons/react'
+import { CheckCircle, CreditCard, Info, Lightning, LockSimple, QrCode, Scales, Wallet } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useState } from 'react'
@@ -27,6 +27,8 @@ import { SheetHeader } from '../ui/Sheet'
 type Method = 'qris' | 'ewallet' | 'card'
 const Q = WINDOW_MINUTES * 60_000
 const DAY = 86_400_000
+// Above this the lane only moves as fast as cars leave. Say so before people pay.
+const NEARLY_FULL = 0.96
 
 export function BookSheet({ venueId }: { venueId: VenueId }) {
   const t = useT()
@@ -221,6 +223,12 @@ export function BookSheet({ venueId }: { venueId: VenueId }) {
       {firstUseful < 0 && (
         <p className="mt-3 rounded-[14px] bg-lega-soft p-3 text-[12.5px] font-medium text-lega-ink dark:bg-lega/15 dark:text-led-lega">
           {day === 0 ? t.book.notWorth : t.book.noneThatDay}
+        </p>
+      )}
+      {pick && pick.occ >= NEARLY_FULL && (
+        <p className="mt-3 flex gap-2 rounded-[14px] bg-ramai-soft p-3 text-[12.5px] leading-snug font-medium text-ramai-ink dark:bg-ramai/15 dark:text-led-ramai">
+          <Info size={16} weight="fill" className="mt-px shrink-0" />
+          {t.book.nearlyFull}
         </p>
       )}
       <p className="mt-2 px-1 text-[11px] text-ink-3">

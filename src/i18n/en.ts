@@ -200,6 +200,7 @@ const en: Dict = {
     premiumOff: (d: number) => `Premium 40% off, book up to ${d} days ahead.`,
     day: 'Day',
     lockedDay: 'Booking other days is a Premium feature',
+    nearlyFull: 'The car park is nearly full at this time. Priority entry skips the gate queue, but a car still has to leave first.',
     noneThatDay: 'Queues look short all day then, you will not need priority entry.',
     notWorth: 'The queue here is short right now, you do not need priority entry. Keep your money.',
     ahead: (h: number, d: number) => `Free users can book up to ${h} hours ahead. Premium, up to ${d} days.`,

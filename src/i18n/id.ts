@@ -199,6 +199,8 @@ const id = {
     premiumOff: (d: number) => `Diskon Premium 40%, bisa booking sampai ${d} hari sebelumnya.`,
     day: 'Hari',
     lockedDay: 'Booking hari lain khusus Premium',
+    nearlyFull:
+      'Di jam ini parkiran hampir penuh total. Jalur prioritas memotong antrian gerbang, tapi tetap harus ada mobil yang keluar dulu.',
     noneThatDay: 'Hari itu antrian diperkirakan pendek terus, jalur prioritas nggak perlu.',
     notWorth: 'Antrian di sini lagi pendek, jalur prioritas nggak perlu. Simpan duitmu.',
     ahead: (h: number, d: number) => `Pengguna gratis bisa booking maksimal ${h} jam sebelumnya. Premium sampai ${d} hari.`,
