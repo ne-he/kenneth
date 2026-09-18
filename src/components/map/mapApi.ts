@@ -1,4 +1,5 @@
-import { LngLatBounds, type Map as MLMap } from 'maplibre-gl'
+// Type-only import: the maplibre bundle stays in the lazy MapView chunk.
+import type { Map as MLMap } from 'maplibre-gl'
 import type { LngLat } from '../../data/types'
 
 /*
@@ -25,7 +26,11 @@ export function flyTo(center: LngLat, bottom = sheetPad(), zoom = 16.2) {
 
 export function fitPoints(points: LngLat[], bottom = sheetPad(), maxZoom = 15.5) {
   if (!map || points.length === 0) return
-  const b = new LngLatBounds(points[0], points[0])
-  points.forEach((p) => b.extend(p))
-  map.fitBounds(b, { padding: padding(bottom), pitch: 45, bearing: -12, maxZoom, duration: 1300 })
+  const lng = points.map((p) => p[0])
+  const lat = points.map((p) => p[1])
+  const bounds: [LngLat, LngLat] = [
+    [Math.min(...lng), Math.min(...lat)],
+    [Math.max(...lng), Math.max(...lat)],
+  ]
+  map.fitBounds(bounds, { padding: padding(bottom), pitch: 45, bearing: -12, maxZoom, duration: 1300 })
 }
