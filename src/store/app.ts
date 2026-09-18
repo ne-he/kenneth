@@ -22,6 +22,8 @@ export interface ParkedSpot {
   photo?: string
   note?: string
   at: number
+  /** Minutes saved on arrival (recommended gate versus default gate). */
+  savedMin: number
 }
 
 export interface PriorityPass {
@@ -109,7 +111,7 @@ interface AppState {
   setPlan: (p: Plan) => void
   setPref: <K extends keyof Prefs>(k: K, v: Prefs[K]) => void
   park: (spot: ParkedSpot) => void
-  leave: (minutesSaved: number) => void
+  leave: () => void
   addPass: (p: PriorityPass) => void
   cancelPass: (id: string) => void
   addEvBooking: (b: EvBooking) => void
@@ -190,7 +192,7 @@ export const useApp = create<AppState>()(
       setPlan: (plan) => set({ plan }),
       setPref: (k, v) => set((s) => ({ prefs: { ...s.prefs, [k]: v } })),
       park: (parked) => set({ parked }),
-      leave: (minutesSaved) =>
+      leave: () =>
         set((s) => {
           if (!s.parked) return {}
           const durationH = Math.max(0.25, (simNowOf(s.clock) - s.parked.at) / 3_600_000)
@@ -199,7 +201,7 @@ export const useApp = create<AppState>()(
             venueId: s.parked.venueId,
             at: s.parked.at,
             durationH,
-            minutesSaved,
+            minutesSaved: s.parked.savedMin,
           }
           return { parked: null, history: [visit, ...s.history] }
         }),
