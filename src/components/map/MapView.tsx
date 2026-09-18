@@ -2,7 +2,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { AnimatePresence } from 'motion/react'
 import { Map as MLMap, Marker, setWorkerUrl, type GeoJSONSource } from 'maplibre-gl'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { LngLat, VenueId } from '../../data/types'
 import type { Snapshot } from '../../engine/occupancy'
@@ -34,19 +34,24 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
   const [ready, setReady] = useState(0)
   const [failed, setFailed] = useState(false)
   const markers = useRef(new Map<string, { marker: Marker; el: HTMLElement }>())
-  const [, force] = useState(0)
+  // Marker elements live outside React. Mirror them in state so portals render from state, not a ref.
+  const [els, setEls] = useState<ReadonlyMap<string, HTMLElement>>(() => new Map())
 
-  // Create the map once.
+  // Create the map once. Theme and camera changes after that have their own effects,
+  // so the first theme and bounds are read through an effect event, not dependencies.
+  const initial = useEffectEvent(() => ({ theme, bounds: initialBounds }))
   useEffect(() => {
     let cancelled = false
     let map: MLMap | null = null
-    loadStyle(theme)
+    const live = markers.current
+    const first = initial()
+    loadStyle(first.theme)
       .then((style) => {
         if (cancelled || !box.current) return
         map = new MLMap({
           container: box.current,
           style,
-          bounds: boundsOf(initialBounds),
+          bounds: boundsOf(first.bounds),
           fitBoundsOptions: {
             padding: { top: 110, bottom: sheetPad(box.current.clientHeight), left: 96, right: 96 },
           },
@@ -68,8 +73,8 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
     return () => {
       cancelled = true
       setMap(null)
-      markers.current.forEach(({ marker }) => marker.remove())
-      markers.current.clear()
+      live.forEach(({ marker }) => marker.remove())
+      live.clear()
       map?.remove()
       mapRef.current = null
     }
@@ -151,7 +156,7 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
       const marker = new Marker({ element: el, anchor }).setLngLat(at).addTo(map)
       markers.current.set(key, { marker, el })
     })
-    force((n) => n + 1)
+    setEls(() => new Map([...markers.current].map(([key, m]) => [key, m.el])))
   }, [snapshots, selected, origin, ready])
 
   const sel = snapshots.find((s) => s.venue.id === selected)
@@ -166,7 +171,7 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
         </div>
       )}
       {snapshots.map((s) => {
-        const el = markers.current.get(`v:${s.venue.id}`)?.el
+        const el = els.get(`v:${s.venue.id}`)
         return el
           ? createPortal(
               <VenuePin
@@ -181,7 +186,7 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
           : null
       })}
       {sel?.gates.map(({ gate, queueMin }) => {
-        const el = markers.current.get(`g:${gate.id}`)?.el
+        const el = els.get(`g:${gate.id}`)
         return el
           ? createPortal(
               <AnimatePresence>
@@ -193,7 +198,7 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
           : null
       })}
       {(() => {
-        const el = markers.current.get('origin')?.el
+        const el = els.get('origin')
         return el ? createPortal(<OriginPin />, el, 'origin') : null
       })()}
     </div>
