@@ -137,9 +137,16 @@ Logonya huruf K yang tersusun dari jalan dilihat dari atas, dengan satu mobil di
 jalan yang sedang kamu lewati, dua cabangnya pilihan tempat, dan mobilnya mengambil yang lega.
 File asli dan versi 1024px ada di [docs/brand](docs/brand).
 
-Saat app dibuka muncul layar hitam dengan logo dan marka jalan yang bergerak. Kalau ada video animasi logo,
-taruh `public/brand/loading.mp4` (boleh ditambah `loading.webm` dan `loading-poster.jpg` berisi frame pertama),
-lalu build ulang. Video otomatis dipakai tanpa ubah kode, dan dilewati untuk pengguna yang mematikan animasi.
+Saat app dibuka muncul layar hitam dengan logo. Selama app memuat, mobilnya diam di tempat parkirnya. Begitu
+peta selesai digambar, mobil itu jalan ke persimpangan, belok kanan, lalu keluar lewat cabang atas sementara layar
+pembuka memudar. Mobil sengaja menunggu peta karena pembuatan peta sempat menahan browser, jadi kalau jalan lebih
+awal gerakannya bisa patah. Paling lambat 3,2 detik setelah halaman dibuka mobil tetap jalan. Pengguna yang
+mematikan animasi langsung masuk tanpa klip.
+
+Gerakan mobil mengikuti klip hasil generate AI, tapi setiap piksel mobil dan jalan diambil dari logo asli, jadi
+bentuknya tidak pernah berubah. Klipnya ada di `public/brand/` (MP4, WebM, dan poster frame pertama). Mau ganti,
+timpa file di sana lalu build ulang tanpa ubah kode. Versi loop 6 detik buat booth dan media sosial (1:1, 9:16,
+16:9) ada di [docs/brand](docs/brand).
 
 Cara kerja simulasinya dijelaskan di [docs/MODEL.md](docs/MODEL.md). Panduan buat anggota tim ada di
 [CONTRIBUTING.md](CONTRIBUTING.md).
