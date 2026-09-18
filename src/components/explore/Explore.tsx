@@ -1,5 +1,5 @@
 import { MapPin } from '@phosphor-icons/react'
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useEffectEvent, useMemo, useState } from 'react'
 import { BINUS_ANGGREK, VENUE_BY_ID, VENUES } from '../../data/venues'
 import { rankVenues } from '../../engine/recommend'
 import { useT } from '../../i18n'
@@ -37,23 +37,28 @@ export function Explore() {
   const ranked = useMemo(() => rankVenues(VENUES, ts, origin, travel), [ts, origin, travel])
   const current = ranked.find((r) => r.venue.id === selected)
 
-  // Real road distances once per origin. The list works on estimates until then.
+  // Real road distances once per origin, not on every clock tick. The list works on estimates until then.
+  const trafficAt = useEffectEvent(() => now)
   useEffect(() => {
     let alive = true
-    fetchTravelTable(origin, VENUES, now)
+    fetchTravelTable(origin, VENUES, trafficAt())
       .then((table) => alive && setTravel(table))
       .catch(() => undefined)
     return () => {
       alive = false
     }
-    // Only refetch when the origin moves, not on every clock tick.
-  }, [origin])
+  }, [origin, setTravel])
 
+  // Opening a venue (or coming back to it after driving) resets the sheet and flies the camera there.
+  const focus = selected && !route ? selected : null
+  const [lastFocus, setLastFocus] = useState(focus)
+  if (focus !== lastFocus) {
+    setLastFocus(focus)
+    if (focus) setSnap('half')
+  }
   useEffect(() => {
-    if (!selected || route) return
-    setSnap('half')
-    flyTo(VENUE_BY_ID[selected].coords)
-  }, [selected, route])
+    if (focus) flyTo(VENUE_BY_ID[focus].coords)
+  }, [focus])
 
   const back = () => {
     select(null)
