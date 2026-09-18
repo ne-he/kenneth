@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useApplyTheme } from '../../lib/theme'
 import { useUi } from '../../store/ui'
 import { Explore } from '../explore/Explore'
+import { Sheets } from '../sheets/Sheets'
 import { Toast } from '../ui/Toast'
 import { TabBar } from './TabBar'
 
@@ -33,6 +34,7 @@ export function PhoneApp() {
           <TabBar variant="floating" />
         </div>
       )}
+      <Sheets />
       <Toast />
     </div>
   )
