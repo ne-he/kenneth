@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
+import { systemNotify } from '../../lib/notify'
 import { useApplyTheme } from '../../lib/theme'
 import { useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
@@ -31,11 +32,7 @@ function useReminderAlarm() {
       const text = t.explore.reliefNow(name)
       useUi.getState().notify(text)
       haptic('success')
-      try {
-        if ('Notification' in window && Notification.permission === 'granted') new Notification('KENNETH', { body: text })
-      } catch {
-        // Some mobile browsers only allow notifications from a service worker.
-      }
+      void systemNotify('KENNETH', text)
       removeReminder(r.id)
     })
   }, [now, reminders, enabled, t])
