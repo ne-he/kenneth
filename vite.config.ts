@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'og.png'],
+      includeAssets: ['favicon-32.png', 'favicon-48.png', 'apple-touch-icon.png', 'og.png'],
       manifest: {
         name: 'KENNETH',
         short_name: 'KENNETH',
@@ -19,7 +19,8 @@ export default defineConfig({
         start_url: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#f3f2ee',
+        // Black splash, the same field as the logo, so the icon sits on it without an edge.
+        background_color: '#000000',
         theme_color: '#111512',
         categories: ['navigation', 'travel', 'utilities'],
         icons: [
