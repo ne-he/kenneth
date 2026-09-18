@@ -2,6 +2,7 @@ import { Lightning, SunDim } from '@phosphor-icons/react'
 import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
+import { passPhase } from '../../engine/pass'
 import { WINDOW_MINUTES, formatRupiah } from '../../engine/pricing'
 import { useDayLabel, useT } from '../../i18n'
 import { clock, dayDiff, stopwatch } from '../../lib/time'
@@ -9,14 +10,6 @@ import { useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { Plate } from '../ui/Display'
-
-export type PassPhase = 'upcoming' | 'open' | 'expired'
-
-export function passPhase(windowStart: number, now: number): PassPhase {
-  if (now < windowStart) return 'upcoming'
-  if (now < windowStart + WINDOW_MINUTES * 60_000) return 'open'
-  return 'expired'
-}
 
 /**
  * The gate pass, styled like a boarding pass: dark, high contrast, and the
