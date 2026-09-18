@@ -85,11 +85,11 @@ export function Activity() {
       )}
 
       <motion.div {...stagger(i++)}>
-        <ImpactCard history={history} />
+        <ImpactCard history={history} now={now} />
       </motion.div>
 
       <motion.div {...stagger(i++)}>
-        <PatternCard history={history} />
+        <PatternCard history={history} now={now} />
       </motion.div>
 
       {history.length > 0 && (
@@ -290,11 +290,11 @@ function ReminderRow({ id, venueId, at }: { id: string; venueId: keyof typeof VE
   )
 }
 
-function ImpactCard({ history }: { history: Visit[] }) {
+function ImpactCard({ history, now }: { history: Visit[]; now: number }) {
   const t = useT()
   const vehicle = useApp((s) => s.vehicle)
   const open = useUi((s) => s.open)
-  const month = history.filter((v) => Date.now() - v.at < 31 * 86_400_000)
+  const month = history.filter((v) => now - v.at < 31 * 86_400_000)
   const total = sumImpact(month.map((v) => impactOf(v.minutesSaved, vehicle.isEV)))
   const max = Math.max(1, ...month.map((v) => v.minutesSaved))
   return (
@@ -340,7 +340,7 @@ function Metric({ label, value, unit, decimals = 0 }: { label: string; value: nu
 }
 
 /** Feature 11, personal pattern. Premium only, shown as a teaser on Free. */
-function PatternCard({ history }: { history: Visit[] }) {
+function PatternCard({ history, now }: { history: Visit[]; now: number }) {
   const t = useT()
   const lang = useLang()
   const plan = useApp((s) => s.plan)
@@ -352,7 +352,7 @@ function PatternCard({ history }: { history: Visit[] }) {
   const fav = [...counts.entries()].sort((a, b) => b[1] - a[1])[0][0] as keyof typeof VENUE_BY_ID
   const venue = VENUE_BY_ID[fav]
   // Assume the habit is the weekend peak, the scenario most people describe.
-  const sat = history.find((v) => wib(v.at).day === 6)?.at ?? Date.now()
+  const sat = history.find((v) => wib(v.at).day === 6)?.at ?? now
   const series = forecastDay(venue, sat)
   const worst = series.filter((p) => p.hour >= 11 && p.hour <= 20).reduce((a, b) => (b.queueMin > a.queueMin ? b : a))
   const best = quietestHour(venue, sat)
