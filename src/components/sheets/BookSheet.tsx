@@ -210,7 +210,7 @@ export function BookSheet({ venueId }: { venueId: VenueId }) {
               )}
             >
               <span className="text-[14px] font-extrabold tabular">{clock(w.start)}</span>
-              <span className={clsx('mt-0.5 text-[12px] font-bold tabular', active ? 'text-led-lega' : 'text-brand-700 dark:text-brand-300')}>
+              <span className={clsx('mt-0.5 text-[12px] font-bold tabular', active ? 'text-led-lega dark:text-brand-700' : 'text-brand-700 dark:text-brand-300')}>
                 {w.worth ? formatRupiah(w.price, true) : '-'}
               </span>
               <span className={clsx('mt-1 text-[10.5px] font-semibold', active ? 'text-canvas/60' : 'text-ink-3')}>
