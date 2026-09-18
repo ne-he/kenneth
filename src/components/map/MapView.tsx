@@ -58,6 +58,7 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
         })
         mapRef.current = map
         setMap(map)
+        if (import.meta.env.DEV) (window as unknown as { __kmap: MLMap }).__kmap = map
         map.on('style.load', () => {
           addOverlays(map!)
           setReady((n) => n + 1)
