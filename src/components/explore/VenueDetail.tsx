@@ -30,6 +30,7 @@ import { alternativesFor, type Ranked } from '../../engine/recommend'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
+import { askNotificationPermission } from '../../lib/notify'
 import { STATUS, formatMin } from '../../lib/status'
 import { clock } from '../../lib/time'
 import { uid, useApp, type CommunityReport } from '../../store/app'
@@ -146,8 +147,10 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
             variant={reminded ? 'secondary' : 'dark'}
             disabled={reminded}
             onClick={() => {
+              haptic('success')
               addReminder({ id: uid(), venueId: venue.id, at: relief, createdAt: Date.now() })
               notify(t.explore.reminded)
+              askNotificationPermission()
             }}
           >
             <BellSimple size={14} weight="fill" />

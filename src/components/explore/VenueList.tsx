@@ -7,6 +7,7 @@ import type { Ranked } from '../../engine/recommend'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
+import { askNotificationPermission } from '../../lib/notify'
 import { STATUS, formatMin } from '../../lib/status'
 import { clock } from '../../lib/time'
 import { uid, useApp } from '../../store/app'
@@ -128,9 +129,7 @@ function ReliefCard({ id, name, at }: { id: VenueId; name: string; at: number })
             haptic('success')
             addReminder({ id: uid(), venueId: id, at, createdAt: Date.now() })
             notify(t.explore.reminded)
-            if ('Notification' in window && Notification.permission === 'default') {
-              Notification.requestPermission().catch(() => undefined)
-            }
+            askNotificationPermission()
           }}
           className="flex h-8 shrink-0 items-center gap-1 rounded-full bg-brand-500 px-3 text-[12px] font-bold text-white disabled:bg-white/15"
         >
