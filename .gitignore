@@ -34,3 +34,7 @@ playwright-report
 
 # local agent config
 .claude
+
+# Firebase
+.firebase/
+firebase-debug.log*
