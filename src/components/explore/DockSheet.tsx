@@ -1,5 +1,5 @@
 import { animate, motion, useMotionValue, type PanInfo } from 'motion/react'
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
 export type Snap = 'peek' | 'half' | 'full'
 
@@ -43,16 +43,15 @@ export function DockSheet({ snap, onSnap, header, children, footer, peek = 172, 
     return () => ro.disconnect()
   }, [])
 
-  const heights: Record<Snap, number> = {
-    peek,
-    half: Math.round(Math.max(peek + 120, H * 0.5)),
-    full: H - 74,
-  }
+  const heights: Record<Snap, number> = useMemo(
+    () => ({ peek, half: Math.round(Math.max(peek + 120, H * 0.5)), full: H - 74 }),
+    [peek, H],
+  )
 
   useEffect(() => {
     const c = animate(h, heights[snap], SPRING)
     return () => c.stop()
-  }, [snap, H, peek])
+  }, [h, heights, snap])
 
   const onPanEnd = (_: PointerEvent, info: PanInfo) => {
     const projected = h.get() - info.velocity.y * 0.18
