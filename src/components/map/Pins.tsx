@@ -34,7 +34,8 @@ export function VenuePin({
 }) {
   const t = useT()
   const s = STATUS[snap.status]
-  const [dx, dy] = DIR[snap.venue.labelDir]
+  // The selected label lifts straight up so the gate chips around the building stay visible.
+  const [dx, dy] = selected ? [0, -66] : DIR[snap.venue.labelDir]
   return (
     <div className="relative size-0">
       <svg className="pointer-events-none absolute overflow-visible" width="1" height="1" aria-hidden="true">

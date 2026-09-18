@@ -108,6 +108,7 @@ export function Explore() {
         snap={route ? 'peek' : snap}
         onSnap={setSnap}
         peek={route ? 176 : 150}
+        contentKey={route ? 'route' : (selected ?? 'list')}
         header={header}
         footer={route ? undefined : <TabBar variant="sunken" />}
       >

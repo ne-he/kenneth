@@ -44,18 +44,13 @@ import { TimeScrubber } from './TimeScrubber'
 export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?: Ranked; onBack: () => void }) {
   const t = useT()
   return (
-    <div className="flex items-center gap-2 px-4 pb-3">
-      <button
-        type="button"
-        onClick={onBack}
-        aria-label={t.common.back}
-        className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
-      >
-        <ArrowLeft size={17} weight="bold" />
-      </button>
+    <div className="flex items-center gap-2 px-5 pb-3">
       <div className="min-w-0 flex-1">
-        <h2 className="truncate text-[19px] leading-tight font-extrabold tracking-tight">{venue.name}</h2>
-        <div className="mt-0.5 flex items-center gap-1.5 text-[11.5px] text-ink-3">
+        <div className="flex items-center gap-2">
+          <h2 className="truncate text-[21px] leading-tight font-extrabold tracking-tight">{venue.name}</h2>
+          {snap && <StatusBadge status={snap.status} className="shrink-0" />}
+        </div>
+        <div className="mt-1 flex items-center gap-1.5 overflow-hidden text-[12px] whitespace-nowrap text-ink-3">
           <span>{venue.district}</span>
           <span>·</span>
           <SourceChip venue={venue} />
@@ -67,7 +62,6 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
           )}
         </div>
       </div>
-      {snap && <StatusBadge status={snap.status} />}
       <button
         type="button"
         onClick={onBack}
