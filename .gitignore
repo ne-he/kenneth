@@ -31,3 +31,6 @@ desktop.ini
 .vercel
 test-results
 playwright-report
+
+# local agent config
+.claude
