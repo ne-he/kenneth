@@ -34,6 +34,8 @@ Tidak ada API key atau file `.env` yang dibutuhkan. Peta dari OpenFreeMap dan ru
    ```
 
 5. Push branch-nya lalu buka Pull Request ke `main`. Minta satu orang lain review sebelum merge.
+6. Rilis ke Firebase (`npm run deploy`) dilakukan pemilik project Firebase setelah merge ke `main`.
+   Mau nunjukin hasil branch ke tim dulu? Minta dibuatkan link uji coba lewat `npm run deploy:preview`.
 
 ## Format commit
 
