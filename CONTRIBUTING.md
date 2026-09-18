@@ -62,9 +62,10 @@ sendiri di filenya.
 **Gaya tulisan.** Bahasa Indonesia santai tapi jelas, seperti ngobrol sama teman. Jangan pakai tanda
 pisah panjang (em dash). Pakai koma, titik, atau pecah jadi dua kalimat.
 
-**Warna.** Pakai token dari `src/index.css` (`bg-surface`, `text-ink-2`, `bg-lega`, dan seterusnya),
-jangan tulis kode hex langsung di komponen. Setiap perubahan tampilan dicek di mode terang dan gelap.
-Ganti tema lewat Profil, Tampilan.
+**Warna.** Pakai token dari `src/index.css` (`bg-surface`, `text-ink-2`, `bg-lega`, dan seterusnya).
+Kode hex langsung hanya untuk hal yang sengaja tidak ikut tema, seperti tiket prioritas yang selalu
+gelap dan garis rute di peta. Setiap perubahan tampilan dicek di mode terang dan gelap. Ganti tema
+lewat Profil, Tampilan.
 
 **Angka.** Semua hitungan (okupansi, antrian, harga, dampak) ada di `src/engine/`. Komponen hanya
 menampilkan. Kalau mengubah rumus di engine, tambah atau ubah test di file `*.test.ts` sebelahnya,
