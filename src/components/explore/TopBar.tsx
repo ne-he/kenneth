@@ -26,7 +26,7 @@ export function TopBar({ now }: { now: number }) {
       className="pt-safe absolute inset-x-0 top-0 z-20 px-3.5"
     >
       <div className="glass shadow-float flex h-12 items-center gap-2.5 rounded-full pr-1.5 pl-1.5">
-        <LogoMark size={36} className="rounded-full" />
+        <LogoMark size={36} shape="circle" />
         <button
           type="button"
           onClick={() => {
