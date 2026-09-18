@@ -43,8 +43,14 @@ describe('pricing', () => {
   })
 
   it('never sells more than the sellable share of a window', () => {
-    for (let h = 10; h < 22; h++) {
-      expect(laneSeatsLeft(cp, atWib(SAT, h, 0), 0.99)).toBeLessThanOrEqual(LANE_SELLABLE)
+    for (const occ of [0.5, 0.75, 0.9, 0.99]) {
+      for (let h = 10; h < 22; h++) {
+        for (const m of [0, 15, 30, 45]) {
+          const seats = laneSeatsLeft(cp, atWib(SAT, h, m), occ)
+          expect(seats).toBeGreaterThanOrEqual(0)
+          expect(seats).toBeLessThanOrEqual(LANE_SELLABLE)
+        }
+      }
     }
   })
 })
