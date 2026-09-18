@@ -19,7 +19,7 @@ import { impactOf, sumImpact } from '../../engine/impact'
 import { forecastDay, occupancyAt, quietestHour } from '../../engine/occupancy'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
 import { useDayLabel, useLang, useT } from '../../i18n'
-import { clock, dayDiff, dayName, hourLabel, stopwatch, wib } from '../../lib/time'
+import { clock, dayDiff, dayName, hourLabel, shortDate, stopwatch, wib } from '../../lib/time'
 import { useApp, type Visit } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
@@ -388,7 +388,7 @@ function HistoryRow({ v }: { v: Visit }) {
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[14px] font-semibold">{venue.name}</span>
         <span className="text-[12px] text-ink-3">
-          {dayName(v.at, lang)} {new Date(v.at).getDate()}/{new Date(v.at).getMonth() + 1}
+          {shortDate(v.at, lang)}
           {v.divertedFrom ? ` · ${t.activity.diverted(VENUE_BY_ID[v.divertedFrom].name)}` : ''}
         </span>
       </span>
