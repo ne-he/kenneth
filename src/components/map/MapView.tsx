@@ -48,7 +48,7 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
           style,
           bounds: boundsOf(initialBounds),
           fitBoundsOptions: {
-            padding: { top: 110, bottom: sheetPad(box.current.clientHeight), left: 64, right: 64 },
+            padding: { top: 110, bottom: sheetPad(box.current.clientHeight), left: 96, right: 96 },
           },
           pitch: 46,
           bearing: -12,
