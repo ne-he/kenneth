@@ -89,11 +89,11 @@ export function MapButtons() {
   }
 
   return (
-    <div className="absolute top-[calc(max(12px,env(safe-area-inset-top))+60px)] right-3.5 z-20 flex flex-col gap-2">
+    <div className="absolute top-[calc(max(12px,var(--safe-top,env(safe-area-inset-top)))+60px)] right-3.5 z-20 flex flex-col gap-2">
       <IconButton label={t.explore.locate} onClick={locate} disabled={busy}>
         <Crosshair size={18} weight="bold" className={busy ? 'animate-spin' : ''} />
       </IconButton>
-      <IconButton label="Semua lokasi" onClick={() => fitPoints([origin, ...VENUES.map((v) => v.coords)])}>
+      <IconButton label={t.explore.fitAll} onClick={() => fitPoints([origin, ...VENUES.map((v) => v.coords)])}>
         <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
           <path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4" />
         </svg>
