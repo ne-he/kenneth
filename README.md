@@ -91,6 +91,26 @@ npm run preview   # jalankan hasil build
 npm run lint      # oxlint
 ```
 
+## Deploy ke Firebase Hosting
+
+Konfigurasi ada di [firebase.json](firebase.json): semua rute diarahkan ke `index.html` (app satu halaman),
+file di `assets/` di-cache setahun karena namanya selalu berubah tiap build, sedangkan `index.html` dan
+service worker selalu dicek ulang supaya versi baru langsung sampai. Paket gratis (Spark) sudah cukup.
+
+Sekali saja, untuk menghubungkan folder ini ke project Firebase:
+
+```bash
+npx firebase-tools login
+npx firebase-tools use --add
+```
+
+Setelah itu setiap mau rilis:
+
+```bash
+npm run deploy           # build lalu publish ke https://<project-id>.web.app
+npm run deploy:preview   # link uji coba terpisah, hangus sendiri setelah 7 hari
+```
+
 ## Stack
 
 React 19, TypeScript, Vite, Tailwind CSS 4, Motion untuk animasi, MapLibre GL dengan peta
@@ -108,8 +128,18 @@ src/
   i18n/        teks Indonesia dan Inggris
   components/  UI per layar: explore, sheets, activity, profile, onboarding, map, park (3D), charts
   pages/       /mitra dan /booth
-docs/          dokumen produk, model simulasi, screenshot
+docs/          dokumen produk, model simulasi, screenshot, logo (docs/brand)
 ```
+
+## Logo dan layar pembuka
+
+Logonya huruf K yang tersusun dari jalan dilihat dari atas, dengan satu mobil di cabang bawah. Batangnya
+jalan yang sedang kamu lewati, dua cabangnya pilihan tempat, dan mobilnya mengambil yang lega.
+File asli dan versi 1024px ada di [docs/brand](docs/brand).
+
+Saat app dibuka muncul layar hitam dengan logo dan marka jalan yang bergerak. Kalau ada video animasi logo,
+taruh `public/brand/loading.mp4` (boleh ditambah `loading.webm` dan `loading-poster.jpg` berisi frame pertama),
+lalu build ulang. Video otomatis dipakai tanpa ubah kode, dan dilewati untuk pengguna yang mematikan animasi.
 
 Cara kerja simulasinya dijelaskan di [docs/MODEL.md](docs/MODEL.md). Panduan buat anggota tim ada di
 [CONTRIBUTING.md](CONTRIBUTING.md).
