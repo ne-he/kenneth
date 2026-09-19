@@ -9,6 +9,24 @@ export type VenueId =
   | 'lippo-puri'
   | 'puri-indah'
   | 'grand-indonesia'
+  | 'slipi-jaya'
+  | 'senayan-city'
+  | 'plaza-senayan'
+  | 'fx-sudirman'
+  | 'mall-alsut'
+  | 'living-world'
+  | 'sm-bekasi'
+  | 'binus-anggrek'
+  | 'binus-syahdan'
+  | 'binus-kijang'
+  | 'binus-senayan'
+  | 'binus-alsut'
+  | 'binus-bekasi'
+
+/** Malls fill up on weekend afternoons, campuses on weekday mornings. */
+export type Category = 'mall' | 'kampus'
+
+export type VehicleKind = 'mobil' | 'motor'
 
 /**
  * Where the occupancy number comes from.
@@ -46,11 +64,29 @@ export interface Tariff {
   verified: boolean
 }
 
+export type Area = 'Jakarta Barat' | 'Jakarta Pusat' | 'Tangerang' | 'Tangerang Selatan' | 'Bekasi'
+
+/** Motorbike bays have their own count, fill level and tariff. */
+export interface MotorBays {
+  capacity: number
+  load: number
+  firstHour: number
+  nextHour: number
+}
+
+/** Valet run by the building. KENNETH only books the drop-off and calls the car back. */
+export interface Valet {
+  lobbies: string[]
+  /** Flat fee paid at the valet desk, never in the app. */
+  price: number
+}
+
 export interface Venue {
   id: VenueId
   name: string
   short: string
-  area: 'Jakarta Barat' | 'Jakarta Pusat'
+  category: Category
+  area: Area
   district: string
   group?: string
   coords: LngLat
@@ -60,6 +96,10 @@ export interface Venue {
   load: number
   /** Minutes the curve is shifted. Positive means the crowd arrives later. */
   shiftMin: number
+  /** Opening and closing hour in WIB. The forecast and booking stay inside it. */
+  hours: [number, number]
+  motor: MotorBays
+  valet?: Valet
   gates: Gate[]
   levels: string[]
   zones: string[]

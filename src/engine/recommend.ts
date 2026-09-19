@@ -52,11 +52,14 @@ export interface Alternative {
 /**
  * Nearby venues that are not full, for when the chosen one is. Venues the
  * user can walk to from the original destination come first, because that
- * keeps the original plan alive (park next door, walk over).
+ * keeps the original plan alive (park next door, walk over). A full campus
+ * points to the other campuses and to anything within walking distance, not
+ * to a mall across town.
  */
 export function alternativesFor(venue: Venue, venues: Venue[], ts: number, limit = 2): Alternative[] {
   return venues
     .filter((v) => v.id !== venue.id)
+    .filter((v) => v.category === venue.category || venue.walkLinks.some((l) => l.to === v.id))
     .map((v) => {
       const link = venue.walkLinks.find((l) => l.to === v.id)
       return {

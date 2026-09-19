@@ -2,7 +2,7 @@ import type { Venue, VenueId } from '../data/types'
 import { VENUES } from '../data/venues'
 import { haversineKm } from '../lib/geo'
 import { atWib } from '../lib/time'
-import { CLOSE_HOUR, OPEN_HOUR, THRESHOLD, forecastDay, gateQueueMin, occupancyAt, statusOf } from './occupancy'
+import { THRESHOLD, forecastDay, gateQueueMin, occupancyAt, statusOf } from './occupancy'
 import { LANE_SELLABLE, WINDOW_MINUTES, priorityBasePrice, priorityWorthIt } from './pricing'
 
 /*
@@ -32,7 +32,7 @@ export interface HourRow {
 export function hourlyFlow(venue: Venue, dayTs: number): HourRow[] {
   const series = forecastDay(venue, dayTs)
   return series.map((p, i) => {
-    const prev = i === 0 ? occupancyAt(venue, atWib(dayTs, OPEN_HOUR - 1, 0)) : series[i - 1].occ
+    const prev = i === 0 ? occupancyAt(venue, atWib(dayTs, venue.hours[0] - 1, 0)) : series[i - 1].occ
     const growth = Math.max(0, p.occ - prev) * venue.capacity
     const turnover = (p.occ * venue.capacity) / AVG_STAY_H
     const entries = Math.round(growth + turnover)
@@ -49,7 +49,10 @@ export interface Diversion {
 /** Where the drivers who gave up at `venue` were sent instead. */
 export function diversions(venue: Venue, dayTs: number, lost: number): Diversion[] {
   const peak = atWib(dayTs, 15, 0)
-  const candidates = VENUES.filter((v) => v.id !== venue.id && statusOf(occupancyAt(v, peak)) !== 'penuh').map((v) => {
+  // A mall loses drivers to other malls, a campus to the other campuses.
+  const candidates = VENUES.filter(
+    (v) => v.id !== venue.id && v.category === venue.category && statusOf(occupancyAt(v, peak)) !== 'penuh',
+  ).map((v) => {
     const km = haversineKm(venue.coords, v.coords)
     const sameGroup = venue.group && v.group === venue.group ? 2.2 : 1
     return { v, w: (sameGroup / Math.max(0.3, km)) * (1 - occupancyAt(v, peak)) }
@@ -94,7 +97,7 @@ export function weekHeat(venue: Venue, anyTs: number) {
   return order.map((day) => {
     const ts = sunday + day * 86_400_000
     const hours = []
-    for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) hours.push({ hour: h, occ: occupancyAt(venue, atWib(ts, h, 0)) })
+    for (let h = venue.hours[0]; h < venue.hours[1]; h++) hours.push({ hour: h, occ: occupancyAt(venue, atWib(ts, h, 0)) })
     return { day, ts, hours }
   })
 }
@@ -104,7 +107,7 @@ export function priorityDay(venue: Venue, dayTs: number) {
   if (!venue.gates.some((g) => g.priorityLane)) return { tickets: 0, gross: 0 }
   let tickets = 0
   let gross = 0
-  for (let h = OPEN_HOUR; h < CLOSE_HOUR; h++) {
+  for (let h = venue.hours[0]; h < venue.hours[1]; h++) {
     for (let m = 0; m < 60; m += WINDOW_MINUTES) {
       const ts = atWib(dayTs, h, m)
       const occ = occupancyAt(venue, ts)

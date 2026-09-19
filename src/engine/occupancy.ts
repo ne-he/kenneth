@@ -1,4 +1,4 @@
-import type { Gate, OccupancyStatus, Venue } from '../data/types'
+import type { Gate, OccupancyStatus, VehicleKind, Venue } from '../data/types'
 import { atWib, wib } from '../lib/time'
 
 /*
@@ -22,8 +22,20 @@ const WEEKDAY = [
 ]
 const FRIDAY = WEEKDAY.map((v, h) => (h >= 17 ? Math.min(0.97, v * 1.18) : v))
 
+// Campuses run the other way round: full from the first class on a weekday, quiet on Sunday.
+const CAMPUS_WEEKDAY = [
+  0.03, 0.03, 0.03, 0.03, 0.03, 0.04, 0.1, 0.45, 0.78, 0.9, 0.94, 0.95, 0.92, 0.95, 0.93, 0.86,
+  0.72, 0.62, 0.55, 0.45, 0.28, 0.12, 0.05, 0.03,
+]
+const CAMPUS_SATURDAY = [
+  0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.06, 0.2, 0.4, 0.55, 0.6, 0.6, 0.55, 0.55, 0.5, 0.42, 0.3,
+  0.2, 0.12, 0.08, 0.05, 0.04, 0.03, 0.03,
+]
+const CAMPUS_SUNDAY = CAMPUS_SATURDAY.map((v) => Math.max(0.03, v * 0.25))
+
 const FLOOR = 0.04
 
+/** Mall hours, the default when a screen shows several venues at once. */
 export const OPEN_HOUR = 10
 export const CLOSE_HOUR = 22
 
@@ -31,7 +43,12 @@ export const THRESHOLD = { ramai: 0.7, penuh: 0.9 } as const
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v))
 
-function curveFor(day: number) {
+function curveFor(venue: Venue, day: number) {
+  if (venue.category === 'kampus') {
+    if (day === 0) return CAMPUS_SUNDAY
+    if (day === 6) return CAMPUS_SATURDAY
+    return CAMPUS_WEEKDAY
+  }
   if (day === 0 || day === 6) return WEEKEND
   if (day === 5) return FRIDAY
   return WEEKDAY
@@ -68,9 +85,10 @@ function breathing(id: string, ts: number) {
 export function occupancyAt(venue: Venue, ts: number): number {
   const shifted = ts - venue.shiftMin * 60_000
   const p = wib(shifted)
-  const base = sampleCurve(curveFor(p.day), p.hourF)
+  const base = sampleCurve(curveFor(venue, p.day), p.hourF)
   const crowd = FLOOR + (base - FLOOR) * venue.load
-  const open = p.hourF >= OPEN_HOUR - 1 && p.hourF <= CLOSE_HOUR + 0.5
+  const [openH, closeH] = venue.hours
+  const open = p.hourF >= openH - 1 && p.hourF <= closeH + 0.5
   const noise = open ? breathing(venue.id, ts) * Math.min(1, venue.load) : 0
   return clamp(crowd + noise, 0.02, 0.995)
 }
@@ -154,7 +172,8 @@ export interface ForecastPoint {
 /** Hourly forecast for the WIB day of `ts`, opening to closing. */
 export function forecastDay(venue: Venue, ts: number): ForecastPoint[] {
   const out: ForecastPoint[] = []
-  for (let hour = OPEN_HOUR; hour <= CLOSE_HOUR; hour++) {
+  const [openH, closeH] = venue.hours
+  for (let hour = openH; hour <= closeH; hour++) {
     const at = atWib(ts, hour, 0)
     const occ = occupancyAt(venue, at)
     out.push({ hour, ts: at, occ, status: statusOf(occ), queueMin: gateQueueMin(defaultGate(venue), occ) })
@@ -169,7 +188,7 @@ export function forecastDay(venue: Venue, ts: number): ForecastPoint[] {
 export function nextRelief(venue: Venue, ts: number): number | null {
   const now = snapshot(venue, ts)
   if (now.queueMin <= 3 && now.status !== 'penuh') return null
-  const close = atWib(ts, CLOSE_HOUR, 0)
+  const close = atWib(ts, venue.hours[1], 0)
   for (let t = ts + 15 * 60_000; t <= close; t += 15 * 60_000) {
     const occ = occupancyAt(venue, t)
     if (gateQueueMin(defaultGate(venue), occ) <= 3 && statusOf(occ) !== 'penuh') {
@@ -181,7 +200,7 @@ export function nextRelief(venue: Venue, ts: number): number | null {
 }
 
 /** Quietest hour of the day, used for the personal pattern insight. */
-export function quietestHour(venue: Venue, ts: number, fromHour = 11, toHour = 20) {
+export function quietestHour(venue: Venue, ts: number, fromHour = venue.hours[0] + 1, toHour = venue.hours[1] - 2) {
   return forecastDay(venue, ts)
     .filter((p) => p.hour >= fromHour && p.hour <= toHour)
     .reduce((a, b) => (b.queueMin < a.queueMin ? b : a))
@@ -197,4 +216,14 @@ export function reservedFree(total: number, occ: number, salt: string, ts: numbe
   const jitter = ((seedOf(salt) * 97 + hour) % 3) - 1
   const share = Math.min(1, Math.max(0, (1 - occ) * 1.7))
   return Math.min(total, Math.max(0, Math.round(total * share) + jitter))
+}
+
+/**
+ * The same venue seen from a motorbike: its own bays, fill level and tariff.
+ * Gates and floors stay the same, so every screen and rule keeps working.
+ */
+export function forKind(venue: Venue, kind: VehicleKind): Venue {
+  if (kind === 'mobil') return venue
+  const { capacity, load, firstHour, nextHour } = venue.motor
+  return { ...venue, capacity, load, tariff: { ...venue.tariff, firstHour, nextHour } }
 }
