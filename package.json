@@ -1,7 +1,7 @@
 {
   "name": "kenneth",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,6 +19,7 @@
     "@phosphor-icons/react": "^2.1.10",
     "@tailwindcss/vite": "^4.3.3",
     "clsx": "^2.1.1",
+    "firebase": "^12.19.0",
     "maplibre-gl": "^6.10.0",
     "motion": "^13.4.0",
     "qrcode": "^1.5.4",

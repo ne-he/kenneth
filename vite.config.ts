@@ -1,7 +1,7 @@
 /// <reference types="vitest/config" />
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { defineConfig, type Plugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -34,7 +34,10 @@ function splashVideo(): Plugin {
   }
 }
 
+const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
+
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(version) },
   plugins: [
     react(),
     tailwindcss(),
@@ -64,6 +67,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: '/index.html',
+        // Firebase serves the Google sign-in handler under /__/auth. It must reach the network, not the app shell.
+        navigateFallbackDenylist: [/^\/__\//],
         runtimeCaching: [
           {
             // Map styles, tiles, fonts and sprites: fast from cache, refreshed in the background.
@@ -89,6 +94,7 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('maplibre-gl')) return 'maplibre'
           if (id.includes('/three/')) return 'three'
+          if (/node_modules[\\/](firebase|@firebase)[\\/]/.test(id)) return 'firebase'
           if (/node_modules[\\/](react|react-dom|scheduler|react-router)[\\/]/.test(id)) return 'react'
           if (/node_modules[\\/](motion|framer-motion|motion-dom|motion-utils)[\\/]/.test(id)) return 'motion'
         },
