@@ -5,6 +5,7 @@ import { BINUS_ANGGREK, VENUE_BY_ID, VENUES } from '../../data/venues'
 import { forKind } from '../../engine/occupancy'
 import { rankVenues } from '../../engine/recommend'
 import { useT } from '../../i18n'
+import { haversineKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
 import { fetchTravelTable } from '../../lib/routing'
 import { useResolvedTheme } from '../../lib/theme'
@@ -20,8 +21,8 @@ import { VenueList } from './VenueList'
 
 const MapView = lazy(() => import('../map/MapView').then((m) => ({ default: m.MapView })))
 
-// First view: the Kemanggisan and Tanjung Duren cluster around BINUS Anggrek.
-const INITIAL_BOUNDS = [BINUS_ANGGREK, ...VENUES.filter((v) => v.area === 'Jakarta Barat').map((v) => v.coords)]
+// First view: everything within 4 km of BINUS Anggrek, the Kemanggisan and Tanjung Duren cluster.
+const INITIAL_BOUNDS = [BINUS_ANGGREK, ...VENUES.filter((v) => haversineKm(BINUS_ANGGREK, v.coords) < 4).map((v) => v.coords)]
 
 const FILTERS: VenueFilter[] = ['all', 'fav', 'kampus', 'mall']
 

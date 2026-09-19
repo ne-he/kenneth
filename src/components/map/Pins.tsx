@@ -88,6 +88,14 @@ export function VenuePin({
   )
 }
 
+/** "Gerbang 3" becomes G3 on the map, a named gate keeps its name: "Gerbang utara" becomes Utara. */
+function gateTag(name: string) {
+  const n = name.match(/^Gerbang (\d+)$/)
+  if (n) return `G${n[1]}`
+  const rest = name.replace(/^Gerbang /, '')
+  return rest.charAt(0).toUpperCase() + rest.slice(1)
+}
+
 export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number; best: boolean }) {
   const t = useT()
   const tone = queueMin < 5 ? STATUS.lega : queueMin < 10 ? STATUS.ramai : STATUS.penuh
@@ -103,7 +111,7 @@ export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number
       )}
       style={{ background: tone.hex }}
     >
-      <span>{gate.name.replace('Gerbang ', 'G')}</span>
+      <span>{gateTag(gate.name)}</span>
       <span className="opacity-85 tabular">
         {formatMin(queueMin)} {t.unit.min}
       </span>

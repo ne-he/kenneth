@@ -62,7 +62,7 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
           {snap && (
             <>
               <span>·</span>
-              <span className="tabular">{formatKm(snap.travel.km)}</span>
+              <span className="tabular">{snap.travel.km < 0.15 ? t.explore.here : formatKm(snap.travel.km)}</span>
             </>
           )}
         </div>
