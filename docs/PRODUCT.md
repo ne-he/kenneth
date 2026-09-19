@@ -47,6 +47,20 @@ Aturan tambahan yang ikut ditanam di app:
 - Booking charger mobil listrik aman dijanjikan, karena chargernya sendiri jadi sensor sekaligus
   penegak aturan.
 
+**Valet, versi yang bisa dipertanggungjawabkan.** Mockup awal punya valet antar pengguna dengan Face ID.
+Itu butuh armada yang tidak kami punya dan data biometrik yang tidak perlu dikumpulkan. Yang benar-benar
+bikin kesal soal valet di mall hari Sabtu adalah menunggu mobil dibawa balik. Jadi KENNETH jadi pintu
+digital untuk valet milik gedung:
+
+- Pesan drop-off: pilih lobi dan jam datang, dapat tiket QR pengganti karcis kertas.
+- Tekan "Siapkan mobil" sebelum turun ke lobi. App menghitung mundur dan mengabari saat mobil siap.
+- Tarif dibayar di meja valet seperti biasa, bukan di app. Nol biometrik.
+- Operator valet jadi calon mitra baru, di samping pengelola gedung.
+
+**Kampus tidak menjual apa pun.** Di kampus BINUS app hanya menunjukkan seberapa penuh gedung parkir dan
+ke mana kalau penuh (kampus lain atau tempat yang bisa dijalan kaki). Motor dan mobil dihitung terpisah,
+karena di kampus porsi motor jauh lebih besar.
+
 **Sengaja tidak dibuat:**
 
 | Ide | Kenapa tidak |
@@ -54,7 +68,7 @@ Aturan tambahan yang ikut ditanam di app:
 | Reservasi petak | Tidak bisa ditegakkan, lihat di atas |
 | Bayar parkir di app | Sudah dikerjakan operator parkir. Kami masuk sebelum mereka, bukan menggantikan |
 | Poin, lencana, gamifikasi | Tidak menjawab masalah. Diganti laporan dampak bulanan dengan rumus terbuka |
-| Valet antar pengguna dengan Face ID (ada di mockup awal) | Bukan bagian dari 11 fitur, butuh armada, dan data biometrik terlalu berisiko untuk prototipe |
+| Valet antar pengguna dengan Face ID (ada di mockup awal) | Butuh armada dan data biometrik. Diganti valet milik gedung, lihat di atas |
 
 ## Harga
 
@@ -123,6 +137,8 @@ Supaya tidak ada yang mengira ini sudah jalan sungguhan:
 - Pembayaran hanya simulasi. Tidak ada uang yang ditarik.
 - Notifikasi duluan kalau ada yang batal (Premium) baru tertulis di halaman paket.
 - Laporan kondisi dari pengguna tersimpan di HP, belum dikirim ke server mana pun.
-- Tidak ada akun. Pindah HP berarti mulai dari awal.
+- Login Google sudah ada, tapi data belum disinkronkan antar perangkat. Pindah HP berarti riwayat dan tiket
+  mulai dari awal. Ini disengaja selama prototipe, supaya data pribadi tidak tersimpan di server.
+- Valet belum tersambung ke operator valet mana pun. Waktu ambil mobil dihitung dari model, bukan dari petugas.
 - Ganjil-genap belum menghitung hari libur nasional.
 - Denah basement, lantai tenant, dan jumlah charger adalah data demo.

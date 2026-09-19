@@ -83,8 +83,14 @@ Jangan hapus label "Estimasi", "Data palang", atau keterangan pembayaran simulas
 
 Tambah satu objek di `src/data/venues.ts` dan id-nya di tipe `VenueId` di `src/data/types.ts`.
 
-- Koordinat mall dan gerbang ambil dari OpenStreetMap, urutannya bujur dulu lalu lintang.
+- Koordinat lokasi dan gerbang ambil dari OpenStreetMap, urutannya bujur dulu lalu lintang. Untuk gerbang, cari
+  `amenity=parking_entrance` atau jalan servis di sebelah gedung.
+- `category` menentukan kurvanya (`mall` atau `kampus`), `hours` jam buka dan tutupnya.
 - `load` mengatur seberapa ramai puncaknya (1 berarti menyentuh puncak kurva), `shiftMin` menggeser jam ramainya.
+- `motor` berisi slot motor sendiri: kapasitas, `load`, dan tarif (harus lebih murah dari tarif mobil).
+- `valet` opsional dan hanya untuk mall. Lobinya harus salah satu dari `lobbies`.
+- Mall wajib punya minimal satu gerbang dengan `priorityLane`, kampus tidak boleh punya.
+- `walkLinks` harus dua arah dengan menit yang sama, test akan menagihnya.
 - `pull` tiap gerbang menentukan ke mana antrian menumpuk. Gerbang utama biasanya paling besar.
 - `labelDir` mengatur arah label pin di peta supaya tidak bertabrakan dengan lokasi di dekatnya.
 - Kapasitas, tarif, charger, dan tenant diisi sebagai data demo dan tetap disebut demo.
@@ -94,8 +100,10 @@ kejauhan dari gedungnya, dan field yang wajib ada.
 
 ## Tips
 
-- Jam app bisa diganti lewat chip jam di pojok kanan atas. Skenario default Sabtu 14.07.
-- Profil, "Hapus semua data di perangkat ini" mengembalikan app ke kondisi awal, termasuk onboarding.
+- Jam app bisa diganti lewat chip jam di kiri atas peta. Skenario default Sabtu 14.07, Selasa 10.00 untuk kampus penuh.
+- Akun, Privasi dan data, "Hapus data" mengembalikan app ke kondisi awal, termasuk onboarding.
+- Tombol "Masuk dengan Google" baru muncul kalau `.env.local` diisi (lihat `.env.example`).
+- Nggak ada yang boleh pindah tab otomatis. Setelah aksi berhasil, cukup toast dan titik di tab Tiket (`markTickets`).
 - Di mode dev, objek peta tersedia di console sebagai `window.__kmap`.
 - Rute dari OSRM kadang lambat. Setelah 6 detik app otomatis pakai rute perkiraan.
 - Data app tersimpan di `localStorage` dengan kunci `kenneth-app`.

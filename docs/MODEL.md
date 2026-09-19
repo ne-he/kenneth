@@ -10,14 +10,21 @@ Produk nyatanya nanti: okupansi = mobil masuk dikurangi mobil keluar, dibaca dar
 
 Di prototipe:
 
-1. Ada tiga kurva per jam (WIB): akhir pekan, hari kerja, dan Jumat (hari kerja dengan malam yang lebih ramai).
+1. Mall punya tiga kurva per jam (WIB): akhir pekan, hari kerja, dan Jumat (hari kerja dengan malam yang lebih ramai).
    Kurva akhir pekan punya puncak jam 14 sampai 15, turun sekitar jam 17, lalu naik lagi buat makan malam.
+   Kampus punya tiga kurva sendiri: hari kerja (naik tajam jam 7, penuh jam 9 sampai 14, turun sore dengan sisa kelas
+   malam), Sabtu (sekitar separuhnya), dan Minggu (hampir kosong).
 2. Tiap lokasi punya `load` (seberapa tinggi puncaknya) dan `shiftMin` (datang lebih cepat atau lebih lambat).
    Rumusnya `okupansi = 0,04 + (kurva - 0,04) × load`.
 3. Ditambah "napas": dua gelombang sinus pelan (periode 17 dan 43 menit, amplitudo total sekitar 2%) supaya angka
    bergerak waktu layar dilihat lama.
 4. Status: **lega** di bawah 70%, **ramai** 70 sampai 89%, **penuh** 90% ke atas.
-5. Jam operasional yang dimodelkan: 10.00 sampai 22.00.
+5. Jam operasional per lokasi: mall 10.00 sampai 22.00, kampus 06.00 sampai 21.00. Perkiraan per jam, jendela
+   booking, dan pencarian "kapan lancar lagi" mengikuti jam lokasinya.
+
+**Motor.** Tiap lokasi juga punya slot motor sendiri: kapasitas, `load`, dan tarif. Kalau kendaraan yang dipakai
+motor, app menukar ketiga angka itu (`forKind`) dan semua rumus di bawah jalan seperti biasa. Gerbang, lantai, dan
+jam buka tetap sama.
 
 Waktu selalu dihitung dalam WIB, apa pun zona waktu perangkatnya.
 
@@ -54,6 +61,20 @@ Daftar di Jelajah diurutkan dari waktu sampai parkir paling kecil.
 Mulai dari sekarang, maju 15 menit sekali sampai jam tutup, cari saat pertama antrian gerbang utama 3 menit
 atau kurang dan status tidak penuh. Hasilnya dibulatkan ke seperempat jam.
 
+## 4b. Valet (`valet.ts`)
+
+Valet dijalankan pengelola gedung. Model kecilnya cuma dua angka yang ikut keramaian:
+
+```
+antre di lobi   = 1 + 7 × clamp((okupansi - 0,50) / 0,45)   menit
+mobil balik     = 6 + 14 × clamp((okupansi - 0,55) / 0,40)  menit
+```
+
+Jadi saat sepi mobil balik dalam 6 menit, saat hampir penuh sampai 20 menit, karena runner harus turun lebih
+jauh dan jalurnya lebih padat. Status tiket dihitung dari waktu, bukan disimpan: menunggu kamu datang, dipegang
+valet, sedang diambil, siap, selesai. Pesanan yang tidak didatangi lebih dari 45 menit setelah jam pilihan hangus
+tanpa biaya.
+
 ## 5. Harga jalur prioritas (`pricing.ts`)
 
 - Harga dasar naik linear dari Rp15.000 (okupansi 80%) ke Rp30.000 (okupansi 98%), dibulatkan ke ribuan.
@@ -88,4 +109,5 @@ bensin adalah angka pembakaran yang umum dipakai. Mobil listrik dihitung hemat w
 ## Yang perlu divalidasi sebelum angka ini dipakai di luar demo
 
 Semua parameter di atas adalah asumsi awal tim. Yang paling menentukan, dan paling perlu dicek ke lapangan:
-kurva okupansi akhir pekan tiap mall, porsi pengunjung yang batal datang saat penuh, dan faktor lalu lintas.
+kurva okupansi akhir pekan tiap mall, kurva kampus mengikuti jadwal kuliah yang sebenarnya, perbandingan slot motor
+dan mobil di tiap kampus, porsi pengunjung yang batal datang saat penuh, faktor lalu lintas, dan waktu ambil mobil valet.
