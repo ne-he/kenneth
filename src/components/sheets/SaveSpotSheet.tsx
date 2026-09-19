@@ -6,7 +6,7 @@ import type { VenueId } from '../../data/types'
 import { snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
-import { simNowOf, useApp } from '../../store/app'
+import { activeVehicleOf, simNowOf, useApp } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { Button } from '../ui/Button'
 import { Stepper } from '../ui/Controls'
@@ -47,8 +47,8 @@ function Chips({ items, value, onChange, label }: { items: string[]; value: stri
             onChange(it)
           }}
           className={clsx(
-            'h-10 min-w-12 rounded-[12px] border px-3 text-[14px] font-extrabold',
-            it === value ? 'border-ink bg-ink text-canvas' : 'border-line bg-surface text-ink-2',
+            'h-10 min-w-12 rounded-[12px] px-3 text-[14px] font-bold transition-colors',
+            it === value ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2',
           )}
         >
           {it}
@@ -62,7 +62,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
   const t = useT()
   const venue = VENUE_BY_ID[venueId]
   const park = useApp((s) => s.park)
-  const { close, notify, setTab, select } = useUi.getState()
+  const { close, notify, select, markTickets } = useUi.getState()
   const [level, setLevel] = useState(venue.levels[1] ?? venue.levels[0])
   const [zone, setZone] = useState(venue.zones[2] ?? venue.zones[0])
   const [pillar, setPillar] = useState(12)
@@ -77,10 +77,11 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
     // What the app saved on this arrival: default gate queue versus the recommended one.
     const snap = snapshot(venue, at)
     const savedMin = Math.max(0, Math.round(snap.queueMin - snap.bestGateQueueMin))
-    park({ venueId, level, zone, pillar, lobby, photo, note: note.trim() || undefined, at, savedMin })
+    const kind = activeVehicleOf(useApp.getState()).kind
+    park({ venueId, level, zone, pillar, lobby, photo, note: note.trim() || undefined, at, savedMin, kind })
     close()
     select(null)
-    setTab('activity')
+    markTickets()
     notify(t.park.saved)
   }
 
@@ -102,7 +103,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
           <select
             value={lobby}
             onChange={(e) => setLobby(e.target.value)}
-            className="h-11 w-full rounded-full border border-line bg-surface px-3.5 text-[14px] font-semibold"
+            className="h-11 w-full rounded-full bg-surface-2 px-3.5 text-[14px] font-semibold"
           >
             {venue.lobbies.map((l) => (
               <option key={l}>{l}</option>
@@ -153,7 +154,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
           onChange={(e) => setNote(e.target.value)}
           placeholder={t.park.notePh}
           maxLength={80}
-          className="h-11 w-full rounded-full border border-line bg-surface px-4 text-[14px] outline-none placeholder:text-ink-3 focus:border-brand-500"
+          className="h-11 w-full rounded-full border border-transparent bg-surface-2 px-4 text-[14px] outline-none placeholder:text-ink-3 focus:border-brand-500"
         />
       </Field>
 
@@ -168,7 +169,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-4">
-      <div className="mb-2 px-1 text-[11px] font-bold tracking-[0.14em] text-ink-3 uppercase">{label}</div>
+      <div className="mb-2 px-1 text-[13px] font-semibold text-ink-3">{label}</div>
       {children}
     </div>
   )

@@ -6,7 +6,7 @@ import { passPhase } from '../../engine/pass'
 import { WINDOW_MINUTES, formatRupiah } from '../../engine/pricing'
 import { useDayLabel, useT } from '../../i18n'
 import { clock, dayDiff, stopwatch } from '../../lib/time'
-import { useApp } from '../../store/app'
+import { useApp, useVehicle } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { Plate } from '../ui/Display'
@@ -20,7 +20,7 @@ export function PassSheet({ passId }: { passId: string }) {
   const dayLabel = useDayLabel()
   const now = useNow(1000)
   const pass = useApp((s) => s.passes.find((p) => p.id === passId))
-  const plate = useApp((s) => s.vehicle.plate)
+  const plate = useVehicle().plate
   const cancelPass = useApp((s) => s.cancelPass)
   const { close, notify } = useUi.getState()
   const [qr, setQr] = useState('')

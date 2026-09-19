@@ -2,14 +2,15 @@ import { useState } from 'react'
 import { useT } from '../../i18n'
 import { useUi } from '../../store/ui'
 import { Sheet } from '../ui/Sheet'
-import { BookSheet } from './BookSheet'
+import { BookHub } from './book/BookHub'
 import { ClockSheet } from './ClockSheet'
-import { EvSheet } from './EvSheet'
 import { FindCarSheet } from './FindCarSheet'
 import { ImpactSheet, PremiumSheet, PrivacySheet, VehicleSheet } from './InfoSheets'
+import { MapOptionsSheet } from './MapOptionsSheet'
 import { PassSheet } from './PassSheet'
 import { SaveSpotSheet } from './SaveSpotSheet'
 import { SearchSheet } from './SearchSheet'
+import { ValetSheet } from './ValetSheet'
 
 /** One place that decides which modal sheet is open. */
 export function Sheets() {
@@ -30,10 +31,7 @@ export function Sheets() {
       body = <ClockSheet />
       break
     case 'book':
-      body = <BookSheet key={sheet.id} venueId={sheet.id} />
-      break
-    case 'ev':
-      body = <EvSheet key={sheet.id} venueId={sheet.id} />
+      body = <BookHub key={`${sheet.id}-${sheet.service ?? ''}`} venueId={sheet.id} service={sheet.service} />
       break
     case 'save-spot':
       body = <SaveSpotSheet key={sheet.id} venueId={sheet.id} />
@@ -43,6 +41,9 @@ export function Sheets() {
       break
     case 'pass':
       body = <PassSheet passId={sheet.id} />
+      break
+    case 'valet':
+      body = <ValetSheet key={sheet.id} id={sheet.id} />
       break
     case 'impact':
       body = <ImpactSheet />
@@ -54,7 +55,10 @@ export function Sheets() {
       body = <PrivacySheet />
       break
     case 'vehicle':
-      body = <VehicleSheet />
+      body = <VehicleSheet key={sheet.id ?? 'active'} id={sheet.id} />
+      break
+    case 'map-options':
+      body = <MapOptionsSheet />
       break
   }
 
