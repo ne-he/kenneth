@@ -8,8 +8,9 @@ import type { LngLat, VenueId } from '../../data/types'
 import type { Snapshot } from '../../engine/occupancy'
 import { signalMapReady } from '../../lib/splash'
 import { STATUS } from '../../lib/status'
+import { useApp } from '../../store/app'
 import type { Route } from '../../store/ui'
-import { setMap, sheetPad } from './mapApi'
+import { fitPoints, setMap, sheetPad } from './mapApi'
 import { GatePin, OriginPin, VenuePin } from './Pins'
 import { firstSymbolId, loadStyle } from './style'
 
@@ -38,26 +39,26 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
   // Marker elements live outside React. Mirror them in state so portals render from state, not a ref.
   const [els, setEls] = useState<ReadonlyMap<string, HTMLElement>>(() => new Map())
 
+  const look = useApp((s) => s.mapPrefs.style)
+  const threeD = useApp((s) => s.mapPrefs.threeD)
+
   // Create the map once. Theme and camera changes after that have their own effects,
   // so the first theme and bounds are read through an effect event, not dependencies.
-  const initial = useEffectEvent(() => ({ theme, bounds: initialBounds }))
+  const initial = useEffectEvent(() => ({ theme, bounds: initialBounds, look, threeD }))
   useEffect(() => {
     let cancelled = false
     let map: MLMap | null = null
     const live = markers.current
     const first = initial()
-    loadStyle(first.theme)
+    loadStyle(first.theme, first.look, first.threeD)
       .then((style) => {
         if (cancelled || !box.current) return
+        // Fit flat first, then tilt: a tilted fit in the constructor frames the horizon, not the pins.
         map = new MLMap({
           container: box.current,
           style,
           bounds: boundsOf(first.bounds),
-          fitBoundsOptions: {
-            padding: { top: 110, bottom: sheetPad(box.current.clientHeight), left: 96, right: 96 },
-          },
-          pitch: 46,
-          bearing: -12,
+          fitBoundsOptions: { padding: { top: 136, bottom: sheetPad(box.current.clientHeight), left: 56, right: 72 } },
           maxPitch: 70,
           attributionControl: { compact: true },
           fadeDuration: 150,
@@ -69,7 +70,10 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
           addOverlays(map!)
           setReady((n) => n + 1)
         })
-        map.once('load', signalMapReady)
+        map.once('load', () => {
+          if (first.threeD) fitPoints(first.bounds, sheetPad(), 15.5, 0)
+          signalMapReady()
+        })
       })
       .catch(() => {
         signalMapReady()
@@ -85,14 +89,20 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
     }
   }, [])
 
-  // Swap base style when the theme changes, keep the camera.
-  const firstTheme = useRef(theme)
+  // Swap the base style when the theme, the look or 3D changes, keep the camera.
+  const shown = useRef(`${theme}:${look}:${threeD}`)
   useEffect(() => {
     const map = mapRef.current
-    if (!map || theme === firstTheme.current) return
-    firstTheme.current = theme
-    loadStyle(theme).then((style) => map.setStyle(style, { diff: false }))
-  }, [theme])
+    const key = `${theme}:${look}:${threeD}`
+    if (!map || key === shown.current) return
+    const wasFlat = shown.current.endsWith('false')
+    shown.current = key
+    loadStyle(theme, look, threeD)
+      .then((style) => map.setStyle(style, { diff: false }))
+      .catch(() => undefined)
+    if (threeD && wasFlat) map.easeTo({ pitch: 50, bearing: -12, duration: 700 })
+    if (!threeD) map.easeTo({ pitch: 0, bearing: 0, duration: 700 })
+  }, [theme, look, threeD])
 
   // Status halos under the pins.
   useEffect(() => {

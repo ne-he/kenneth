@@ -3,12 +3,17 @@ import type { VenueId } from '../../data/types'
 import { snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
+import { NAV_APP_NAME, externalNavUrl } from '../../lib/navApps'
 import { fetchRoute } from '../../lib/routing'
 import { simNowOf, useApp } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { fitPoints, flyTo } from '../map/mapApi'
 
-/** Start and stop in-app navigation to the quietest gate of a venue. */
+/**
+ * Start and stop navigation to the quietest gate of a venue. With Google Maps
+ * or Waze picked in Akun, the gate goes to that app instead and KENNETH stays
+ * on the venue, ready for "Parkir" when the user arrives.
+ */
 export function useNavigation() {
   const t = useT()
 
@@ -18,7 +23,14 @@ export function useNavigation() {
     const snap = snapshot(venue, now)
     const gate = venue.gates.find((g) => g.id === gateId) ?? snap.bestGate
     const { origin, notify, setRoute, select } = useUi.getState()
+    const app = useApp.getState().mapPrefs.navApp
     haptic('success')
+    if (app !== 'kenneth') {
+      window.open(externalNavUrl(app, gate.coords), '_blank', 'noopener')
+      select(venueId)
+      notify(t.mapOptions.openedIn(NAV_APP_NAME[app], gate.name))
+      return
+    }
     const r = await fetchRoute(origin, gate.coords, now)
     select(venueId)
     setRoute({ venueId, gateId: gate.id, ...r, startedAt: now })
