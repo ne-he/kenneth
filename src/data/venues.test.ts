@@ -31,13 +31,43 @@ describe('venue data', () => {
       expect(v.capacity, v.id).toBeGreaterThan(0)
       expect(v.load, v.id).toBeGreaterThan(0)
       expect(v.gates.length, v.id).toBeGreaterThan(0)
-      expect(v.gates.some((g) => g.priorityLane), `${v.id} priority lane`).toBe(true)
+      // Malls sell priority entry, campuses sell nothing.
+      expect(v.gates.some((g) => g.priorityLane), `${v.id} priority lane`).toBe(v.category === 'mall')
       v.gates.forEach((g) => expect(g.pull, g.id).toBeGreaterThan(0))
       expect(new Set(v.gates.map((g) => g.id)).size, v.id).toBe(v.gates.length)
       expect(v.levels.length, v.id).toBeGreaterThan(0)
       expect(v.zones.length, v.id).toBeGreaterThan(0)
       expect(v.lobbies.length, v.id).toBeGreaterThan(0)
       expect(v.tariff.verified, v.id).toBe(false)
+      expect(v.hours[0], v.id).toBeLessThan(v.hours[1])
+      expect(v.motor.capacity, `${v.id} motorbike bays`).toBeGreaterThan(0)
+      expect(v.motor.firstHour, `${v.id} motorbike tariff`).toBeLessThan(v.tariff.firstHour)
+      if (v.valet) {
+        expect(v.category, `${v.id} valet`).toBe('mall')
+        expect(v.valet.lobbies.length, `${v.id} valet lobbies`).toBeGreaterThan(0)
+        v.valet.lobbies.forEach((l) => expect(v.lobbies, `${v.id} valet lobby`).toContain(l))
+      }
+    }
+  })
+
+  it('covers every BINUS campus in Greater Jakarta, each with a mall nearby', () => {
+    const campuses = VENUES.filter((v) => v.category === 'kampus')
+    expect(campuses.map((v) => v.id).sort()).toEqual(
+      ['binus-alsut', 'binus-anggrek', 'binus-bekasi', 'binus-kijang', 'binus-senayan', 'binus-syahdan'].sort(),
+    )
+    for (const c of campuses) {
+      const mall = VENUES.filter((v) => v.category === 'mall').some((m) => haversineKm(c.coords, m.coords) < 2.5)
+      expect(mall, `${c.id} has a mall within 2.5 km`).toBe(true)
+    }
+  })
+
+  it('keeps walking links the same in both directions', () => {
+    for (const v of VENUES) {
+      v.walkLinks.forEach((l) => {
+        const back = VENUE_BY_ID[l.to].walkLinks.find((x) => x.to === v.id)
+        expect(back, `${l.to} back to ${v.id}`).toBeDefined()
+        expect(back!.minutes, `${v.id} and ${l.to}`).toBe(l.minutes)
+      })
     }
   })
 

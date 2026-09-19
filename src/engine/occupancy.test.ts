@@ -3,6 +3,7 @@ import { VENUE_BY_ID, VENUES } from '../data/venues'
 import { atWib, nextSaturdayAt, wib } from '../lib/time'
 import {
   THRESHOLD,
+  forKind,
   forecastDay,
   nextRelief,
   occupancyAt,
@@ -87,3 +88,40 @@ describe('occupancy model', () => {
     expect(statusOf(THRESHOLD.penuh)).toBe('penuh')
   })
 })
+
+describe('campuses', () => {
+  const anggrek = VENUE_BY_ID['binus-anggrek']
+
+  it('is packed on a weekday morning and calm on a Saturday afternoon', () => {
+    expect(snapshot(anggrek, TUE_1000).status).toBe('penuh')
+    expect(snapshot(anggrek, SAT_1407).status).toBe('lega')
+  })
+
+  it('forecasts from its own opening hour, not the mall hours', () => {
+    const f = forecastDay(anggrek, TUE_1000)
+    expect(f[0].hour).toBe(6)
+    expect(f.at(-1)!.hour).toBe(21)
+  })
+
+  it('stays nearly empty on a Sunday', () => {
+    const sunday = atWib(SAT_1407 + 86_400_000, 11, 0)
+    expect(occupancyAt(anggrek, sunday)).toBeLessThan(0.3)
+  })
+})
+
+describe('motorbike view', () => {
+  it('swaps in the motorbike bays, fill level and tariff, and keeps the rest', () => {
+    const cp = VENUE_BY_ID['central-park']
+    const moto = forKind(cp, 'motor')
+    expect(moto.capacity).toBe(cp.motor.capacity)
+    expect(moto.tariff.firstHour).toBe(cp.motor.firstHour)
+    expect(moto.gates).toBe(cp.gates)
+    expect(forKind(cp, 'mobil')).toBe(cp)
+  })
+
+  it('gives a different number when the motorbike bays fill differently', () => {
+    const syahdan = VENUE_BY_ID['binus-syahdan']
+    expect(snapshot(forKind(syahdan, 'motor'), TUE_1000).free).not.toBe(snapshot(syahdan, TUE_1000).free)
+  })
+})
+
