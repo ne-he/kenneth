@@ -71,9 +71,9 @@ export function ValetSheet({ id }: { id: string }) {
         <Cell label={t.valet.price} value={formatRupiah(ticket.price, true)} />
       </div>
 
-      <div className="mb-4 flex items-center justify-between rounded-[16px] bg-surface-2 px-4 py-3 text-[12.5px] text-ink-2">
+      <div className="mb-4 flex items-center justify-between gap-3 rounded-[16px] bg-surface-2 px-4 py-3 text-[12.5px] text-ink-2">
         <span>{t.valet.payAtDesk}</span>
-        <Plate plate={plate} small />
+        {phase !== 'booked' && phase !== 'parked' && <Plate plate={plate} small />}
       </div>
 
       {phase === 'booked' && (
