@@ -1,7 +1,5 @@
 import { CarProfile, FastForward, Key, Timer } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
-import QRCode from 'qrcode'
-import { useEffect, useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import { occupancyAt } from '../../engine/occupancy'
 import { formatRupiah } from '../../engine/pricing'
@@ -26,13 +24,6 @@ export function ValetSheet({ id }: { id: string }) {
   const plate = useVehicle().plate
   const close = useUi((s) => s.close)
   const act = useValetActions()
-  const [qr, setQr] = useState('')
-
-  useEffect(() => {
-    if (!ticket) return
-    QRCode.toDataURL(`kenneth://valet/${ticket.token}`, { margin: 1, width: 360, color: { dark: '#0c0f0d', light: '#ffffff' } }).then(setQr)
-  }, [ticket])
-
   if (!ticket) return null
   const venue = VENUE_BY_ID[ticket.venueId]
   const phase = valetPhase(ticket, now)
@@ -44,9 +35,11 @@ export function ValetSheet({ id }: { id: string }) {
       <SheetHeader eyebrow={`${t.book.services.valet} · ${t.valet.phases[phase]}`} title={venue.name} onClose={close} closeLabel={t.common.close} />
 
       {(phase === 'booked' || phase === 'parked') && (
-        <div className="mx-auto mb-4 w-full max-w-[220px] rounded-[22px] border border-line bg-white p-3">
-          {qr ? <img src={qr} alt={ticket.token} className="aspect-square w-full" /> : <div className="aspect-square w-full" />}
-          <div className="mt-1.5 text-center font-mono text-[12px] font-bold tracking-[0.2em] text-[#0c0f0d]">{ticket.token}</div>
+        <div className="mb-4 rounded-[22px] border border-line px-4 py-5 text-center">
+          <div className="text-[11.5px] font-semibold text-ink-3">{t.valet.codeLabel}</div>
+          <div className="mt-1 font-mono text-[30px] leading-none font-bold tracking-[0.12em]">{ticket.token}</div>
+          <Plate plate={plate} className="mt-3.5 scale-125" />
+          <p className="mt-4 text-[12.5px] text-ink-2">{phase === 'booked' ? t.valet.showTicket : t.valet.keepCode}</p>
         </div>
       )}
 
@@ -79,8 +72,8 @@ export function ValetSheet({ id }: { id: string }) {
       </div>
 
       <div className="mb-4 flex items-center justify-between rounded-[16px] bg-surface-2 px-4 py-3 text-[12.5px] text-ink-2">
-        <span>{phase === 'booked' ? t.valet.showTicket : t.valet.payAtDesk}</span>
-        <Plate plate={plate} />
+        <span>{t.valet.payAtDesk}</span>
+        <Plate plate={plate} small />
       </div>
 
       {phase === 'booked' && (
