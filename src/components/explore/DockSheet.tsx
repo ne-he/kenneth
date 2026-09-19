@@ -44,7 +44,7 @@ export function DockSheet({ snap, onSnap, header, children, footer, peek = 172, 
   }, [])
 
   const heights: Record<Snap, number> = useMemo(
-    () => ({ peek, half: Math.round(Math.max(peek + 120, H * 0.56)), full: H - 64 }),
+    () => ({ peek, half: Math.round(Math.max(peek + 120, H * 0.5)), full: H - 64 }),
     [peek, H],
   )
 

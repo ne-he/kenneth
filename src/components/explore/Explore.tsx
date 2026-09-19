@@ -21,8 +21,8 @@ import { VenueList } from './VenueList'
 
 const MapView = lazy(() => import('../map/MapView').then((m) => ({ default: m.MapView })))
 
-// First view: everything within 4 km of BINUS Anggrek, the Kemanggisan and Tanjung Duren cluster.
-const INITIAL_BOUNDS = [BINUS_ANGGREK, ...VENUES.filter((v) => haversineKm(BINUS_ANGGREK, v.coords) < 4).map((v) => v.coords)]
+// First view: the three Kemanggisan campuses and the malls within walking distance of Tanjung Duren.
+const INITIAL_BOUNDS = [BINUS_ANGGREK, ...VENUES.filter((v) => haversineKm(BINUS_ANGGREK, v.coords) < 3.3).map((v) => v.coords)]
 
 const FILTERS: VenueFilter[] = ['all', 'fav', 'kampus', 'mall']
 

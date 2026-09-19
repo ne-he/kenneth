@@ -16,7 +16,7 @@ export const setMap = (m: MLMap | null) => {
 export const getMap = () => map
 
 /** The Explore sheet at rest plus the tab bar under it: a bit over half the screen. */
-export const sheetPad = (h?: number) => Math.round((h ?? map?.getContainer().clientHeight ?? 800) * 0.56 + 34)
+export const sheetPad = (h?: number) => Math.round((h ?? map?.getContainer().clientHeight ?? 800) * 0.5 + 64)
 
 /** Space the floating UI takes (search and chips on top, sheet below), so the camera centers on what is visible. */
 const padding = (bottom: number) => ({ top: 136, left: 56, right: 72, bottom })
@@ -39,5 +39,6 @@ export function fitPoints(points: LngLat[], bottom = sheetPad(), maxZoom = 15.5,
   // flyTo leaves its padding on the map, and fitBounds adds its own on top.
   // Without this reset the two stack up and the camera zooms out to Java.
   map.setPadding({ top: 0, right: 0, bottom: 0, left: 0 })
-  map.fitBounds(bounds, { padding: padding(bottom), ...tilt(45, -12), maxZoom, duration })
+  // Overviews tilt less than close-ups: a steep tilt over a wide area mostly shows the horizon.
+  map.fitBounds(bounds, { padding: padding(bottom), ...tilt(32, -10), maxZoom, duration })
 }
