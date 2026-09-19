@@ -95,7 +95,7 @@ Motor dan mobil punya slot, tingkat keterisian, dan tarif sendiri: ganti kendara
 
 Tambahan di luar 11 fitur:
 
-- **Valet gedung.** Pesan drop-off, tunjukkan QR ke petugas, lalu tekan "Siapkan mobil" sebelum turun ke lobi.
+- **Valet gedung.** Pesan drop-off, sebut plat atau kode booking ke petugas, lalu tekan "Siapkan mobil" sebelum turun ke lobi.
   Ada hitung mundur dan notifikasi "Mobilmu siap di Lobi A". Bayarnya tetap di meja valet.
 - **Opsi peta.** Tampilan Tenang atau Detail, gedung 3D nyala atau mati, dan tombol Rute bisa langsung membuka
   Google Maps atau Waze dengan tujuan gerbang paling lancar.

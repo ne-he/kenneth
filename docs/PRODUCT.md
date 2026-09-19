@@ -52,7 +52,7 @@ Itu butuh armada yang tidak kami punya dan data biometrik yang tidak perlu dikum
 bikin kesal soal valet di mall hari Sabtu adalah menunggu mobil dibawa balik. Jadi KENNETH jadi pintu
 digital untuk valet milik gedung:
 
-- Pesan drop-off: pilih lobi dan jam datang, dapat tiket QR pengganti karcis kertas.
+- Pesan drop-off: pilih lobi dan jam datang, dapat kode booking. Petugas mencocokkan plat atau kode di daftar mereka, jadi nggak perlu scan apa pun.
 - Tekan "Siapkan mobil" sebelum turun ke lobi. App menghitung mundur dan mengabari saat mobil siap.
 - Tarif dibayar di meja valet seperti biasa, bukan di app. Nol biometrik.
 - Operator valet jadi calon mitra baru, di samping pengelola gedung.
