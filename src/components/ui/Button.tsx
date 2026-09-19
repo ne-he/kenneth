@@ -52,8 +52,9 @@ export function IconButton({
   label,
   className,
   onClick,
+  big,
   ...rest
-}: HTMLMotionProps<'button'> & { label: string }) {
+}: HTMLMotionProps<'button'> & { label: string; big?: boolean }) {
   return (
     <motion.button
       type="button"
@@ -61,7 +62,8 @@ export function IconButton({
       title={label}
       whileTap={{ scale: 0.9 }}
       className={clsx(
-        'glass shadow-float grid size-10 place-items-center rounded-full text-ink-2 transition-colors hover:text-ink',
+        'glass shadow-float grid place-items-center rounded-full text-ink-2 transition-colors hover:text-ink',
+        big ? 'size-12' : 'size-10',
         className,
       )}
       onClick={(e) => {

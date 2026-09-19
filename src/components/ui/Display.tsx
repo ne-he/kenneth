@@ -130,16 +130,17 @@ export function OccupancyRing({
  * Indonesian number plate, the white design introduced in 2022 with the
  * expiry row underneath.
  */
-export function Plate({ plate, className }: { plate: string; className?: string }) {
+export function Plate({ plate, className, small }: { plate: string; className?: string; small?: boolean }) {
   return (
     <span
       className={clsx(
-        'inline-flex flex-col items-center rounded-[5px] border-[1.5px] border-[#111] bg-white px-2 pt-[3px] pb-[2px] font-mono leading-none text-[#111] shadow-[0_1px_0_#0002]',
+        'inline-flex flex-col items-center rounded-[5px] border-[1.5px] border-[#111] bg-white font-mono leading-none text-[#111] shadow-[0_1px_0_#0002]',
+        small ? 'px-1.5 pt-[2px] pb-[1.5px]' : 'px-2 pt-[3px] pb-[2px]',
         className,
       )}
     >
-      <span className="text-[13px] font-bold tracking-[0.12em] whitespace-nowrap">{plate || 'B ---- ---'}</span>
-      <span className="mt-[2px] text-[6.5px] font-bold tracking-[0.3em] opacity-70">08 . 29</span>
+      <span className={clsx('font-bold tracking-[0.12em] whitespace-nowrap', small ? 'text-[11px]' : 'text-[13px]')}>{plate || 'B ---- ---'}</span>
+      <span className={clsx('font-bold tracking-[0.3em] opacity-70', small ? 'mt-px text-[5.5px]' : 'mt-[2px] text-[6.5px]')}>08 . 29</span>
     </span>
   )
 }

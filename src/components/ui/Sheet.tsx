@@ -100,11 +100,11 @@ export function SheetHeader({
     <div className="mb-4 flex items-start justify-between gap-3">
       <div className="min-w-0">
         {eyebrow && (
-          <div className="mb-1 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-400">
+          <div className="mb-0.5 text-[13px] font-semibold text-ink-3">
             {eyebrow}
           </div>
         )}
-        <h2 className="text-[21px] font-extrabold leading-tight tracking-tight">{title}</h2>
+        <h2 className="text-[21px] font-bold leading-tight tracking-tight">{title}</h2>
       </div>
       {right}
       {onClose && (

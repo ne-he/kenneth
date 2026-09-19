@@ -172,6 +172,20 @@
   .pt-safe {
     padding-top: max(12px, var(--safe-top, env(safe-area-inset-top)));
   }
+
+  /* The bottom nav sits on the home indicator, so it needs less than a sheet does. */
+  .pb-nav {
+    padding-bottom: var(--nav-pad);
+  }
+
+  /*
+    Declared on the app root, not :root, so the desktop frame's fake home bar
+    (set on the frame element) flows into it.
+  */
+  .app-root {
+    --nav-pad: max(4px, var(--safe-bottom, env(safe-area-inset-bottom)));
+    --nav-h: calc(56px + var(--nav-pad));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
