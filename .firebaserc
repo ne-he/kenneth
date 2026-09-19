@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "kenneth-9339d"
-  }
+  },
+  "targets": {
+    "kenneth-9339d": {
+      "hosting": {
+        "main": [
+          "kenneth-9339d"
+        ],
+        "park": [
+          "kenneth-park"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
