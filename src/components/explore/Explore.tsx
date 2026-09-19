@@ -1,25 +1,29 @@
 import { MapPin } from '@phosphor-icons/react'
-import { lazy, Suspense, useEffect, useEffectEvent, useMemo, useState } from 'react'
+import clsx from 'clsx'
+import { lazy, Suspense, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { BINUS_ANGGREK, VENUE_BY_ID, VENUES } from '../../data/venues'
+import { forKind } from '../../engine/occupancy'
 import { rankVenues } from '../../engine/recommend'
 import { useT } from '../../i18n'
+import { haptic } from '../../lib/haptics'
 import { fetchTravelTable } from '../../lib/routing'
 import { useResolvedTheme } from '../../lib/theme'
+import { useApp, useVehicle } from '../../store/app'
 import { useViewTs } from '../../store/clock'
-import { useUi } from '../../store/ui'
+import { useUi, type VenueFilter } from '../../store/ui'
 import { fitPoints, flyTo } from '../map/mapApi'
 import { DriveHud, NavBanner } from '../nav/NavOverlay'
-import { TabBar } from '../shell/TabBar'
 import { DockSheet, type Snap } from './DockSheet'
-import { TimeScrubber } from './TimeScrubber'
 import { MapButtons, TopBar } from './TopBar'
 import { VenueDetail, VenueDetailHeader } from './VenueDetail'
 import { VenueList } from './VenueList'
 
 const MapView = lazy(() => import('../map/MapView').then((m) => ({ default: m.MapView })))
 
-// First view: the pilot cluster around BINUS, Grand Indonesia sits just off to the east.
+// First view: the Kemanggisan and Tanjung Duren cluster around BINUS Anggrek.
 const INITIAL_BOUNDS = [BINUS_ANGGREK, ...VENUES.filter((v) => v.area === 'Jakarta Barat').map((v) => v.coords)]
+
+const FILTERS: VenueFilter[] = ['all', 'fav', 'kampus', 'mall']
 
 export function Explore() {
   const t = useT()
@@ -32,10 +36,25 @@ export function Explore() {
   const selected = useUi((s) => s.selected)
   const select = useUi((s) => s.select)
   const route = useUi((s) => s.route)
+  const filter = useUi((s) => s.filter)
+  const setFilter = useUi((s) => s.setFilter)
+  const favorites = useApp((s) => s.favorites)
+  const kind = useVehicle().kind
   const [snap, setSnap] = useState<Snap>('half')
 
-  const ranked = useMemo(() => rankVenues(VENUES, ts, origin, travel), [ts, origin, travel])
+  // A motorbike sees motorbike bays: same places, different numbers.
+  const venues = useMemo(() => VENUES.map((v) => forKind(v, kind)), [kind])
+  const ranked = useMemo(() => rankVenues(venues, ts, origin, travel), [venues, ts, origin, travel])
+  const shown = useMemo(
+    () =>
+      ranked.filter((r) =>
+        filter === 'all' ? true : filter === 'fav' ? favorites.includes(r.venue.id) : r.venue.category === filter,
+      ),
+    [ranked, filter, favorites],
+  )
   const current = ranked.find((r) => r.venue.id === selected)
+  // The map follows the filter, but never hides the place you have open.
+  const onMap = current && !shown.includes(current) ? [...shown, current] : shown
 
   // Real road distances once per origin, not on every clock tick. The list works on estimates until then.
   const trafficAt = useEffectEvent(() => now)
@@ -60,6 +79,15 @@ export function Explore() {
     if (focus) flyTo(VENUE_BY_ID[focus].coords)
   }, [focus])
 
+  // A new filter frames what it shows. The first render keeps the opening view.
+  const framed = useRef(filter)
+  useEffect(() => {
+    if (framed.current === filter) return
+    framed.current = filter
+    if (useUi.getState().selected || shown.length === 0) return
+    fitPoints(filter === 'all' ? INITIAL_BOUNDS : shown.map((r) => r.venue.coords))
+  }, [filter, shown])
+
   const back = () => {
     select(null)
     setSnap('half')
@@ -77,20 +105,39 @@ export function Explore() {
   } else {
     header = (
       <div className="pb-3">
-        <div className="flex items-end justify-between px-5 pb-3">
-          <div>
-            <h1 className="text-[22px] leading-none font-extrabold tracking-tight">{t.explore.area}</h1>
-            <p className="mt-1.5 text-[12px] text-ink-3">{t.explore.count(VENUES.length)}</p>
+        <div className="flex items-center justify-between gap-3 px-5 pb-3">
+          <div className="min-w-0">
+            <h1 className="text-[20px] leading-tight font-bold tracking-tight">{t.explore.area}</h1>
+            <p className="mt-0.5 truncate text-[12.5px] text-ink-3">{t.explore.count(shown.length)}</p>
           </div>
-          <span className="flex shrink-0 items-center gap-1 rounded-full bg-signal/10 px-2.5 py-1 text-[11px] font-bold whitespace-nowrap text-signal dark:text-[#7fa6ff]">
-            <MapPin size={12} weight="fill" />
+          <span className="flex shrink-0 items-center gap-1 text-[12px] font-semibold whitespace-nowrap text-ink-2">
+            <MapPin size={13} weight="fill" className="text-signal" />
             {originLabel === 'gps' ? t.explore.fromGps : t.explore.fromBinus}
           </span>
         </div>
-        <TimeScrubber venues={VENUES} now={now} />
+        <div className="no-scrollbar flex gap-1.5 overflow-x-auto px-5" role="radiogroup" aria-label={t.explore.area}>
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              type="button"
+              role="radio"
+              aria-checked={filter === f}
+              onClick={() => {
+                haptic('tap')
+                setFilter(f)
+              }}
+              className={clsx(
+                'h-8 shrink-0 rounded-full px-3.5 text-[13px] font-semibold transition-colors',
+                filter === f ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2 hover:text-ink',
+              )}
+            >
+              {t.explore.filters[f]}
+            </button>
+          ))}
+        </div>
       </div>
     )
-    body = <VenueList ranked={ranked} ts={ts} previewing={previewing} />
+    body = <VenueList ranked={shown} ts={ts} now={now} previewing={previewing} filter={filter} />
   }
 
   return (
@@ -98,7 +145,7 @@ export function Explore() {
       <Suspense fallback={<div className="absolute inset-0 bg-canvas" />}>
         <MapView
           theme={theme}
-          snapshots={ranked}
+          snapshots={onMap}
           selected={selected}
           onSelect={select}
           origin={origin}
@@ -109,16 +156,18 @@ export function Explore() {
       {!route && <TopBar now={now} />}
       <NavBanner route={route} now={now} />
       {!route && <MapButtons />}
-      <DockSheet
-        snap={route ? 'peek' : snap}
-        onSnap={setSnap}
-        peek={route ? 176 : 150}
-        contentKey={route ? 'route' : (selected ?? 'list')}
-        header={header}
-        footer={route ? undefined : <TabBar variant="sunken" />}
-      >
-        {body}
-      </DockSheet>
+      {/* The sheet lives above the tab bar, the map runs underneath both. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0" style={{ bottom: route ? 0 : 'var(--nav-h)' }}>
+        <DockSheet
+          snap={route ? 'peek' : snap}
+          onSnap={setSnap}
+          peek={route ? 176 : 214}
+          contentKey={route ? 'route' : (selected ?? `list-${filter}`)}
+          header={header}
+        >
+          {body}
+        </DockSheet>
+      </div>
     </div>
   )
 }

@@ -1,13 +1,13 @@
 import { MagnifyingGlass, X } from '@phosphor-icons/react'
 import { useMemo, useState } from 'react'
 import { VENUES } from '../../data/venues'
-import { snapshot } from '../../engine/occupancy'
+import { forKind, snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
-import { STATUS } from '../../lib/status'
+import { useVehicle } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
-import { StatusBadge } from '../ui/Display'
+import { StatusPill, VenueGlyph } from '../ui/Kit'
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[^a-z0-9 ]/g, '')
 
@@ -18,17 +18,18 @@ export function SearchSheet() {
   const close = useUi((s) => s.close)
   const select = useUi((s) => s.select)
   const setTab = useUi((s) => s.setTab)
+  const kind = useVehicle().kind
 
   const rows = useMemo(() => {
     const needle = norm(q.trim())
-    return VENUES.filter((v) => !needle || norm(`${v.name} ${v.short} ${v.district} ${v.area}`).includes(needle)).map(
-      (v) => snapshot(v, now),
-    )
-  }, [q, now])
+    return VENUES.filter(
+      (v) => !needle || norm(`${v.name} ${v.short} ${v.district} ${v.area} ${v.category} ${t.venue.category[v.category]}`).includes(needle),
+    ).map((v) => snapshot(forKind(v, kind), now))
+  }, [q, now, kind, t])
 
   return (
     <div className="pt-1 pb-4">
-      <label className="flex h-12 items-center gap-2.5 rounded-2xl bg-surface-2 px-3.5">
+      <label className="flex h-12 items-center gap-2.5 rounded-2xl border border-transparent bg-surface-2 px-3.5 focus-within:border-brand-500">
         <MagnifyingGlass size={18} className="text-ink-3" />
         <input
           autoFocus
@@ -57,19 +58,14 @@ export function SearchSheet() {
               }}
               className="flex w-full items-center gap-3 py-3 text-left"
             >
-              <span
-                className="grid size-10 shrink-0 place-items-center rounded-[13px] text-[12.5px] font-extrabold text-white tabular"
-                style={{ background: STATUS[s.status].hex }}
-              >
-                {s.pct}%
-              </span>
+              <VenueGlyph category={s.venue.category} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[15px] font-bold">{s.venue.name}</span>
+                <span className="block truncate text-[15px] font-semibold">{s.venue.name}</span>
                 <span className="text-[12px] text-ink-3">
-                  {s.venue.district}, {s.venue.area}
+                  {t.venue.category[s.venue.category]} · {s.venue.district}, {s.venue.area}
                 </span>
               </span>
-              <StatusBadge status={s.status} />
+              <StatusPill status={s.status} pct={s.pct} />
             </button>
           </li>
         ))}

@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { motion } from 'motion/react'
+import type { VehicleKind } from '../../data/types'
 import type { Snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { STATUS } from '../../lib/status'
@@ -11,12 +12,12 @@ const DOTS = 24
  * The signature panel: a digital twin of the LED "SISA SLOT" board that
  * hangs over Jakarta car park entrances, except you read it from home.
  */
-export function LedBoard({ snap }: { snap: Snapshot }) {
+export function LedBoard({ snap, kind = 'mobil' }: { snap: Snapshot; kind?: VehicleKind }) {
   const t = useT()
   const s = STATUS[snap.status]
   const lit = Math.round(snap.occ * DOTS)
   return (
-    <div className="relative overflow-hidden rounded-[24px] bg-led-bg p-4 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.06),0_18px_40px_-18px_rgb(0_0_0/0.6)]">
+    <div className="relative overflow-hidden rounded-[22px] bg-led-bg p-4 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.06),0_18px_40px_-18px_rgb(0_0_0/0.6)]">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.07]"
         style={{
@@ -32,10 +33,10 @@ export function LedBoard({ snap }: { snap: Snapshot }) {
       />
       <div className="relative flex items-start justify-between">
         <div>
-          <div className="font-led text-[13px] font-bold tracking-[0.2em] text-white/55">{t.venue.sisaSlot}</div>
+          <div className="font-led text-[13px] font-bold tracking-[0.2em] text-white/55">{kind === 'motor' ? t.venue.sisaSlotMotor : t.venue.sisaSlot}</div>
           <Led value={snap.free} status={snap.status} className="mt-1 block text-[64px]" />
           <div className="mt-1 text-[11.5px] font-medium text-white/50 tabular">
-            {t.venue.of} {snap.venue.capacity.toLocaleString('id-ID')} {t.unit.slots}
+            {t.venue.of} {snap.venue.capacity.toLocaleString('id-ID')} {kind === 'motor' ? t.unit.motorSlots : t.unit.slots}
           </div>
         </div>
         <div className="flex flex-col items-end gap-1.5 pt-0.5">
