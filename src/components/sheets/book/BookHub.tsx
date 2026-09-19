@@ -98,8 +98,12 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
           <Button variant="dark" onClick={() => setTab('tickets')}>
             <Ticket size={17} weight="bold" /> {t.book.seeTickets}
           </Button>
+        ) : booked.service === 'valet' ? (
+          <Button variant="primary" onClick={() => open({ kind: 'valet', id: booked.id })}>
+            <Ticket size={17} weight="bold" /> {t.valet.openTicket}
+          </Button>
         ) : (
-          <Button variant="primary" onClick={() => open(booked.service === 'priority' ? { kind: 'pass', id: booked.id } : { kind: 'valet', id: booked.id })}>
+          <Button variant="primary" onClick={() => open({ kind: 'pass', id: booked.id })}>
             <QrCode size={17} weight="bold" /> {t.activity.showQr}
           </Button>
         )}
