@@ -213,7 +213,8 @@ export function quietestHour(venue: Venue, ts: number, fromHour = venue.hours[0]
 export function reservedFree(total: number, occ: number, salt: string, ts: number): number {
   if (total === 0) return 0
   const hour = Math.floor(ts / 3_600_000)
-  const jitter = ((seedOf(salt) * 97 + hour) % 3) - 1
+  // seedOf is a fraction, so floor before the modulo or the count comes out as 3.049.
+  const jitter = (Math.floor(seedOf(salt) * 97 + hour) % 3) - 1
   const share = Math.min(1, Math.max(0, (1 - occ) * 1.7))
   return Math.min(total, Math.max(0, Math.round(total * share) + jitter))
 }

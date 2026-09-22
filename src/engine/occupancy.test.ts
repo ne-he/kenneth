@@ -7,6 +7,7 @@ import {
   forecastDay,
   nextRelief,
   occupancyAt,
+  reservedFree,
   snapshot,
   statusOf,
 } from './occupancy'
@@ -125,3 +126,23 @@ describe('motorbike view', () => {
   })
 })
 
+
+describe('reserved bays', () => {
+  it('counts whole bays, never a fraction, and never more than exist', () => {
+    for (const v of VENUES) {
+      for (const ts of [SAT_1407, TUE_1000, SAT_1407 + 3 * 3_600_000]) {
+        const occ = occupancyAt(v, ts)
+        for (const [total, salt] of [
+          [v.ev.chargers, 'e'],
+          [v.accessible.difabel, 'd'],
+          [v.accessible.ibuHamil, 'h'],
+        ] as const) {
+          const free = reservedFree(total, occ, v.id + salt, ts)
+          expect(Number.isInteger(free)).toBe(true)
+          expect(free).toBeGreaterThanOrEqual(0)
+          expect(free).toBeLessThanOrEqual(total)
+        }
+      }
+    }
+  })
+})
