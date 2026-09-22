@@ -42,6 +42,7 @@ export interface PriorityPass {
   token: string
   createdAt: number
   status: 'active' | 'cancelled'
+  cancelledAt?: number
 }
 
 export interface EvBooking {
@@ -51,6 +52,8 @@ export interface EvBooking {
   durationMin: number
   charger: string
   createdAt: number
+  /** Cancelled bookings stay on record so Riwayat can show them. */
+  cancelledAt?: number
 }
 
 export interface Reminder {
@@ -68,6 +71,9 @@ export interface Visit {
   minutesSaved: number
   /** Set when the app steered the user away from a full venue. */
   divertedFrom?: VenueId
+  /** Handed to the building's valet instead of parking yourself. */
+  via?: 'valet'
+  kind?: VehicleKind
 }
 
 export interface CommunityReport {
@@ -144,9 +150,9 @@ interface AppState {
   park: (spot: ParkedSpot) => void
   leave: () => void
   addPass: (p: PriorityPass) => void
-  cancelPass: (id: string) => void
+  cancelPass: (id: string, at: number) => void
   addEvBooking: (b: EvBooking) => void
-  cancelEvBooking: (id: string) => void
+  cancelEvBooking: (id: string, at: number) => void
   addValet: (v: ValetTicket) => void
   updateValet: (id: string, patch: Partial<ValetTicket>) => void
   finishValet: (id: string, at: number) => void
@@ -265,14 +271,16 @@ export const useApp = create<AppState>()(
             at: s.parked.at,
             durationH,
             minutesSaved: s.parked.savedMin,
+            kind: s.parked.kind,
           }
           return { parked: null, history: [visit, ...s.history] }
         }),
       addPass: (p) => set((s) => ({ passes: [p, ...s.passes] })),
-      cancelPass: (id) =>
-        set((s) => ({ passes: s.passes.map((p) => (p.id === id ? { ...p, status: 'cancelled' } : p)) })),
+      cancelPass: (id, at) =>
+        set((s) => ({ passes: s.passes.map((p) => (p.id === id ? { ...p, status: 'cancelled', cancelledAt: at } : p)) })),
       addEvBooking: (b) => set((s) => ({ evBookings: [b, ...s.evBookings] })),
-      cancelEvBooking: (id) => set((s) => ({ evBookings: s.evBookings.filter((b) => b.id !== id) })),
+      cancelEvBooking: (id, at) =>
+        set((s) => ({ evBookings: s.evBookings.map((b) => (b.id === id ? { ...b, cancelledAt: at } : b)) })),
       addValet: (v) => set((s) => ({ valets: [v, ...s.valets] })),
       updateValet: (id, patch) => set((s) => ({ valets: s.valets.map((v) => (v.id === id ? { ...v, ...patch } : v)) })),
       finishValet: (id, at) =>
@@ -287,6 +295,8 @@ export const useApp = create<AppState>()(
             durationH: Math.max(0.25, (at - since) / 3_600_000),
             // Called ahead instead of standing at the lobby for the whole fetch.
             minutesSaved: t.readyAt && t.requestedAt ? Math.round((t.readyAt - t.requestedAt) / 60_000) : 0,
+            via: 'valet',
+            kind: 'mobil',
           }
           return {
             valets: s.valets.map((v) => (v.id === id ? { ...v, status: 'done', closedAt: at } : v)),
