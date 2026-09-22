@@ -103,7 +103,11 @@ kejauhan dari gedungnya, dan field yang wajib ada.
 - Jam app bisa diganti lewat chip jam di kiri atas peta. Skenario default Sabtu 14.07, Selasa 10.00 untuk kampus penuh.
 - Akun, Privasi dan data, "Hapus data" mengembalikan app ke kondisi awal, termasuk onboarding.
 - Tombol "Masuk dengan Google" baru muncul kalau `.env.local` diisi (lihat `.env.example`).
-- Nggak ada yang boleh pindah tab otomatis. Setelah aksi berhasil, cukup toast dan titik di tab Tiket (`markTickets`).
+- Nggak ada yang boleh pindah tab otomatis. Setelah aksi berhasil, cukup toast dan titik di tab Aktivitas (`markActivity`).
+  Satu-satunya perpindahan tab adalah yang ditekan pengguna sendiri, misalnya tombol "Lagi" di Riwayat.
+- Tab Parkir satu template untuk semua mode. Mode baru berarti isi pin dan tombol baru di `engine/modes.ts` dan
+  `explore/PlaceCard.tsx`, bukan layar baru.
+- Booking yang bisa dibatalkan selalu pakai `CancelConfirm`, dan yang dibatalkan tetap tercatat (lihat `engine/activity.ts`).
 - Di mode dev, objek peta tersedia di console sebagai `window.__kmap`.
 - Rute dari OSRM kadang lambat. Setelah 6 detik app otomatis pakai rute perkiraan.
 - Data app tersimpan di `localStorage` dengan kunci `kenneth-app`.

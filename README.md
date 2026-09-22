@@ -7,14 +7,14 @@
 <p align="center"><b>Cek parkir semudah cek cuaca.</b><br/>
 Seberapa penuh, antri gerbang berapa menit, dan ke mana kalau penuh. Sebelum kamu berangkat.</p>
 
-<p align="center"><a href="https://kenneth-9339d.web.app"><b>kenneth-9339d.web.app</b></a><br/>
+<p align="center"><a href="https://kenneth-park.web.app"><b>kenneth-park.web.app</b></a><br/>
 Buka di HP untuk app-nya. Di laptop, app yang sama tampil di bingkai HP dengan QR di pojok.</p>
 
 <p align="center">
-  <img src="docs/screens/explore.png" width="200" alt="Tab Peta" />
-  <img src="docs/screens/venue-led.png" width="200" alt="Detail lokasi dengan papan sisa slot" />
-  <img src="docs/screens/valet.png" width="200" alt="Tiket valet, mobil siap di lobi" />
-  <img src="docs/screens/account.png" width="200" alt="Tab Akun" />
+  <img src="docs/screens/explore.png" width="200" alt="Tab Parkir: peta dan daftar tempat" />
+  <img src="docs/screens/modes.png" width="200" alt="Dropdown mode: Parkir, Jalur prioritas, Valet, Charger EV" />
+  <img src="docs/screens/valet-card.png" width="200" alt="Mode Valet di Taman Anggrek" />
+  <img src="docs/screens/activity.png" width="200" alt="Tab Aktivitas: sekarang, nanti, riwayat" />
 </p>
 
 > **Status: prototipe.** Dibuat untuk mata kuliah ENPR6312 Venture Creation (BINUS, semester ganjil 2026/2027).
@@ -39,14 +39,18 @@ berhenti. App operator parkir baru kepakai setelah kamu masuk. Padahal keputusan
 
 ## Cara pakainya
 
-App-nya cuma tiga tab, selalu di tempat yang sama di bawah layar. Nggak ada dashboard, dan app nggak pernah pindah
-tab sendiri.
+App-nya cuma tiga tab, selalu di tempat yang sama di bawah layar. Logo K di tengah adalah rumahnya, dibuat lebih
+menonjol seperti tombol QRIS di app bank. Nggak ada dashboard, dan app nggak pernah pindah tab sendiri.
 
 | Tab | Isi |
 |---|---|
-| **Peta** | Peta plus daftar tempat, urut dari yang paling cepat dapet parkir. Filter Semua, Favorit, Kampus, Mall. Buka satu tempat untuk papan "SISA SLOT" dan empat tombol: Rute, Pesan, Parkir, Ingetin |
-| **Tiket** | Yang sedang berjalan: lokasi parkirmu, tiket jalur prioritas, valet, charger. Lalu pengingat dan riwayat |
-| **Akun** | Masuk dengan Google atau tetap jadi tamu, kendaraan (mobil dan motor), paket, dampak bulan ini, opsi peta, notifikasi |
+| **Aktivitas** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, valet yang lagi jalan, jalur prioritas yang sedang berlaku. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
+| **Parkir** (logo K, tengah) | Peta besar, search, dan dropdown "Mau ngapain?" di kanan search: Parkir, Jalur prioritas, Valet, Charger EV, plus pilihan kendaraan (mobil atau motor). Layoutnya selalu sama, yang berubah cuma angka di pin dan satu tombol utama di kartu tempat. Tap K lagi untuk balik ke tampilan awal |
+| **Akun** (kanan) | Masuk dengan Google atau tetap jadi tamu, kendaraan, paket, dampak bulan ini, opsi peta, notifikasi |
+
+Tiap booking yang masih bisa dibatalkan punya tombol "Batalkan" yang kelihatan, di kartu Aktivitas, di tiketnya, dan
+langsung setelah memesan. Batalnya dua langkah dengan aturannya ditulis. Yang dibatalkan tetap tercatat di Riwayat.
+Kalau ada yang lagi jalan (misalnya valet sedang mengambil mobil), satu baris muncul di atas kartu tab Parkir.
 
 Pertama kali dibuka ada onboarding empat langkah (bisa dilewati): sambutan, yang bisa dibantu, tempat favorit,
 kendaraan. Setelah itu langsung ke peta.
@@ -81,16 +85,16 @@ Motor dan mobil punya slot, tingkat keterisian, dan tarif sendiri: ganti kendara
 
 | # | Fitur | Di mana |
 |---|---|---|
-| 01 | Kondisi parkir real-time | Pin dan daftar di Peta, papan "SISA SLOT" di detail lokasi |
+| 01 | Kondisi parkir real-time | Pin dan daftar di tab Parkir, papan "SISA SLOT" di detail lokasi |
 | 02 | Rekomendasi alternatif | Detail lokasi yang penuh, bagian "Masih lega di dekat sini" |
-| 03 | Ingetin saat lega | Tombol "Ingetin" di detail, baris pengingat di daftar |
+| 03 | Ingetin saat lega | Tombol ⋯ di kartu tempat, baris pengingat di daftar, pengingat aktif di Aktivitas |
 | 04 | Estimasi biaya parkir | Detail lokasi, baris "Biaya parkir" |
 | 05 | Arahkan ke gerbang yang bener | Chip antrian tiap gerbang di peta, tombol Rute ke gerbang paling lancar (di KENNETH, Google Maps, atau Waze) |
-| 06 | Inget lokasi mobil | Tombol "Parkir", simpan lantai, zona, pilar, lobi, foto. Muncul di Tiket dan sebagai chip di peta |
+| 06 | Inget lokasi mobil | Tombol ⋯ lalu "Simpan lokasi parkir", atau "Udah sampai" di akhir rute. Muncul di Aktivitas dan di baris atas tab Parkir |
 | 07 | Rute mobil ke tenant | Detail lokasi, "Dari parkir ke tujuan", plus denah basement 3D di "Cari kendaraan" |
 | 08 | Slot difabel dan ibu hamil | Detail lokasi, baris "Slot khusus" |
-| 09 | Booking jalur prioritas | Tombol "Pesan", tab Jalur prioritas. Tiket QR di tab Tiket |
-| 10 | Booking charger EV | Tombol "Pesan", tab Charger EV |
+| 09 | Booking jalur prioritas | Mode Jalur prioritas, atau saran "Mau masuk tanpa antre?" di kartu tempat yang penuh. Tiket QR di Aktivitas |
+| 10 | Booking charger EV | Mode Charger EV, pin menunjukkan charger yang kosong |
 | 11 | Pola kebiasaan pribadi | Akun, Dampak bulan ini, "Pola kebiasaanmu" (Premium) |
 
 Tambahan di luar 11 fitur:
@@ -112,7 +116,7 @@ Tambahan di luar 11 fitur:
 - **Valet milik gedung, bukan armada kami.** KENNETH cuma pintu digitalnya. Nol biometrik, bayar di meja valet.
 - **Kampus tidak menjual apa pun.** Di kampus app cuma menunjukkan seberapa penuh dan ke mana kalau penuh.
 - **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
-- **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, tiket, dan lokasi
+- **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, booking, dan lokasi
   parkir tetap di perangkat. Yang nantinya dijual ke pengelola hanya agregat per jam.
 
 ## Jalankan sendiri
@@ -173,7 +177,7 @@ src/
   engine/      mesin simulasi: okupansi, antrian gerbang, harga, valet, ganjil-genap, dampak, ranking, angka mitra
   store/       state app (disimpan di localStorage), state UI, jam simulasi, jawaban booth
   i18n/        teks Indonesia dan Inggris
-  components/  UI per layar: explore (Peta), tickets, account, sheets (termasuk sheets/book), onboarding, map, park (3D)
+  components/  UI per layar: explore (tab Parkir), activity, account, sheets (termasuk sheets/book), onboarding, map, park (3D)
   lib/         login Google, navigasi ke app lain, notifikasi, waktu WIB
   pages/       /mitra dan /booth
 docs/          dokumen produk, model simulasi, screenshot, logo (docs/brand)

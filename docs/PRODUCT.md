@@ -24,6 +24,22 @@ Tiga hal yang menentukan produk ini hidup atau mati, urut dari yang paling penti
 2. Terbaca sekilas. Angka besar, satu warna status, tanpa grafik yang harus dipelajari dulu.
 3. Kepadatan cakupan. Rekomendasi alternatif cuma berguna kalau mall sebelahnya juga tercakup.
 
+## Navigasi (keputusan tim, 22 Sep 2026)
+
+Tiga tab: Aktivitas di kiri, logo K (Parkir) di tengah, Akun di kanan. Masukan tim atas versi 0.2: pemisahan
+tab kurang jelas, tab yang cuma berisi riwayat terasa boros, dan fitur sebaiknya diakses dari dalam fitur lain.
+
+- **Satu layar utama untuk semua hal.** Parkir biasa, jalur prioritas, valet, dan charger EV memakai layar yang
+  sama: peta besar, search, dan dropdown "Mau ngapain?". Yang berubah hanya angka di pin dan satu tombol utama.
+  Pengguna tidak perlu belajar layar baru untuk tiap layanan.
+- **Satu tab satu tugas.** Parkir untuk memutuskan, Aktivitas untuk yang sudah dipesan, Akun untuk diri sendiri.
+- **Riwayat bukan arsip.** Tiap baris punya tombol "Lagi", karena kebanyakan orang parkir di tempat yang sama
+  berulang kali.
+- **Batal selalu kelihatan.** Booking yang masih bisa dibatalkan punya tombol "Batalkan" di kartunya, dua langkah,
+  dengan aturannya tertulis. Yang dibatalkan tetap tercatat di Riwayat supaya tidak ada uang atau pesanan yang
+  terasa hilang.
+- **App tidak pernah pindah tab sendiri.** Yang lagi berjalan muncul sebagai satu baris di atas kartu tab Parkir.
+
 ## Yang dijual, dan yang sengaja tidak
 
 **Tidak menjual petak parkir.** Kalau yang dijual petak selama sekian jam, kami tidak punya wewenang
