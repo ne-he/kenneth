@@ -5,18 +5,21 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { LngLat, VenueId } from '../../data/types'
+import type { PinFact } from '../../engine/modes'
 import type { Snapshot } from '../../engine/occupancy'
 import { signalMapReady } from '../../lib/splash'
-import { STATUS } from '../../lib/status'
 import { useApp } from '../../store/app'
 import type { Route } from '../../store/ui'
 import { fitPoints, setMap, sheetPad } from './mapApi'
 import { GatePin, OriginPin, VenuePin } from './Pins'
+import { factHex } from './pinColor'
 import { firstSymbolId, loadStyle } from './style'
 
 interface Props {
   theme: 'light' | 'dark'
   snapshots: Snapshot[]
+  /** What each pin says in the current mode. Missing means percent full. */
+  facts?: ReadonlyMap<VenueId, PinFact>
   selected: VenueId | null
   onSelect: (id: VenueId) => void
   origin: LngLat
@@ -30,7 +33,7 @@ const ROUTE_COLOR = '#059669'
 // cannot see. Hand it a bundled worker explicitly so dev and prod both work.
 setWorkerUrl(workerUrl)
 
-export function MapView({ theme, snapshots, selected, onSelect, origin, route, initialBounds }: Props) {
+export function MapView({ theme, snapshots, facts, selected, onSelect, origin, route, initialBounds }: Props) {
   const box = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MLMap | null>(null)
   const [ready, setReady] = useState(0)
@@ -109,13 +112,15 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
     const src = mapRef.current?.getSource('venue-halo') as GeoJSONSource | undefined
     src?.setData({
       type: 'FeatureCollection',
-      features: snapshots.map((s) => ({
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: s.venue.coords },
-        properties: { color: STATUS[s.status].hex, selected: s.venue.id === selected ? 1 : 0 },
-      })),
+      features: snapshots
+        .filter((s) => facts?.get(s.venue.id)?.kind !== 'none')
+        .map((s) => ({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: s.venue.coords },
+          properties: { color: factHex(facts?.get(s.venue.id), s), selected: s.venue.id === selected ? 1 : 0 },
+        })),
     })
-  }, [snapshots, selected, ready])
+  }, [snapshots, facts, selected, ready])
 
   // Route line with a short draw-on animation.
   useEffect(() => {
@@ -191,6 +196,7 @@ export function MapView({ theme, snapshots, selected, onSelect, origin, route, i
           ? createPortal(
               <VenuePin
                 snap={s}
+                fact={facts?.get(s.venue.id)}
                 selected={s.venue.id === selected}
                 dimmed={!!selected && s.venue.id !== selected}
                 onClick={() => onSelect(s.venue.id)}
