@@ -1,7 +1,5 @@
 import {
-  BellSimple,
   CarProfile,
-  CheckCircle,
   CurrencyCircleDollar,
   Database,
   DoorOpen,
@@ -9,12 +7,10 @@ import {
   Megaphone,
   NavigationArrow,
   PersonSimpleWalk,
-  ShareNetwork,
   ShieldCheck,
   Sparkle,
   Star,
   Storefront,
-  Ticket,
   Warning,
   Wheelchair,
   X,
@@ -25,7 +21,7 @@ import { useMemo, useState } from 'react'
 import { VENUES } from '../../data/venues'
 import type { Venue } from '../../data/types'
 import { checkGage } from '../../engine/gage'
-import { forKind, nextRelief, reservedFree } from '../../engine/occupancy'
+import { forKind, reservedFree } from '../../engine/occupancy'
 import { formatRupiah, parkingCost, priorityWorthIt } from '../../engine/pricing'
 import { alternativesFor, type Ranked } from '../../engine/recommend'
 import { servicesFor, type Service } from '../../engine/services'
@@ -33,16 +29,14 @@ import { dropQueueMin, retrievalMin } from '../../engine/valet'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
-import { askNotificationPermission } from '../../lib/notify'
-import { shareSpot } from '../../lib/share'
 import { STATUS, formatMin } from '../../lib/status'
-import { clock } from '../../lib/time'
-import { uid, useApp, useVehicle, type CommunityReport } from '../../store/app'
+import { useApp, useVehicle, type CommunityReport } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
-import { ActionButton, Disclosure, Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
+import { Disclosure, Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
 import { LedBoard } from './LedBoard'
+import { PlaceCard } from './PlaceCard'
 import { TimeScrubber } from './TimeScrubber'
 
 export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?: Ranked; onBack: () => void }) {
@@ -114,133 +108,75 @@ function SourceChip({ venue }: { venue: Venue }) {
 export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: number; now: number; previewing: boolean }) {
   const t = useT()
   const venue = snap.venue
-  const nav = useNavigation()
-  const open = useUi((s) => s.open)
   const select = useUi((s) => s.select)
-  const notify = useUi((s) => s.notify)
   const vehicle = useVehicle()
-  const reminders = useApp((s) => s.reminders)
-  const addReminder = useApp((s) => s.addReminder)
 
-  const relief = !previewing ? nextRelief(venue, ts) : null
   const pool = useMemo(() => VENUES.map((v) => forKind(v, vehicle.kind)), [vehicle.kind])
   const alts = snap.status !== 'lega' ? alternativesFor(venue, pool, ts) : []
   const services = servicesFor(venue, vehicle.kind)
-  const reminded = reminders.some((r) => r.venueId === venue.id)
-
-  const remind = () => {
-    if (!relief || reminded) return
-    haptic('success')
-    addReminder({ id: uid(), venueId: venue.id, at: relief, createdAt: Date.now() })
-    notify(t.explore.reminded)
-    askNotificationPermission()
-  }
 
   return (
-    <div className="space-y-5 px-4 pb-10">
-      <LedBoard snap={snap} kind={vehicle.kind} />
+    <div className="px-4 pb-10">
+      <PlaceCard snap={snap} ts={ts} previewing={previewing} />
 
-      <div className="grid grid-cols-3 divide-x divide-line rounded-[18px] border border-line bg-surface py-3">
-        <Stat label={t.venue.queueAtMain} value={formatMin(snap.queueMin)} tone={snap.queueMin >= 10 ? 'penuh' : snap.queueMin >= 5 ? 'ramai' : 'lega'} />
-        <Stat label={snap.bestGate.name} value={formatMin(snap.bestGateQueueMin)} tone="lega" />
-        <Stat label={t.venue.cruise} value={formatMin(snap.cruiseMin)} tone={snap.cruiseMin >= 3 ? 'ramai' : 'lega'} />
-      </div>
+      {/* Below the fold: shows when the sheet is pulled up. */}
+      <div className="mt-5 space-y-5">
+        <LedBoard snap={snap} kind={vehicle.kind} />
 
-      <div className="flex gap-1 px-1">
-        <ActionButton tone="brand" icon={<NavigationArrow size={22} weight="fill" />} label={t.venue.actions.route} onClick={() => nav.start(venue.id)} />
-        <ActionButton
-          icon={<Ticket size={22} weight="bold" />}
-          label={t.venue.actions.book}
-          disabled={services.length === 0}
-          onClick={() => open({ kind: 'book', id: venue.id })}
-        />
-        <ActionButton icon={<CarProfile size={22} weight="bold" />} label={t.venue.actions.park} onClick={() => open({ kind: 'save-spot', id: venue.id })} />
-        {relief ? (
-          <ActionButton
-            icon={reminded ? <CheckCircle size={22} weight="fill" /> : <BellSimple size={22} weight="bold" />}
-            label={reminded ? t.explore.remindSet : t.venue.actions.remind}
-            active={reminded}
-            onClick={remind}
-          />
-        ) : (
-          <ActionButton
-            icon={<ShareNetwork size={22} weight="bold" />}
-            label={t.venue.actions.share}
-            onClick={() =>
-              shareSpot(t.venue.shareText(venue.name, snap.pct, t.status[snap.status], window.location.origin), () => notify(t.activity.shared))
-            }
-          />
-        )}
-      </div>
-
-      {(relief || services.length === 0) && (
-        <p className="-mt-1 px-2 text-center text-[12.5px] leading-snug text-ink-3">
-          {relief ? t.explore.relief(venue.name, clock(relief)) : vehicle.kind === 'motor' ? t.venue.motorNoBook : t.venue.noBook}
-        </p>
-      )}
-
-      {alts.length > 0 && (
-        <section>
-          <Label>{t.venue.alternatives}</Label>
-          <List>
-            {alts.map((a) => (
-              <button
-                key={a.snap.venue.id}
-                type="button"
-                onClick={() => {
-                  haptic('tap')
-                  select(a.snap.venue.id)
-                }}
-                className="flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors hover:bg-surface-2/60"
-              >
-                <VenueGlyph category={a.snap.venue.category} size={36} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[14px] font-semibold">{a.snap.venue.name}</span>
-                  <span className="mt-0.5 flex items-start gap-1 text-[12px] leading-snug text-ink-3">
-                    {a.walk ? <PersonSimpleWalk size={13} className="mt-px shrink-0" /> : <CarProfile size={13} className="mt-px shrink-0" />}
-                    <span className="line-clamp-2">{a.walk ? t.venue.walk(a.walk.minutes, a.walk.via) : t.venue.drive(formatKm(a.km))}</span>
+        {alts.length > 0 && (
+          <section>
+            <Label>{t.venue.alternatives}</Label>
+            <List>
+              {alts.map((a) => (
+                <button
+                  key={a.snap.venue.id}
+                  type="button"
+                  onClick={() => {
+                    haptic('tap')
+                    select(a.snap.venue.id)
+                  }}
+                  className="flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors hover:bg-surface-2/60"
+                >
+                  <VenueGlyph category={a.snap.venue.category} size={36} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[14px] font-semibold">{a.snap.venue.name}</span>
+                    <span className="mt-0.5 flex items-start gap-1 text-[12px] leading-snug text-ink-3">
+                      {a.walk ? <PersonSimpleWalk size={13} className="mt-px shrink-0" /> : <CarProfile size={13} className="mt-px shrink-0" />}
+                      <span className="line-clamp-2">{a.walk ? t.venue.walk(a.walk.minutes, a.walk.via) : t.venue.drive(formatKm(a.km))}</span>
+                    </span>
                   </span>
-                </span>
-                <StatusPill status={a.snap.status} pct={a.snap.pct} />
-              </button>
-            ))}
-          </List>
+                  <StatusPill status={a.snap.status} pct={a.snap.pct} />
+                </button>
+              ))}
+            </List>
+          </section>
+        )}
+
+        <section className="rounded-[18px] border border-line bg-surface p-3.5">
+          <TimeScrubber venues={[venue]} now={now} title={t.venue.forecast} />
         </section>
-      )}
 
-      <section className="rounded-[18px] border border-line bg-surface p-3.5">
-        <TimeScrubber venues={[venue]} now={now} title={t.venue.forecast} />
-      </section>
+        <List>
+          <GatesRow snap={snap} />
+          <CostRow venue={venue} />
+          {services.length > 0 && <ServicesRow venue={venue} snap={snap} services={services} ts={ts} />}
+          <SpecialRow venue={venue} snap={snap} ts={ts} />
+          {vehicle.kind === 'mobil' && <GageRow venue={venue} ts={ts} />}
+          {venue.tenants.length > 0 && <TenantsRow venue={venue} />}
+          <ReportRow venue={venue} now={now} />
+        </List>
 
-      <List>
-        <GatesRow snap={snap} />
-        <CostRow venue={venue} />
-        {services.length > 0 && <ServicesRow venue={venue} snap={snap} services={services} ts={ts} />}
-        <SpecialRow venue={venue} snap={snap} ts={ts} />
-        {vehicle.kind === 'mobil' && <GageRow venue={venue} ts={ts} />}
-        {venue.tenants.length > 0 && <TenantsRow venue={venue} />}
-        <ReportRow venue={venue} now={now} />
-      </List>
+        {services.length === 0 && (
+          <p className="px-2 text-center text-[12.5px] leading-snug text-ink-3">{vehicle.kind === 'motor' ? t.venue.motorNoBook : t.venue.noBook}</p>
+        )}
 
-      <p className="flex gap-2 px-1 text-[11.5px] leading-snug text-ink-3">
-        <Info size={14} className="mt-[1px] shrink-0" />
-        <span>
-          {venue.source === 'palang' ? t.source.palangNote : t.source.estimasiNote} {t.source.prototype}
-        </span>
-      </p>
-    </div>
-  )
-}
-
-function Stat({ label, value, tone }: { label: string; value: string; tone: 'lega' | 'ramai' | 'penuh' }) {
-  const t = useT()
-  return (
-    <div className="px-3 text-center">
-      <div className={clsx('text-[20px] leading-none font-bold tracking-tight tabular', STATUS[tone].text)}>
-        {value}
-        <span className="ml-0.5 text-[11px] font-semibold">{t.unit.min}</span>
+        <p className="flex gap-2 px-1 text-[11.5px] leading-snug text-ink-3">
+          <Info size={14} className="mt-[1px] shrink-0" />
+          <span>
+            {venue.source === 'palang' ? t.source.palangNote : t.source.estimasiNote} {t.source.prototype}
+          </span>
+        </p>
       </div>
-      <div className="mt-1.5 truncate text-[11px] font-medium text-ink-3">{label}</div>
     </div>
   )
 }
