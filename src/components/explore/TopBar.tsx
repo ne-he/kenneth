@@ -1,25 +1,27 @@
-import { CarProfile, Crosshair, MagnifyingGlass, Motorcycle, StackSimple } from '@phosphor-icons/react'
+import { CaretDown, Crosshair, MagnifyingGlass, Motorcycle } from '@phosphor-icons/react'
+import clsx from 'clsx'
 import { motion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
-import { VENUE_BY_ID, VENUES } from '../../data/venues'
 import { useT, useLang } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { clock, dayName } from '../../lib/time'
 import { useApp, useVehicle } from '../../store/app'
 import { useUi } from '../../store/ui'
-import { fitPoints } from '../map/mapApi'
 import { IconButton } from '../ui/Button'
-import { LogoMark } from '../ui/Logo'
+import { MODE_ICON } from './modeIcons'
 
 // Jabodetabek, so Alam Sutera and Bekasi count as "here" too.
 const AREA = { minLat: -6.45, maxLat: -6.05, minLng: 106.55, maxLng: 107.1 }
 
-/** Search on top, then only the chips that matter right now: the demo clock, motorbike mode, your parked car. */
-export function TopBar({ now }: { now: number }) {
+/**
+ * Search, and next to it the one dropdown that decides what the map is for.
+ * Under it only the demo clock. Everything else lives in the sheet.
+ */
+export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boolean; onMenu: () => void }) {
   const t = useT()
   const lang = useLang()
-  const mode = useApp((s) => s.clock.mode)
-  const parked = useApp((s) => s.parked)
+  const clockMode = useApp((s) => s.clock.mode)
+  const mode = useUi((s) => s.mode)
   const kind = useVehicle().kind
   const open = useUi((s) => s.open)
   return (
@@ -27,7 +29,7 @@ export function TopBar({ now }: { now: number }) {
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.1 }}
-      className="pt-safe pointer-events-none absolute inset-x-0 top-0 z-20 px-3.5"
+      className={clsx('pt-safe pointer-events-none absolute inset-x-0 top-0 px-3.5', menuOpen ? 'z-[49]' : 'z-20')}
     >
       <div className="pointer-events-auto flex items-center gap-2">
         <button
@@ -36,35 +38,37 @@ export function TopBar({ now }: { now: number }) {
             haptic('tap')
             open({ kind: 'search' })
           }}
-          className="glass shadow-float flex h-12 min-w-0 flex-1 items-center gap-2.5 rounded-full pr-4 pl-1.5 text-left text-[15px] text-ink-3"
+          className="glass shadow-float flex h-12 min-w-0 flex-1 items-center gap-2.5 rounded-full px-4 text-left text-[15px] text-ink-3"
         >
-          <LogoMark size={36} shape="circle" />
-          <MagnifyingGlass size={17} className="shrink-0 text-ink-2" />
+          <MagnifyingGlass size={18} weight="bold" className="shrink-0 text-ink-2" />
           <span className="truncate">{t.explore.search}</span>
         </button>
-        <IconButton label={t.mapOptions.title} onClick={() => open({ kind: 'map-options' })} big>
-          <StackSimple size={20} weight="bold" />
-        </IconButton>
+        <button
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded={menuOpen}
+          aria-label={`${t.modes.ask} ${t.modes[mode].label}`}
+          onClick={() => {
+            haptic('tap')
+            onMenu()
+          }}
+          className="shadow-float flex h-12 shrink-0 items-center gap-1.5 rounded-full bg-ink pr-3 pl-3.5 text-[14px] font-bold text-canvas"
+        >
+          {kind === 'motor' ? <Motorcycle size={18} weight="fill" /> : MODE_ICON[mode]({ size: 18, weight: 'fill' })}
+          <span>{kind === 'motor' ? t.explore.motorMode : t.modes[mode].short}</span>
+          <motion.span animate={{ rotate: menuOpen ? 180 : 0 }} className="grid place-items-center">
+            <CaretDown size={13} weight="bold" />
+          </motion.span>
+        </button>
       </div>
-      <div className="pointer-events-auto mt-2 flex max-w-[calc(100%-52px)] flex-wrap gap-1.5">
+      <div className="pointer-events-auto mt-2 flex">
         <Chip onClick={() => open({ kind: 'clock' })} label={t.profile.clock}>
-          <span className={mode === 'live' ? 'size-1.5 animate-pulse rounded-full bg-brand-500' : 'size-1.5 rounded-full bg-ramai'} />
+          <span className={clockMode === 'live' ? 'size-1.5 animate-pulse rounded-full bg-brand-500' : 'size-1.5 rounded-full bg-ramai'} />
           <span className="tabular">
             {dayName(now, lang)} {clock(now)}
           </span>
-          <span className="text-ink-3">{mode === 'live' ? t.common.live : t.common.simulated}</span>
+          <span className="text-ink-3">{clockMode === 'live' ? t.common.live : t.common.simulated}</span>
         </Chip>
-        {kind === 'motor' && (
-          <Chip onClick={() => open({ kind: 'vehicle' })} label={t.explore.motorMode}>
-            <Motorcycle size={14} weight="fill" /> {t.explore.motorMode}
-          </Chip>
-        )}
-        {parked && (
-          <Chip onClick={() => open({ kind: 'find-car' })} label={t.park.findCar}>
-            <CarProfile size={14} weight="fill" className="text-brand-600 dark:text-brand-400" />
-            {VENUE_BY_ID[parked.venueId].short} · {parked.level} {parked.zone}-{parked.pillar}
-          </Chip>
-        )}
       </div>
     </motion.div>
   )
@@ -88,7 +92,6 @@ function Chip({ children, onClick, label }: { children: ReactNode; onClick: () =
 
 export function MapButtons() {
   const t = useT()
-  const origin = useUi((s) => s.origin)
   const setOrigin = useUi((s) => s.setOrigin)
   const notify = useUi((s) => s.notify)
   const [busy, setBusy] = useState(false)
@@ -118,14 +121,9 @@ export function MapButtons() {
   }
 
   return (
-    <div className="absolute top-[calc(max(12px,var(--safe-top,env(safe-area-inset-top)))+60px)] right-3.5 z-20 flex flex-col gap-2">
+    <div className="absolute top-[calc(max(12px,var(--safe-top,env(safe-area-inset-top)))+60px)] right-3.5 z-20">
       <IconButton label={t.explore.locate} onClick={locate} disabled={busy} big>
         <Crosshair size={19} weight="bold" className={busy ? 'animate-spin' : ''} />
-      </IconButton>
-      <IconButton label={t.explore.fitAll} onClick={() => fitPoints([origin, ...VENUES.map((v) => v.coords)])} big>
-        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-          <path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4" />
-        </svg>
       </IconButton>
     </div>
   )
