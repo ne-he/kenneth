@@ -1,10 +1,17 @@
 import { create } from 'zustand'
 import type { LngLat, VenueId } from '../data/types'
+import type { ParkMode } from '../engine/modes'
 import type { TravelLookup } from '../engine/recommend'
 import type { Service } from '../engine/services'
 
-/** Three places, always in the same spot at the bottom: the map, your tickets, your account. */
-export type Tab = 'explore' | 'tickets' | 'account'
+/**
+ * Three places, always in the same spot at the bottom. The middle one (the K)
+ * is home: the map plus everything you can book. Left is what you have going
+ * on, right is you.
+ */
+export type Tab = 'activity' | 'park' | 'account'
+
+export type { ParkMode }
 
 export type VenueFilter = 'all' | 'fav' | 'mall' | 'kampus'
 
@@ -34,6 +41,7 @@ export interface Route {
 
 interface UiState {
   tab: Tab
+  mode: ParkMode
   sheet: SheetKey | null
   selected: VenueId | null
   filter: VenueFilter
@@ -44,10 +52,14 @@ interface UiState {
   originLabel: 'binus' | 'gps'
   travel: TravelLookup
   toast: { id: number; text: string; icon?: string } | null
-  /** Something new landed in Tiket since the user last looked. Drives the dot on the tab. */
-  ticketsBadge: boolean
+  /** Something new landed in Aktivitas since the user last looked. Drives the dot on the tab. */
+  activityBadge: boolean
+  /** Bumped when the K is tapped while already home: the map goes back to the overview. */
+  homeTick: number
 
   setTab: (t: Tab) => void
+  setMode: (m: ParkMode) => void
+  goHome: () => void
   open: (s: SheetKey) => void
   close: () => void
   select: (id: VenueId | null) => void
@@ -57,11 +69,12 @@ interface UiState {
   setOrigin: (o: LngLat, label: 'binus' | 'gps') => void
   setTravel: (t: TravelLookup) => void
   notify: (text: string, icon?: string) => void
-  markTickets: () => void
+  markActivity: () => void
 }
 
 export const useUi = create<UiState>()((set) => ({
-  tab: 'explore',
+  tab: 'park',
+  mode: 'park',
   sheet: null,
   selected: null,
   filter: 'all',
@@ -71,9 +84,12 @@ export const useUi = create<UiState>()((set) => ({
   originLabel: 'binus',
   travel: {},
   toast: null,
-  ticketsBadge: false,
+  activityBadge: false,
+  homeTick: 0,
 
-  setTab: (tab) => set((s) => ({ tab, sheet: null, ticketsBadge: tab === 'tickets' ? false : s.ticketsBadge })),
+  setTab: (tab) => set((s) => ({ tab, sheet: null, activityBadge: tab === 'activity' ? false : s.activityBadge })),
+  setMode: (mode) => set({ mode }),
+  goHome: () => set((s) => ({ selected: null, sheet: null, homeTick: s.homeTick + 1 })),
   open: (sheet) => set({ sheet }),
   close: () => set({ sheet: null }),
   select: (selected) => set({ selected }),
@@ -83,5 +99,5 @@ export const useUi = create<UiState>()((set) => ({
   setOrigin: (origin, originLabel) => set({ origin, originLabel, travel: {} }),
   setTravel: (travel) => set({ travel }),
   notify: (text, icon) => set({ toast: { id: Date.now(), text, icon } }),
-  markTickets: () => set((s) => ({ ticketsBadge: s.tab !== 'tickets' })),
+  markActivity: () => set((s) => ({ activityBadge: s.tab !== 'activity' })),
 }))
