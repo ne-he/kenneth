@@ -11,10 +11,10 @@ import { useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { Account } from '../account/Account'
+import { Activity } from '../activity/Activity'
 import { Explore } from '../explore/Explore'
 import { Onboarding } from '../onboarding/Onboarding'
 import { Sheets } from '../sheets/Sheets'
-import { Tickets } from '../tickets/Tickets'
 import { Toast } from '../ui/Toast'
 import { BottomNav } from './BottomNav'
 
@@ -54,7 +54,7 @@ function useValetAlarm() {
       if (v.readyAt && now - v.readyAt > 60_000) return
       const text = t.valet.readyNow(v.lobby)
       useUi.getState().notify(text)
-      useUi.getState().markTickets()
+      useUi.getState().markActivity()
       haptic('success')
       void systemNotify('KENNETH', text)
     })
@@ -85,7 +85,7 @@ export function PhoneApp() {
       {/* The map stays mounted so it never reloads when switching tabs. */}
       <Explore />
       <AnimatePresence>
-        {tab !== 'explore' && (
+        {tab !== 'park' && (
           <motion.div
             key={tab}
             initial={{ opacity: 0, y: 10 }}
@@ -94,7 +94,7 @@ export function PhoneApp() {
             transition={{ type: 'spring', stiffness: 420, damping: 38 }}
             className="absolute inset-0 z-40 bg-canvas"
           >
-            {tab === 'tickets' ? <Tickets /> : <Account />}
+            {tab === 'activity' ? <Activity /> : <Account />}
           </motion.div>
         )}
       </AnimatePresence>
