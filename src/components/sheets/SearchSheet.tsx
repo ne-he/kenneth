@@ -53,7 +53,7 @@ export function SearchSheet() {
               onClick={() => {
                 haptic('tap')
                 close()
-                setTab('explore')
+                setTab('park')
                 select(s.venue.id)
               }}
               className="flex w-full items-center gap-3 py-3 text-left"

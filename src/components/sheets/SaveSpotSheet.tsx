@@ -62,7 +62,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
   const t = useT()
   const venue = VENUE_BY_ID[venueId]
   const park = useApp((s) => s.park)
-  const { close, notify, select, markTickets } = useUi.getState()
+  const { close, notify, select, markActivity } = useUi.getState()
   const [level, setLevel] = useState(venue.levels[1] ?? venue.levels[0])
   const [zone, setZone] = useState(venue.zones[2] ?? venue.zones[0])
   const [pillar, setPillar] = useState(12)
@@ -81,7 +81,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
     park({ venueId, level, zone, pillar, lobby, photo, note: note.trim() || undefined, at, savedMin, kind })
     close()
     select(null)
-    markTickets()
+    markActivity()
     notify(t.park.saved)
   }
 

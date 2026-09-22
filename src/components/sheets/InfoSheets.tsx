@@ -238,7 +238,7 @@ export function PrivacySheet() {
             if (!confirm) return setConfirm(true)
             resetAll()
             close()
-            setTab('explore')
+            setTab('park')
           }}
         >
           <Trash size={16} weight="bold" />
