@@ -1,8 +1,10 @@
-import { BellSimple, Star, Wheelchair } from '@phosphor-icons/react'
+import { BellSimple, ChargingStation, Key, Lightning, Star, Wheelchair } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 import type { VenueId } from '../../data/types'
+import type { ParkMode, PinFact } from '../../engine/modes'
 import { nextRelief } from '../../engine/occupancy'
+import { formatRupiah } from '../../engine/pricing'
 import type { Ranked } from '../../engine/recommend'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
@@ -21,12 +23,16 @@ import { TimeScrubber } from './TimeScrubber'
  */
 export function VenueList({
   ranked,
+  facts,
+  mode,
   ts,
   now,
   previewing,
   filter,
 }: {
   ranked: Ranked[]
+  facts: ReadonlyMap<VenueId, PinFact>
+  mode: ParkMode
   ts: number
   now: number
   previewing: boolean
@@ -37,15 +43,17 @@ export function VenueList({
   const accessibleFirst = useApp((s) => s.prefs.accessibleFirst)
   const favorites = useApp((s) => s.favorites)
 
-  // The one full venue the user most likely wanted: nudge them with its relief time.
-  const fullOne = ranked.find((r) => r.status === 'penuh')
+  // The one full venue the user most likely wanted: nudge them with its relief time. Only when just parking.
+  const fullOne = mode === 'park' ? ranked.find((r) => r.status === 'penuh') : undefined
   const relief = fullOne && !previewing ? nextRelief(fullOne.venue, ts) : null
 
   if (ranked.length === 0) {
     return (
       <div className="px-8 pt-6 pb-10 text-center">
         <Star size={28} className="mx-auto text-ink-3" />
-        <p className="mt-2 text-[13.5px] leading-relaxed text-ink-3">{filter === 'fav' ? t.explore.emptyFav : t.explore.empty}</p>
+        <p className="mt-2 text-[13.5px] leading-relaxed text-ink-3">
+          {filter === 'fav' ? t.explore.emptyFav : mode === 'park' ? t.explore.empty : t.modes.emptyList}
+        </p>
       </div>
     )
   }
@@ -98,10 +106,7 @@ export function VenueList({
                   </span>
                 </span>
                 <span className="flex shrink-0 flex-col items-end gap-1">
-                  <span className="text-[15px] leading-none font-bold tracking-tight tabular">
-                    {Math.round(r.timeToPark)}
-                    <span className="ml-0.5 text-[11px] font-semibold text-ink-3">{t.unit.min}</span>
-                  </span>
+                  <ModeValue fact={facts.get(r.venue.id)} minutes={r.timeToPark} />
                   <StatusPill status={r.status} pct={r.pct} />
                 </span>
               </button>
@@ -112,9 +117,47 @@ export function VenueList({
       <div className="mt-4 border-t border-line px-5 pt-4">
         <TimeScrubber venues={ranked.map((r) => r.venue)} now={now} title={t.explore.forecastToday} />
       </div>
-      <p className="px-6 pt-4 text-center text-[11.5px] leading-relaxed text-ink-3">{t.explore.toParkHint}</p>
+      {mode === 'park' && <p className="px-6 pt-4 text-center text-[11.5px] leading-relaxed text-ink-3">{t.explore.toParkHint}</p>}
     </div>
   )
+}
+
+/** The number on the right of a row: minutes to a bay when parking, otherwise what the mode is about. */
+function ModeValue({ fact, minutes }: { fact?: PinFact; minutes: number }) {
+  const t = useT()
+  const num = 'flex items-center gap-1 text-[15px] leading-none font-bold tracking-tight tabular'
+  const unit = 'text-[11px] font-semibold text-ink-3'
+  switch (fact?.kind) {
+    case 'price':
+      return (
+        <span className={num}>
+          <Lightning size={13} weight="fill" className="text-ramai" />
+          {fact.worth ? formatRupiah(fact.price, true) : <span className="text-[13px] text-lega-ink dark:text-led-lega">{t.modes.calm}</span>}
+        </span>
+      )
+    case 'wait':
+      return (
+        <span className={num}>
+          <Key size={13} weight="fill" className="text-ink-2" />
+          {fact.min}
+          <span className={unit}>{t.unit.min}</span>
+        </span>
+      )
+    case 'chargers':
+      return (
+        <span className={num}>
+          <ChargingStation size={13} weight="fill" className="text-ev" />
+          {t.modes.free(fact.free, fact.total)}
+        </span>
+      )
+    default:
+      return (
+        <span className="text-[15px] leading-none font-bold tracking-tight tabular">
+          {Math.round(minutes)}
+          <span className={`ml-0.5 ${unit}`}>{t.unit.min}</span>
+        </span>
+      )
+  }
 }
 
 function ReliefRow({ id, name, at }: { id: VenueId; name: string; at: number }) {
