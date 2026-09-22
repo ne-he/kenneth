@@ -5,13 +5,16 @@ import { VENUE_BY_ID } from '../../../data/venues'
 import type { VenueId } from '../../../data/types'
 import { servicesFor, type Service } from '../../../engine/services'
 import { useT } from '../../../i18n'
-import { useVehicle } from '../../../store/app'
+import { useApp, useVehicle } from '../../../store/app'
 import { useUi } from '../../../store/ui'
+import { useCancel } from '../../activity/useCancel'
 import { Button } from '../../ui/Button'
+import { CancelConfirm } from '../../ui/CancelConfirm'
 import { Segmented } from '../../ui/Controls'
 import { SheetHeader } from '../../ui/Sheet'
 import { EvPanel } from './EvPanel'
 import { PriorityPanel } from './PriorityPanel'
+import { useValetActions } from './useValetActions'
 import { ValetPanel } from './ValetPanel'
 
 export interface Booked {
@@ -35,7 +38,7 @@ export function BookHub({ venueId, service }: { venueId: VenueId; service?: Serv
   const [booked, setBooked] = useState<Booked | null>(null)
 
   const done = (b: Booked) => {
-    useUi.getState().markTickets()
+    useUi.getState().markActivity()
     setBooked(b)
   }
 
@@ -73,6 +76,19 @@ export function BookHub({ venueId, service }: { venueId: VenueId; service?: Serv
 function BookedView({ booked, venueName }: { booked: Booked; venueName: string }) {
   const t = useT()
   const { close, open, setTab } = useUi.getState()
+  const cancel = useCancel()
+  const valet = useValetActions()
+  const undo = () => {
+    if (booked.service === 'priority') cancel.pass(booked.id)
+    else if (booked.service === 'ev') cancel.ev(booked.id)
+    else {
+      const ticket = useApp.getState().valets.find((v) => v.id === booked.id)
+      if (ticket) valet.cancel(ticket)
+    }
+    close()
+  }
+  const policy =
+    booked.service === 'priority' ? t.activity.cancelPolicy : booked.service === 'valet' ? t.activity.valetCancelPolicy : t.activity.evCancelPolicy
   return (
     <div className="flex flex-col items-center pt-6 pb-5 text-center">
       <motion.span
@@ -95,7 +111,7 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
           {t.common.done}
         </Button>
         {booked.service === 'ev' ? (
-          <Button variant="dark" onClick={() => setTab('tickets')}>
+          <Button variant="dark" onClick={() => setTab('activity')}>
             <Ticket size={17} weight="bold" /> {t.book.seeTickets}
           </Button>
         ) : booked.service === 'valet' ? (
@@ -108,6 +124,7 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
           </Button>
         )}
       </div>
+      <CancelConfirm className="mt-3 w-full" label={t.activity.wrongBooking} policy={policy} onConfirm={undo} />
     </div>
   )
 }

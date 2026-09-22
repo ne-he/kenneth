@@ -9,6 +9,8 @@ import { clock, dayDiff, stopwatch } from '../../lib/time'
 import { useApp, useVehicle } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
+import { useCancel } from '../activity/useCancel'
+import { CancelConfirm } from '../ui/CancelConfirm'
 import { Plate } from '../ui/Display'
 
 /**
@@ -21,8 +23,8 @@ export function PassSheet({ passId }: { passId: string }) {
   const now = useNow(1000)
   const pass = useApp((s) => s.passes.find((p) => p.id === passId))
   const plate = useVehicle().plate
-  const cancelPass = useApp((s) => s.cancelPass)
-  const { close, notify } = useUi.getState()
+  const cancel = useCancel()
+  const close = useUi((s) => s.close)
   const [qr, setQr] = useState('')
 
   useEffect(() => {
@@ -82,17 +84,15 @@ export function PassSheet({ passId }: { passId: string }) {
       </div>
 
       {pass.status === 'active' && phase === 'upcoming' && (
-        <button
-          type="button"
-          onClick={() => {
-            cancelPass(pass.id)
-            notify(t.activity.passCancelled)
+        <CancelConfirm
+          dark
+          className="mt-4"
+          policy={t.activity.cancelPolicy}
+          onConfirm={() => {
+            cancel.pass(pass.id)
             close()
           }}
-          className="mt-4 h-11 w-full rounded-2xl bg-white/8 text-[13.5px] font-semibold text-white/80 hover:bg-white/12"
-        >
-          {t.activity.cancelPass}
-        </button>
+        />
       )}
     </div>
   )

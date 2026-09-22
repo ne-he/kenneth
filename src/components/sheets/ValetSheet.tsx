@@ -10,6 +10,7 @@ import { useApp, useVehicle } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { Button } from '../ui/Button'
+import { CancelConfirm } from '../ui/CancelConfirm'
 import { Plate } from '../ui/Display'
 import { SheetHeader } from '../ui/Sheet'
 import { useValetActions } from './book/useValetActions'
@@ -77,14 +78,19 @@ export function ValetSheet({ id }: { id: string }) {
       </div>
 
       {phase === 'booked' && (
-        <div className="grid grid-cols-[1fr_1.6fr] gap-2">
-          <Button variant="secondary" onClick={() => act.cancel(ticket)}>
-            {t.valet.cancel}
-          </Button>
-          <Button variant="dark" onClick={() => act.handover(ticket)}>
+        <>
+          <Button variant="dark" size="lg" block onClick={() => act.handover(ticket)}>
             <Key size={17} weight="fill" /> {t.valet.handover}
           </Button>
-        </div>
+          <CancelConfirm
+            className="mt-2"
+            policy={t.activity.valetCancelPolicy}
+            onConfirm={() => {
+              act.cancel(ticket)
+              close()
+            }}
+          />
+        </>
       )}
       {phase === 'parked' && (
         <>
