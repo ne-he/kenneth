@@ -61,26 +61,32 @@ Daftar di Jelajah diurutkan dari waktu sampai parkir paling kecil.
 Mulai dari sekarang, maju 15 menit sekali sampai jam tutup, cari saat pertama antrian gerbang utama 3 menit
 atau kurang dan status tidak penuh. Hasilnya dibulatkan ke seperempat jam.
 
-## 4b. Valet (`valet.ts`)
+## 4b. Valet runner (`valet.ts`)
 
-Valet dijalankan pengelola gedung. Model kecilnya cuma dua angka yang ikut keramaian:
+Valet dijalankan armada runner KENNETH, dan mobil diparkir di Zona KENNETH dekat lobi. Model kecilnya cuma dua
+angka yang ikut keramaian:
 
 ```
-antre di lobi   = 1 + 7 × clamp((okupansi - 0,50) / 0,45)   menit
-mobil balik     = 6 + 14 × clamp((okupansi - 0,55) / 0,40)  menit
+runner datang   = 1 + 4 × clamp((okupansi - 0,50) / 0,45)   menit
+mobil balik     = 4 + 6 × clamp((okupansi - 0,55) / 0,40)   menit
 ```
 
-Jadi saat sepi mobil balik dalam 6 menit, saat hampir penuh sampai 20 menit, karena runner harus turun lebih
-jauh dan jalurnya lebih padat. Status tiket dihitung dari waktu, bukan disimpan: menunggu kamu datang, dipegang
-valet, sedang diambil, siap, selesai. Pesanan yang tidak didatangi lebih dari 45 menit setelah jam pilihan hangus
+Jadi saat sepi mobil balik dalam 4 menit, saat hampir penuh sampai 10 menit. Lebih cepat dari valet biasa karena
+mobil tidak dibawa ke basement paling bawah. Nama runner dan nomor badge di tiket dipilih dari id tiket, jadi
+selalu sama untuk tiket yang sama. Status tiket dihitung dari waktu, bukan disimpan: menunggu kamu datang, dipegang
+runner, sedang diambil, siap, selesai. Pesanan yang tidak didatangi lebih dari 45 menit setelah jam pilihan hangus
 tanpa biaya.
 
-## 5. Harga jalur prioritas (`pricing.ts`)
+## 5. Zona KENNETH (`zone.ts`, `pricing.ts`)
 
-- Harga dasar naik linear dari Rp15.000 (okupansi 80%) ke Rp30.000 (okupansi 98%), dibulatkan ke ribuan.
-- Hanya dijual kalau antrian dasar 5 menit atau lebih.
+- Zona ada di mall yang punya gerbang berkamera pelat KENNETH. Lantainya lantai parkir pertama, dekat lobi utama.
+- Jumlah petak = kapasitas mobil / 100, dibatasi 12 sampai 40.
+- Petak kosong per jam datang = petak zona dikurangi petak terpakai, dengan
+  terpakai = petak × clamp((okupansi - 0,45) / 0,50), plus sedikit variasi tetap per jam supaya demo selalu sama.
+- Nomor petak (K-01 dan seterusnya) diturunkan dari id booking.
+- Petak ditahan 30 menit dari jam datang, lalu dilepas lagi.
+- Harga dasar naik linear dari Rp15.000 (okupansi 60%) ke Rp30.000 (okupansi 98%), dibulatkan ke ribuan.
 - Premium: diskon 40%, dibulatkan ke 500 rupiah.
-- Per jendela 15 menit, lajur prioritas menampung 30 mobil tapi yang dijual paling banyak 24.
 
 ## 6. Ganjil-genap (`gage.ts`)
 
@@ -110,4 +116,4 @@ bensin adalah angka pembakaran yang umum dipakai. Mobil listrik dihitung hemat w
 
 Semua parameter di atas adalah asumsi awal tim. Yang paling menentukan, dan paling perlu dicek ke lapangan:
 kurva okupansi akhir pekan tiap mall, kurva kampus mengikuti jadwal kuliah yang sebenarnya, perbandingan slot motor
-dan mobil di tiap kampus, porsi pengunjung yang batal datang saat penuh, faktor lalu lintas, dan waktu ambil mobil valet.
+dan mobil di tiap kampus, porsi pengunjung yang batal datang saat penuh, faktor lalu lintas, dan waktu ambil mobil valet runner, dan ukuran Zona KENNETH.

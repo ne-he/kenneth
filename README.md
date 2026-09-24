@@ -12,8 +12,8 @@ Buka di HP untuk app-nya. Di laptop, app yang sama tampil di bingkai HP dengan Q
 
 <p align="center">
   <img src="docs/screens/explore.png" width="200" alt="Tab Parkir: peta dan daftar tempat" />
-  <img src="docs/screens/modes.png" width="200" alt="Dropdown mode: Parkir, Jalur prioritas, Valet, Charger EV" />
-  <img src="docs/screens/valet-card.png" width="200" alt="Mode Valet di Taman Anggrek" />
+  <img src="docs/screens/modes.png" width="200" alt="Dropdown mode: Parkir, Zona KENNETH, Valet runner, Charger EV" />
+  <img src="docs/screens/valet-card.png" width="200" alt="Mode Valet runner di Taman Anggrek" />
   <img src="docs/screens/activity.png" width="200" alt="Tab Aktivitas: sekarang, nanti, riwayat" />
 </p>
 
@@ -22,8 +22,8 @@ Buka di HP untuk app-nya. Di laptop, app yang sama tampil di bingkai HP dengan Q
 > dan app menyebut itu di setiap halaman lokasi.
 
 *English summary: KENNETH is a mobile web app that shows how full Jakarta car parks (malls and the BINUS campuses)
-are before you leave home, how long the gate queue is, and which nearby place still has space. It books priority
-entry, the building's valet and EV chargers. This repo is a working prototype with simulated data, built for a
+are before you leave home, how long the gate queue is, and which nearby place still has space. It books a bay in
+the KENNETH Zone (reserved bays by the lobby, like brand-only parking), a KENNETH runner valet and EV chargers. This repo is a working prototype with simulated data, built for a
 university venture course.*
 
 ---
@@ -44,13 +44,13 @@ menonjol seperti tombol QRIS di app bank. Nggak ada dashboard, dan app nggak per
 
 | Tab | Isi |
 |---|---|
-| **Aktivitas** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, valet yang lagi jalan, jalur prioritas yang sedang berlaku. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
-| **Parkir** (logo K, tengah) | Peta besar, search, dan dropdown "Mau ngapain?" di kanan search: Parkir, Jalur prioritas, Valet, Charger EV, plus pilihan kendaraan (mobil atau motor). Layoutnya selalu sama, yang berubah cuma angka di pin dan satu tombol utama di kartu tempat. Tap K lagi untuk balik ke tampilan awal |
+| **Aktivitas** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, runner valet yang lagi jalan, petak Zona KENNETH yang sedang ditahan. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
+| **Parkir** (logo K, tengah) | Peta besar, search, dan dropdown "Mau ngapain?" di kanan search: Parkir, Zona KENNETH, Valet runner, Charger EV, plus pilihan kendaraan (mobil atau motor). Layoutnya selalu sama, yang berubah cuma angka di pin dan satu tombol utama di kartu tempat. Tap K lagi untuk balik ke tampilan awal |
 | **Akun** (kanan) | Masuk dengan Google atau tetap jadi tamu, kendaraan, paket, dampak bulan ini, opsi peta, notifikasi |
 
 Tiap booking yang masih bisa dibatalkan punya tombol "Batalkan" yang kelihatan, di kartu Aktivitas, di tiketnya, dan
 langsung setelah memesan. Batalnya dua langkah dengan aturannya ditulis. Yang dibatalkan tetap tercatat di Riwayat.
-Kalau ada yang lagi jalan (misalnya valet sedang mengambil mobil), satu baris muncul di atas kartu tab Parkir.
+Kalau ada yang lagi jalan (misalnya runner sedang membawa mobil balik), satu baris muncul di atas kartu tab Parkir.
 
 Pertama kali dibuka ada onboarding empat langkah (bisa dilewati): sambutan, yang bisa dibantu, tempat favorit,
 kendaraan. Setelah itu langsung ke peta.
@@ -93,14 +93,14 @@ Motor dan mobil punya slot, tingkat keterisian, dan tarif sendiri: ganti kendara
 | 06 | Inget lokasi mobil | Tombol ⋯ lalu "Simpan lokasi parkir", atau "Udah sampai" di akhir rute. Muncul di Aktivitas dan di baris atas tab Parkir |
 | 07 | Rute mobil ke tenant | Detail lokasi, "Dari parkir ke tujuan", plus denah basement 3D di "Cari kendaraan" |
 | 08 | Slot difabel dan ibu hamil | Detail lokasi, baris "Slot khusus" |
-| 09 | Booking jalur prioritas | Mode Jalur prioritas, atau saran "Mau masuk tanpa antre?" di kartu tempat yang penuh. Tiket QR di Aktivitas |
+| 09 | Booking petak Zona KENNETH | Mode Zona KENNETH, atau saran "Males muter?" di kartu tempat yang ramai. Tiket petak (nomor petak plus QR cadangan) di Aktivitas |
 | 10 | Booking charger EV | Mode Charger EV, pin menunjukkan charger yang kosong |
 | 11 | Pola kebiasaan pribadi | Akun, Dampak bulan ini, "Pola kebiasaanmu" (Premium) |
 
 Tambahan di luar 11 fitur:
 
-- **Valet gedung.** Pesan drop-off, sebut plat atau kode booking ke petugas, lalu tekan "Siapkan mobil" sebelum turun ke lobi.
-  Ada hitung mundur dan notifikasi "Mobilmu siap di Lobi A". Bayarnya tetap di meja valet.
+- **Valet runner.** Runner KENNETH nunggu di lobi, nyocokin kode booking sama pelat, lalu parkir mobilnya di Zona KENNETH.
+  Tekan "Siapkan mobil" sebelum turun ke lobi, ada hitung mundur dan notifikasi "Mobilmu siap di Lobi A". Bayar di app.
 - **Opsi peta.** Tampilan Tenang atau Detail, gedung 3D nyala atau mati, dan tombol Rute bisa langsung membuka
   Google Maps atau Waze dengan tujuan gerbang paling lancar.
 - **Akun Google** lewat Firebase Authentication. Mode tamu tetap bisa semua fitur.
@@ -109,11 +109,11 @@ Tambahan di luar 11 fitur:
 
 ## Keputusan produk yang kelihatan di app
 
-- **Tidak jual petak, jual giliran masuk.** Tiket prioritas berlaku 15 menit untuk lewat jalur khusus. Setelah masuk,
-  parkir biasa tanpa batas waktu dan tanpa denda. Lihat [docs/PRODUCT.md](docs/PRODUCT.md) untuk alasannya.
+- **Zona KENNETH, kayak parkir khusus Lexus.** Gedung menyisihkan 12 sampai 40 petak dekat lobi khusus pengguna KENNETH.
+  Booking jam datang, petak ditahan 30 menit, palang baca pelat, lalu parkir selama apa pun dengan tarif gedung biasa.
+  Ini ide, belum realistis untuk sekarang. Lihat [docs/PRODUCT.md](docs/PRODUCT.md).
 - **Booking bayar per pakai.** Premium cuma jual hal yang nggak pernah habis: booking lebih awal, diskon, notifikasi.
-- **Jalur prioritas cuma ditawarkan kalau antrian nyata** (5 menit ke atas). Kalau sepi, app bilang nggak perlu.
-- **Valet milik gedung, bukan armada kami.** KENNETH cuma pintu digitalnya. Nol biometrik, bayar di meja valet.
+- **Valet pakai armada runner KENNETH.** Mobil diparkir di Zona KENNETH, jadi baliknya cepat. Nol biometrik, cukup kode dan pelat.
 - **Kampus tidak menjual apa pun.** Di kampus app cuma menunjukkan seberapa penuh dan ke mana kalau penuh.
 - **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
 - **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, booking, dan lokasi
@@ -174,7 +174,7 @@ Font: Plus Jakarta Sans (dibuat untuk identitas kota Jakarta) dan Doto untuk ang
 ```
 src/
   data/        daftar lokasi (koordinat dan gerbang dari OSM, sisanya data demo)
-  engine/      mesin simulasi: okupansi, antrian gerbang, harga, valet, ganjil-genap, dampak, ranking, angka mitra
+  engine/      mesin simulasi: okupansi, antrian gerbang, harga, Zona KENNETH, valet runner, ganjil-genap, dampak, ranking, angka mitra
   store/       state app (disimpan di localStorage), state UI, jam simulasi, jawaban booth
   i18n/        teks Indonesia dan Inggris
   components/  UI per layar: explore (tab Parkir), activity, account, sheets (termasuk sheets/book), onboarding, map, park (3D)

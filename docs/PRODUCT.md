@@ -29,7 +29,7 @@ Tiga hal yang menentukan produk ini hidup atau mati, urut dari yang paling penti
 Tiga tab: Aktivitas di kiri, logo K (Parkir) di tengah, Akun di kanan. Masukan tim atas versi 0.2: pemisahan
 tab kurang jelas, tab yang cuma berisi riwayat terasa boros, dan fitur sebaiknya diakses dari dalam fitur lain.
 
-- **Satu layar utama untuk semua hal.** Parkir biasa, jalur prioritas, valet, dan charger EV memakai layar yang
+- **Satu layar utama untuk semua hal.** Parkir biasa, Zona KENNETH, valet runner, dan charger EV memakai layar yang
   sama: peta besar, search, dan dropdown "Mau ngapain?". Yang berubah hanya angka di pin dan satu tombol utama.
   Pengguna tidak perlu belajar layar baru untuk tiap layanan.
 - **Satu tab satu tugas.** Parkir untuk memutuskan, Aktivitas untuk yang sudah dipesan, Akun untuk diri sendiri.
@@ -42,36 +42,36 @@ tab kurang jelas, tab yang cuma berisi riwayat terasa boros, dan fitur sebaiknya
 
 ## Yang dijual, dan yang sengaja tidak
 
-**Tidak menjual petak parkir.** Kalau yang dijual petak selama sekian jam, kami tidak punya wewenang
-mengusir, menderek, atau menggembok mobil yang kelamaan. Denda kecil tidak bikin jera. Denda besar
-bikin pengguna jalan di mall sambil lihat jam, artinya produk merugikan penggunanya sendiri.
+**Keputusan 24 Sep 2026: KENNETH dinilai sebagai ide, bukan harus realistis hari ini.** Versi 0.3 menjual
+giliran masuk lewat jalur prioritas. Masalahnya dua: banyak gedung parkir cuma punya satu lajur masuk, dan
+mobil biasa jadi menunggu lebih lama. Versi 0.4 menggantinya dengan konsep yang lebih gampang dibayangkan.
 
-**Yang dijual adalah giliran masuk.** Pengguna memesan jendela 15 menit, misalnya 14.00 sampai 14.15,
-lalu scan QR di jalur khusus. Setelah lewat gerbang ia pengguna parkir biasa: boleh berapa lama pun,
-bayar tarif normal. Tidak ada yang ditahan, jadi tidak ada yang bisa overstay.
+**Zona KENNETH.** Sama seperti zona parkir khusus Lexus atau BMW di beberapa mall, tapi mereknya KENNETH.
+Gedung menyisihkan sebagian petak di lantai parkir pertama, dekat lobi lift utama, khusus pengguna KENNETH.
 
-Aturan tambahan yang ikut ditanam di app:
+- Pengguna memilih hari dan jam datang (per 30 menit), lalu dapat nomor petak, misalnya K-07.
+- Masuk lewat gerbang yang punya kamera pelat KENNETH. Palang membaca pelat, QR di tiket hanya cadangan.
+- Tanda hijau Zona KENNETH menuntun ke petak. Petak ditahan 30 menit dari jam datang.
+- Setelah masuk, parkir selama apa pun dengan tarif gedung biasa. Biaya booking Rp15.000 sampai Rp30.000,
+  ikut keramaian.
+- Ukuran zona di data demo: sekitar satu dari seratus petak, minimal 12 dan maksimal 40.
+- Petak lain tetap untuk semua orang, dan antrian gerbang biasa tidak ditahan untuk siapa pun.
+
+Aturan lain yang tetap:
 
 - Booking dibayar per pakai, bukan bagian dari langganan. Lihat tulisan "habis" sebelum bayar itu
   kecewa biasa. Lihatnya setelah bayar langganan itu merasa ditipu.
-- Per jendela 15 menit, lajur prioritas menampung 30 mobil tapi yang dijual paling banyak 24.
-  Sisanya bantalan buat yang telat.
-- Jalur prioritas hanya ditawarkan kalau antrian dasar 5 menit atau lebih. Kalau sepi, app bilang
-  tidak perlu beli.
-- Kalau parkiran hampir penuh total, app bilang di depan bahwa jalur prioritas memotong antrian
-  gerbang tapi tetap menunggu ada mobil keluar.
-- Booking charger mobil listrik aman dijanjikan, karena chargernya sendiri jadi sensor sekaligus
+- Booking bisa dibatalkan sampai jam datang dengan dana kembali penuh.
+- Booking charger mobil listrik tetap seperti sebelumnya. Chargernya sendiri jadi sensor sekaligus
   penegak aturan.
 
-**Valet, versi yang bisa dipertanggungjawabkan.** Mockup awal punya valet antar pengguna dengan Face ID.
-Itu butuh armada yang tidak kami punya dan data biometrik yang tidak perlu dikumpulkan. Yang benar-benar
-bikin kesal soal valet di mall hari Sabtu adalah menunggu mobil dibawa balik. Jadi KENNETH jadi pintu
-digital untuk valet milik gedung:
+**Valet pakai armada runner KENNETH.** Versi 0.3 memakai valet milik gedung. Sekarang KENNETH punya armada
+runner sendiri berseragam hijau:
 
-- Pesan drop-off: pilih lobi dan jam datang, dapat kode booking. Petugas mencocokkan plat atau kode di daftar mereka, jadi nggak perlu scan apa pun.
-- Tekan "Siapkan mobil" sebelum turun ke lobi. App menghitung mundur dan mengabari saat mobil siap.
-- Tarif dibayar di meja valet seperti biasa, bukan di app. Nol biometrik.
-- Operator valet jadi calon mitra baru, di samping pengelola gedung.
+- Pesan runner: pilih lobi dan jam datang, bayar di app, dapat kode booking dan nama runner.
+- Runner mencocokkan kode dengan pelat, ambil kunci, lalu parkir mobilnya di Zona KENNETH.
+- Tekan "Siapkan mobil" sebelum turun ke lobi. Karena mobil ada di zona dekat lobi, baliknya 4 sampai 10 menit.
+- Face ID dari mockup awal tetap tidak dipakai. Kode dan pelat sudah cukup, dan data biometrik tidak perlu dikumpulkan.
 
 **Kampus tidak menjual apa pun.** Di kampus BINUS app hanya menunjukkan seberapa penuh gedung parkir dan
 ke mana kalau penuh (kampus lain atau tempat yang bisa dijalan kaki). Motor dan mobil dihitung terpisah,
@@ -81,10 +81,10 @@ karena di kampus porsi motor jauh lebih besar.
 
 | Ide | Kenapa tidak |
 |---|---|
-| Reservasi petak | Tidak bisa ditegakkan, lihat di atas |
+| Bayar denda kalau kelamaan di Zona KENNETH | Bikin pengguna belanja sambil lihat jam. Petak cuma ditahan sampai 30 menit setelah jam datang, setelah masuk bebas |
 | Bayar parkir di app | Sudah dikerjakan operator parkir. Kami masuk sebelum mereka, bukan menggantikan |
 | Poin, lencana, gamifikasi | Tidak menjawab masalah. Diganti laporan dampak bulanan dengan rumus terbuka |
-| Valet antar pengguna dengan Face ID (ada di mockup awal) | Butuh armada dan data biometrik. Diganti valet milik gedung, lihat di atas |
+| Face ID untuk serah terima kunci (ada di mockup awal) | Data biometrik tidak perlu. Runner cukup mencocokkan kode dan pelat |
 
 ## Harga
 
@@ -94,18 +94,19 @@ Semua angka di bawah masih perkiraan dan belum divalidasi ke pengelola gedung ma
 
 | Paket | Harga | Isi |
 |---|---|---|
-| Gratis | Rp0 | Okupansi dan antrian semua lokasi, rekomendasi alternatif, gerbang paling lancar, simpan lokasi mobil, rute ke tenant. Booking prioritas maksimal 2 jam sebelumnya dengan harga normal |
-| Jalur prioritas | Rp15.000 sampai Rp30.000 per pakai | Harga ikut keramaian. Sabtu siang mahal, Selasa pagi murah atau tidak perlu beli |
+| Gratis | Rp0 | Okupansi dan antrian semua lokasi, rekomendasi alternatif, gerbang paling lancar, simpan lokasi mobil, rute ke tenant. Booking Zona KENNETH maksimal 2 jam sebelumnya dengan harga normal |
+| Zona KENNETH | Rp15.000 sampai Rp30.000 per booking | Harga ikut keramaian. Sabtu siang mahal, Selasa pagi murah |
+| Valet runner | Rp40.000 sampai Rp75.000 per pakai (data demo) | Bayar di app, mobil diparkir di Zona KENNETH |
 | Premium | Rp29.000 per bulan | Booking sampai 7 hari sebelumnya, diskon 40% tiap booking, notifikasi jam lega lokasi favorit, notifikasi duluan kalau ada yang batal, pola kebiasaan pribadi |
 
-Prinsip Premium: yang dijual hanya hal yang tidak pernah habis stoknya. Premium tidak menjamin dapat giliran.
+Prinsip Premium: yang dijual hanya hal yang tidak pernah habis stoknya. Premium tidak menjamin dapat petak.
 
 **Untuk pengelola gedung**
 
 | Pelanggan | Perkiraan harga | Yang didapat |
 |---|---|---|
 | Mall sepi | Rp10 juta sampai Rp15 juta per bulan | Muncul sebagai rekomendasi saat lokasi lain penuh. Pengunjungnya sudah di jalan, sudah bawa mobil, sudah niat belanja |
-| Mall ramai | Bagi hasil booking | Jalur prioritas, pengingat yang menahan pengunjung supaya datang nanti daripada batal, pemerataan antrian antar gerbang |
+| Mall ramai | Bagi hasil booking | Sewa petak untuk Zona KENNETH dan valet runner, pengingat yang menahan pengunjung supaya datang nanti daripada batal, pemerataan antrian antar gerbang |
 | Semua lokasi | Rp5 juta sampai Rp10 juta per bulan | Dashboard: berapa orang batal datang karena lihat penuh, larinya ke mana, jam berapa kehilangan pengunjung |
 
 Halaman `/mitra` di app adalah contoh dashboard itu, dengan angka simulasi.
@@ -139,7 +140,7 @@ Pertanyaannya, dengan nomor yang sama seperti di layar:
 2. Waktu itu kira-kira berapa lama.
 3. Kalau app kadang meleset 10 sampai 15 persen, masih mau pakai? Ini menguji risiko 5.
 4. Dua fitur yang paling dibutuhkan, dari 11 fitur.
-5. Mau bayar Rp15.000 sampai Rp30.000 buat masuk tanpa antri? Ini menguji harga jalur prioritas.
+5. Mau bayar Rp15.000 sampai Rp30.000 buat petak pasti dekat lobi? Ini menguji harga Zona KENNETH.
 
 Setelah itu feedback grid: yang disuka, yang diharapkan, yang masih bikin bingung, ide.
 
@@ -155,6 +156,6 @@ Supaya tidak ada yang mengira ini sudah jalan sungguhan:
 - Laporan kondisi dari pengguna tersimpan di HP, belum dikirim ke server mana pun.
 - Login Google sudah ada, tapi data belum disinkronkan antar perangkat. Pindah HP berarti riwayat dan tiket
   mulai dari awal. Ini disengaja selama prototipe, supaya data pribadi tidak tersimpan di server.
-- Valet belum tersambung ke operator valet mana pun. Waktu ambil mobil dihitung dari model, bukan dari petugas.
+- Zona KENNETH dan armada runner masih ide. Belum ada gedung yang menyisihkan petak dan belum ada runner. Nama runner di app contoh.
 - Ganjil-genap belum menghitung hari libur nasional.
 - Denah basement, lantai tenant, dan jumlah charger adalah data demo.

@@ -65,7 +65,7 @@ sendiri di filenya.
 pisah panjang (em dash). Pakai koma, titik, atau pecah jadi dua kalimat.
 
 **Warna.** Pakai token dari `src/index.css` (`bg-surface`, `text-ink-2`, `bg-lega`, dan seterusnya).
-Kode hex langsung hanya untuk hal yang sengaja tidak ikut tema, seperti tiket prioritas yang selalu
+Kode hex langsung hanya untuk hal yang sengaja tidak ikut tema, seperti tiket Zona KENNETH yang selalu
 gelap dan garis rute di peta. Setiap perubahan tampilan dicek di mode terang dan gelap. Ganti tema
 lewat Profil, Tampilan.
 
@@ -88,8 +88,8 @@ Tambah satu objek di `src/data/venues.ts` dan id-nya di tipe `VenueId` di `src/d
 - `category` menentukan kurvanya (`mall` atau `kampus`), `hours` jam buka dan tutupnya.
 - `load` mengatur seberapa ramai puncaknya (1 berarti menyentuh puncak kurva), `shiftMin` menggeser jam ramainya.
 - `motor` berisi slot motor sendiri: kapasitas, `load`, dan tarif (harus lebih murah dari tarif mobil).
-- `valet` opsional dan hanya untuk mall. Lobinya harus salah satu dari `lobbies`.
-- Mall wajib punya minimal satu gerbang dengan `priorityLane`, kampus tidak boleh punya.
+- `valet` opsional dan hanya untuk mall: lobi tempat runner KENNETH menunggu dan tarifnya. Lobinya harus salah satu dari `lobbies`.
+- Mall wajib punya minimal satu gerbang dengan `priorityLane` (gerbang berkamera pelat menuju Zona KENNETH), kampus tidak boleh punya.
 - `walkLinks` harus dua arah dengan menit yang sama, test akan menagihnya.
 - `pull` tiap gerbang menentukan ke mana antrian menumpuk. Gerbang utama biasanya paling besar.
 - `labelDir` mengatur arah label pin di peta supaya tidak bertabrakan dengan lokasi di dekatnya.
