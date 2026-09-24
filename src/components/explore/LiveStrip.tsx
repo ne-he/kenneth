@@ -1,10 +1,11 @@
-import { CaretRight, CarProfile, ChargingStation, Key, Lightning } from '@phosphor-icons/react'
+import { CaretRight, CarProfile, ChargingStation, Crown, Key } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
 import { useMemo } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import { headline, splitActivity } from '../../engine/activity'
 import { valetPhase } from '../../engine/valet'
+import { bayOf } from '../../engine/zone'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { clock, stopwatch } from '../../lib/time'
@@ -55,10 +56,10 @@ export function LiveStrip() {
     go = () => open({ kind: 'valet', id: ticket.id })
   } else if (item.kind === 'pass') {
     const pass = passes.find((p) => p.id === item.id)!
-    const gate = VENUE_BY_ID[pass.venueId].gates.find((g) => g.id === pass.gateId)
-    icon = <Lightning size={16} weight="fill" />
+    const venue = VENUE_BY_ID[pass.venueId]
+    icon = <Crown size={16} weight="fill" />
     hot = now >= pass.windowStart
-    text = `${VENUE_BY_ID[pass.venueId].short} · ${t.activity.passLive(gate?.name ?? '', clock(pass.windowStart))}`
+    text = `${venue.short} · ${t.activity.passLive(bayOf(pass, venue), clock(pass.windowStart))}`
     go = () => open({ kind: 'pass', id: pass.id })
   } else if (item.kind === 'ev') {
     const b = evBookings.find((x) => x.id === item.id)!

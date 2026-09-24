@@ -25,7 +25,7 @@ const FEATURES = [
   ['biaya', 'Estimasi biaya', 'Cost estimate'],
   ['mobil', 'Inget lokasi mobil', 'Remember my car'],
   ['difabel', 'Slot difabel dan ibu hamil', 'Accessible bays'],
-  ['prioritas', 'Jalur prioritas', 'Priority entry'],
+  ['prioritas', 'Zona KENNETH', 'KENNETH Zone'],
   ['ev', 'Booking charger EV', 'EV charger booking'],
 ] as const
 
@@ -40,7 +40,7 @@ const COPY = {
     q3: 'Kalau app ini kadang meleset 10 sampai 15 persen, kamu masih mau pakai?',
     q3o: { ya: 'Masih', mungkin: 'Mungkin', tidak: 'Nggak' },
     q4: 'Dua fitur yang paling kamu butuhin',
-    q5: 'Pas antri panjang, mau bayar Rp15-30rb buat masuk tanpa antri?',
+    q5: 'Mau bayar Rp15-30rb buat petak pasti di dekat lobi, tanpa muter?',
     q5o: { ya: 'Mau', tergantung: 'Tergantung', tidak: 'Nggak' },
     grid: 'Feedback grid',
     like: 'Yang disuka',
@@ -70,7 +70,7 @@ const COPY = {
     q3: 'If the app were sometimes off by 10 to 15 percent, would you still use it?',
     q3o: { ya: 'Yes', mungkin: 'Maybe', tidak: 'No' },
     q4: 'The two features you need most',
-    q5: 'In a long queue, would you pay Rp15-30k to enter without queueing?',
+    q5: 'Would you pay Rp15-30k for a sure bay by the lobby, no circling?',
     q5o: { ya: 'Yes', tergantung: 'Depends', tidak: 'No' },
     grid: 'Feedback grid',
     like: 'What I like',

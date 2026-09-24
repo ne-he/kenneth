@@ -1,9 +1,9 @@
-import { CarProfile, FastForward, Key, Timer } from '@phosphor-icons/react'
+import { CarProfile, FastForward, Key, PersonSimpleRun, Timer } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { VENUE_BY_ID } from '../../data/venues'
 import { occupancyAt } from '../../engine/occupancy'
 import { formatRupiah } from '../../engine/pricing'
-import { retrievalMin, valetPhase } from '../../engine/valet'
+import { retrievalMin, runnerFor, valetPhase } from '../../engine/valet'
 import { useDayLabel, useT } from '../../i18n'
 import { clock, stopwatch } from '../../lib/time'
 import { useApp, useVehicle } from '../../store/app'
@@ -15,7 +15,7 @@ import { Plate } from '../ui/Display'
 import { SheetHeader } from '../ui/Sheet'
 import { useValetActions } from './book/useValetActions'
 
-/** The valet ticket. One big next step at a time: hand over, call the car, pick it up. */
+/** The runner ticket. One big next step at a time: hand over, call the car, pick it up. */
 export function ValetSheet({ id }: { id: string }) {
   const t = useT()
   const dayLabel = useDayLabel()
@@ -30,10 +30,24 @@ export function ValetSheet({ id }: { id: string }) {
   const phase = valetPhase(ticket, now)
   const fetchLeft = Math.max(0, (ticket.readyAt ?? now) - now)
   const fetchTotal = Math.max(1, (ticket.readyAt ?? now) - (ticket.requestedAt ?? now))
+  const runner = runnerFor(ticket.id)
 
   return (
     <div className="pb-5">
       <SheetHeader eyebrow={`${t.book.services.valet} · ${t.valet.phases[phase]}`} title={venue.name} onClose={close} closeLabel={t.common.close} />
+
+      {phase !== 'lapsed' && phase !== 'cancelled' && (
+        <div className="mb-3 flex items-center gap-3 rounded-[18px] bg-surface-2 px-4 py-3">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-500 text-white">
+            <PersonSimpleRun size={20} weight="fill" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[11.5px] text-ink-3">{t.valet.runner}</span>
+            <span className="block text-[15px] font-bold">{runner.name}</span>
+            <span className="block text-[11.5px] text-ink-3">{t.valet.runnerMeta(runner.badge)}</span>
+          </span>
+        </div>
+      )}
 
       {(phase === 'booked' || phase === 'parked') && (
         <div className="mb-4 rounded-[22px] border border-line px-4 py-5 text-center">

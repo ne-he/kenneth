@@ -1,4 +1,4 @@
-import { BellSimple, ChargingStation, Key, Lightning, Star, Wheelchair } from '@phosphor-icons/react'
+import { BellSimple, ChargingStation, Crown, Key, Star, Wheelchair } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 import type { VenueId } from '../../data/types'
@@ -131,8 +131,8 @@ function ModeValue({ fact, minutes }: { fact?: PinFact; minutes: number }) {
     case 'price':
       return (
         <span className={num}>
-          <Lightning size={13} weight="fill" className="text-ramai" />
-          {fact.worth ? formatRupiah(fact.price, true) : <span className="text-[13px] text-lega-ink dark:text-led-lega">{t.modes.calm}</span>}
+          <Crown size={13} weight="fill" className="text-brand-600" />
+          {fact.left > 0 ? formatRupiah(fact.price, true) : <span className="text-[13px] text-penuh-ink dark:text-led-penuh">{t.modes.soldOut}</span>}
         </span>
       )
     case 'wait':

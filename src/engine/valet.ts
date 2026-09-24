@@ -1,26 +1,35 @@
 import type { VenueId } from '../data/types'
 
 /*
-  Valet, the honest version.
+  Valet by the KENNETH runner fleet.
 
-  The team mockup had a peer to peer runner and a Face ID key handover. That
-  needs a fleet nobody has and biometrics nobody should collect. What people
-  actually hate about valet at a Jakarta mall on Saturday is the wait for the
-  car at the end, so KENNETH does two things with the building's own valet:
-  book the drop-off, and call the car back before walking down to the lobby.
-  The fee is paid at the valet desk, never in the app.
+  A runner in a KENNETH uniform meets you at the lobby, checks the booking
+  code against your plate, takes the key and parks the car in Zona KENNETH,
+  a few steps from the lift. When you are done you call the car from the
+  app and the runner brings it back. The fee is paid in the app, the normal
+  parking tariff still runs as usual. Face ID from the team mockup stays out:
+  the code and the plate are enough.
 */
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 
-/** Minutes a runner needs to bring the car back up, longer when the basement is packed. */
+/** Minutes a runner needs to bring the car back. Short, the car sits in the zone next to the lobby. */
 export function retrievalMin(occ: number): number {
-  return Math.round(6 + 14 * clamp01((occ - 0.55) / 0.4))
+  return Math.round(4 + 6 * clamp01((occ - 0.55) / 0.4))
 }
 
-/** Minutes spent waiting at the lobby before a runner takes the key. */
+/** Minutes until a free runner reaches you at the lobby. */
 export function dropQueueMin(occ: number): number {
-  return Math.round(1 + 7 * clamp01((occ - 0.5) / 0.45))
+  return Math.round(1 + 4 * clamp01((occ - 0.5) / 0.45))
+}
+
+const RUNNERS = ['Andi', 'Bayu', 'Dimas', 'Fajar', 'Rizky', 'Sari', 'Tika', 'Yoga']
+
+/** The runner on a ticket, with a short badge number. Demo names, stable per ticket. */
+export function runnerFor(ticketId: string): { name: string; badge: string } {
+  let h = 0
+  for (const ch of ticketId) h = (h * 33 + ch.charCodeAt(0)) >>> 0
+  return { name: RUNNERS[h % RUNNERS.length], badge: `R-${String(100 + (h % 900))}` }
 }
 
 /** A booked drop-off is held this long after the chosen time, then lapses. */

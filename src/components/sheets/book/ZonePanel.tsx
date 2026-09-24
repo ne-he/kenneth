@@ -1,19 +1,12 @@
-import { CreditCard, Info, Lightning, LockSimple, QrCode, Scales, Wallet } from '@phosphor-icons/react'
+import { Crown, CreditCard, DoorOpen, Lightning, LockSimple, QrCode, Question, Wallet } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useState } from 'react'
 import { VENUE_BY_ID } from '../../../data/venues'
 import type { VenueId } from '../../../data/types'
 import { forecastDay, occupancyAt, statusOf } from '../../../engine/occupancy'
-import {
-  FREE_BOOKING_AHEAD_H,
-  PREMIUM_BOOKING_AHEAD_D,
-  WINDOW_MINUTES,
-  formatRupiah,
-  laneSeatsLeft,
-  priorityPrice,
-  priorityWorthIt,
-} from '../../../engine/pricing'
+import { FREE_BOOKING_AHEAD_H, PREMIUM_BOOKING_AHEAD_D, formatRupiah, zonePrice } from '../../../engine/pricing'
+import { SLOT_MIN, ZONE_HOLD_MIN, bayFor, baysLeft, zoneOf } from '../../../engine/zone'
 import { useDayLabel, useLang, useT } from '../../../i18n'
 import { haptic } from '../../../lib/haptics'
 import { STATUS } from '../../../lib/status'
@@ -26,21 +19,19 @@ import { Label } from '../../ui/Kit'
 import type { Booked } from './BookHub'
 
 type Method = 'qris' | 'ewallet' | 'card'
-const Q = WINDOW_MINUTES * 60_000
+const Q = SLOT_MIN * 60_000
 const DAY = 86_400_000
-// Above this the lane only moves as fast as cars leave. Say so before people pay.
-const NEARLY_FULL = 0.96
 
-/** Priority entry: pick a day, pick a 15 minute window, pay per use. */
-export function PriorityPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Booked) => void }) {
+/** Zona KENNETH: pick a day, pick an arrival time, get a bay by the lobby. */
+export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Booked) => void }) {
   const t = useT()
   const lang = useLang()
   const venue = VENUE_BY_ID[venueId]
+  const zone = zoneOf(venue)!
   const now = useNow(30_000)
   const plan = useApp((s) => s.plan)
   const addPass = useApp((s) => s.addPass)
   const open = useUi((s) => s.open)
-  const gate = venue.gates.find((g) => g.priorityLane) ?? venue.gates[0]
   const [method, setMethod] = useState<Method>('qris')
   const [paying, setPaying] = useState(false)
   const [day, setDay] = useState(0)
@@ -59,32 +50,22 @@ export function PriorityPanel({ venueId, onDone }: { venueId: VenueId; onDone: (
     [now, plan, venue],
   )
 
-  const windows = useMemo(() => {
+  const slots = useMemo(() => {
     const dayTs = now + day * DAY
     const first = Math.ceil((now + 5 * 60_000) / Q) * Q
     const from = day === 0 ? Math.max(first, atWib(dayTs, openH, 0)) : atWib(dayTs, openH, 0)
-    let to = atWib(dayTs, closeH, 0) - Q
-    if (plan === 'free') to = Math.min(to, first + ((FREE_BOOKING_AHEAD_H * 60) / WINDOW_MINUTES - 1) * Q)
+    let to = atWib(dayTs, closeH, 0) - 2 * Q
+    if (plan === 'free') to = Math.min(to, first + ((FREE_BOOKING_AHEAD_H * 60) / SLOT_MIN - 1) * Q)
     const list = []
     for (let start = from; start <= to; start += Q) {
       const occ = occupancyAt(venue, start)
-      list.push({
-        start,
-        occ,
-        price: priorityPrice(occ, plan),
-        seats: laneSeatsLeft(venue, start, occ),
-        worth: priorityWorthIt(occ),
-      })
+      list.push({ start, occ, price: zonePrice(occ, plan), left: baysLeft(venue, start, occ) })
     }
-    if (plan === 'free') return list
-    // A whole day is long. Start the row where a queue begins and stop where it ends.
-    const a = list.findIndex((w) => w.worth)
-    const b = list.findLastIndex((w) => w.worth)
-    return a < 0 ? [] : list.slice(a, b + 1)
+    return list
   }, [now, plan, venue, day, openH, closeH])
 
-  const firstUseful = windows.findIndex((w) => w.worth && w.seats > 0)
-  const pick = windows.find((w) => w.start === picked && w.worth && w.seats > 0) ?? windows[firstUseful]
+  const firstOpen = slots.findIndex((s) => s.left > 0)
+  const pick = slots.find((s) => s.start === picked && s.left > 0) ?? slots[firstOpen]
 
   const pay = () => {
     if (!pick) return
@@ -92,23 +73,38 @@ export function PriorityPanel({ venueId, onDone }: { venueId: VenueId; onDone: (
     haptic('tap')
     window.setTimeout(() => {
       const id = uid()
+      const bay = bayFor(id, venue)
       addPass({
         id,
         venueId,
-        gateId: gate.id,
+        gateId: zone.gate.id,
         windowStart: pick.start,
+        bay,
         price: pick.price,
-        token: `KNT-${venue.short.toUpperCase().replace(/[^A-Z0-9]/g, '')}-${id.slice(0, 4).toUpperCase()}`,
+        token: `KNZ-${venue.short.toUpperCase().replace(/[^A-Z0-9]/g, '')}-${id.slice(0, 4).toUpperCase()}`,
         createdAt: Date.now(),
         status: 'active',
       })
       haptic('success')
-      onDone({ service: 'priority', id, line: `${gate.name} · ${dayLabel(pick.start, now)}, ${clock(pick.start)}-${clock(pick.start + Q)}` })
+      onDone({ service: 'priority', id, line: `${t.activity.bay} ${bay} · ${dayLabel(pick.start, now)}, ${clock(pick.start)}` })
     }, 1100)
   }
 
   return (
     <div>
+      <div className="mb-4 flex items-center gap-3 rounded-[18px] bg-ink p-3.5 text-canvas">
+        <span className="grid size-11 shrink-0 place-items-center rounded-[14px] bg-brand-500 text-white">
+          <Crown size={22} weight="fill" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[11px] font-semibold opacity-60">{t.book.zoneWhere}</span>
+          <span className="block text-[15px] leading-tight font-bold">{t.activity.bayWhere(zone.level, zone.lobby)}</span>
+          <span className="mt-0.5 flex items-center gap-1 text-[12px] opacity-70">
+            <DoorOpen size={13} weight="fill" /> {zone.gate.name} · {t.book.zoneBays(zone.bays)}
+          </span>
+        </span>
+      </div>
+
       <Label>{t.book.day}</Label>
       <div className="no-scrollbar -mx-5 mb-4 flex gap-1.5 overflow-x-auto px-5 pb-1" role="radiogroup" aria-label={t.book.day}>
         {days.map((d, i) => {
@@ -156,17 +152,17 @@ export function PriorityPanel({ venueId, onDone }: { venueId: VenueId; onDone: (
         {t.book.window}
       </Label>
       <div key={day} className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
-        {windows.map((w) => {
-          const disabled = !w.worth || w.seats === 0
-          const active = w.start === pick?.start
+        {slots.map((s) => {
+          const disabled = s.left === 0
+          const active = s.start === pick?.start
           return (
             <button
-              key={w.start}
+              key={s.start}
               type="button"
               disabled={disabled}
               onClick={() => {
                 haptic('tap')
-                setPicked(w.start)
+                setPicked(s.start)
               }}
               className={clsx(
                 'flex w-[84px] shrink-0 flex-col items-start rounded-[16px] p-2.5 text-left transition-colors',
@@ -174,66 +170,40 @@ export function PriorityPanel({ venueId, onDone }: { venueId: VenueId; onDone: (
                 disabled && 'opacity-40',
               )}
             >
-              <span className="text-[14px] font-bold tabular">{clock(w.start)}</span>
+              <span className="text-[14px] font-bold tabular">{clock(s.start)}</span>
               <span className={clsx('mt-0.5 text-[12px] font-bold tabular', active ? 'text-led-lega dark:text-brand-700' : 'text-brand-700 dark:text-brand-300')}>
-                {w.worth ? formatRupiah(w.price, true) : '-'}
+                {formatRupiah(s.price, true)}
               </span>
               <span className={clsx('mt-1 text-[10.5px] font-semibold', active ? 'text-canvas/60' : 'text-ink-3')}>
-                {w.seats === 0 ? t.book.soldOut : t.book.seats(w.seats)}
+                {disabled ? t.book.soldOut : t.book.seats(s.left)}
               </span>
             </button>
           )
         })}
       </div>
-      {firstUseful < 0 && (
-        <p className="mt-3 rounded-[14px] bg-lega-soft p-3 text-[12.5px] font-medium text-lega-ink dark:bg-lega/15 dark:text-led-lega">
+      {firstOpen < 0 && (
+        <p className="mt-3 rounded-[14px] bg-ramai-soft p-3 text-[12.5px] font-medium text-ramai-ink dark:bg-ramai/15 dark:text-led-ramai">
           {day === 0 ? t.book.notWorth : t.book.noneThatDay}
         </p>
       )}
-      {pick && pick.occ >= NEARLY_FULL && (
-        <p className="mt-3 flex gap-2 rounded-[14px] bg-ramai-soft p-3 text-[12.5px] leading-snug font-medium text-ramai-ink dark:bg-ramai/15 dark:text-led-ramai">
-          <Info size={16} weight="fill" className="mt-px shrink-0" />
-          {t.book.nearlyFull}
-        </p>
-      )}
-      <p className="mt-2 px-1 text-[11.5px] text-ink-3">
+      <p className="mt-2 px-1 text-[11.5px] leading-snug text-ink-3">{t.book.holdNote(ZONE_HOLD_MIN)}</p>
+      <p className="mt-1 px-1 text-[11.5px] text-ink-3">
         {plan === 'premium' ? t.book.premiumOff(PREMIUM_BOOKING_AHEAD_D) : t.book.ahead(FREE_BOOKING_AHEAD_H, PREMIUM_BOOKING_AHEAD_D)}
       </p>
 
       <Label className="mt-5">{t.book.payWith}</Label>
-      <div className="grid grid-cols-3 gap-2">
-        {(
-          [
-            ['qris', 'QRIS', <QrCode key="q" size={20} />],
-            ['ewallet', 'E-wallet', <Wallet key="w" size={20} />],
-            ['card', t.book.card, <CreditCard key="c" size={20} />],
-          ] as const
-        ).map(([key, label, icon]) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setMethod(key)}
-            className={clsx(
-              'flex h-16 flex-col items-center justify-center gap-1 rounded-[16px] border text-[12px] font-semibold transition-colors',
-              method === key ? 'border-ink bg-surface text-ink' : 'border-transparent bg-surface-2 text-ink-2',
-            )}
-          >
-            {icon}
-            {label}
-          </button>
-        ))}
-      </div>
+      <PayMethods value={method} onChange={setMethod} />
 
       <details className="mt-4 rounded-[16px] bg-surface-2 p-3 text-[12.5px]">
         <summary className="flex cursor-pointer list-none items-center gap-2 font-semibold">
-          <Scales size={16} /> {t.book.fair}
+          <Question size={16} /> {t.book.fair}
         </summary>
         <p className="mt-2 leading-relaxed text-ink-2">{t.book.what}</p>
         <p className="mt-2 leading-relaxed text-ink-2">{t.book.fairBody}</p>
       </details>
 
       <div className="sticky bottom-0 mt-4 bg-surface pt-2">
-        <Button variant="primary" size="lg" block disabled={!pick || firstUseful < 0 || paying} onClick={pay}>
+        <Button variant="primary" size="lg" block disabled={!pick || paying} onClick={pay}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.span key={String(paying)} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
               {paying ? t.book.paying : `${t.book.pay} ${pick ? formatRupiah(pick.price) : ''}`}
@@ -245,3 +215,34 @@ export function PriorityPanel({ venueId, onDone }: { venueId: VenueId; onDone: (
     </div>
   )
 }
+
+/** QRIS, e-wallet or card. Shared with the runner booking. */
+export function PayMethods({ value, onChange }: { value: Method; onChange: (m: Method) => void }) {
+  const t = useT()
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      {(
+        [
+          ['qris', 'QRIS', <QrCode key="q" size={20} />],
+          ['ewallet', 'E-wallet', <Wallet key="w" size={20} />],
+          ['card', t.book.card, <CreditCard key="c" size={20} />],
+        ] as const
+      ).map(([key, label, icon]) => (
+        <button
+          key={key}
+          type="button"
+          onClick={() => onChange(key)}
+          className={clsx(
+            'flex h-16 flex-col items-center justify-center gap-1 rounded-[16px] border text-[12px] font-semibold transition-colors',
+            value === key ? 'border-ink bg-surface text-ink' : 'border-transparent bg-surface-2 text-ink-2',
+          )}
+        >
+          {icon}
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+export type { Method as PayMethod }

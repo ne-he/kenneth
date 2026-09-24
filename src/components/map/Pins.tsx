@@ -1,4 +1,4 @@
-import { ChargingStation, Key, Lightning } from '@phosphor-icons/react'
+import { ChargingStation, Crown, Key } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
@@ -25,7 +25,7 @@ const DIR: Record<LabelDir, [number, number]> = {
  * Callout pin: a dot on the exact spot, the label pushed out along a leader
  * line. Central Park, Neo Soho and Taman Anggrek sit a couple hundred metres
  * apart, so plain pins would pile on top of each other at city zoom. The
- * number in the badge follows the mode: percent full, priority price, valet
+ * number in the badge follows the mode: percent full, zone bay price, valet
  * wait, free chargers. A place that does not offer the mode goes grey.
  */
 export function VenuePin({
@@ -54,14 +54,15 @@ export function VenuePin({
       badge = `${fact.pct}%`
       break
     case 'price':
-      badge = fact.worth ? (
-        <>
-          <Lightning size={10} weight="fill" /> {formatRupiah(fact.price, true).replace('Rp', '')}
-        </>
-      ) : (
-        t.modes.calm
-      )
-      spoken = fact.worth ? formatRupiah(fact.price) : t.modes.calm
+      badge =
+        fact.left > 0 ? (
+          <>
+            <Crown size={10} weight="fill" /> {formatRupiah(fact.price, true).replace('Rp', '')}
+          </>
+        ) : (
+          t.modes.soldOut
+        )
+      spoken = fact.left > 0 ? `${t.modes.priority.label} ${formatRupiah(fact.price)}` : t.modes.soldOut
       break
     case 'wait':
       badge = (

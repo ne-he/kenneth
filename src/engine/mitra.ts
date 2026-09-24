@@ -3,7 +3,8 @@ import { VENUES } from '../data/venues'
 import { haversineKm } from '../lib/geo'
 import { atWib } from '../lib/time'
 import { THRESHOLD, forecastDay, gateQueueMin, occupancyAt, statusOf } from './occupancy'
-import { LANE_SELLABLE, WINDOW_MINUTES, priorityBasePrice, priorityWorthIt } from './pricing'
+import { zoneBasePrice } from './pricing'
+import { SLOT_MIN, baysLeft, zoneOf } from './zone'
 
 /*
   Numbers for the partner dashboard, the B2B product. Everything is derived
@@ -102,19 +103,24 @@ export function weekHeat(venue: Venue, anyTs: number) {
   })
 }
 
-/** Priority entry tickets the lane could sell today and their gross value. */
+/**
+ * Zona KENNETH bookings for the day and their gross value. A bay turns over
+ * roughly once per average stay, so each slot only sells the bays that
+ * were taken for it, spread over the stay length.
+ */
 export function priorityDay(venue: Venue, dayTs: number) {
-  if (!venue.gates.some((g) => g.priorityLane)) return { tickets: 0, gross: 0 }
+  const zone = zoneOf(venue)
+  if (!zone) return { tickets: 0, gross: 0 }
   let tickets = 0
   let gross = 0
+  const slotsPerStay = (AVG_STAY_H * 60) / SLOT_MIN
   for (let h = venue.hours[0]; h < venue.hours[1]; h++) {
-    for (let m = 0; m < 60; m += WINDOW_MINUTES) {
+    for (let m = 0; m < 60; m += SLOT_MIN) {
       const ts = atWib(dayTs, h, m)
       const occ = occupancyAt(venue, ts)
-      if (!priorityWorthIt(occ)) continue
-      const sold = Math.round(LANE_SELLABLE * 0.55)
+      const sold = Math.round((zone.bays - baysLeft(venue, ts, occ)) / slotsPerStay)
       tickets += sold
-      gross += sold * priorityBasePrice(occ)
+      gross += sold * zoneBasePrice(occ)
     }
   }
   return { tickets, gross }

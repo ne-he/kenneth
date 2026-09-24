@@ -4,9 +4,9 @@ import {
   CarProfile,
   ChargingStation,
   CheckCircle,
+  Crown,
   DotsThree,
   Key,
-  Lightning,
   NavigationArrow,
   PersonSimpleWalk,
   ShareNetwork,
@@ -17,9 +17,10 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { VENUES } from '../../data/venues'
 import { chargersFree, valetFacts } from '../../engine/modes'
 import { defaultGate, forKind, nextRelief } from '../../engine/occupancy'
-import { WINDOW_MINUTES, formatRupiah, priorityPrice, priorityWorthIt } from '../../engine/pricing'
+import { formatRupiah, zonePrice, zoneWorthIt } from '../../engine/pricing'
 import { alternativesFor, type Ranked } from '../../engine/recommend'
 import { servicesFor } from '../../engine/services'
+import { baysLeft, zoneOf } from '../../engine/zone'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
@@ -67,23 +68,22 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
   }
 
   if (mode === 'priority') {
-    const gate = venue.gates.find((g) => g.priorityLane) ?? venue.gates[0]
-    const worth = priorityWorthIt(snap.occ)
-    const tone = snap.queueMin >= 10 ? 'penuh' : snap.queueMin >= 5 ? 'ramai' : 'lega'
+    const zone = zoneOf(venue)!
+    const left = baysLeft(venue, ts, snap.occ)
     return (
       <Card>
-        <Line>{t.card.priorityLine(gate.name)}</Line>
+        <Line>{t.card.priorityLine(zone.level, zone.lobby, zone.gate.name)}</Line>
         <Stats
           cells={[
-            [`${formatMin(snap.queueMin)} ${t.unit.min}`, t.card.priorityQueue, STATUS[tone].text],
-            [formatRupiah(priorityPrice(snap.occ, plan), true), t.card.priorityPrice],
-            [`${WINDOW_MINUTES} ${t.unit.min}`, t.card.priorityWindow],
+            [`${left}/${zone.bays}`, t.card.priorityLeft, STATUS[left === 0 ? 'penuh' : left <= 3 ? 'ramai' : 'lega'].text],
+            [formatRupiah(zonePrice(snap.occ, plan), true), t.card.priorityPrice],
+            [`±1 ${t.unit.min}`, t.card.priorityWalk],
           ]}
         />
-        {!worth && <Note>{t.card.priorityCalm}</Note>}
+        {left === 0 && <Note>{t.card.priorityGone}</Note>}
         <Actions onRoute={route}>
           <Btn tone="dark" onClick={() => open({ kind: 'book', id: venue.id, service: 'priority' })}>
-            <Lightning size={17} weight="fill" /> {t.card.priorityCta}
+            <Crown size={17} weight="fill" /> {t.card.priorityCta}
           </Btn>
         </Actions>
       </Card>
@@ -155,7 +155,7 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
   const alt = snap.status !== 'lega' ? alternativesFor(venue, pool, ts)[0] : undefined
   const relief = !previewing ? nextRelief(venue, ts) : null
   const reminded = reminders.some((r) => r.venueId === venue.id)
-  const bookHint = services.includes('priority') && priorityWorthIt(snap.occ)
+  const bookHint = services.includes('priority') && zoneWorthIt(snap.occ)
 
   const main = defaultGate(venue)
   const split = snap.bestGate.id !== main.id && snap.queueMin - snap.bestGateQueueMin >= 2
@@ -233,8 +233,8 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
       {(bookHint || alt) && (
         <div className="mt-2.5 grid gap-1.5">
           {bookHint && (
-            <Hint icon={<Lightning size={16} weight="fill" className="text-ramai" />} onClick={() => open({ kind: 'book', id: venue.id, service: 'priority' })}>
-              {t.card.bookHint(formatRupiah(priorityPrice(snap.occ, plan), true))}
+            <Hint icon={<Crown size={16} weight="fill" className="text-brand-600" />} onClick={() => open({ kind: 'book', id: venue.id, service: 'priority' })}>
+              {t.card.bookHint(formatRupiah(zonePrice(snap.occ, plan), true))}
             </Hint>
           )}
           {alt && (

@@ -4,7 +4,7 @@ import { nextSaturdayAt } from '../lib/time'
 import { snapshot } from './occupancy'
 import { alternativesFor } from './recommend'
 import { servicesFor } from './services'
-import { VALET_HOLD_MIN, dropQueueMin, retrievalMin, valetOpen, valetPhase, type ValetTicket } from './valet'
+import { VALET_HOLD_MIN, dropQueueMin, retrievalMin, runnerFor, valetOpen, valetPhase, type ValetTicket } from './valet'
 
 const SAT = nextSaturdayAt(Date.UTC(2026, 8, 14), 14, 7)
 const MIN = 60_000
@@ -22,9 +22,9 @@ const ticket = (patch: Partial<ValetTicket> = {}): ValetTicket => ({
 })
 
 describe('valet', () => {
-  it('takes longer to bring the car back when the basement is packed', () => {
-    expect(retrievalMin(0.3)).toBe(6)
-    expect(retrievalMin(0.97)).toBe(20)
+  it('brings the car back from the zone fast, a little slower when the mall is packed', () => {
+    expect(retrievalMin(0.3)).toBe(4)
+    expect(retrievalMin(0.97)).toBe(10)
     expect(retrievalMin(0.8)).toBeGreaterThan(retrievalMin(0.6))
     expect(dropQueueMin(0.95)).toBeGreaterThan(dropQueueMin(0.4))
   })
@@ -40,6 +40,11 @@ describe('valet', () => {
     expect(valetPhase(ticket({ status: 'done' }), SAT)).toBe('done')
   })
 
+  it('puts the same runner on a ticket every time', () => {
+    expect(runnerFor('t1')).toEqual(runnerFor('t1'))
+    expect(runnerFor('t1').badge).toMatch(/^R-\d{3}$/)
+  })
+
   it('only keeps open tickets in the active list', () => {
     expect(valetOpen(ticket(), SAT)).toBe(true)
     expect(valetOpen(ticket(), SAT + (VALET_HOLD_MIN + 1) * MIN)).toBe(false)
@@ -48,7 +53,7 @@ describe('valet', () => {
 })
 
 describe('what can be booked', () => {
-  it('offers valet, priority entry and chargers at a big mall, to a car', () => {
+  it('offers the KENNETH Zone, runner valet and chargers at a big mall, to a car', () => {
     expect(servicesFor(VENUE_BY_ID['central-park'], 'mobil')).toEqual(['priority', 'valet', 'ev'])
   })
 

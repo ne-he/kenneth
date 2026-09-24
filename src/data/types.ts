@@ -46,6 +46,7 @@ export interface Gate {
   coords: LngLat
   /** How much of the arrival flow this gate absorbs relative to an even split. */
   pull: number
+  /** Has the KENNETH plate reader and leads straight to Zona KENNETH. */
   priorityLane: boolean
 }
 
@@ -74,10 +75,10 @@ export interface MotorBays {
   nextHour: number
 }
 
-/** Valet run by the building. KENNETH only books the drop-off and calls the car back. */
+/** Valet by the KENNETH runner fleet: where runners meet you, and their fee. */
 export interface Valet {
   lobbies: string[]
-  /** Flat fee paid at the valet desk, never in the app. */
+  /** Flat runner fee, paid in the app. */
   price: number
 }
 

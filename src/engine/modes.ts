@@ -1,13 +1,14 @@
 import type { VehicleKind, Venue } from '../data/types'
 import { reservedFree, type Snapshot } from './occupancy'
-import { priorityPrice, priorityWorthIt, type Plan } from './pricing'
+import { zonePrice, type Plan } from './pricing'
 import { servicesFor } from './services'
 import { dropQueueMin, retrievalMin } from './valet'
+import { baysLeft } from './zone'
 
 /*
   The Parkir tab is one screen used four ways. The mode picks which question
-  the map answers: how full is it, what does skipping the queue cost, how long
-  until the valet brings the car back, how many chargers are free. The layout
+  the map answers: how full is it, what a sure bay in Zona KENNETH costs, how
+  long until a runner brings the car back, how many chargers are free. The layout
   never changes, only the number on each pin and the one button on the card.
 */
 
@@ -26,7 +27,7 @@ export const modesFor = (kind: VehicleKind): ParkMode[] => (kind === 'mobil' ? M
 /** What a pin says in each mode. */
 export type PinFact =
   | { kind: 'pct'; pct: number }
-  | { kind: 'price'; price: number; worth: boolean }
+  | { kind: 'price'; price: number; left: number }
   | { kind: 'wait'; min: number }
   | { kind: 'chargers'; free: number; total: number }
   | { kind: 'none' }
@@ -38,7 +39,7 @@ export function pinFact(snap: Snapshot, mode: ParkMode, kind: VehicleKind, plan:
     case 'park':
       return { kind: 'pct', pct: snap.pct }
     case 'priority':
-      return { kind: 'price', price: priorityPrice(snap.occ, plan), worth: priorityWorthIt(snap.occ) }
+      return { kind: 'price', price: zonePrice(snap.occ, plan), left: baysLeft(v, ts, snap.occ) }
     case 'valet':
       return { kind: 'wait', min: retrievalMin(snap.occ) }
     case 'ev':
@@ -50,5 +51,5 @@ export function pinFact(snap: Snapshot, mode: ParkMode, kind: VehicleKind, plan:
 export const chargersFree = (snap: Snapshot, ts: number) =>
   reservedFree(snap.venue.ev.chargers, snap.occ * 0.9, snap.venue.id + 'e', ts)
 
-/** Numbers for the valet card: wait at the lobby, and how long the car takes to come back once called. */
+/** Numbers for the valet card: how soon a runner meets you, and how long the car takes to come back once called. */
 export const valetFacts = (snap: Snapshot) => ({ drop: dropQueueMin(snap.occ), back: retrievalMin(snap.occ) })

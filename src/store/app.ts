@@ -33,11 +33,15 @@ export interface ParkedSpot {
   kind?: VehicleKind
 }
 
+/** A Zona KENNETH booking. Named PriorityPass since v0.3 so saved bookings keep loading. */
 export interface PriorityPass {
   id: string
   venueId: VenueId
   gateId: string
+  /** Booked arrival time. The bay is held from here for ZONE_HOLD_MIN minutes. */
   windowStart: number
+  /** The bay, e.g. K-07. Missing on v0.3 priority passes. */
+  bay?: string
   price: number
   token: string
   createdAt: number
@@ -71,7 +75,7 @@ export interface Visit {
   minutesSaved: number
   /** Set when the app steered the user away from a full venue. */
   divertedFrom?: VenueId
-  /** Handed to the building's valet instead of parking yourself. */
+  /** Handed to a KENNETH runner instead of parking yourself. */
   via?: 'valet'
   kind?: VehicleKind
 }

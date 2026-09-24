@@ -22,10 +22,11 @@ import { VENUES } from '../../data/venues'
 import type { Venue } from '../../data/types'
 import { checkGage } from '../../engine/gage'
 import { forKind, reservedFree } from '../../engine/occupancy'
-import { formatRupiah, parkingCost, priorityWorthIt } from '../../engine/pricing'
+import { formatRupiah, parkingCost } from '../../engine/pricing'
 import { alternativesFor, type Ranked } from '../../engine/recommend'
 import { servicesFor, type Service } from '../../engine/services'
 import { dropQueueMin, retrievalMin } from '../../engine/valet'
+import { baysLeft, zoneOf } from '../../engine/zone'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
@@ -246,8 +247,9 @@ function CostRow({ venue }: { venue: Venue }) {
 function ServicesRow({ venue, snap, services, ts }: { venue: Venue; snap: Ranked; services: Service[]; ts: number }) {
   const t = useT()
   const open = useUi((s) => s.open)
+  const zone = zoneOf(venue)
   const detail: Record<Service, string> = {
-    priority: priorityWorthIt(snap.occ) ? t.venue.priorityWorth : t.venue.priorityNotNeeded,
+    priority: zone ? t.venue.priorityDetail(baysLeft(venue, ts, snap.occ), zone.bays, zone.level) : '',
     valet: venue.valet ? t.venue.valetDetail(formatRupiah(venue.valet.price, true), dropQueueMin(snap.occ), retrievalMin(snap.occ)) : '',
     ev: t.venue.evDetail(reservedFree(venue.ev.chargers, snap.occ * 0.9, venue.id + 'e', ts), venue.ev.chargers, venue.ev.kw),
   }

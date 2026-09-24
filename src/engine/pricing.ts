@@ -1,26 +1,20 @@
 import type { Venue } from '../data/types'
-import { wib } from '../lib/time'
-import { baseQueueMin } from './occupancy'
 
 /*
-  Pricing rules straight from the team's strategy doc.
+  Pricing rules.
 
   - Parking tariff: the venue's normal rate, shown as an estimate.
-  - Priority entry: Rp15rb to Rp30rb per use, moves with the crowd. Only sold
-    where there is an actual queue, because it only has value there.
+  - Zona KENNETH: Rp15rb to Rp30rb per booking on top of the normal tariff,
+    moves with the crowd. The bay is guaranteed, so it sells even on a quiet
+    day, just at the low end.
   - Premium (Rp29rb per month) sells things that never run out: booking up
     to 7 days ahead, 40% off each booking, early notifications.
-  - Never sell the whole lane: 24 of every 30 entries per 15 minute window,
-    the rest is a buffer for people who arrive late.
 */
 
-export const PRIORITY_MIN = 15_000
-export const PRIORITY_MAX = 30_000
+export const ZONE_MIN = 15_000
+export const ZONE_MAX = 30_000
 export const PREMIUM_MONTHLY = 29_000
 export const PREMIUM_DISCOUNT = 0.4
-export const WINDOW_MINUTES = 15
-export const LANE_CAPACITY = 30
-export const LANE_SELLABLE = 24
 export const FREE_BOOKING_AHEAD_H = 2
 export const PREMIUM_BOOKING_AHEAD_D = 7
 
@@ -33,27 +27,19 @@ export function parkingCost(venue: Venue, hours: number): number {
 
 const roundTo = (v: number, step: number) => Math.round(v / step) * step
 
-/** Dynamic priority price for a given occupancy, before any plan discount. */
-export function priorityBasePrice(occ: number): number {
-  const x = Math.min(1, Math.max(0, (occ - 0.8) / 0.18))
-  return roundTo(PRIORITY_MIN + x * (PRIORITY_MAX - PRIORITY_MIN), 1000)
+/** Dynamic zone price for a given occupancy, before any plan discount. */
+export function zoneBasePrice(occ: number): number {
+  const x = Math.min(1, Math.max(0, (occ - 0.6) / 0.38))
+  return roundTo(ZONE_MIN + x * (ZONE_MAX - ZONE_MIN), 1000)
 }
 
-export function priorityPrice(occ: number, plan: Plan): number {
-  const base = priorityBasePrice(occ)
+export function zonePrice(occ: number, plan: Plan): number {
+  const base = zoneBasePrice(occ)
   return plan === 'premium' ? roundTo(base * (1 - PREMIUM_DISCOUNT), 500) : base
 }
 
-/** Priority entry only makes sense when the normal lane actually queues. */
-export const priorityWorthIt = (occ: number) => baseQueueMin(occ) >= 5
-
-/** Sellable entries left in the window starting at `windowTs`. Deterministic. */
-export function laneSeatsLeft(venue: Venue, windowTs: number, occ: number): number {
-  const p = wib(windowTs)
-  const salt = (venue.id.length * 7 + p.hour * 13 + Math.floor(p.minute / 15) * 5) % 9
-  const demand = Math.round(LANE_SELLABLE * Math.min(1, Math.max(0, (occ - 0.7) / 0.28)))
-  return Math.min(LANE_SELLABLE, Math.max(0, LANE_SELLABLE - demand + (salt % 4)))
-}
+/** Worth pointing out on the normal parking card: the lot is busy enough that a sure bay helps. */
+export const zoneWorthIt = (occ: number) => occ >= 0.8
 
 export function formatRupiah(v: number, compact = false): string {
   if (compact && v >= 1_000_000) {

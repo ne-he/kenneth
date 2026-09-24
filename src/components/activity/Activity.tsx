@@ -4,11 +4,10 @@ import {
   CaretRight,
   CarProfile,
   ChargingStation,
+  Crown,
   Key,
-  Lightning,
   MapTrifold,
   Motorcycle,
-  QrCode,
   ShareNetwork,
   Ticket,
   X,
@@ -21,8 +20,9 @@ import type { VenueId } from '../../data/types'
 import { splitActivity, type Past } from '../../engine/activity'
 import { forKind, occupancyAt } from '../../engine/occupancy'
 import { passPhase } from '../../engine/pass'
-import { WINDOW_MINUTES, formatRupiah, parkingCost } from '../../engine/pricing'
-import { valetPhase, type ValetTicket } from '../../engine/valet'
+import { formatRupiah, parkingCost } from '../../engine/pricing'
+import { runnerFor, valetPhase, type ValetTicket } from '../../engine/valet'
+import { ZONE_HOLD_MIN, bayOf, zoneOf } from '../../engine/zone'
 import { useDayLabel, useLang, useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { shareSpot } from '../../lib/share'
@@ -278,7 +278,7 @@ function ValetCard({ id, now }: { id: string; now: number }) {
     <Card
       icon={<Key size={22} weight="fill" />}
       tone={phase === 'ready' ? 'brand' : 'ink'}
-      eyebrow={`${t.book.services.valet} · ${ticket.token}`}
+      eyebrow={`${t.book.services.valet} · ${runnerFor(ticket.id).name}`}
       title={venue.name}
       meta={meta}
       onClick={() => open({ kind: 'valet', id: ticket.id })}
@@ -315,9 +315,9 @@ function PassCard({ id, now }: { id: string; now: number }) {
   const open = useUi((s) => s.open)
   const cancel = useCancel()
   const venue = VENUE_BY_ID[pass.venueId]
-  const gate = venue.gates.find((g) => g.id === pass.gateId)!
+  const zone = zoneOf(venue)
   const phase = passPhase(pass.windowStart, now)
-  const end = pass.windowStart + WINDOW_MINUTES * 60_000
+  const end = pass.windowStart + ZONE_HOLD_MIN * 60_000
   const when =
     dayDiff(now, pass.windowStart) > 0
       ? dayLabel(pass.windowStart, now)
@@ -326,16 +326,16 @@ function PassCard({ id, now }: { id: string; now: number }) {
         : t.activity.endsIn(stopwatch(end - now))
   return (
     <Card
-      icon={<Lightning size={22} weight="fill" />}
+      icon={<Crown size={22} weight="fill" />}
       tone="brand"
-      eyebrow={`${t.activity.passTitle} · ${gate.name}`}
+      eyebrow={`${t.activity.passTitle} · ${bayOf(pass, venue)}${zone ? ` · ${zone.level}` : ''}`}
       title={venue.name}
-      meta={`${clock(pass.windowStart)}-${clock(end)} · ${when}`}
+      meta={`${clock(pass.windowStart)} · ${when}`}
       onClick={() => open({ kind: 'pass', id: pass.id })}
       right={<span className="shrink-0 text-[13px] font-bold tabular">{formatRupiah(pass.price, true)}</span>}
     >
       <Button variant="dark" block className="mt-3" onClick={() => open({ kind: 'pass', id: pass.id })}>
-        <QrCode size={17} weight="bold" /> {t.activity.showQr}
+        <Ticket size={17} weight="fill" /> {t.activity.showQr}
       </Button>
       {phase === 'upcoming' && <CancelConfirm className="mt-1.5" policy={t.activity.cancelPolicy} onConfirm={() => cancel.pass(pass.id)} />}
     </Card>
@@ -397,7 +397,7 @@ function ReminderCard({ id }: { id: string }) {
 const PAST_ICON: Record<Past['service'], (motor: boolean) => ReactNode> = {
   park: (motor) => (motor ? <Motorcycle size={17} weight="fill" /> : <CarProfile size={17} weight="fill" />),
   valet: () => <Key size={17} weight="fill" />,
-  priority: () => <Lightning size={17} weight="fill" />,
+  priority: () => <Crown size={17} weight="fill" />,
   ev: () => <ChargingStation size={17} weight="fill" />,
 }
 

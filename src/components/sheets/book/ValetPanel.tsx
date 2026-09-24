@@ -1,4 +1,5 @@
 import { Clock, HandCoins, Key, Timer } from '@phosphor-icons/react'
+import { AnimatePresence, motion } from 'motion/react'
 import clsx from 'clsx'
 import { useMemo, useState, type ReactNode } from 'react'
 import { VENUE_BY_ID } from '../../../data/venues'
@@ -16,12 +17,13 @@ import { Button } from '../../ui/Button'
 import { Plate } from '../../ui/Display'
 import { Label, List } from '../../ui/Kit'
 import type { Booked } from './BookHub'
+import { PayMethods, type PayMethod } from './ZonePanel'
 
 const Q = 15 * 60_000
 
 /**
- * Book the building's own valet. Pick the lobby and when you will pull up,
- * see what the wait looks like at that hour, pay at the desk as usual.
+ * Book a KENNETH runner. Pick the lobby and when you will pull up, see how
+ * soon a runner reaches you at that hour, pay in the app.
  */
 export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Booked) => void }) {
   const t = useT()
@@ -33,6 +35,8 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
   const addValet = useApp((s) => s.addValet)
   const open = useUi((s) => s.open)
   const [lobby, setLobby] = useState(valet.lobbies[0])
+  const [method, setMethod] = useState<PayMethod>('qris')
+  const [paying, setPaying] = useState(false)
 
   const slots = useMemo(() => {
     const first = Math.ceil((now + 10 * 60_000) / Q) * Q
@@ -51,19 +55,23 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
   const occ = occupancyAt(venue, arriveAt)
 
   const book = () => {
-    const id = uid()
-    haptic('success')
-    addValet({
-      id,
-      venueId,
-      lobby,
-      arriveAt,
-      price: valet.price,
-      token: `VLT-${id.slice(0, 5).toUpperCase()}`,
-      createdAt: Date.now(),
-      status: 'active',
-    })
-    onDone({ service: 'valet', id, line: `${lobby} · ${dayLabel(arriveAt, now)}, ${clock(arriveAt)}` })
+    setPaying(true)
+    haptic('tap')
+    window.setTimeout(() => {
+      const id = uid()
+      haptic('success')
+      addValet({
+        id,
+        venueId,
+        lobby,
+        arriveAt,
+        price: valet.price,
+        token: `RNR-${id.slice(0, 5).toUpperCase()}`,
+        createdAt: Date.now(),
+        status: 'active',
+      })
+      onDone({ service: 'valet', id, line: `${lobby} · ${dayLabel(arriveAt, now)}, ${clock(arriveAt)}` })
+    }, 1100)
   }
 
   return (
@@ -130,9 +138,30 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
         )}
       </div>
 
-      <Button variant="primary" size="lg" block onClick={book}>
-        <Key size={18} weight="fill" /> {t.valet.confirm} · {clock(arriveAt)}
-      </Button>
+      <Label>{t.book.payWith}</Label>
+      <PayMethods value={method} onChange={setMethod} />
+
+      <div className="sticky bottom-0 mt-4 bg-surface pt-2">
+        <Button variant="primary" size="lg" block disabled={paying} onClick={book}>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={String(paying)}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="flex items-center gap-2"
+            >
+              {paying ? (
+                t.valet.paying
+              ) : (
+                <>
+                  <Key size={18} weight="fill" /> {t.valet.confirm} · {formatRupiah(valet.price, true)}
+                </>
+              )}
+            </motion.span>
+          </AnimatePresence>
+        </Button>
+      </div>
       <p className="mt-2 text-center text-[11px] leading-snug text-ink-3">{t.valet.demoNote}</p>
     </div>
   )

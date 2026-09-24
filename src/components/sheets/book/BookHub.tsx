@@ -1,4 +1,4 @@
-import { CheckCircle, QrCode, Ticket } from '@phosphor-icons/react'
+import { CheckCircle, Crown, Ticket } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { VENUE_BY_ID } from '../../../data/venues'
@@ -13,9 +13,9 @@ import { CancelConfirm } from '../../ui/CancelConfirm'
 import { Segmented } from '../../ui/Controls'
 import { SheetHeader } from '../../ui/Sheet'
 import { EvPanel } from './EvPanel'
-import { PriorityPanel } from './PriorityPanel'
 import { useValetActions } from './useValetActions'
 import { ValetPanel } from './ValetPanel'
+import { ZonePanel } from './ZonePanel'
 
 export interface Booked {
   service: Service
@@ -63,7 +63,7 @@ export function BookHub({ venueId, service }: { venueId: VenueId; service?: Serv
           )}
           <p className="mb-4 px-1 text-[13px] leading-relaxed text-ink-2">{t.book.serviceHint[tab]}</p>
           <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
-            {tab === 'priority' && <PriorityPanel venueId={venueId} onDone={done} />}
+            {tab === 'priority' && <ZonePanel venueId={venueId} onDone={done} />}
             {tab === 'valet' && <ValetPanel venueId={venueId} onDone={done} />}
             {tab === 'ev' && <EvPanel venueId={venueId} onDone={done} />}
           </motion.div>
@@ -120,7 +120,7 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
           </Button>
         ) : (
           <Button variant="primary" onClick={() => open({ kind: 'pass', id: booked.id })}>
-            <QrCode size={17} weight="bold" /> {t.activity.showQr}
+            <Crown size={17} weight="fill" /> {t.activity.showQr}
           </Button>
         )}
       </div>

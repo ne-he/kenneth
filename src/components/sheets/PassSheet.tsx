@@ -1,9 +1,10 @@
-import { Lightning, SunDim } from '@phosphor-icons/react'
+import { Crown, DoorOpen, SunDim } from '@phosphor-icons/react'
 import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import { passPhase } from '../../engine/pass'
-import { WINDOW_MINUTES, formatRupiah } from '../../engine/pricing'
+import { formatRupiah } from '../../engine/pricing'
+import { ZONE_HOLD_MIN, bayOf, zoneOf } from '../../engine/zone'
 import { useDayLabel, useT } from '../../i18n'
 import { clock, dayDiff, stopwatch } from '../../lib/time'
 import { useApp, useVehicle } from '../../store/app'
@@ -14,8 +15,9 @@ import { CancelConfirm } from '../ui/CancelConfirm'
 import { Plate } from '../ui/Display'
 
 /**
- * The gate pass, styled like a boarding pass: dark, high contrast, and the
- * QR as big as the sheet allows so a scanner reads it on the first try.
+ * The Zona KENNETH ticket, styled like a boarding pass: dark, high contrast,
+ * the bay number big enough to read from the driver's seat, and the QR as a
+ * backup for when the barrier camera misses the plate.
  */
 export function PassSheet({ passId }: { passId: string }) {
   const t = useT()
@@ -39,8 +41,10 @@ export function PassSheet({ passId }: { passId: string }) {
 
   if (!pass) return null
   const venue = VENUE_BY_ID[pass.venueId]
-  const gate = venue.gates.find((g) => g.id === pass.gateId)!
-  const end = pass.windowStart + WINDOW_MINUTES * 60_000
+  const gate = venue.gates.find((g) => g.id === pass.gateId) ?? venue.gates[0]
+  const zone = zoneOf(venue)
+  const bay = bayOf(pass, venue)
+  const end = pass.windowStart + ZONE_HOLD_MIN * 60_000
   const phase = passPhase(pass.windowStart, now)
   const countdown = phase === 'upcoming' ? pass.windowStart - now : end - now
 
@@ -49,14 +53,23 @@ export function PassSheet({ passId }: { passId: string }) {
       <div className="mb-4 flex items-start justify-between">
         <div>
           <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.16em] text-led-lega uppercase">
-            <Lightning size={12} weight="fill" /> {t.activity.passTitle}
+            <Crown size={12} weight="fill" /> {t.activity.passTitle}
           </div>
           <h2 className="mt-1 text-[22px] leading-tight font-extrabold">{venue.name}</h2>
-          <p className="text-[13px] text-white/60">
-            {gate.name} · {gate.hint}
-          </p>
+          {zone && <p className="text-[13px] text-white/60">{t.activity.bayWhere(zone.level, zone.lobby)}</p>}
         </div>
         <Plate plate={plate} />
+      </div>
+
+      <div className="mb-4 flex items-end justify-between rounded-[20px] bg-white/[0.06] px-4 py-3">
+        <div>
+          <div className="text-[10px] font-bold tracking-[0.12em] text-white/45 uppercase">{t.activity.bay}</div>
+          <div className="font-mono text-[44px] leading-none font-extrabold tracking-tight text-led-lega">{bay}</div>
+        </div>
+        <p className="flex max-w-[55%] items-start gap-1.5 text-right text-[12px] leading-snug text-white/60">
+          <DoorOpen size={15} weight="fill" className="mt-px shrink-0" />
+          {t.activity.followSigns(gate.name)}
+        </p>
       </div>
 
       <div className="mx-auto w-full max-w-[260px] rounded-[26px] bg-white p-3.5 shadow-[0_0_0_6px_rgb(67_255_159/0.15),0_24px_50px_-18px_rgb(67_255_159/0.35)]">
@@ -68,7 +81,7 @@ export function PassSheet({ passId }: { passId: string }) {
       </p>
 
       <div className="mt-5 grid grid-cols-3 overflow-hidden rounded-[20px] border border-white/10 text-center">
-        <Cell label={t.activity.window} value={`${clock(pass.windowStart)}-${clock(end)}`} />
+        <Cell label={t.activity.window} value={clock(pass.windowStart)} />
         <Cell
           label={phase === 'upcoming' ? t.activity.upcoming : phase === 'open' ? t.activity.open : t.activity.expired}
           value={

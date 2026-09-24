@@ -6,14 +6,14 @@ const INK = '#111512'
 const EV = '#0b84f3'
 const MUTED = '#9aa09c'
 
-/** Colour of a pin in the current mode: status for how full, ink for valet, blue for chargers, grey when not offered. */
+/** Colour of a pin in the current mode: status for how full, red when the zone is sold out, ink for valet, blue for chargers, grey when not offered. */
 export function factHex(fact: PinFact | undefined, snap: Snapshot): string {
   if (!fact) return STATUS[snap.status].hex
   switch (fact.kind) {
     case 'pct':
       return STATUS[snap.status].hex
     case 'price':
-      return fact.worth ? STATUS[snap.status].hex : STATUS.lega.hex
+      return fact.left > 0 ? STATUS[snap.status].hex : STATUS.penuh.hex
     case 'wait':
       return INK
     case 'chargers':

@@ -3,17 +3,10 @@ import { BINUS_ANGGREK, VENUE_BY_ID, VENUES } from '../data/venues'
 import { atWib, nextSaturdayAt } from '../lib/time'
 import { checkGage, dateParity, plateParity } from './gage'
 import { CO2_KG_PER_L, impactOf, sumImpact } from './impact'
-import {
-  PRIORITY_MAX,
-  PRIORITY_MIN,
-  laneSeatsLeft,
-  LANE_SELLABLE,
-  parkingCost,
-  priorityBasePrice,
-  priorityPrice,
-  priorityWorthIt,
-} from './pricing'
+import { ZONE_MAX, ZONE_MIN, parkingCost, zoneBasePrice, zonePrice } from './pricing'
 import { alternativesFor, rankVenues } from './recommend'
+import { bayFor, baysLeft, zoneOf } from './zone'
+import { passPhase } from './pass'
 
 const SAT = nextSaturdayAt(Date.UTC(2026, 8, 14), 14, 7)
 const cp = VENUE_BY_ID['central-park']
@@ -25,33 +18,60 @@ describe('pricing', () => {
     expect(parkingCost(cp, 3)).toBe(5000 + 2 * 4000)
   })
 
-  it('keeps priority entry inside Rp15rb to Rp30rb', () => {
+  it('keeps a KENNETH Zone bay inside Rp15rb to Rp30rb', () => {
     for (let occ = 0; occ <= 1; occ += 0.05) {
-      const p = priorityBasePrice(occ)
-      expect(p).toBeGreaterThanOrEqual(PRIORITY_MIN)
-      expect(p).toBeLessThanOrEqual(PRIORITY_MAX)
+      const p = zoneBasePrice(occ)
+      expect(p).toBeGreaterThanOrEqual(ZONE_MIN)
+      expect(p).toBeLessThanOrEqual(ZONE_MAX)
     }
+    expect(zoneBasePrice(0.3)).toBe(ZONE_MIN)
+    expect(zoneBasePrice(0.99)).toBe(ZONE_MAX)
   })
 
   it('gives premium members 40 percent off', () => {
-    expect(priorityPrice(0.95, 'premium')).toBeLessThan(priorityPrice(0.95, 'free'))
+    expect(zonePrice(0.95, 'premium')).toBeLessThan(zonePrice(0.95, 'free'))
+  })
+})
+
+describe('KENNETH Zone', () => {
+  it('exists at malls with a plate reader gate, never at a campus', () => {
+    expect(zoneOf(cp)?.gate.id).toBe('cp-3')
+    expect(zoneOf(VENUE_BY_ID['binus-anggrek'])).toBeNull()
   })
 
-  it('only sells priority where there is a real queue', () => {
-    expect(priorityWorthIt(0.5)).toBe(false)
-    expect(priorityWorthIt(0.96)).toBe(true)
+  it('keeps the zone between 12 and 40 bays', () => {
+    VENUES.forEach((v) => {
+      const z = zoneOf(v)
+      if (z) expect(z.bays).toBeGreaterThanOrEqual(12)
+      if (z) expect(z.bays).toBeLessThanOrEqual(40)
+    })
   })
 
-  it('never sells more than the sellable share of a window', () => {
-    for (const occ of [0.5, 0.75, 0.9, 0.99]) {
+  it('never has more bays left than the zone holds, and fewer when the mall is packed', () => {
+    const bays = zoneOf(cp)!.bays
+    for (const occ of [0.3, 0.6, 0.9, 0.99]) {
       for (let h = 10; h < 22; h++) {
-        for (const m of [0, 15, 30, 45]) {
-          const seats = laneSeatsLeft(cp, atWib(SAT, h, m), occ)
-          expect(seats).toBeGreaterThanOrEqual(0)
-          expect(seats).toBeLessThanOrEqual(LANE_SELLABLE)
+        for (const m of [0, 30]) {
+          const left = baysLeft(cp, atWib(SAT, h, m), occ)
+          expect(left).toBeGreaterThanOrEqual(0)
+          expect(left).toBeLessThanOrEqual(bays)
         }
       }
     }
+    const at = atWib(SAT, 14, 0)
+    expect(baysLeft(cp, at, 0.99)).toBeLessThan(baysLeft(cp, at, 0.4))
+  })
+
+  it('gives a booking the same bay every time', () => {
+    expect(bayFor('abc123', cp)).toBe(bayFor('abc123', cp))
+    expect(bayFor('abc123', cp)).toMatch(/^K-\d{2}$/)
+  })
+
+  it('holds the bay for 30 minutes from the arrival time', () => {
+    const at = atWib(SAT, 14, 0)
+    expect(passPhase(at, at - 60_000)).toBe('upcoming')
+    expect(passPhase(at, at + 29 * 60_000)).toBe('open')
+    expect(passPhase(at, at + 30 * 60_000)).toBe('expired')
   })
 })
 
