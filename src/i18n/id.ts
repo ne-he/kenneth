@@ -221,7 +221,7 @@ const id = {
     less: 'Lebih sedikit',
     again: 'Lagi',
     againLabel: (name: string) => `Pesan lagi di ${name}`,
-    nothingNow: 'Belum ada yang berjalan. Booking baru muncul di sini.',
+    nothingNow: 'Belum ada yang berjalan. Pesanan baru muncul di sini.',
     startsIn: (t: string) => `mulai dalam ${t}`,
     endsIn: (t: string) => `tutup dalam ${t}`,
     outcome: { done: 'Selesai', cancelled: 'Dibatalkan', lapsed: 'Hangus' },
