@@ -191,7 +191,12 @@ function GatesRow({ snap }: { snap: Ranked }) {
     <Disclosure
       icon={<DoorOpen size={17} weight="fill" />}
       title={t.venue.gates}
-      summary={t.venue.gatesSummary(snap.bestGate.name, formatMin(snap.bestGateQueueMin))}
+      // The card above already names the best gate, so the summary gives the spread instead.
+      summary={t.venue.gatesRange(
+        snap.gates.length,
+        formatMin(Math.min(...snap.gates.map((g) => g.queueMin))),
+        formatMin(Math.max(...snap.gates.map((g) => g.queueMin))),
+      )}
     >
       <div className="divide-y divide-line">
         {snap.gates.map(({ gate, queueMin }, i) => (

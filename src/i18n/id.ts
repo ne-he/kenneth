@@ -138,6 +138,7 @@ const id = {
     forecast: 'Perkiraan hari ini',
     gates: 'Gerbang masuk',
     gatesSummary: (gate: string, min: string) => `${gate} paling lancar, ${min} mnt`,
+    gatesRange: (n: number, min: string, max: string) => (min === max ? `${n} gerbang, antre ${min} mnt` : `${n} gerbang, antre ${min}-${max} mnt`),
     recommended: 'Paling lancar',
     priorityLane: 'akses Zona KENNETH',
     cost: 'Biaya parkir',
