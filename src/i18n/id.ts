@@ -140,6 +140,8 @@ const id = {
     gates: 'Gerbang masuk',
     gatesSummary: (gate: string, min: string) => `${gate} paling lancar, ${min} mnt`,
     gatesRange: (n: number, min: string, max: string) => (min === max ? `${n} gerbang, antre ${min} mnt` : `${n} gerbang, antre ${min}-${max} mnt`),
+    gatesUpTo: (n: number, max: string) => `${n} gerbang, antre sampai ${max} mnt`,
+    gatesCalm: (n: number) => (n === 1 ? '1 gerbang, lancar' : `${n} gerbang, semua lancar`),
     recommended: 'Paling lancar',
     zoneLane: 'akses Zona KENNETH',
     cost: 'Biaya parkir',
