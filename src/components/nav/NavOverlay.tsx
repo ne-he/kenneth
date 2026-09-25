@@ -1,11 +1,12 @@
 import { ArrowBendUpRight, CarProfile, NavigationArrow } from '@phosphor-icons/react'
 import { AnimatePresence, motion } from 'motion/react'
 import { VENUE_BY_ID } from '../../data/venues'
-import { snapshot } from '../../engine/occupancy'
+import { forKind, snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { formatMin } from '../../lib/status'
 import { clock } from '../../lib/time'
+import { useVehicle } from '../../store/app'
 import type { Route } from '../../store/ui'
 import { useUi } from '../../store/ui'
 import { useNavigation } from './useNavigation'
@@ -21,9 +22,12 @@ export function NavBanner({ route, now }: { route: Route | null; now: number }) 
 }
 
 function BannerBody({ route, now, t }: { route: Route; now: number; t: ReturnType<typeof useT> }) {
-  const venue = VENUE_BY_ID[route.venueId]
+  // A motorbike queues against the motorbike bays, like everywhere else in the app.
+  const venue = forKind(VENUE_BY_ID[route.venueId], useVehicle().kind)
   const gate = venue.gates.find((g) => g.id === route.gateId)!
-  const snap = snapshot(venue, now)
+  // The queue that matters is the one waiting when you get there, not the one now.
+  const eta = route.startedAt + route.minutes * 60_000
+  const snap = snapshot(venue, Math.max(now, eta))
   const q = snap.gates.find((g) => g.gate.id === gate.id)?.queueMin ?? 0
   return (
     <motion.div

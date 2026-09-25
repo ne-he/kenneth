@@ -149,7 +149,7 @@ export function Explore() {
         <div className="flex items-center justify-between gap-3 px-5 pb-3">
           <div className="min-w-0">
             <h1 className="text-[20px] leading-tight font-bold tracking-tight">{t.modes.listTitle[mode]}</h1>
-            <p className="mt-0.5 truncate text-[12.5px] text-ink-3">{t.modes.count(shown.length)}</p>
+            <p className="mt-0.5 truncate text-[12.5px] text-ink-3">{t.modes.count[mode](shown.length)}</p>
           </div>
           <span className="flex shrink-0 items-center gap-1 text-[12px] font-semibold whitespace-nowrap text-ink-2">
             <MapPin size={13} weight="fill" className="text-signal" />

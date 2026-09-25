@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useRef, useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import type { VenueId } from '../../data/types'
-import { snapshot } from '../../engine/occupancy'
+import { forKind, snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { activeVehicleOf, simNowOf, useApp } from '../../store/app'
@@ -75,9 +75,9 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
     const at = simNowOf(useApp.getState().clock)
     haptic('success')
     // What the app saved on this arrival: default gate queue versus the recommended one.
-    const snap = snapshot(venue, at)
-    const savedMin = Math.max(0, Math.round(snap.queueMin - snap.bestGateQueueMin))
     const kind = activeVehicleOf(useApp.getState()).kind
+    const snap = snapshot(forKind(venue, kind), at)
+    const savedMin = Math.max(0, Math.round(snap.queueMin - snap.bestGateQueueMin))
     park({ venueId, level, section, pillar, lobby, photo, note: note.trim() || undefined, at, savedMin, kind })
     close()
     select(null)

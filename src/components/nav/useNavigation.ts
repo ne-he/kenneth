@@ -1,11 +1,11 @@
 import { VENUE_BY_ID } from '../../data/venues'
 import type { VenueId } from '../../data/types'
-import { snapshot } from '../../engine/occupancy'
+import { forKind, snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { NAV_APP_NAME, externalNavUrl } from '../../lib/navApps'
 import { fetchRoute } from '../../lib/routing'
-import { simNowOf, useApp } from '../../store/app'
+import { activeVehicleOf, simNowOf, useApp } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { fitPoints, flyTo } from '../map/mapApi'
 
@@ -18,7 +18,8 @@ export function useNavigation() {
   const t = useT()
 
   const start = async (venueId: VenueId, gateId?: string) => {
-    const venue = VENUE_BY_ID[venueId]
+    // Same numbers as the card that offered the route, so a motorbike gets the motorbike's quietest gate.
+    const venue = forKind(VENUE_BY_ID[venueId], activeVehicleOf(useApp.getState()).kind)
     const now = simNowOf(useApp.getState().clock)
     const snap = snapshot(venue, now)
     const gate = venue.gates.find((g) => g.id === gateId) ?? snap.bestGate

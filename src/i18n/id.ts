@@ -44,7 +44,13 @@ const id = {
     vehicle: 'Kendaraan',
     addVehicle: 'Tambah',
     listTitle: { park: 'Sekitar kamu', zone: 'Ada Zona KENNETH', valet: 'Ada valet runner', ev: 'Ada charger EV' },
-    count: (n: number) => `${n} lokasi, tercepat di atas`,
+    // Says what the number on the right of each row means in this mode.
+    count: {
+      park: (n: number) => `${n} lokasi, tercepat di atas`,
+      zone: (n: number) => `${n} lokasi · harga petak`,
+      valet: (n: number) => `${n} lokasi · menit mobil balik`,
+      ev: (n: number) => `${n} lokasi · charger kosong`,
+    },
     none: {
       zone: 'Di sini belum ada Zona KENNETH.',
       valet: 'Runner KENNETH belum jalan di sini.',

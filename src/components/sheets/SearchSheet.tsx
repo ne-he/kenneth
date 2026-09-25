@@ -2,6 +2,7 @@ import { MagnifyingGlass, X } from '@phosphor-icons/react'
 import { useMemo, useState } from 'react'
 import { VENUES } from '../../data/venues'
 import { forKind, snapshot } from '../../engine/occupancy'
+import { servicesFor } from '../../engine/services'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { useVehicle } from '../../store/app'
@@ -22,9 +23,21 @@ export function SearchSheet() {
 
   const rows = useMemo(() => {
     const needle = norm(q.trim())
-    return VENUES.filter(
-      (v) => !needle || norm(`${v.name} ${v.short} ${v.district} ${v.area} ${v.category} ${t.venue.category[v.category]}`).includes(needle),
-    ).map((v) => snapshot(forKind(v, kind), now))
+    // Services and tenants count too, so "valet", "charger" or "bioskop" find the places that have them.
+    const haystack = (v: (typeof VENUES)[number]) =>
+      norm(
+        [
+          v.name,
+          v.short,
+          v.district,
+          v.area,
+          v.category,
+          t.venue.category[v.category],
+          ...servicesFor(v, kind).flatMap((s) => [t.book.services[s], t.modes[s].short]),
+          ...v.tenants.map((x) => x.name),
+        ].join(' '),
+      )
+    return VENUES.filter((v) => !needle || haystack(v).includes(needle)).map((v) => snapshot(forKind(v, kind), now))
   }, [q, now, kind, t])
 
   return (
