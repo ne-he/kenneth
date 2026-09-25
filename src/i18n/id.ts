@@ -233,7 +233,7 @@ const id = {
     summary: (n: number) => `Bulan ini ${n} kali parkir`,
     summarySaved: (m: number) => `hemat ${m} mnt antre`,
     cancel: 'Batalkan',
-    cancelAsk: 'Yakin batalkan booking ini?',
+    cancelAsk: 'Yakin batalkan pesanan ini?',
     cancelYes: 'Ya, batalkan',
     cancelNo: 'Nggak jadi',
     cancelPolicy: 'Bisa dibatalkan sampai jam datang, dana kembali penuh.',
