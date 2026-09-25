@@ -164,7 +164,8 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
           <CostRow venue={venue} />
           {services.length > 0 && <ServicesRow venue={venue} snap={snap} services={services} ts={ts} />}
           <SpecialRow venue={venue} snap={snap} ts={ts} />
-          {vehicle.kind === 'mobil' && <GageRow venue={venue} ts={ts} />}
+          {/* Odd-even plates only matter on a corridor route; elsewhere the row would only say it does not apply. */}
+          {vehicle.kind === 'mobil' && venue.gageCorridor && <GageRow venue={venue} ts={ts} />}
           {venue.tenants.length > 0 && <TenantsRow venue={venue} />}
           <ReportRow venue={venue} now={now} />
         </List>
