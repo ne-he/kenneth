@@ -63,7 +63,7 @@ export function Segmented<T extends string>({
               onChange(o.value)
             }}
             className={clsx(
-              'relative flex h-8 flex-1 items-center justify-center rounded-full px-3 text-[12.5px] font-semibold transition-colors',
+              'relative flex h-8 min-w-0 flex-1 items-center justify-center rounded-full px-2 text-[12.5px] font-semibold whitespace-nowrap transition-colors',
               active ? 'text-ink' : 'text-ink-3 hover:text-ink-2',
             )}
           >
