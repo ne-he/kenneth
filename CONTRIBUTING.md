@@ -89,7 +89,8 @@ Tambah satu objek di `src/data/venues.ts` dan id-nya di tipe `VenueId` di `src/d
 - `load` mengatur seberapa ramai puncaknya (1 berarti menyentuh puncak kurva), `shiftMin` menggeser jam ramainya.
 - `motor` berisi slot motor sendiri: kapasitas, `load`, dan tarif (harus lebih murah dari tarif mobil).
 - `valet` opsional dan hanya untuk mall: lobi tempat runner KENNETH menunggu dan tarifnya. Lobinya harus salah satu dari `lobbies`.
-- Mall wajib punya minimal satu gerbang dengan `priorityLane` (gerbang berkamera pelat menuju Zona KENNETH), kampus tidak boleh punya.
+- Mall wajib punya minimal satu gerbang dengan `zoneLane` (gerbang berkamera pelat menuju Zona KENNETH), kampus tidak boleh punya.
+- `sections` berisi huruf bagian lantai yang tertulis di pilar (A, B, C). Di layar disebut Area, supaya tidak tertukar dengan Zona KENNETH.
 - `walkLinks` harus dua arah dengan menit yang sama, test akan menagihnya.
 - `pull` tiap gerbang menentukan ke mana antrian menumpuk. Gerbang utama biasanya paling besar.
 - `labelDir` mengatur arah label pin di peta supaya tidak bertabrakan dengan lokasi di dekatnya.
