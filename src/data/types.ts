@@ -47,7 +47,7 @@ export interface Gate {
   /** How much of the arrival flow this gate absorbs relative to an even split. */
   pull: number
   /** Has the KENNETH plate reader and leads straight to Zona KENNETH. */
-  priorityLane: boolean
+  zoneLane: boolean
 }
 
 export interface Tenant {

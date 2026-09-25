@@ -208,7 +208,7 @@ function GatesRow({ snap }: { snap: Ranked }) {
               </span>
               <span className="mt-0.5 block text-[12px] text-ink-3">
                 {gate.hint}
-                {gate.priorityLane ? ` · ${t.venue.priorityLane}` : ''}
+                {gate.zoneLane ? ` · ${t.venue.zoneLane}` : ''}
               </span>
             </span>
             <span className={clsx('text-[14px] font-bold tabular', STATUS[queueMin < 5 ? 'lega' : queueMin < 10 ? 'ramai' : 'penuh'].text)}>
@@ -256,7 +256,7 @@ function ServicesRow({ venue, snap, services, ts }: { venue: Venue; snap: Ranked
   const open = useUi((s) => s.open)
   const zone = zoneOf(venue)
   const detail: Record<Service, string> = {
-    priority: zone ? t.venue.priorityDetail(baysLeft(venue, ts, snap.occ), zone.bays, zone.level) : '',
+    zone: zone ? t.venue.zoneDetail(baysLeft(venue, ts, snap.occ), zone.bays, zone.level) : '',
     valet: venue.valet ? t.venue.valetDetail(formatRupiah(venue.valet.price, true), dropQueueMin(snap.occ), retrievalMin(snap.occ)) : '',
     ev: t.venue.evDetail(reservedFree(venue.ev.chargers, snap.occ * 0.9, venue.id + 'e', ts), venue.ev.chargers, venue.ev.kw),
   }

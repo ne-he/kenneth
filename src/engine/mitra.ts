@@ -108,7 +108,7 @@ export function weekHeat(venue: Venue, anyTs: number) {
  * roughly once per average stay, so each slot only sells the bays that
  * were taken for it, spread over the stay length.
  */
-export function priorityDay(venue: Venue, dayTs: number) {
+export function zoneDay(venue: Venue, dayTs: number) {
   const zone = zoneOf(venue)
   if (!zone) return { tickets: 0, gross: 0 }
   let tickets = 0

@@ -31,8 +31,8 @@ describe('venue data', () => {
       expect(v.capacity, v.id).toBeGreaterThan(0)
       expect(v.load, v.id).toBeGreaterThan(0)
       expect(v.gates.length, v.id).toBeGreaterThan(0)
-      // Malls sell priority entry, campuses sell nothing.
-      expect(v.gates.some((g) => g.priorityLane), `${v.id} priority lane`).toBe(v.category === 'mall')
+      // Malls have a Zona KENNETH gate, campuses sell nothing.
+      expect(v.gates.some((g) => g.zoneLane), `${v.id} zone lane`).toBe(v.category === 'mall')
       v.gates.forEach((g) => expect(g.pull, g.id).toBeGreaterThan(0))
       expect(new Set(v.gates.map((g) => g.id)).size, v.id).toBe(v.gates.length)
       expect(v.levels.length, v.id).toBeGreaterThan(0)

@@ -23,8 +23,8 @@ const g = (
   hint: string,
   coords: LngLat,
   pull: number,
-  priorityLane = false,
-) => ({ id, name, hint, coords, pull, priorityLane })
+  zoneLane = false,
+) => ({ id, name, hint, coords, pull, zoneLane })
 
 export const VENUES: Venue[] = [
   {

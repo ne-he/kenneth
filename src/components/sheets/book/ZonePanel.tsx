@@ -86,7 +86,7 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
         status: 'active',
       })
       haptic('success')
-      onDone({ service: 'priority', id, line: `${t.activity.bay} ${bay} · ${dayLabel(pick.start, now)}, ${clock(pick.start)}` })
+      onDone({ service: 'zone', id, line: `${t.activity.bay} ${bay} · ${dayLabel(pick.start, now)}, ${clock(pick.start)}` })
     }, 1100)
   }
 

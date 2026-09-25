@@ -62,7 +62,7 @@ export function VenuePin({
         ) : (
           t.modes.soldOut
         )
-      spoken = fact.left > 0 ? `${t.modes.priority.label} ${formatRupiah(fact.price)}` : t.modes.soldOut
+      spoken = fact.left > 0 ? `${t.modes.zone.label} ${formatRupiah(fact.price)}` : t.modes.soldOut
       break
     case 'wait':
       badge = (

@@ -397,7 +397,7 @@ function ReminderCard({ id }: { id: string }) {
 const PAST_ICON: Record<Past['service'], (motor: boolean) => ReactNode> = {
   park: (motor) => (motor ? <Motorcycle size={17} weight="fill" /> : <CarProfile size={17} weight="fill" />),
   valet: () => <Key size={17} weight="fill" />,
-  priority: () => <Crown size={17} weight="fill" />,
+  zone: () => <Crown size={17} weight="fill" />,
   ev: () => <ChargingStation size={17} weight="fill" />,
 }
 

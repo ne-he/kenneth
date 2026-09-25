@@ -63,7 +63,7 @@ export function BookHub({ venueId, service }: { venueId: VenueId; service?: Serv
           )}
           <p className="mb-4 px-1 text-[13px] leading-relaxed text-ink-2">{t.book.serviceHint[tab]}</p>
           <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
-            {tab === 'priority' && <ZonePanel venueId={venueId} onDone={done} />}
+            {tab === 'zone' && <ZonePanel venueId={venueId} onDone={done} />}
             {tab === 'valet' && <ValetPanel venueId={venueId} onDone={done} />}
             {tab === 'ev' && <EvPanel venueId={venueId} onDone={done} />}
           </motion.div>
@@ -79,7 +79,7 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
   const cancel = useCancel()
   const valet = useValetActions()
   const undo = () => {
-    if (booked.service === 'priority') cancel.pass(booked.id)
+    if (booked.service === 'zone') cancel.pass(booked.id)
     else if (booked.service === 'ev') cancel.ev(booked.id)
     else {
       const ticket = useApp.getState().valets.find((v) => v.id === booked.id)
@@ -88,7 +88,7 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
     close()
   }
   const policy =
-    booked.service === 'priority' ? t.activity.cancelPolicy : booked.service === 'valet' ? t.activity.valetCancelPolicy : t.activity.evCancelPolicy
+    booked.service === 'zone' ? t.activity.cancelPolicy : booked.service === 'valet' ? t.activity.valetCancelPolicy : t.activity.evCancelPolicy
   return (
     <div className="flex flex-col items-center pt-6 pb-5 text-center">
       <motion.span

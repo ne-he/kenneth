@@ -33,14 +33,14 @@ export interface ParkedSpot {
   kind?: VehicleKind
 }
 
-/** A Zona KENNETH booking. Named PriorityPass since v0.3 so saved bookings keep loading. */
-export interface PriorityPass {
+/** A Zona KENNETH booking. Stored under `passes`, the key used since v0.3, so old bookings keep loading. */
+export interface ZonePass {
   id: string
   venueId: VenueId
   gateId: string
   /** Booked arrival time. The bay is held from here for ZONE_HOLD_MIN minutes. */
   windowStart: number
-  /** The bay, e.g. K-07. Missing on v0.3 priority passes. */
+  /** The bay, e.g. K-07. Missing on passes saved by v0.3. */
   bay?: string
   price: number
   token: string
@@ -131,7 +131,7 @@ interface AppState {
   mapPrefs: MapPrefs
   account: Account | null
   parked: ParkedSpot | null
-  passes: PriorityPass[]
+  passes: ZonePass[]
   evBookings: EvBooking[]
   valets: ValetTicket[]
   reminders: Reminder[]
@@ -153,7 +153,7 @@ interface AppState {
   setAccount: (a: Account | null) => void
   park: (spot: ParkedSpot) => void
   leave: () => void
-  addPass: (p: PriorityPass) => void
+  addPass: (p: ZonePass) => void
   cancelPass: (id: string, at: number) => void
   addEvBooking: (b: EvBooking) => void
   cancelEvBooking: (id: string, at: number) => void

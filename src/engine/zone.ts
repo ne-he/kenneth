@@ -32,7 +32,7 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 /** The zone at a venue, if it has one. Malls only, campuses stay information only. */
 export function zoneOf(venue: Venue): KennethZone | null {
   if (venue.category !== 'mall') return null
-  const gate = venue.gates.find((g) => g.priorityLane)
+  const gate = venue.gates.find((g) => g.zoneLane)
   if (!gate) return null
   return {
     level: venue.levels[0],

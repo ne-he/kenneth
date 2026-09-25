@@ -1,5 +1,5 @@
 import type { VenueId } from '../data/types'
-import type { EvBooking, ParkedSpot, PriorityPass, Reminder, Visit } from '../store/app'
+import type { EvBooking, ParkedSpot, ZonePass, Reminder, Visit } from '../store/app'
 import { passPhase } from './pass'
 import { valetPhase, VALET_HOLD_MIN, type ValetTicket } from './valet'
 
@@ -22,7 +22,7 @@ export type Upcoming =
   | { kind: 'ev'; id: string; at: number }
   | { kind: 'reminder'; id: string; at: number }
 
-export type PastKind = 'park' | 'valet' | 'priority' | 'ev'
+export type PastKind = 'park' | 'valet' | 'zone' | 'ev'
 export type Outcome = 'done' | 'cancelled' | 'lapsed'
 
 export interface Past {
@@ -36,7 +36,7 @@ export interface Past {
 
 export interface ActivityInput {
   parked: ParkedSpot | null
-  passes: PriorityPass[]
+  passes: ZonePass[]
   valets: ValetTicket[]
   evBookings: EvBooking[]
   reminders: Reminder[]
@@ -91,13 +91,13 @@ export function splitActivity(s: ActivityInput, now: number): Split {
 
   for (const p of s.passes) {
     if (p.status === 'cancelled') {
-      past.push({ key: `p:${p.id}`, service: 'priority', outcome: 'cancelled', venueId: p.venueId, at: p.cancelledAt ?? p.createdAt })
+      past.push({ key: `p:${p.id}`, service: 'zone', outcome: 'cancelled', venueId: p.venueId, at: p.cancelledAt ?? p.createdAt })
       continue
     }
     const phase = passPhase(p.windowStart, now)
     if (phase === 'open') current.push({ rank: URGENCY['pass:open'], item: { kind: 'pass', id: p.id, at: p.windowStart } })
     else if (phase === 'upcoming') upcoming.push({ kind: 'pass', id: p.id, at: p.windowStart })
-    else past.push({ key: `p:${p.id}`, service: 'priority', outcome: 'done', venueId: p.venueId, at: p.windowStart })
+    else past.push({ key: `p:${p.id}`, service: 'zone', outcome: 'done', venueId: p.venueId, at: p.windowStart })
   }
 
   for (const b of s.evBookings) {

@@ -67,23 +67,23 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
     )
   }
 
-  if (mode === 'priority') {
+  if (mode === 'zone') {
     const zone = zoneOf(venue)!
     const left = baysLeft(venue, ts, snap.occ)
     return (
       <Card>
-        <Line>{t.card.priorityLine(zone.level, zone.lobby, zone.gate.name)}</Line>
+        <Line>{t.card.zoneLine(zone.level, zone.lobby, zone.gate.name)}</Line>
         <Stats
           cells={[
-            [`${left}/${zone.bays}`, t.card.priorityLeft, STATUS[left === 0 ? 'penuh' : left <= 3 ? 'ramai' : 'lega'].text],
-            [formatRupiah(zonePrice(snap.occ, plan), true), t.card.priorityPrice],
-            [`±1 ${t.unit.min}`, t.card.priorityWalk],
+            [`${left}/${zone.bays}`, t.card.zoneLeft, STATUS[left === 0 ? 'penuh' : left <= 3 ? 'ramai' : 'lega'].text],
+            [formatRupiah(zonePrice(snap.occ, plan), true), t.card.zonePrice],
+            [`±1 ${t.unit.min}`, t.card.zoneWalk],
           ]}
         />
-        {left === 0 && <Note>{t.card.priorityGone}</Note>}
+        {left === 0 && <Note>{t.card.zoneGone}</Note>}
         <Actions onRoute={route}>
-          <Btn tone="dark" onClick={() => open({ kind: 'book', id: venue.id, service: 'priority' })}>
-            <Crown size={17} weight="fill" /> {t.card.priorityCta}
+          <Btn tone="dark" onClick={() => open({ kind: 'book', id: venue.id, service: 'zone' })}>
+            <Crown size={17} weight="fill" /> {t.card.zoneCta}
           </Btn>
         </Actions>
       </Card>
@@ -155,7 +155,7 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
   const alt = snap.status !== 'lega' ? alternativesFor(venue, pool, ts)[0] : undefined
   const relief = !previewing ? nextRelief(venue, ts) : null
   const reminded = reminders.some((r) => r.venueId === venue.id)
-  const bookHint = services.includes('priority') && zoneWorthIt(snap.occ)
+  const bookHint = services.includes('zone') && zoneWorthIt(snap.occ)
 
   const main = defaultGate(venue)
   const split = snap.bestGate.id !== main.id && snap.queueMin - snap.bestGateQueueMin >= 2
@@ -233,7 +233,7 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
       {(bookHint || alt) && (
         <div className="mt-2.5 grid gap-1.5">
           {bookHint && (
-            <Hint icon={<Crown size={16} weight="fill" className="text-brand-600" />} onClick={() => open({ kind: 'book', id: venue.id, service: 'priority' })}>
+            <Hint icon={<Crown size={16} weight="fill" className="text-brand-600" />} onClick={() => open({ kind: 'book', id: venue.id, service: 'zone' })}>
               {t.card.bookHint(formatRupiah(zonePrice(snap.occ, plan), true))}
             </Hint>
           )}

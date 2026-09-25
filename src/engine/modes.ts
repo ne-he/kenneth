@@ -12,9 +12,9 @@ import { baysLeft } from './zone'
   never changes, only the number on each pin and the one button on the card.
 */
 
-export type ParkMode = 'park' | 'priority' | 'valet' | 'ev'
+export type ParkMode = 'park' | 'zone' | 'valet' | 'ev'
 
-export const MODES: ParkMode[] = ['park', 'priority', 'valet', 'ev']
+export const MODES: ParkMode[] = ['park', 'zone', 'valet', 'ev']
 
 /** Whether this venue can serve this mode for this vehicle. Parking is everywhere. */
 export function offers(venue: Venue, kind: VehicleKind, mode: ParkMode): boolean {
@@ -38,7 +38,7 @@ export function pinFact(snap: Snapshot, mode: ParkMode, kind: VehicleKind, plan:
   switch (mode) {
     case 'park':
       return { kind: 'pct', pct: snap.pct }
-    case 'priority':
+    case 'zone':
       return { kind: 'price', price: zonePrice(snap.occ, plan), left: baysLeft(v, ts, snap.occ) }
     case 'valet':
       return { kind: 'wait', min: retrievalMin(snap.occ) }
