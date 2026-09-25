@@ -23,7 +23,9 @@ export function NavBanner({ route, now }: { route: Route | null; now: number }) 
 function BannerBody({ route, now, t }: { route: Route; now: number; t: ReturnType<typeof useT> }) {
   const venue = VENUE_BY_ID[route.venueId]
   const gate = venue.gates.find((g) => g.id === route.gateId)!
-  const snap = snapshot(venue, now)
+  // The queue that matters is the one waiting when you get there, not the one now.
+  const eta = route.startedAt + route.minutes * 60_000
+  const snap = snapshot(venue, Math.max(now, eta))
   const q = snap.gates.find((g) => g.gate.id === gate.id)?.queueMin ?? 0
   return (
     <motion.div
