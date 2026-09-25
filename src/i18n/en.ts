@@ -97,6 +97,7 @@ const en: Dict = {
     prototype: 'Prototype. Every number is simulated and not connected to any building operator yet.',
   },
   explore: {
+    modesTip: 'Book a KENNETH Zone bay, a runner or a charger from here',
     search: 'Where do you want to park?',
     filters: { all: 'All', fav: 'Favourites', mall: 'Malls', kampus: 'Campuses' },
     fastest: 'Quickest',

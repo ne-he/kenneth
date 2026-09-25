@@ -121,6 +121,8 @@ export interface ClockState {
 
 interface AppState {
   onboarded: boolean
+  /** The service menu has been opened once, so the tip pointing at it can stay away. */
+  seenModeMenu: boolean
   name: string
   vehicles: Vehicle[]
   activeVehicle: string
@@ -140,6 +142,7 @@ interface AppState {
   reports: CommunityReport[]
   clock: ClockState
 
+  markModeMenuSeen: () => void
   finishOnboarding: (p: { name: string; vehicle: Omit<Vehicle, 'id'>; favorites: VenueId[]; withSample: boolean }) => void
   setName: (name: string) => void
   saveVehicle: (v: Vehicle) => void
@@ -178,6 +181,7 @@ export const NO_VEHICLE: Vehicle = { id: 'none', kind: 'mobil', model: '', plate
 
 const DEFAULTS = {
   onboarded: false,
+  seenModeMenu: false,
   name: '',
   vehicles: [] as Vehicle[],
   activeVehicle: '',
@@ -243,6 +247,7 @@ export const useApp = create<AppState>()(
           history: withSample ? sampleHistory(Date.now()) : [],
         })
       },
+      markModeMenuSeen: () => set({ seenModeMenu: true }),
       setName: (name) => set({ name }),
       saveVehicle: (v) =>
         set((s) => {

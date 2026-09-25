@@ -98,6 +98,7 @@ const id = {
   },
   explore: {
     search: 'Mau parkir di mana?',
+    modesTip: 'Pesan Zona KENNETH, valet runner, atau charger dari sini',
     filters: { all: 'Semua', fav: 'Favorit', mall: 'Mall', kampus: 'Kampus' },
     fastest: 'Tercepat',
     empty: 'Nggak ada lokasi di filter ini.',

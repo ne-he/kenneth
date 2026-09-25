@@ -1,6 +1,6 @@
 import { CaretDown, Crosshair, MagnifyingGlass, Motorcycle } from '@phosphor-icons/react'
 import clsx from 'clsx'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
 import { useT, useLang } from '../../i18n'
 import { haptic } from '../../lib/haptics'
@@ -24,6 +24,16 @@ export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boole
   const mode = useUi((s) => s.mode)
   const kind = useVehicle().kind
   const open = useUi((s) => s.open)
+  const onboarded = useApp((s) => s.onboarded)
+  const seenModeMenu = useApp((s) => s.seenModeMenu)
+  const markModeMenuSeen = useApp((s) => s.markModeMenuSeen)
+  // The paid services all live behind the mode button. Point at it once, until the menu has been opened.
+  const tip = onboarded && !seenModeMenu && !menuOpen && kind !== 'motor'
+  const toggleMenu = () => {
+    haptic('tap')
+    if (!menuOpen) markModeMenuSeen()
+    onMenu()
+  }
   return (
     <motion.div
       initial={{ y: -24, opacity: 0 }}
@@ -48,10 +58,7 @@ export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boole
           aria-haspopup="dialog"
           aria-expanded={menuOpen}
           aria-label={`${t.modes.ask} ${t.modes[mode].label}`}
-          onClick={() => {
-            haptic('tap')
-            onMenu()
-          }}
+          onClick={toggleMenu}
           className="shadow-float flex h-12 shrink-0 items-center gap-1.5 rounded-full bg-ink pr-3 pl-3.5 text-[14px] font-bold text-canvas"
         >
           {kind === 'motor' ? <Motorcycle size={18} weight="fill" /> : MODE_ICON[mode]({ size: 18, weight: 'fill' })}
@@ -61,7 +68,7 @@ export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boole
           </motion.span>
         </button>
       </div>
-      <div className="pointer-events-auto mt-2 flex">
+      <div className="pointer-events-auto relative mt-2 flex">
         <Chip onClick={() => open({ kind: 'clock' })} label={t.profile.clock}>
           <span className={clockMode === 'live' ? 'size-1.5 animate-pulse rounded-full bg-brand-500' : 'size-1.5 rounded-full bg-ramai'} />
           <span className="tabular">
@@ -69,8 +76,28 @@ export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boole
           </span>
           <span className="text-ink-3">{clockMode === 'live' ? t.common.live : t.common.simulated}</span>
         </Chip>
+        <AnimatePresence>{tip && <ModesTip key="tip" onClick={toggleMenu} />}</AnimatePresence>
       </div>
     </motion.div>
+  )
+}
+
+/** A one-time pointer to the mode button. It sits left of the locate button so neither covers the other. */
+function ModesTip({ onClick }: { onClick: () => void }) {
+  const t = useT()
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ type: 'spring', stiffness: 420, damping: 30, delay: 0.6 }}
+      className="shadow-float absolute top-[40px] right-[64px] w-[196px] rounded-[16px] bg-ink px-3 py-2 text-left text-[12.5px] leading-snug font-semibold text-canvas"
+    >
+      <span aria-hidden="true" className="absolute -top-1.5 right-3 size-3 rotate-45 rounded-[2px] bg-ink" />
+      <span className="relative">{t.explore.modesTip}</span>
+    </motion.button>
   )
 }
 
