@@ -407,7 +407,8 @@ function PastRow({ p }: { p: Past }) {
   const lang = useLang()
   const venue = VENUE_BY_ID[p.venueId]
   const motor = p.visit?.kind === 'motor'
-  const bits = [shortDate(p.at, lang), t.activity.kind[p.service]]
+  // Plain parking already reads "parkir 2j" below, so only the paid services name themselves.
+  const bits = p.service === 'park' ? [shortDate(p.at, lang)] : [shortDate(p.at, lang), t.activity.kind[p.service]]
   if (p.outcome !== 'done') bits.push(t.activity.outcome[p.outcome])
   else if (p.visit) {
     bits.push(t.activity.parkedFor(formatHours(p.visit.durationH, lang)))
