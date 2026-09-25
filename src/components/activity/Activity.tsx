@@ -233,7 +233,7 @@ function ParkedCard({ now }: { now: number }) {
       tone="brand"
       eyebrow={spot.kind === 'motor' ? t.activity.parkedMotor : t.activity.parked}
       title={venue.name}
-      meta={`${spot.level} · ${spot.zone}-${spot.pillar} · ${spot.lobby}`}
+      meta={`${spot.level} · ${spot.section}-${spot.pillar} · ${spot.lobby}`}
       right={
         <span className="shrink-0 text-right">
           <span className="block font-mono text-[15px] font-bold tabular">{stopwatch(elapsed)}</span>
@@ -249,7 +249,7 @@ function ParkedCard({ now }: { now: number }) {
           <MapTrifold size={17} weight="bold" /> {t.park.findCar}
         </Button>
         <Button
-          onClick={() => shareSpot(`${venue.name}, ${spot.level} ${spot.zone}-${spot.pillar}, ${spot.lobby}`, () => notify(t.activity.shared))}
+          onClick={() => shareSpot(`${venue.name}, ${spot.level} ${spot.section}-${spot.pillar}, ${spot.lobby}`, () => notify(t.activity.shared))}
         >
           <ShareNetwork size={17} weight="bold" /> {t.activity.share}
         </Button>
@@ -397,7 +397,7 @@ function ReminderCard({ id }: { id: string }) {
 const PAST_ICON: Record<Past['service'], (motor: boolean) => ReactNode> = {
   park: (motor) => (motor ? <Motorcycle size={17} weight="fill" /> : <CarProfile size={17} weight="fill" />),
   valet: () => <Key size={17} weight="fill" />,
-  priority: () => <Crown size={17} weight="fill" />,
+  zone: () => <Crown size={17} weight="fill" />,
   ev: () => <ChargingStation size={17} weight="fill" />,
 }
 

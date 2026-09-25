@@ -10,7 +10,7 @@ import { CountUp } from '../components/ui/Display'
 import { Wordmark } from '../components/ui/Logo'
 import type { VenueId } from '../data/types'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
-import { AVG_STAY_H, BUSY_LINE, FULL_LINE, diversions, gateBalance, hourlyFlow, priorityDay, weekHeat } from '../engine/mitra'
+import { AVG_STAY_H, BUSY_LINE, FULL_LINE, diversions, gateBalance, hourlyFlow, zoneDay, weekHeat } from '../engine/mitra'
 import { formatRupiah } from '../engine/pricing'
 import { useLang } from '../i18n'
 import { useResolvedTheme } from '../lib/theme'
@@ -27,7 +27,7 @@ const COPY = {
     kpiIn: 'Mobil masuk',
     kpiPeak: 'Puncak okupansi',
     kpiLost: 'Batal datang karena penuh',
-    kpiPriority: 'Booking Zona KENNETH',
+    kpiZone: 'Booking Zona KENNETH',
     at: 'jam',
     occ: 'Okupansi per jam',
     occSub: 'Garis tipis = batas ramai dan penuh',
@@ -68,7 +68,7 @@ const COPY = {
     kpiIn: 'Cars in',
     kpiPeak: 'Peak occupancy',
     kpiLost: 'Gave up because full',
-    kpiPriority: 'KENNETH Zone bookings',
+    kpiZone: 'KENNETH Zone bookings',
     at: 'at',
     occ: 'Occupancy by hour',
     occSub: 'Thin lines mark the busy and full thresholds',
@@ -130,7 +130,7 @@ export default function Mitra() {
   const div = useMemo(() => diversions(venue, dayTs, totalLost), [venue, dayTs, totalLost])
   const gates = useMemo(() => gateBalance(venue, dayTs), [venue, dayTs])
   const heat = useMemo(() => weekHeat(venue, now), [venue, now])
-  const prio = useMemo(() => priorityDay(venue, dayTs), [venue, dayTs])
+  const prio = useMemo(() => zoneDay(venue, dayTs), [venue, dayTs])
   const busyVenue = peak.occ >= FULL_LINE
   const nowHour = dayKey === 'today' ? wib(now).hourF : undefined
 
@@ -195,7 +195,7 @@ export default function Mitra() {
           <Kpi icon={<TrendDown size={18} weight="fill" />} label={c.kpiLost} value={totalLost} tone={totalLost > 0 ? 'bad' : undefined} />
           <Kpi
             icon={<ShieldCheck size={18} weight="fill" />}
-            label={c.kpiPriority}
+            label={c.kpiZone}
             value={prio.tickets}
             note={prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
           />

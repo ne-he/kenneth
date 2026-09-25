@@ -57,6 +57,18 @@ berhubungan, pecah jadi dua commit.
 
 ## Aturan kode
 
+**Nama layanan.** Pakai nama yang sama di layar dan di kode:
+
+| Di layar | Di kode | Isinya |
+| --- | --- | --- |
+| Parkir | `park` | Cek penuh atau lega dan rute ke gerbang paling lancar. Gratis. |
+| Zona KENNETH | `zone` | Petak pasti di zona khusus dekat lobi, dipesan per jam datang. |
+| Valet runner | `valet` | Runner KENNETH menerima mobil di lobi dan memarkirnya di Zona KENNETH. |
+| Charger EV | `ev` | Charger mobil listrik yang dikunci atas nama pengguna. |
+| Area (A, B, C) | `section` | Bagian lantai parkir, huruf yang tertulis di pilar. Bukan Zona KENNETH. |
+
+Tombol untuk layanan berbayar selalu diawali "Pesan" (Pesan petak, Pesan runner, Pesan charger).
+
 **Teks.** Semua teks yang tampil di layar masuk ke `src/i18n/id.ts` dan `src/i18n/en.ts`. Tipe `Dict`
 bikin build gagal kalau salah satunya kelupaan. Halaman `/mitra` dan `/booth` punya objek `COPY`
 sendiri di filenya.
@@ -89,7 +101,8 @@ Tambah satu objek di `src/data/venues.ts` dan id-nya di tipe `VenueId` di `src/d
 - `load` mengatur seberapa ramai puncaknya (1 berarti menyentuh puncak kurva), `shiftMin` menggeser jam ramainya.
 - `motor` berisi slot motor sendiri: kapasitas, `load`, dan tarif (harus lebih murah dari tarif mobil).
 - `valet` opsional dan hanya untuk mall: lobi tempat runner KENNETH menunggu dan tarifnya. Lobinya harus salah satu dari `lobbies`.
-- Mall wajib punya minimal satu gerbang dengan `priorityLane` (gerbang berkamera pelat menuju Zona KENNETH), kampus tidak boleh punya.
+- Mall wajib punya minimal satu gerbang dengan `zoneLane` (gerbang berkamera pelat menuju Zona KENNETH), kampus tidak boleh punya.
+- `sections` berisi huruf bagian lantai yang tertulis di pilar (A, B, C). Di layar disebut Area, supaya tidak tertukar dengan Zona KENNETH.
 - `walkLinks` harus dua arah dengan menit yang sama, test akan menagihnya.
 - `pull` tiap gerbang menentukan ke mana antrian menumpuk. Gerbang utama biasanya paling besar.
 - `labelDir` mengatur arah label pin di peta supaya tidak bertabrakan dengan lokasi di dekatnya.

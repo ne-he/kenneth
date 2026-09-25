@@ -54,7 +54,7 @@ describe('valet', () => {
 
 describe('what can be booked', () => {
   it('offers the KENNETH Zone, runner valet and chargers at a big mall, to a car', () => {
-    expect(servicesFor(VENUE_BY_ID['central-park'], 'mobil')).toEqual(['priority', 'valet', 'ev'])
+    expect(servicesFor(VENUE_BY_ID['central-park'], 'mobil')).toEqual(['zone', 'valet', 'ev'])
   })
 
   it('sells nothing at a campus and nothing to a motorbike', () => {

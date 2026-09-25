@@ -64,7 +64,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
   const park = useApp((s) => s.park)
   const { close, notify, select, markActivity } = useUi.getState()
   const [level, setLevel] = useState(venue.levels[1] ?? venue.levels[0])
-  const [zone, setZone] = useState(venue.zones[2] ?? venue.zones[0])
+  const [section, setSection] = useState(venue.sections[2] ?? venue.sections[0])
   const [pillar, setPillar] = useState(12)
   const [lobby, setLobby] = useState(venue.lobbies[0])
   const [note, setNote] = useState('')
@@ -78,7 +78,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
     const snap = snapshot(venue, at)
     const savedMin = Math.max(0, Math.round(snap.queueMin - snap.bestGateQueueMin))
     const kind = activeVehicleOf(useApp.getState()).kind
-    park({ venueId, level, zone, pillar, lobby, photo, note: note.trim() || undefined, at, savedMin, kind })
+    park({ venueId, level, section, pillar, lobby, photo, note: note.trim() || undefined, at, savedMin, kind })
     close()
     select(null)
     markActivity()
@@ -92,12 +92,12 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
       <Field label={t.park.level}>
         <Chips items={venue.levels} value={level} onChange={setLevel} label={t.park.level} />
       </Field>
-      <Field label={t.park.zone}>
-        <Chips items={venue.zones} value={zone} onChange={setZone} label={t.park.zone} />
+      <Field label={t.park.section}>
+        <Chips items={venue.sections} value={section} onChange={setSection} label={t.park.section} />
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label={t.park.pillar}>
-          <Stepper value={pillar} onChange={setPillar} min={1} max={40} label={t.park.pillar} format={(v) => `${zone}-${v}`} />
+          <Stepper value={pillar} onChange={setPillar} min={1} max={40} label={t.park.pillar} format={(v) => `${section}-${v}`} />
         </Field>
         <Field label={t.park.lobby}>
           <select
@@ -160,7 +160,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
 
       <Button variant="primary" size="lg" block onClick={save} className="mt-2">
         <CarProfile size={18} weight="fill" />
-        {t.common.save} · {level} {zone}-{pillar}
+        {t.common.save} · {level} {section}-{pillar}
       </Button>
     </div>
   )

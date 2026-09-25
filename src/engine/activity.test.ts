@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { nextSaturdayAt } from '../lib/time'
-import type { EvBooking, PriorityPass, Visit } from '../store/app'
+import type { EvBooking, ZonePass, Visit } from '../store/app'
 import { headline, splitActivity, type ActivityInput } from './activity'
 import { VALET_HOLD_MIN, type ValetTicket } from './valet'
 
@@ -21,7 +21,7 @@ const valet = (patch: Partial<ValetTicket> = {}): ValetTicket => ({
   ...patch,
 })
 
-const pass = (patch: Partial<PriorityPass> = {}): PriorityPass => ({
+const pass = (patch: Partial<ZonePass> = {}): ZonePass => ({
   id: 'p1',
   venueId: 'taman-anggrek',
   gateId: 'g2',
@@ -55,7 +55,7 @@ describe('activity', () => {
     const s = splitActivity(
       {
         ...empty,
-        parked: { venueId: 'neo-soho', level: 'B2', zone: 'C', pillar: 12, lobby: 'Lobi A', at: SAT - 60 * MIN, savedMin: 5 },
+        parked: { venueId: 'neo-soho', level: 'B2', section: 'C', pillar: 12, lobby: 'Lobi A', at: SAT - 60 * MIN, savedMin: 5 },
         valets: [ready],
         passes: [pass({ windowStart: SAT - 5 * MIN })],
       },
@@ -79,7 +79,7 @@ describe('activity', () => {
     expect(s.upcoming).toEqual([])
     expect(s.past.map((p) => [p.service, p.outcome])).toEqual([
       ['ev', 'cancelled'],
-      ['priority', 'cancelled'],
+      ['zone', 'cancelled'],
       ['valet', 'cancelled'],
       ['valet', 'lapsed'],
     ])

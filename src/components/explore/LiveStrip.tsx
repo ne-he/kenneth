@@ -40,7 +40,7 @@ export function LiveStrip() {
 
   if (item.kind === 'parked' && parked) {
     const v = VENUE_BY_ID[parked.venueId]
-    text = t.activity.parkedLive(`${v.short} · ${parked.level} ${parked.zone}-${parked.pillar}`)
+    text = t.activity.parkedLive(`${v.short} · ${parked.level} ${parked.section}-${parked.pillar}`)
   } else if (item.kind === 'valet') {
     const ticket = valets.find((v) => v.id === item.id)!
     const phase = valetPhase(ticket, now)

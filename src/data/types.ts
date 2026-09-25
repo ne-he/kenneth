@@ -47,7 +47,7 @@ export interface Gate {
   /** How much of the arrival flow this gate absorbs relative to an even split. */
   pull: number
   /** Has the KENNETH plate reader and leads straight to Zona KENNETH. */
-  priorityLane: boolean
+  zoneLane: boolean
 }
 
 export interface Tenant {
@@ -103,7 +103,8 @@ export interface Venue {
   valet?: Valet
   gates: Gate[]
   levels: string[]
-  zones: string[]
+  /** Floor sections, the letter on the pillars (A-12). Shown as Area, never as a zone. */
+  sections: string[]
   lobbies: string[]
   accessible: { difabel: number; ibuHamil: number }
   ev: { chargers: number; kw: number }

@@ -12,7 +12,7 @@ import type { ParkedSpot } from '../../store/app'
 
 interface Props {
   spot: ParkedSpot
-  zones: string[]
+  sections: string[]
   occupancy: number
   dark: boolean
   onWalk?: (metres: number) => void
@@ -98,7 +98,7 @@ function rng(seed: number) {
   return () => (s = (s * 16807) % 2147483647) / 2147483647
 }
 
-export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Props) {
+export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: Props) {
   const host = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -120,11 +120,11 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
     scene.background = new THREE.Color(pal.bg)
     scene.fog = new THREE.Fog(pal.bg, 38, 70)
 
-    // Layout: each zone is a double row of bays facing a shared aisle.
-    const zi = Math.max(0, zones.indexOf(spot.zone))
+    // Layout: each section is a double row of bays facing a shared aisle.
+    const zi = Math.max(0, sections.indexOf(spot.section))
     const rows = Math.max(12, Math.ceil(spot.pillar / PILLAR_EVERY) * PILLAR_EVERY + 4)
-    const zoneW = BAY_D * 2 + AISLE
-    const floorW = zones.length * zoneW + AISLE
+    const sectionW = BAY_D * 2 + AISLE
+    const floorW = sections.length * sectionW + AISLE
     const floorD = rows * BAY_W + 6
     const x0 = -floorW / 2 + AISLE / 2
     const z0 = -floorD / 2 + 4
@@ -145,8 +145,8 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
 
     let target = new THREE.Vector3()
 
-    zones.forEach((zone, i) => {
-      const cx = x0 + i * zoneW + BAY_D
+    sections.forEach((section, i) => {
+      const cx = x0 + i * sectionW + BAY_D
       for (const side of [-1, 1]) {
         const bx = cx + side * (BAY_D / 2 + 0.05)
         for (let r = 0; r < rows; r++) {
@@ -179,7 +179,7 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
         p.castShadow = true
         scene.add(p)
       }
-      const zl = labelSprite(zone, dark ? '#f1f4f2' : '#111512', dark ? 'rgba(255,255,255,0.08)' : 'rgba(17,21,18,0.08)', 1.3)
+      const zl = labelSprite(section, dark ? '#f1f4f2' : '#111512', dark ? 'rgba(255,255,255,0.08)' : 'rgba(17,21,18,0.08)', 1.3)
       zl.position.set(cx, 3.4, z0 + rows * BAY_W + 1.6)
       scene.add(zl)
     })
@@ -212,12 +212,12 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
     ring.rotation.x = -Math.PI / 2
     ring.position.set(target.x, 0.03, target.z)
     scene.add(ring)
-    const tag = labelSprite(`${spot.level} · ${spot.zone}-${spot.pillar}`, '#0c0f0d', '#43ff9f', 1.1)
+    const tag = labelSprite(`${spot.level} · ${spot.section}-${spot.pillar}`, '#0c0f0d', '#43ff9f', 1.1)
     tag.position.set(target.x, 2.6, target.z)
     scene.add(tag)
 
-    // Walking path: lobby, along the aisle next to your zone, then to the car.
-    const aisleX = x0 + zi * zoneW + BAY_D * 2 + AISLE / 2 - 0.05
+    // Walking path: lobby, along the aisle next to your section, then to the car.
+    const aisleX = x0 + zi * sectionW + BAY_D * 2 + AISLE / 2 - 0.05
     const pts = [
       new THREE.Vector3(lobbyPos.x, 0.06, lobbyPos.z + 0.9),
       new THREE.Vector3(lobbyPos.x, 0.06, z0 - 0.8),
@@ -325,7 +325,7 @@ export default function FloorScene({ spot, zones, occupancy, dark, onWalk }: Pro
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [spot, zones, occupancy, dark, onWalk])
+  }, [spot, sections, occupancy, dark, onWalk])
 
   return <div ref={host} className="h-full w-full touch-none" />
 }

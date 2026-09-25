@@ -21,7 +21,8 @@ export interface Vehicle {
 export interface ParkedSpot {
   venueId: VenueId
   level: string
-  zone: string
+  /** Floor section letter, e.g. C in C-12. Saved as `zone` before storage version 3. */
+  section: string
   pillar: number
   lobby: string
   photo?: string
@@ -33,14 +34,14 @@ export interface ParkedSpot {
   kind?: VehicleKind
 }
 
-/** A Zona KENNETH booking. Named PriorityPass since v0.3 so saved bookings keep loading. */
-export interface PriorityPass {
+/** A Zona KENNETH booking. Stored under `passes`, the key used since v0.3, so old bookings keep loading. */
+export interface ZonePass {
   id: string
   venueId: VenueId
   gateId: string
   /** Booked arrival time. The bay is held from here for ZONE_HOLD_MIN minutes. */
   windowStart: number
-  /** The bay, e.g. K-07. Missing on v0.3 priority passes. */
+  /** The bay, e.g. K-07. Missing on passes saved by v0.3. */
   bay?: string
   price: number
   token: string
@@ -131,7 +132,7 @@ interface AppState {
   mapPrefs: MapPrefs
   account: Account | null
   parked: ParkedSpot | null
-  passes: PriorityPass[]
+  passes: ZonePass[]
   evBookings: EvBooking[]
   valets: ValetTicket[]
   reminders: Reminder[]
@@ -153,7 +154,7 @@ interface AppState {
   setAccount: (a: Account | null) => void
   park: (spot: ParkedSpot) => void
   leave: () => void
-  addPass: (p: PriorityPass) => void
+  addPass: (p: ZonePass) => void
   cancelPass: (id: string, at: number) => void
   addEvBooking: (b: EvBooking) => void
   cancelEvBooking: (id: string, at: number) => void
@@ -328,7 +329,7 @@ export const useApp = create<AppState>()(
     }),
     {
       name: 'kenneth-app',
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => localStorage),
       migrate: (persisted, version) => migrateApp(persisted as Record<string, unknown>, version),
     },
@@ -337,7 +338,9 @@ export const useApp = create<AppState>()(
 
 /**
  * Version 1 had a single car. Version 2 keeps a garage (cars and motorbikes),
- * favourites, valet tickets, map settings and the signed-in account.
+ * favourites, valet tickets, map settings and the signed-in account. Version 3
+ * saves the floor section of a parked car as `section`, so `zone` only ever
+ * means Zona KENNETH.
  */
 export function migrateApp(state: Record<string, unknown>, version: number) {
   if (version < 2) {
@@ -350,6 +353,13 @@ export function migrateApp(state: Record<string, unknown>, version: number) {
     state.valets = []
     state.mapPrefs = DEFAULTS.mapPrefs
     state.account = null
+  }
+  if (version < 3) {
+    const parked = state.parked as (Record<string, unknown> & { zone?: string }) | null | undefined
+    if (parked && parked.zone !== undefined && parked.section === undefined) {
+      parked.section = parked.zone
+      delete parked.zone
+    }
   }
   return state as unknown as AppState
 }
