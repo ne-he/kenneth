@@ -57,6 +57,18 @@ berhubungan, pecah jadi dua commit.
 
 ## Aturan kode
 
+**Nama layanan.** Pakai nama yang sama di layar dan di kode:
+
+| Di layar | Di kode | Isinya |
+| --- | --- | --- |
+| Parkir | `park` | Cek penuh atau lega dan rute ke gerbang paling lancar. Gratis. |
+| Zona KENNETH | `zone` | Petak pasti di zona khusus dekat lobi, dipesan per jam datang. |
+| Valet runner | `valet` | Runner KENNETH menerima mobil di lobi dan memarkirnya di Zona KENNETH. |
+| Charger EV | `ev` | Charger mobil listrik yang dikunci atas nama pengguna. |
+| Area (A, B, C) | `section` | Bagian lantai parkir, huruf yang tertulis di pilar. Bukan Zona KENNETH. |
+
+Tombol untuk layanan berbayar selalu diawali "Pesan" (Pesan petak, Pesan runner, Pesan charger).
+
 **Teks.** Semua teks yang tampil di layar masuk ke `src/i18n/id.ts` dan `src/i18n/en.ts`. Tipe `Dict`
 bikin build gagal kalau salah satunya kelupaan. Halaman `/mitra` dan `/booth` punya objek `COPY`
 sendiri di filenya.
