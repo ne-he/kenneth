@@ -139,7 +139,10 @@ const en: Dict = {
     forecast: 'Forecast today',
     gates: 'Entry gates',
     gatesSummary: (gate: string, min: string) => `${gate} is quickest, ${min} min`,
-    gatesRange: (n: number, min: string, max: string) => (min === max ? `${n} gates, ${min} min queue` : `${n} gates, ${min}-${max} min queue`),
+    gatesRange: (n: number, min: string, max: string) =>
+      `${n} ${n === 1 ? 'gate' : 'gates'}, ${min === max ? min : `${min}-${max}`} min queue`,
+    gatesUpTo: (n: number, max: string) => `${n} gates, up to ${max} min queue`,
+    gatesCalm: (n: number) => (n === 1 ? '1 gate, clear' : `${n} gates, all clear`),
     recommended: 'Quickest',
     zoneLane: 'KENNETH Zone access',
     cost: 'Parking cost',

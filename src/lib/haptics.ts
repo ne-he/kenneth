@@ -11,6 +11,8 @@ const PATTERNS: Record<Pattern, number | number[]> = {
 /** Light vibration on Android. iOS Safari ignores it, which is fine. */
 export function haptic(p: Pattern = 'tap') {
   if (!useApp.getState().prefs.haptics) return
+  // Chrome blocks (and logs) vibration before the first tap, e.g. a toast raised by a timer.
+  if (typeof navigator !== 'undefined' && navigator.userActivation && !navigator.userActivation.hasBeenActive) return
   try {
     navigator.vibrate?.(PATTERNS[p])
   } catch {

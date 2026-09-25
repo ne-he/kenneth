@@ -192,12 +192,7 @@ function GatesRow({ snap }: { snap: Ranked }) {
     <Disclosure
       icon={<DoorOpen size={17} weight="fill" />}
       title={t.venue.gates}
-      // The card above already names the best gate, so the summary gives the spread instead.
-      summary={t.venue.gatesRange(
-        snap.gates.length,
-        formatMin(Math.min(...snap.gates.map((g) => g.queueMin))),
-        formatMin(Math.max(...snap.gates.map((g) => g.queueMin))),
-      )}
+      summary={gateSpread(t, snap.gates.map((g) => g.queueMin))}
     >
       <div className="divide-y divide-line">
         {snap.gates.map(({ gate, queueMin }, i) => (
@@ -228,6 +223,19 @@ function GatesRow({ snap }: { snap: Ranked }) {
       </div>
     </Disclosure>
   )
+}
+
+/**
+ * The card above already names the best gate, so the summary gives the spread:
+ * "semua lancar" when every gate is quick, never a range like "<1-1".
+ */
+function gateSpread(t: ReturnType<typeof useT>, queues: number[]) {
+  const n = queues.length
+  const lo = Math.min(...queues)
+  const hi = Math.max(...queues)
+  if (hi < 3) return t.venue.gatesCalm(n)
+  if (lo < 1) return t.venue.gatesUpTo(n, formatMin(hi))
+  return t.venue.gatesRange(n, formatMin(lo), formatMin(hi))
 }
 
 function CostRow({ venue }: { venue: Venue }) {
