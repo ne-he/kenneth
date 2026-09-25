@@ -15,8 +15,9 @@ import { SLOT_MIN, baysLeft, zoneOf } from './zone'
   - Average stay 2.6 hours, so each hour about occupancy / 2.6 of the lot turns over.
   - Once a lot passes 88% some arriving drivers give up. At 100% about 22%
     of arrivals leave. That share is linear in between.
-  - Of the drivers who give up, KENNETH users are redirected to nearby
-    venues that are not full, weighted by distance, same group first.
+  - Drivers who give up are spread over nearby venues that are not full,
+    weighted by distance, same group first. The page labels this as where
+    they would go if they all used KENNETH, since the app's share is unknown.
 */
 
 export const AVG_STAY_H = 2.6
