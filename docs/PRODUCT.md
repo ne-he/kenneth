@@ -31,7 +31,8 @@ tab kurang jelas, tab yang cuma berisi riwayat terasa boros, dan fitur sebaiknya
 
 - **Satu layar utama untuk semua hal.** Parkir biasa, Zona KENNETH, valet runner, dan charger EV memakai layar yang
   sama: peta besar, search, dan dropdown "Mau ngapain?". Yang berubah hanya angka di pin dan satu tombol utama.
-  Pengguna tidak perlu belajar layar baru untuk tiap layanan.
+  Pengguna tidak perlu belajar layar baru untuk tiap layanan. Karena semua layanan berbayar ada di balik
+  dropdown itu, pengguna baru sekali ditunjukkan tip di bawah tombolnya, dan onboarding menyebut letaknya.
 - **Satu tab satu tugas.** Parkir untuk memutuskan, Aktivitas untuk yang sudah dipesan, Akun untuk diri sendiri.
 - **Riwayat bukan arsip.** Tiap baris punya tombol "Lagi", karena kebanyakan orang parkir di tempat yang sama
   berulang kali.

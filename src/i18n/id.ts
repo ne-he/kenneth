@@ -519,7 +519,7 @@ const id = {
     what: [
       { title: 'Lihat sebelum berangkat', body: 'Terisi berapa persen dan antri berapa menit, di mall dan kampus BINUS.' },
       { title: 'Penuh? Ada yang lega', body: 'Alternatif terdekat, plus gerbang yang paling lancar.' },
-      { title: 'Pesan tanpa ribet', body: 'Petak di Zona KENNETH, valet runner, dan charger mobil listrik.' },
+      { title: 'Pesan tanpa ribet', body: 'Petak di Zona KENNETH, valet runner, dan charger mobil listrik. Semuanya dari tombol Parkir di kanan atas.' },
     ],
     honest:
       'Angkanya dari palang parkir yang sudah terpasang. Lokasi yang pengelolanya belum terhubung ditandai Estimasi.',
