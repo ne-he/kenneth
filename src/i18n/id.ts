@@ -414,6 +414,7 @@ const id = {
     free: 'Paket Gratis',
     premium: 'Premium',
     upgrade: 'Lihat Premium',
+    freeHint: 'Premium buat yang sering ke mall',
     impactLine: (min: number, l: string, kg: string) => `Hemat ${min} mnt, ${l} L bensin, ${kg} kg CO₂`,
     mapNav: 'Peta dan navigasi',
     prefs: 'Notifikasi dan preferensi',

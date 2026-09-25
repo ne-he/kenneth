@@ -413,6 +413,7 @@ const en: Dict = {
     free: 'Free plan',
     premium: 'Premium',
     upgrade: 'See Premium',
+    freeHint: 'Premium is for regular mall-goers',
     impactLine: (min: number, l: string, kg: string) => `Saved ${min} min, ${l} L petrol, ${kg} kg CO₂`,
     mapNav: 'Map and navigation',
     prefs: 'Notifications and preferences',

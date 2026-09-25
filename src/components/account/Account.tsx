@@ -78,7 +78,7 @@ export function Account() {
         <Row
           icon={<Crown size={17} weight="fill" />}
           title={plan === 'premium' ? t.profile.premium : t.profile.free}
-          hint={plan === 'premium' ? t.premium.active : t.premium.premTag}
+          hint={plan === 'premium' ? t.premium.active : t.profile.freeHint}
           right={<Chevron text={plan === 'premium' ? undefined : t.profile.upgrade} />}
           onClick={() => open({ kind: 'premium' })}
         />
