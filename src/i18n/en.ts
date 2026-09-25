@@ -516,7 +516,7 @@ const en: Dict = {
     what: [
       { title: 'See it before you go', body: 'How full it is and how long the queue is, at malls and BINUS campuses.' },
       { title: 'Full? Somewhere is open', body: 'The nearest alternative, plus the quickest gate.' },
-      { title: 'Book without fuss', body: 'KENNETH Zone bays, runner valet and electric car chargers.' },
+      { title: 'Book without fuss', body: 'KENNETH Zone bays, runner valet and electric car chargers. All from the Park button at the top right.' },
     ],
     honest: 'The numbers come from the parking barriers already installed. Places whose operator is not connected yet are marked Estimate.',
     favTitle: 'Where do you usually park?',
