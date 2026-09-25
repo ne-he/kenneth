@@ -233,7 +233,7 @@ function ParkedCard({ now }: { now: number }) {
       tone="brand"
       eyebrow={spot.kind === 'motor' ? t.activity.parkedMotor : t.activity.parked}
       title={venue.name}
-      meta={`${spot.level} · ${t.park.zone} ${spot.zone} · ${spot.zone}-${spot.pillar} · ${spot.lobby}`}
+      meta={`${spot.level} · ${spot.zone}-${spot.pillar} · ${spot.lobby}`}
       right={
         <span className="shrink-0 text-right">
           <span className="block font-mono text-[15px] font-bold tabular">{stopwatch(elapsed)}</span>
