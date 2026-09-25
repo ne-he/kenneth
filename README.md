@@ -180,7 +180,7 @@ src/
   components/  UI per layar: explore (tab Parkir), activity, account, sheets (termasuk sheets/book), onboarding, map, park (3D)
   lib/         login Google, navigasi ke app lain, notifikasi, waktu WIB
   pages/       /mitra dan /booth
-docs/          dokumen produk, model simulasi, screenshot, logo (docs/brand)
+docs/          dokumen produk, model simulasi, screenshot, logo (docs/brand), guide media sosial (docs/social)
 ```
 
 ## Logo dan layar pembuka
@@ -199,6 +199,9 @@ Gerakan mobil mengikuti klip hasil generate AI, tapi setiap piksel mobil dan jal
 bentuknya tidak pernah berubah. Klipnya ada di `public/brand/` (MP4, WebM, dan poster frame pertama), begitu juga
 loop 6 detik versi kecil yang dipakai di layar sambutan onboarding. Versi loop untuk booth dan media sosial (1:1, 9:16,
 16:9) ada di [docs/brand](docs/brand).
+
+Guide desain carousel Instagram (warna, tipografi, jalan yang menyambung antar slide, dan aturan slide video)
+ada di [docs/social/GUIDE.md](docs/social/GUIDE.md), lengkap dengan dua contoh carousel dan generatornya.
 
 Cara kerja simulasinya dijelaskan di [docs/MODEL.md](docs/MODEL.md). Panduan buat anggota tim ada di
 [CONTRIBUTING.md](CONTRIBUTING.md).
