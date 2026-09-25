@@ -1,0 +1,4 @@
+source/static/rendered/
+source/static/__pycache__/
+source/motion/*/renders/
+source/motion/*/snapshots/
