@@ -193,7 +193,7 @@ const en: Dict = {
   park: {
     title: 'Save your parking spot',
     level: 'Level',
-    zone: 'Area',
+    section: 'Area',
     pillar: 'Pillar',
     lobby: 'Nearest lift lobby',
     photo: 'Photo of the pillar or around it',

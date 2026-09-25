@@ -193,7 +193,7 @@ const id = {
   park: {
     title: 'Simpan lokasi parkir',
     level: 'Lantai',
-    zone: 'Area',
+    section: 'Area',
     pillar: 'Pilar',
     lobby: 'Lobi lift terdekat',
     photo: 'Foto pilar atau sekitar',

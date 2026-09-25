@@ -55,7 +55,7 @@ describe('activity', () => {
     const s = splitActivity(
       {
         ...empty,
-        parked: { venueId: 'neo-soho', level: 'B2', zone: 'C', pillar: 12, lobby: 'Lobi A', at: SAT - 60 * MIN, savedMin: 5 },
+        parked: { venueId: 'neo-soho', level: 'B2', section: 'C', pillar: 12, lobby: 'Lobi A', at: SAT - 60 * MIN, savedMin: 5 },
         valets: [ready],
         passes: [pass({ windowStart: SAT - 5 * MIN })],
       },

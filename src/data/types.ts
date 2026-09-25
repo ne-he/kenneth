@@ -103,7 +103,8 @@ export interface Venue {
   valet?: Valet
   gates: Gate[]
   levels: string[]
-  zones: string[]
+  /** Floor sections, the letter on the pillars (A-12). Shown as Area, never as a zone. */
+  sections: string[]
   lobbies: string[]
   accessible: { difabel: number; ibuHamil: number }
   ev: { chargers: number; kw: number }

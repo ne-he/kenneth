@@ -36,7 +36,7 @@ describe('venue data', () => {
       v.gates.forEach((g) => expect(g.pull, g.id).toBeGreaterThan(0))
       expect(new Set(v.gates.map((g) => g.id)).size, v.id).toBe(v.gates.length)
       expect(v.levels.length, v.id).toBeGreaterThan(0)
-      expect(v.zones.length, v.id).toBeGreaterThan(0)
+      expect(v.sections.length, v.id).toBeGreaterThan(0)
       expect(v.lobbies.length, v.id).toBeGreaterThan(0)
       expect(v.tariff.verified, v.id).toBe(false)
       expect(v.hours[0], v.id).toBeLessThan(v.hours[1])

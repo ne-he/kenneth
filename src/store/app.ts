@@ -21,7 +21,8 @@ export interface Vehicle {
 export interface ParkedSpot {
   venueId: VenueId
   level: string
-  zone: string
+  /** Floor section letter, e.g. C in C-12. Saved as `zone` before storage version 3. */
+  section: string
   pillar: number
   lobby: string
   photo?: string
@@ -328,7 +329,7 @@ export const useApp = create<AppState>()(
     }),
     {
       name: 'kenneth-app',
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => localStorage),
       migrate: (persisted, version) => migrateApp(persisted as Record<string, unknown>, version),
     },
@@ -337,7 +338,9 @@ export const useApp = create<AppState>()(
 
 /**
  * Version 1 had a single car. Version 2 keeps a garage (cars and motorbikes),
- * favourites, valet tickets, map settings and the signed-in account.
+ * favourites, valet tickets, map settings and the signed-in account. Version 3
+ * saves the floor section of a parked car as `section`, so `zone` only ever
+ * means Zona KENNETH.
  */
 export function migrateApp(state: Record<string, unknown>, version: number) {
   if (version < 2) {
@@ -350,6 +353,13 @@ export function migrateApp(state: Record<string, unknown>, version: number) {
     state.valets = []
     state.mapPrefs = DEFAULTS.mapPrefs
     state.account = null
+  }
+  if (version < 3) {
+    const parked = state.parked as (Record<string, unknown> & { zone?: string }) | null | undefined
+    if (parked && parked.zone !== undefined && parked.section === undefined) {
+      parked.section = parked.zone
+      delete parked.zone
+    }
   }
   return state as unknown as AppState
 }

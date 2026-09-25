@@ -20,8 +20,26 @@ describe('saved data from the first version', () => {
     expect(activeVehicleOf(v2)).toBe(NO_VEHICLE)
   })
 
-  it('leaves version 2 data alone', () => {
+  it('leaves version 2 data without a parked car alone', () => {
     const state = { vehicles: [{ id: 'a', kind: 'motor', plate: 'B 1 A', model: '', isEV: false }], activeVehicle: 'a' }
     expect(migrateApp({ ...state }, 2)).toEqual(state)
+  })
+})
+
+describe('saved data from version 2', () => {
+  it('moves the parked floor section from zone to section', () => {
+    const parked = { venueId: 'neo-soho', level: 'B2', zone: 'C', pillar: 12, lobby: 'Lobi A', at: 1, savedMin: 3 }
+    const v3 = migrateApp({ parked: { ...parked } }, 2)
+    expect(v3.parked?.section).toBe('C')
+    expect(v3.parked && 'zone' in v3.parked).toBe(false)
+  })
+
+  it('handles nobody being parked', () => {
+    expect(migrateApp({ parked: null }, 2).parked).toBeNull()
+  })
+
+  it('leaves version 3 data alone', () => {
+    const parked = { venueId: 'neo-soho', level: 'B2', section: 'C', pillar: 12, lobby: 'Lobi A', at: 1, savedMin: 3 }
+    expect(migrateApp({ parked: { ...parked } }, 3).parked).toEqual(parked)
   })
 })
