@@ -26,7 +26,7 @@ export function FindCarSheet() {
   if (!spot) return null
   const venue = VENUE_BY_ID[spot.venueId]
   const walkMin = Math.max(1, Math.round(metres / 1.2 / 60))
-  const text = `${venue.name}, ${spot.level} zona ${spot.zone} pilar ${spot.zone}-${spot.pillar}, dekat ${spot.lobby}`
+  const text = `${venue.name}, ${spot.level} pilar ${spot.zone}-${spot.pillar}, dekat ${spot.lobby}`
 
   return (
     <div className="pb-5">
@@ -34,7 +34,7 @@ export function FindCarSheet() {
         eyebrow={venue.name}
         title={
           <span className="tabular">
-            {spot.level} · {t.park.zone} {spot.zone} · {spot.zone}-{spot.pillar}
+            {spot.level} · {spot.zone}-{spot.pillar}
           </span>
         }
         onClose={close}

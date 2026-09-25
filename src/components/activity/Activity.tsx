@@ -233,7 +233,7 @@ function ParkedCard({ now }: { now: number }) {
       tone="brand"
       eyebrow={spot.kind === 'motor' ? t.activity.parkedMotor : t.activity.parked}
       title={venue.name}
-      meta={`${spot.level} · ${t.park.zone} ${spot.zone} · ${spot.zone}-${spot.pillar} · ${spot.lobby}`}
+      meta={`${spot.level} · ${spot.zone}-${spot.pillar} · ${spot.lobby}`}
       right={
         <span className="shrink-0 text-right">
           <span className="block font-mono text-[15px] font-bold tabular">{stopwatch(elapsed)}</span>
@@ -407,7 +407,8 @@ function PastRow({ p }: { p: Past }) {
   const lang = useLang()
   const venue = VENUE_BY_ID[p.venueId]
   const motor = p.visit?.kind === 'motor'
-  const bits = [shortDate(p.at, lang), t.activity.kind[p.service]]
+  // Plain parking already reads "parkir 2j" below, so only the paid services name themselves.
+  const bits = p.service === 'park' ? [shortDate(p.at, lang)] : [shortDate(p.at, lang), t.activity.kind[p.service]]
   if (p.outcome !== 'done') bits.push(t.activity.outcome[p.outcome])
   else if (p.visit) {
     bits.push(t.activity.parkedFor(formatHours(p.visit.durationH, lang)))

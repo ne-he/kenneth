@@ -294,7 +294,7 @@ export const VENUES: Venue[] = [
     accessible: { difabel: 4, ibuHamil: 4 },
     ev: { chargers: 0, kw: 0 },
     tariff: { firstHour: 4000, nextHour: 3000, verified: false },
-    labelDir: 'e',
+    labelDir: 'se',
     gageCorridor: false,
     walkLinks: [],
     tenants: [],

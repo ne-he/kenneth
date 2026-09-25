@@ -43,8 +43,9 @@ export function VenueList({
   const accessibleFirst = useApp((s) => s.prefs.accessibleFirst)
   const favorites = useApp((s) => s.favorites)
 
-  // The one full venue the user most likely wanted: nudge them with its relief time. Only when just parking.
-  const fullOne = mode === 'park' ? ranked.find((r) => r.status === 'penuh') : undefined
+  // A full favourite gets its relief time above the list. Any other full place keeps the reminder in its own card,
+  // so strangers' venues do not push the list down. Only when just parking.
+  const fullOne = mode === 'park' ? ranked.find((r) => r.status === 'penuh' && favorites.includes(r.venue.id)) : undefined
   const relief = fullOne && !previewing ? nextRelief(fullOne.venue, ts) : null
 
   if (ranked.length === 0) {

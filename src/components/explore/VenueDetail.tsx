@@ -110,10 +110,12 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
   const t = useT()
   const venue = snap.venue
   const select = useUi((s) => s.select)
+  const mode = useUi((s) => s.mode)
   const vehicle = useVehicle()
 
   const pool = useMemo(() => VENUES.map((v) => forKind(v, vehicle.kind)), [vehicle.kind])
-  const alts = snap.status !== 'lega' ? alternativesFor(venue, pool, ts) : []
+  // In park mode the card above already suggests the first one, so the list starts after it.
+  const alts = snap.status !== 'lega' ? alternativesFor(venue, pool, ts).slice(mode === 'park' ? 1 : 0) : []
   const services = servicesFor(venue, vehicle.kind)
 
   return (
@@ -189,7 +191,12 @@ function GatesRow({ snap }: { snap: Ranked }) {
     <Disclosure
       icon={<DoorOpen size={17} weight="fill" />}
       title={t.venue.gates}
-      summary={t.venue.gatesSummary(snap.bestGate.name, formatMin(snap.bestGateQueueMin))}
+      // The card above already names the best gate, so the summary gives the spread instead.
+      summary={t.venue.gatesRange(
+        snap.gates.length,
+        formatMin(Math.min(...snap.gates.map((g) => g.queueMin))),
+        formatMin(Math.max(...snap.gates.map((g) => g.queueMin))),
+      )}
     >
       <div className="divide-y divide-line">
         {snap.gates.map(({ gate, queueMin }, i) => (
