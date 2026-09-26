@@ -213,6 +213,7 @@ export default function Mitra() {
               data={flow}
               color={colors.mono}
               nowHour={nowHour}
+              label={c.occ}
               thresholds={[
                 { value: BUSY_LINE, label: `${lang === 'id' ? 'Ramai' : 'Busy'} 70%` },
                 { value: FULL_LINE, label: `${lang === 'id' ? 'Penuh' : 'Full'} 90%` },
