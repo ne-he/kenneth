@@ -35,9 +35,10 @@ export function hourlyFlow(venue: Venue, dayTs: number): HourRow[] {
   const series = forecastDay(venue, dayTs)
   return series.map((p, i) => {
     const prev = i === 0 ? occupancyAt(venue, atWib(dayTs, venue.hours[0] - 1, 0)) : series[i - 1].occ
-    const growth = Math.max(0, p.occ - prev) * venue.capacity
+    // Entries = change in cars parked + cars that left. When the lot empties the change is negative.
+    const change = (p.occ - prev) * venue.capacity
     const turnover = (p.occ * venue.capacity) / AVG_STAY_H
-    const entries = Math.round(growth + turnover)
+    const entries = Math.max(0, Math.round(change + turnover))
     const giveUp = Math.max(0, Math.min(1, (p.occ - GIVE_UP_FROM) / (1 - GIVE_UP_FROM))) * GIVE_UP_MAX
     return { hour: p.hour, occ: p.occ, entries, lost: Math.round(entries * giveUp) }
   })
