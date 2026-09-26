@@ -276,7 +276,7 @@ const en: Dict = {
     impactHow: 'How we count it',
     diverted: (name: string) => `redirected from ${name}`,
     saved: (m: number) => `saved ${m} min`,
-    reminderAt: (name: string, time: string) => `${name}, around ${time}`,
+    reminderAt: (name: string, time: string) => `Remind me when ${name} clears, around ${time}`,
     empty: 'Nothing found',
   },
   impactSheet: {

@@ -275,7 +275,7 @@ const id = {
     impactHow: 'Cara hitungnya',
     diverted: (name: string) => `dialihkan dari ${name}`,
     saved: (m: number) => `hemat ${m} mnt`,
-    reminderAt: (name: string, time: string) => `${name}, sekitar ${time}`,
+    reminderAt: (name: string, time: string) => `Ingetin pas ${name} lega, sekitar ${time}`,
     empty: 'Nggak ketemu',
   },
   impactSheet: {
