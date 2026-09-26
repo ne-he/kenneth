@@ -99,6 +99,15 @@ export function statusOf(occ: number): OccupancyStatus {
   return 'lega'
 }
 
+/** Whole percent for the screen. Never rounds up across a status line: 89.7% full reads 89%, not "90% ramai". */
+export function pctOf(occ: number): number {
+  const pct = Math.round(occ * 100)
+  const status = statusOf(occ)
+  if (status === 'lega') return Math.min(pct, Math.round(THRESHOLD.ramai * 100) - 1)
+  if (status === 'ramai') return Math.min(pct, Math.round(THRESHOLD.penuh * 100) - 1)
+  return pct
+}
+
 export const freeSlots = (venue: Venue, occ: number) => Math.max(0, Math.round(venue.capacity * (1 - occ)))
 
 /**
@@ -148,7 +157,7 @@ export function snapshot(venue: Venue, ts: number): Snapshot {
   return {
     venue,
     occ,
-    pct: Math.round(occ * 100),
+    pct: pctOf(occ),
     status: statusOf(occ),
     free: freeSlots(venue, occ),
     queueMin: gateQueueMin(defaultGate(venue), occ),

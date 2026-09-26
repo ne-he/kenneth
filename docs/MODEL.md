@@ -19,6 +19,8 @@ Di prototipe:
 3. Ditambah "napas": dua gelombang sinus pelan (periode 17 dan 43 menit, amplitudo total sekitar 2%) supaya angka
    bergerak waktu layar dilihat lama.
 4. Status: **lega** di bawah 70%, **ramai** 70 sampai 89%, **penuh** 90% ke atas.
+   Persen di layar dibulatkan biasa, kecuali kalau pembulatan itu melewati batas status: 89,7% tetap tertulis
+   89% (ramai), bukan 90%.
 5. Jam operasional per lokasi: mall 10.00 sampai 22.00, kampus 06.00 sampai 21.00. Perkiraan per jam, jendela
    booking, dan pencarian "kapan lancar lagi" mengikuti jam lokasinya.
 

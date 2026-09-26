@@ -9,6 +9,7 @@ import {
   gateQueueMin,
   nextRelief,
   occupancyAt,
+  pctOf,
   reservedFree,
   snapshot,
   statusOf,
@@ -100,6 +101,17 @@ describe('occupancy model', () => {
     expect(f[0].hour).toBe(10)
     expect(f.at(-1)!.hour).toBe(22)
     expect(f.length).toBe(13)
+  })
+
+  it('never shows a percent from the next status band', () => {
+    // Central Park at 13.23 on Saturday is 89.6% full: it used to read "90%" on a pin that still said ramai.
+    expect(pctOf(0.8965)).toBe(89)
+    expect(pctOf(0.6956)).toBe(69)
+    expect(pctOf(0.9)).toBe(90)
+    expect(pctOf(0.7)).toBe(70)
+    expect(pctOf(0.954)).toBe(95)
+    const snap = snapshot(VENUE_BY_ID['central-park'], atWib(SAT_1407, 13, 23))
+    expect(statusOf(snap.pct / 100)).toBe(snap.status)
   })
 
   it('maps thresholds to status labels', () => {
