@@ -6,9 +6,10 @@ kenapa sebuah layar dibuat seperti itu.
 
 ## Untuk siapa
 
-Pengunjung mall di Jakarta yang bawa mobil, di akhir pekan. Mulainya sengaja sempit: enam mall di
-Jakarta Barat (Central Park, Neo Soho, Taman Anggrek, Mal Ciputra, Lippo Mall Puri, Puri Indah Mall),
-ditambah Grand Indonesia sebagai contoh mall besar dengan rute ke tenant.
+Pengunjung mall di Jakarta yang bawa mobil di akhir pekan, dan mahasiswa BINUS yang bawa mobil atau motor
+di hari kerja. Cakupannya sengaja sempit: 20 lokasi yang dipadatkan di sekitar tiap kampus BINUS, yaitu enam
+kampus dan empat belas mall di dekatnya (daftarnya di [README](../README.md#lokasi)). Versi awal cuma enam mall
+di Jakarta Barat ditambah Grand Indonesia.
 
 Kenapa sempit? Data parkir baru berguna kalau cakupannya rapat. Empat sampai enam mall yang saling
 berdekatan lebih cepat terasa manfaatnya daripada lima puluh mall yang berjauhan.
