@@ -1,4 +1,5 @@
 import type { VenueId } from '../data/types'
+import { atWib } from '../lib/time'
 
 /*
   Valet by the KENNETH runner fleet.
@@ -21,6 +22,21 @@ export function retrievalMin(occ: number): number {
 /** Minutes until a free runner reaches you at the lobby. */
 export function dropQueueMin(occ: number): number {
   return Math.round(1 + 4 * clamp01((occ - 0.5) / 0.45))
+}
+
+const QUARTER = 15 * 60_000
+
+/**
+ * Arrival times a runner can be booked for today: every quarter hour from
+ * ten minutes out, never before the building opens and up to an hour before
+ * it closes, at most ten of them.
+ */
+export function valetSlots(hours: [number, number], now: number): number[] {
+  const first = Math.max(Math.ceil((now + 10 * 60_000) / QUARTER) * QUARTER, atWib(now, hours[0], 0))
+  const last = atWib(now, hours[1], 0) - 60 * 60_000
+  const list: number[] = []
+  for (let s = first; s <= last && list.length < 10; s += QUARTER) list.push(s)
+  return list
 }
 
 const RUNNERS = ['Andi', 'Bayu', 'Dimas', 'Fajar', 'Rizky', 'Sari', 'Tika', 'Yoga']
@@ -59,6 +75,13 @@ export function valetPhase(t: ValetTicket, now: number): ValetPhase {
   if (t.droppedAt) return 'parked'
   return now > t.arriveAt + VALET_HOLD_MIN * 60_000 ? 'lapsed' : 'booked'
 }
+
+/** The runner is at the lobby from this long before the booked time, so the key can change hands. */
+export const HANDOVER_EARLY_MIN = 30
+
+/** True when the key can be handed over: still booked and the arrival time is close. */
+export const canHandOver = (t: ValetTicket, now: number) =>
+  valetPhase(t, now) === 'booked' && now >= t.arriveAt - HANDOVER_EARLY_MIN * 60_000
 
 /** True while the ticket still needs the user: booked, car with the valet, or on its way back. */
 export const valetOpen = (t: ValetTicket, now: number) =>

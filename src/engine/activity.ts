@@ -108,7 +108,8 @@ export function splitActivity(s: ActivityInput, now: number): Split {
     else upcoming.push({ kind: 'ev', id: b.id, at: b.start })
   }
 
-  for (const r of s.reminders) upcoming.push({ kind: 'reminder', id: r.id, at: r.at })
+  // A reminder that never fired (notifications off) is stale once its time has passed.
+  for (const r of s.reminders) if (r.at > now) upcoming.push({ kind: 'reminder', id: r.id, at: r.at })
 
   for (const v of s.history) {
     past.push({ key: `h:${v.id}`, service: v.via === 'valet' ? 'valet' : 'park', outcome: 'done', venueId: v.venueId, at: v.at, visit: v })

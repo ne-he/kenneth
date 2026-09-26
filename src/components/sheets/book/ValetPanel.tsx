@@ -6,10 +6,10 @@ import { VENUE_BY_ID } from '../../../data/venues'
 import type { VenueId } from '../../../data/types'
 import { occupancyAt } from '../../../engine/occupancy'
 import { formatRupiah } from '../../../engine/pricing'
-import { dropQueueMin, retrievalMin } from '../../../engine/valet'
+import { dropQueueMin, retrievalMin, valetSlots } from '../../../engine/valet'
 import { useDayLabel, useT } from '../../../i18n'
 import { haptic } from '../../../lib/haptics'
-import { atWib, clock } from '../../../lib/time'
+import { clock } from '../../../lib/time'
 import { uid, useApp, useVehicle } from '../../../store/app'
 import { useNow } from '../../../store/clock'
 import { useUi } from '../../../store/ui'
@@ -18,8 +18,6 @@ import { Plate } from '../../ui/Display'
 import { Label, List } from '../../ui/Kit'
 import type { Booked } from './BookHub'
 import { PayMethods, type PayMethod } from './ZonePanel'
-
-const Q = 15 * 60_000
 
 /**
  * Book a KENNETH runner. Pick the lobby and when you will pull up, see how
@@ -38,13 +36,7 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
   const [method, setMethod] = useState<PayMethod>('qris')
   const [paying, setPaying] = useState(false)
 
-  const slots = useMemo(() => {
-    const first = Math.ceil((now + 10 * 60_000) / Q) * Q
-    const last = atWib(now, venue.hours[1], 0) - 60 * 60_000
-    const list = []
-    for (let s = first; s <= last && list.length < 10; s += Q) list.push(s)
-    return list
-  }, [now, venue.hours])
+  const slots = useMemo(() => valetSlots(venue.hours, now), [now, venue.hours])
   const [picked, setPicked] = useState<number | null>(null)
   const arriveAt = slots.find((s) => s === picked) ?? slots[0]
 

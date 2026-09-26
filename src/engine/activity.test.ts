@@ -92,6 +92,15 @@ describe('activity', () => {
     expect(s.past[0]).toMatchObject({ service: 'valet', outcome: 'done', visit })
   })
 
+  it('drops a reminder from Nanti once its time has passed', () => {
+    const reminders = [
+      { id: 'r1', venueId: 'central-park' as const, at: SAT - 5 * MIN, createdAt: SAT - 60 * MIN },
+      { id: 'r2', venueId: 'neo-soho' as const, at: SAT + 30 * MIN, createdAt: SAT - 60 * MIN },
+    ]
+    const s = splitActivity({ ...empty, reminders }, SAT)
+    expect(s.upcoming.map((u) => u.id)).toEqual(['r2'])
+  })
+
   it('only surfaces an upcoming booking on the map when it starts within the hour', () => {
     const later = splitActivity({ ...empty, passes: [pass({ windowStart: SAT + 3 * 60 * MIN })] }, SAT)
     expect(headline(later, SAT)).toBeNull()
