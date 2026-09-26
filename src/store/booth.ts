@@ -66,7 +66,8 @@ export function toCsv(rows: BoothResponse[]): string {
 }
 
 export function download(name: string, text: string, type: string) {
-  const blob = new Blob(['﻿' + text], { type })
+  // Excel needs the BOM to read a CSV as UTF-8. JSON must not have one, JSON.parse and Python reject it.
+  const blob = new Blob([type === 'text/csv' ? '﻿' + text : text], { type })
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
   a.download = name
