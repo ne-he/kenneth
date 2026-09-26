@@ -388,7 +388,7 @@ function ReminderCard({ id }: { id: string }) {
           remove(r.id)
           notify(t.activity.reminderCancelled)
         }}
-        aria-label={t.common.cancel}
+        aria-label={t.activity.reminderRemove(VENUE_BY_ID[r.venueId].name)}
         className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-surface-2"
       >
         <X size={15} weight="bold" />

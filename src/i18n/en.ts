@@ -249,6 +249,7 @@ const en: Dict = {
     cancelledRefund: 'Cancelled, full refund',
     evCancelled: 'Charger cancelled',
     reminderCancelled: 'Reminder removed',
+    reminderRemove: (name: string) => `Remove the ${name} reminder`,
     wrongBooking: 'Booked by mistake? Cancel',
     parkedLive: (where: string) => `Parked at ${where}`,
     passLive: (bay: string, time: string) => `KENNETH Zone bay ${bay}, ${time}`,

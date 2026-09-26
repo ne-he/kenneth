@@ -248,6 +248,7 @@ const id = {
     cancelledRefund: 'Dibatalkan, dana kembali penuh',
     evCancelled: 'Charger dibatalkan',
     reminderCancelled: 'Pengingat dihapus',
+    reminderRemove: (name: string) => `Hapus pengingat ${name}`,
     wrongBooking: 'Salah pesan? Batalkan',
     parkedLive: (where: string) => `Parkir di ${where}`,
     passLive: (bay: string, time: string) => `Zona KENNETH petak ${bay}, ${time}`,
