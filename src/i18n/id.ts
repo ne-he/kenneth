@@ -365,7 +365,7 @@ const id = {
     pickedUp: 'Mobil udah diambil',
     done: 'Valet selesai, masuk riwayat',
     cancelled: 'Runner dibatalkan, dana kembali penuh',
-    codeLabel: 'Kode booking',
+    codeLabel: 'Kode pesanan',
     showTicket: 'Pas sampai lobi, runner nyocokin kode ini sama pelatmu.',
     keepCode: 'Runner nganterin mobilmu balik ke lobi yang sama. Kode ini tetap dipakai.',
     openTicket: 'Buka tiket runner',
