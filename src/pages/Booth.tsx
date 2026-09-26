@@ -121,7 +121,8 @@ export default function Booth() {
   const submit = () => {
     if (!ready) return
     haptic('success')
-    add({ ...f, id: uid(), at: Date.now() } as BoothResponse)
+    // Question 2 hides when the visitor never drives, so drop an answer picked before switching.
+    add({ ...f, lostMin: f.lastTime === 'tidak' ? '' : f.lostMin, id: uid(), at: Date.now() } as BoothResponse)
     setF(EMPTY)
     setThanks(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
