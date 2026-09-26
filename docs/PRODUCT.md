@@ -99,6 +99,7 @@ Semua angka di bawah masih perkiraan dan belum divalidasi ke pengelola gedung ma
 | Gratis | Rp0 | Okupansi dan antrian semua lokasi, rekomendasi alternatif, gerbang paling lancar, simpan lokasi mobil, rute ke tenant. Booking Zona KENNETH maksimal 2 jam sebelumnya dengan harga normal |
 | Zona KENNETH | Rp15.000 sampai Rp30.000 per booking | Harga ikut keramaian. Sabtu siang mahal, Selasa pagi murah |
 | Valet runner | Rp40.000 sampai Rp75.000 per pakai (data demo) | Bayar di app, mobil diparkir di Zona KENNETH |
+| Charger EV | Rp0 untuk booking | Charger dikunci atas nama pengguna. Biaya idle berlaku kalau mobil tetap dicolok setelah penuh |
 | Premium | Rp29.000 per bulan | Booking sampai 7 hari sebelumnya, diskon 40% tiap booking, notifikasi jam lega lokasi favorit, notifikasi duluan kalau ada yang batal, pola kebiasaan pribadi |
 
 Prinsip Premium: yang dijual hanya hal yang tidak pernah habis stoknya. Premium tidak menjamin dapat petak.
