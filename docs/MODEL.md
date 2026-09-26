@@ -106,10 +106,11 @@ bensin adalah angka pembakaran yang umum dipakai. Mobil listrik dihitung hemat w
 
 ## 8. Angka dashboard mitra (`mitra.ts`)
 
-- Mobil masuk per jam = pertumbuhan okupansi × kapasitas + pergantian (okupansi × kapasitas / 2,6 jam rata-rata parkir).
+- Mobil masuk per jam = perubahan okupansi × kapasitas + pergantian (okupansi × kapasitas / 2,6 jam rata-rata parkir).
+  Perubahannya negatif saat parkiran mulai kosong, dan hasilnya tidak pernah di bawah nol.
 - Pengunjung yang batal datang: mulai muncul di atas 88%, naik linear sampai 22% dari kedatangan di 100%.
-- Pengalihan: dibagi ke lokasi terdekat yang tidak penuh, bobot `1 / jarak × (1 - okupansi)`, properti satu grup dikali 2,2.
-- Pemerataan gerbang (dihitung di jam 15.00): tanpa app, porsi mengikuti `pull`. Dengan app, 45% pengendara
+- Pengalihan: dibagi ke lokasi terdekat yang tidak penuh di jam tersibuk hari itu, bobot `1 / jarak × (1 - okupansi)`, properti satu grup dikali 2,2.
+- Pemerataan gerbang (dihitung di jam tersibuk hari itu, misalnya 15.00 untuk mall di hari Sabtu): tanpa app, porsi mengikuti `pull`. Dengan app, 45% pengendara
   dibagi ulang dengan bobot `1 / antrian gerbang`, jadi gerbang yang antriannya pendek dapat lebih banyak.
 
 ## Yang perlu divalidasi sebelum angka ini dipakai di luar demo
