@@ -116,4 +116,4 @@ bensin adalah angka pembakaran yang umum dipakai. Mobil listrik dihitung hemat w
 
 Semua parameter di atas adalah asumsi awal tim. Yang paling menentukan, dan paling perlu dicek ke lapangan:
 kurva okupansi akhir pekan tiap mall, kurva kampus mengikuti jadwal kuliah yang sebenarnya, perbandingan slot motor
-dan mobil di tiap kampus, porsi pengunjung yang batal datang saat penuh, faktor lalu lintas, dan waktu ambil mobil valet runner, dan ukuran Zona KENNETH.
+dan mobil di tiap kampus, porsi pengunjung yang batal datang saat penuh, faktor lalu lintas, waktu ambil mobil valet runner, dan ukuran Zona KENNETH.
