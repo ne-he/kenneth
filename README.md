@@ -154,7 +154,7 @@ npx firebase-tools login
 Setelah itu setiap mau rilis:
 
 ```bash
-npm run deploy           # build lalu publish ke https://kenneth-9339d.web.app
+npm run deploy           # build lalu publish ke https://kenneth-9339d.web.app dan https://kenneth-park.web.app
 npm run deploy:preview   # link uji coba terpisah, hangus sendiri setelah 7 hari
 ```
 
