@@ -276,7 +276,6 @@ const id = {
     impactCo2: 'Emisi CO₂',
     impactHow: 'Cara hitungnya',
     diverted: (name: string) => `dialihkan dari ${name}`,
-    saved: (m: number) => `hemat ${m} mnt`,
     reminderAt: (name: string, time: string) => `Ingetin pas ${name} lega, sekitar ${time}`,
     empty: 'Nggak ketemu',
   },
