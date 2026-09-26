@@ -379,6 +379,7 @@ const en: Dict = {
     idle: 'An idle fee applies if the car stays plugged in after it is full.',
     confirm: 'Book charger',
     notEv: 'The vehicle in use is not an electric car.',
+    closedToday: 'Chargers here can no longer be booked today. Try again tomorrow.',
   },
   mapOptions: {
     title: 'Map options',

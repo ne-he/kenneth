@@ -379,6 +379,7 @@ const id = {
     idle: 'Biaya idle berlaku kalau mobil tetap dicolok setelah penuh.',
     confirm: 'Pesan charger',
     notEv: 'Kendaraan yang lagi dipakai bukan mobil listrik.',
+    closedToday: 'Charger di sini udah nggak bisa dipesan untuk hari ini. Coba lagi besok.',
   },
   mapOptions: {
     title: 'Opsi peta',

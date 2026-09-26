@@ -5,7 +5,7 @@ import { VENUE_BY_ID } from '../../../data/venues'
 import type { VenueId } from '../../../data/types'
 import { useT } from '../../../i18n'
 import { haptic } from '../../../lib/haptics'
-import { clock } from '../../../lib/time'
+import { atWib, clock } from '../../../lib/time'
 import { uid, useApp, useVehicle } from '../../../store/app'
 import { useNow } from '../../../store/clock'
 import { Button } from '../../ui/Button'
@@ -23,10 +23,12 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
   const vehicle = useVehicle()
   const addEvBooking = useApp((s) => s.addEvBooking)
 
+  // Half-hour starts while the building is open, the last one half an hour before closing.
   const slots = useMemo(() => {
-    const first = Math.ceil((now + 10 * 60_000) / HALF_HOUR) * HALF_HOUR
-    return Array.from({ length: 8 }, (_, i) => first + i * HALF_HOUR)
-  }, [now])
+    const first = Math.max(Math.ceil((now + 10 * 60_000) / HALF_HOUR) * HALF_HOUR, atWib(now, venue.hours[0], 0))
+    const last = atWib(now, venue.hours[1], 0) - HALF_HOUR
+    return Array.from({ length: 8 }, (_, i) => first + i * HALF_HOUR).filter((s) => s <= last)
+  }, [now, venue.hours])
   const units = Array.from({ length: venue.ev.chargers }, (_, i) => `${String.fromCharCode(65 + Math.floor(i / 4))}${(i % 4) + 1}`)
 
   const [start, setStart] = useState(slots[0])
@@ -35,6 +37,10 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
 
   // A unit is taken if its index lines up with the slot, deterministic so the grid is stable.
   const taken = (u: string, s: number) => (u.charCodeAt(0) + Number(u[1]) + s / HALF_HOUR) % 3 === 0
+
+  if (slots.length === 0) {
+    return <p className="rounded-[16px] bg-surface-2 p-4 text-[13.5px] leading-relaxed text-ink-2">{t.ev.closedToday}</p>
+  }
 
   return (
     <div>
