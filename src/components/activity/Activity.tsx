@@ -18,7 +18,7 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import type { VenueId } from '../../data/types'
 import { splitActivity, type Past } from '../../engine/activity'
-import { forKind, occupancyAt } from '../../engine/occupancy'
+import { forKind } from '../../engine/occupancy'
 import { passPhase } from '../../engine/pass'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
 import { canHandOver, runnerFor, valetPhase, type ValetTicket } from '../../engine/valet'
@@ -226,7 +226,6 @@ function ParkedCard({ now }: { now: number }) {
   const venue = forKind(VENUE_BY_ID[spot.venueId], spot.kind ?? 'mobil')
   const elapsed = now - spot.at
   const cost = parkingCost(venue, elapsed / 3_600_000)
-  const exitMin = Math.max(1, Math.round(1 + occupancyAt(venue, now) * 3))
   return (
     <Card
       icon={spot.kind === 'motor' ? <Motorcycle size={22} weight="fill" /> : <CarProfile size={22} weight="fill" />}
@@ -241,9 +240,6 @@ function ParkedCard({ now }: { now: number }) {
         </span>
       }
     >
-      <p className="mt-3 rounded-[12px] bg-surface-2 px-3 py-2 text-[12px] text-ink-2">
-        {t.activity.exit}: <span className="font-semibold text-lega-ink dark:text-led-lega">{t.activity.exitSmooth(exitMin)}</span>
-      </p>
       <div className="mt-3 grid grid-cols-[1.4fr_1fr] gap-2">
         <Button variant="dark" onClick={() => open({ kind: 'find-car' })}>
           <MapTrifold size={17} weight="bold" /> {t.park.findCar}

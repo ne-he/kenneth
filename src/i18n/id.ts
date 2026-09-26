@@ -254,8 +254,6 @@ const id = {
     evLive: (pct: number) => `Charger EV, sesi udah ${pct}%`,
     parked: 'Mobil kamu',
     parkedMotor: 'Motor kamu',
-    exit: 'Jalur keluar',
-    exitSmooth: (m: number) => `lancar, sekitar ${m} menit`,
     share: 'Bagikan',
     shared: 'Disalin, tinggal tempel',
     passTitle: 'Zona KENNETH',

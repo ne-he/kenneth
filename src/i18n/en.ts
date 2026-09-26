@@ -255,8 +255,6 @@ const en: Dict = {
     evLive: (pct: number) => `EV charger, session ${pct}% through`,
     parked: 'Your car',
     parkedMotor: 'Your motorbike',
-    exit: 'Exit lane',
-    exitSmooth: (m: number) => `clear, about ${m} min`,
     share: 'Share',
     shared: 'Copied, ready to paste',
     passTitle: 'KENNETH Zone',
