@@ -27,6 +27,7 @@ const COPY = {
     kpiIn: 'Mobil masuk',
     kpiPeak: 'Puncak okupansi',
     kpiLost: 'Batal datang karena penuh',
+    kpiLostNote: 'Estimasi model, tidak terukur dari palang',
     kpiZone: 'Booking Zona KENNETH',
     at: 'jam',
     occ: 'Okupansi per jam',
@@ -69,6 +70,7 @@ const COPY = {
     kpiIn: 'Cars in',
     kpiPeak: 'Peak occupancy',
     kpiLost: 'Gave up because full',
+    kpiLostNote: 'Model estimate, barriers cannot count it',
     kpiZone: 'KENNETH Zone bookings',
     at: 'at',
     occ: 'Occupancy by hour',
@@ -196,7 +198,7 @@ export default function Mitra() {
             unit="%"
             note={`${c.at} ${String(peak.hour).padStart(2, '0')}.00`}
           />
-          <Kpi icon={<TrendDown size={18} weight="fill" />} label={c.kpiLost} value={totalLost} tone={totalLost > 0 ? 'bad' : undefined} />
+          <Kpi icon={<TrendDown size={18} weight="fill" />} label={c.kpiLost} value={totalLost} note={c.kpiLostNote} tone={totalLost > 0 ? 'bad' : undefined} />
           <Kpi
             icon={<ShieldCheck size={18} weight="fill" />}
             label={c.kpiZone}
