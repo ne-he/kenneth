@@ -26,7 +26,7 @@ export function FindCarSheet() {
   if (!spot) return null
   const venue = VENUE_BY_ID[spot.venueId]
   const walkMin = Math.max(1, Math.round(metres / 1.2 / 60))
-  const text = `${venue.name}, ${spot.level} pilar ${spot.section}-${spot.pillar}, dekat ${spot.lobby}`
+  const text = t.activity.spotText(venue.name, spot.level, `${spot.section}-${spot.pillar}`, spot.lobby)
 
   return (
     <div className="pb-5">

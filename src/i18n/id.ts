@@ -256,6 +256,7 @@ const id = {
     parkedMotor: 'Motor kamu',
     share: 'Bagikan',
     shared: 'Disalin, tinggal tempel',
+    spotText: (venue: string, level: string, spot: string, lobby: string) => `${venue}, ${level} pilar ${spot}, dekat ${lobby}`,
     passTitle: 'Zona KENNETH',
     window: 'Jam datang',
     bay: 'Petak',

@@ -257,6 +257,7 @@ const en: Dict = {
     parkedMotor: 'Your motorbike',
     share: 'Share',
     shared: 'Copied, ready to paste',
+    spotText: (venue: string, level: string, spot: string, lobby: string) => `${venue}, ${level} pillar ${spot}, near ${lobby}`,
     passTitle: 'KENNETH Zone',
     window: 'Arrival',
     bay: 'Bay',

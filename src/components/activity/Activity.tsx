@@ -245,7 +245,7 @@ function ParkedCard({ now }: { now: number }) {
           <MapTrifold size={17} weight="bold" /> {t.park.findCar}
         </Button>
         <Button
-          onClick={() => shareSpot(`${venue.name}, ${spot.level} ${spot.section}-${spot.pillar}, ${spot.lobby}`, () => notify(t.activity.shared))}
+          onClick={() => shareSpot(t.activity.spotText(venue.name, spot.level, `${spot.section}-${spot.pillar}`, spot.lobby), () => notify(t.activity.shared))}
         >
           <ShareNetwork size={17} weight="bold" /> {t.activity.share}
         </Button>
