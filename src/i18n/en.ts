@@ -269,7 +269,7 @@ const en: Dict = {
     upcoming: 'Arrive in',
     open: 'Held for',
     expired: 'Expired',
-    evTitle: 'Charger',
+    evTitle: 'EV charger',
     impact: 'Impact this month',
     impactTime: 'Time',
     impactFuel: 'Petrol',

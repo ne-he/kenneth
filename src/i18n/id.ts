@@ -268,7 +268,7 @@ const id = {
     upcoming: 'Datang dalam',
     open: 'Ditahan lagi',
     expired: 'Lewat',
-    evTitle: 'Charger',
+    evTitle: 'Charger EV',
     impact: 'Dampak bulan ini',
     impactTime: 'Waktu',
     impactFuel: 'Bensin',
