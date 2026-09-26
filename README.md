@@ -144,7 +144,9 @@ npm run lint      # oxlint
 
 Konfigurasi ada di [firebase.json](firebase.json): semua rute diarahkan ke `index.html` (app satu halaman),
 file di `assets/` di-cache setahun karena namanya selalu berubah tiap build, sedangkan semua rute, `index.html`,
-dan service worker selalu dicek ulang supaya versi baru langsung sampai. Paket gratis (Spark) sudah cukup.
+dan service worker selalu dicek ulang supaya versi baru langsung sampai. Header keamanan (nosniff, Referrer-Policy,
+Permissions-Policy) ikut dikirim, begitu juga Content-Security-Policy dalam mode Report-Only: pelanggarannya cuma
+dicatat di console browser, belum diblokir. Paket gratis (Spark) sudah cukup.
 
 Folder ini sudah terhubung ke project `kenneth-9339d` lewat [.firebaserc](.firebaserc). Yang mau rilis harus
 ditambahkan dulu sebagai anggota project di Firebase console, lalu login sekali:
