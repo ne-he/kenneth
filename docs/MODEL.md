@@ -91,7 +91,7 @@ tanpa biaya.
 ## 6. Ganjil-genap (`gage.ts`)
 
 Berlaku Senin sampai Jumat, 06.00 sampai 10.00 dan 16.00 sampai 21.00, di koridor tertentu. Mobil listrik
-bebas. Di data demo hanya Grand Indonesia (Thamrin) yang ditandai koridor. Hari libur nasional belum dimodelkan,
+bebas. Di data demo yang ditandai koridor hanya Grand Indonesia (Thamrin) dan fX Sudirman. Hari libur nasional belum dimodelkan,
 jadi app menyebutnya pengingat, bukan jaminan hukum.
 
 ## 7. Dampak (`impact.ts`)
