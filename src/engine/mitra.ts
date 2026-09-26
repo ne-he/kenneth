@@ -44,6 +44,11 @@ export function hourlyFlow(venue: Venue, dayTs: number): HourRow[] {
   })
 }
 
+/** The day's busiest hour, when most drivers give up and gate queues are longest. */
+export function peakTs(venue: Venue, dayTs: number): number {
+  return forecastDay(venue, dayTs).reduce((a, b) => (b.occ > a.occ ? b : a)).ts
+}
+
 export interface Diversion {
   to: VenueId
   count: number
@@ -51,7 +56,7 @@ export interface Diversion {
 
 /** Where the drivers who gave up at `venue` were sent instead. */
 export function diversions(venue: Venue, dayTs: number, lost: number): Diversion[] {
-  const peak = atWib(dayTs, 15, 0)
+  const peak = peakTs(venue, dayTs)
   // A mall loses drivers to other malls, a campus to the other campuses.
   const candidates = VENUES.filter(
     (v) => v.id !== venue.id && v.category === venue.category && statusOf(occupancyAt(v, peak)) !== 'penuh',
@@ -81,7 +86,7 @@ export interface GateShare {
  * them is sent to whichever gate has the shortest queue, which flattens it.
  */
 export function gateBalance(venue: Venue, dayTs: number, steered = 0.45): GateShare[] {
-  const peak = atWib(dayTs, 15, 0)
+  const peak = peakTs(venue, dayTs)
   const occ = occupancyAt(venue, peak)
   const pullSum = venue.gates.reduce((a, g) => a + g.pull, 0)
   const inv = venue.gates.map((g) => 1 / Math.max(0.2, gateQueueMin(g, occ)))
