@@ -56,6 +56,7 @@ const COPY = {
     assume: (h: number) =>
       `Asumsi model: rata-rata parkir ${h} jam, pengunjung mulai batal di atas 88% dan sampai 22% di 100%. Harga paket masih perkiraan, belum divalidasi ke pengelola mana pun.`,
     gross: 'nilai kotor',
+    noZone: 'Kampus tidak punya Zona KENNETH',
     table: 'Lihat sebagai tabel',
     hour: 'Jam',
   },
@@ -97,6 +98,7 @@ const COPY = {
     assume: (h: number) =>
       `Model assumptions: average stay ${h} hours, visitors start giving up above 88% and up to 22% at 100%. Plan prices are estimates, not validated with any manager yet.`,
     gross: 'gross value',
+    noZone: 'Campuses have no KENNETH Zone',
     table: 'View as table',
     hour: 'Hour',
   },
@@ -198,8 +200,8 @@ export default function Mitra() {
           <Kpi
             icon={<ShieldCheck size={18} weight="fill" />}
             label={c.kpiZone}
-            value={prio.tickets}
-            note={prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
+            value={isMall ? prio.tickets : null}
+            note={!isMall ? c.noZone : prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
           />
         </section>
 
@@ -279,7 +281,7 @@ export default function Mitra() {
   )
 }
 
-function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label: string; value: number; unit?: string; note?: string; tone?: 'bad' }) {
+function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label: string; value: number | null; unit?: string; note?: string; tone?: 'bad' }) {
   return (
     <div className="rounded-[22px] border border-line bg-surface p-4">
       <div className="flex items-center gap-2 text-[12px] font-semibold text-ink-3">
@@ -289,8 +291,8 @@ function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label:
         {label}
       </div>
       <div className="mt-3 text-[34px] leading-none font-extrabold tracking-tight">
-        <CountUp value={value} grouped />
-        {unit && <span className="text-[18px]">{unit}</span>}
+        {value === null ? '-' : <CountUp value={value} grouped />}
+        {unit && value !== null && <span className="text-[18px]">{unit}</span>}
       </div>
       {note && <div className="mt-1.5 text-[12px] text-ink-3">{note}</div>}
     </div>
