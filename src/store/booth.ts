@@ -57,7 +57,9 @@ const COLUMNS: (keyof BoothResponse)[] = [
 ]
 
 const cell = (v: unknown) => {
-  const s = Array.isArray(v) ? v.join('; ') : typeof v === 'number' ? new Date(v).toISOString() : String(v ?? '')
+  let s = Array.isArray(v) ? v.join('; ') : typeof v === 'number' ? new Date(v).toISOString() : String(v ?? '')
+  // Free text starting with = + - @ opens as a formula in Excel ("- cepat" shows #NAME?). A leading ' keeps it text.
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`
   return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 }
 

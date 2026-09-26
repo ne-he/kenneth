@@ -32,6 +32,12 @@ describe('booth CSV export', () => {
     expect(toCsv([{ ...base, like: 'a\rb' }])).toContain('"a\rb"')
   })
 
+  it('keeps free text that looks like a formula as plain text', () => {
+    const row = toCsv([{ ...base, like: '- cepat', wish: '=1+1', idea: '@kenneth', contact: '+62812' }]).split('\n')[1]
+    expect(row).toContain(",'- cepat,'=1+1,,'@kenneth,'+62812")
+    expect(row).toContain(',15-30,')
+  })
+
   it('joins multi-select answers and writes timestamps as ISO', () => {
     const row = toCsv([base]).split('\n')[1]
     expect(row).toContain('okupansi; gerbang')
