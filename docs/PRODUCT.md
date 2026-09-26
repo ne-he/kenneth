@@ -130,7 +130,7 @@ Sebelas risiko ini dari daftar risiko tim. Kolom terakhir menunjukkan di mana ja
 | 8 | Hanya terasa di akhir pekan | Visi jangka panjang: kantor, rumah sakit, kampus | Tidak ada di app. Pilot sengaja mall dulu |
 | 9 | Yang tidak bayar menunggu lebih lama | Tidak ada antrian yang didahulukan. Zona punya petak sendiri, antrian gerbang biasa tidak ditahan untuk siapa pun, dan fitur gratis ikut mengurangi antrian | "Kok bisa ada zona khusus?" di layar booking |
 | 10 | Parkiran penuh total | Diakui di depan | Label "Habis" di jam yang petaknya sudah habis, dan "Masih lega di dekat sini" di lokasi yang penuh |
-| 11 | Privasi data lokasi | Yang dijual ke pengelola hanya agregat dan anonim | Profil, Privasi dan data. Semua data prototipe tinggal di HP |
+| 11 | Privasi data lokasi | Yang dijual ke pengelola hanya agregat dan anonim | Akun, Privasi dan data. Semua data prototipe tinggal di HP |
 
 ## Yang diuji di BINUS Festival
 
