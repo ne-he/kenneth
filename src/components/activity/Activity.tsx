@@ -328,12 +328,19 @@ function PassCard({ id, now }: { id: string; now: number }) {
       title={venue.name}
       meta={`${clock(pass.windowStart)} · ${when}`}
       onClick={() => open({ kind: 'pass', id: pass.id })}
-      right={<span className="shrink-0 text-[13px] font-bold tabular">{formatRupiah(pass.price, true)}</span>}
+      right={
+        <span className="flex shrink-0 items-center gap-1 text-[13px] font-bold tabular">
+          {formatRupiah(pass.price, true)} <CaretRight size={16} className="text-ink-3" />
+        </span>
+      }
     >
-      <Button variant="dark" block className="mt-3" onClick={() => open({ kind: 'pass', id: pass.id })}>
-        <Ticket size={17} weight="fill" /> {t.activity.showQr}
-      </Button>
-      {phase === 'upcoming' && <CancelConfirm className="mt-1.5" policy={t.activity.cancelPolicy} onConfirm={() => cancel.pass(pass.id)} />}
+      {/* The QR only matters at the barrier, so the big button waits until the bay is held. */}
+      {phase === 'open' && (
+        <Button variant="dark" block className="mt-3" onClick={() => open({ kind: 'pass', id: pass.id })}>
+          <Ticket size={17} weight="fill" /> {t.activity.showQr}
+        </Button>
+      )}
+      {phase === 'upcoming' && <CancelConfirm className="mt-3" policy={t.activity.cancelPolicy} onConfirm={() => cancel.pass(pass.id)} />}
     </Card>
   )
 }
