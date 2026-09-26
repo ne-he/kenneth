@@ -54,7 +54,7 @@ Waktu tempuh diambil dari tabel OSRM (jarak jalan asli), dikali faktor lalu lint
 kosong: 2,1× di akhir pekan jam 11.00 sampai 21.00, 2,4× di jam sibuk hari kerja, 1,4 sampai 1,6× di luar itu. Kalau OSRM tidak
 bisa dihubungi, jarak garis lurus dikali 1,35 dengan kecepatan rata-rata 21 km/jam.
 
-Daftar di Jelajah diurutkan dari waktu sampai parkir paling kecil.
+Daftar di tab Parkir diurutkan dari waktu sampai parkir paling kecil.
 
 ## 4. Kapan lancar lagi
 
