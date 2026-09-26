@@ -58,7 +58,7 @@ const COLUMNS: (keyof BoothResponse)[] = [
 
 const cell = (v: unknown) => {
   const s = Array.isArray(v) ? v.join('; ') : typeof v === 'number' ? new Date(v).toISOString() : String(v ?? '')
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 }
 
 export function toCsv(rows: BoothResponse[]): string {

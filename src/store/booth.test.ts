@@ -28,6 +28,10 @@ describe('booth CSV export', () => {
     expect(csv).toContain('"Bagus, ""rapi""\nbanget"')
   })
 
+  it('quotes a lone carriage return too', () => {
+    expect(toCsv([{ ...base, like: 'a\rb' }])).toContain('"a\rb"')
+  })
+
   it('joins multi-select answers and writes timestamps as ISO', () => {
     const row = toCsv([base]).split('\n')[1]
     expect(row).toContain('okupansi; gerbang')
