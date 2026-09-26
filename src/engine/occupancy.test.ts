@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
-import { atWib, nextSaturdayAt, wib } from '../lib/time'
+import { atWib, clock, nextSaturdayAt, wib } from '../lib/time'
 import {
   THRESHOLD,
+  defaultGate,
   forKind,
   forecastDay,
+  gateQueueMin,
   nextRelief,
   occupancyAt,
   reservedFree,
@@ -70,6 +72,23 @@ describe('occupancy model', () => {
     const h = wib(relief!).hour
     expect(h).toBeGreaterThanOrEqual(16)
     expect(h).toBeLessThanOrEqual(17)
+  })
+
+  it('only promises relief at a quarter hour when the main gate really is calm', () => {
+    // Central Park at 12.54 used to say 16.15, when the main gate still had a 6 minute queue.
+    for (const v of VENUES) {
+      for (let m = 0; m < 24 * 60; m += 7) {
+        const ts = atWib(SAT_1407, 0, 0) + m * 60_000
+        const relief = nextRelief(v, ts)
+        if (relief === null) continue
+        const where = `${v.id} asked at ${clock(ts)}, told ${clock(relief)}`
+        expect(relief, where).toBeGreaterThan(ts)
+        expect(wib(relief).minute % 15, where).toBe(0)
+        const occ = occupancyAt(v, relief)
+        expect(gateQueueMin(defaultGate(v), occ), where).toBeLessThanOrEqual(3)
+        expect(statusOf(occ), where).not.toBe('penuh')
+      }
+    }
   })
 
   it('returns no relief when the venue is already fine', () => {

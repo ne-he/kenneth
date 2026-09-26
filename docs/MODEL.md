@@ -58,8 +58,9 @@ Daftar di Jelajah diurutkan dari waktu sampai parkir paling kecil.
 
 ## 4. Kapan lancar lagi
 
-Mulai dari sekarang, maju 15 menit sekali sampai jam tutup, cari saat pertama antrian gerbang utama 3 menit
-atau kurang dan status tidak penuh. Hasilnya dibulatkan ke seperempat jam.
+Mulai dari seperempat jam berikutnya (14.07 mulai dari 14.15), maju 15 menit sekali sampai jam tutup, cari
+seperempat jam pertama saat antrian gerbang utama 3 menit atau kurang dan status tidak penuh. Jam yang tampil
+adalah jam yang dicek itu sendiri, jadi pengingat tidak bunyi sebelum antriannya benar-benar turun.
 
 ## 4b. Valet runner (`valet.ts`)
 
