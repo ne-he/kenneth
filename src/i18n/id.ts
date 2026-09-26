@@ -251,7 +251,7 @@ const id = {
     wrongBooking: 'Salah pesan? Batalkan',
     parkedLive: (where: string) => `Parkir di ${where}`,
     passLive: (bay: string, time: string) => `Zona KENNETH petak ${bay}, ${time}`,
-    evLive: (pct: number) => `Charger, terisi ${pct}%`,
+    evLive: (pct: number) => `Charger EV, sesi udah ${pct}%`,
     parked: 'Mobil kamu',
     parkedMotor: 'Motor kamu',
     exit: 'Jalur keluar',

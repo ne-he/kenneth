@@ -252,7 +252,7 @@ const en: Dict = {
     wrongBooking: 'Booked by mistake? Cancel',
     parkedLive: (where: string) => `Parked at ${where}`,
     passLive: (bay: string, time: string) => `KENNETH Zone bay ${bay}, ${time}`,
-    evLive: (pct: number) => `Charging, ${pct}%`,
+    evLive: (pct: number) => `EV charger, session ${pct}% through`,
     parked: 'Your car',
     parkedMotor: 'Your motorbike',
     exit: 'Exit lane',
