@@ -60,6 +60,13 @@ export function valetPhase(t: ValetTicket, now: number): ValetPhase {
   return now > t.arriveAt + VALET_HOLD_MIN * 60_000 ? 'lapsed' : 'booked'
 }
 
+/** The runner is at the lobby from this long before the booked time, so the key can change hands. */
+export const HANDOVER_EARLY_MIN = 30
+
+/** True when the key can be handed over: still booked and the arrival time is close. */
+export const canHandOver = (t: ValetTicket, now: number) =>
+  valetPhase(t, now) === 'booked' && now >= t.arriveAt - HANDOVER_EARLY_MIN * 60_000
+
 /** True while the ticket still needs the user: booked, car with the valet, or on its way back. */
 export const valetOpen = (t: ValetTicket, now: number) =>
   ['booked', 'parked', 'fetching', 'ready'].includes(valetPhase(t, now))

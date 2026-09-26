@@ -21,7 +21,7 @@ import { splitActivity, type Past } from '../../engine/activity'
 import { forKind, occupancyAt } from '../../engine/occupancy'
 import { passPhase } from '../../engine/pass'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
-import { runnerFor, valetPhase, type ValetTicket } from '../../engine/valet'
+import { canHandOver, runnerFor, valetPhase, type ValetTicket } from '../../engine/valet'
 import { ZONE_HOLD_MIN, bayOf, zoneOf } from '../../engine/zone'
 import { useDayLabel, useLang, useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
@@ -293,7 +293,7 @@ function ValetCard({ id, now }: { id: string; now: number }) {
           />
         </div>
       )}
-      {(phase === 'booked' || phase === 'parked' || phase === 'ready') && (
+      {((phase === 'booked' && canHandOver(ticket, now)) || phase === 'parked' || phase === 'ready') && (
         <Button
           variant={phase === 'parked' ? 'primary' : 'dark'}
           block

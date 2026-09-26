@@ -4,7 +4,7 @@ import { nextSaturdayAt } from '../lib/time'
 import { snapshot } from './occupancy'
 import { alternativesFor } from './recommend'
 import { servicesFor } from './services'
-import { VALET_HOLD_MIN, dropQueueMin, retrievalMin, runnerFor, valetOpen, valetPhase, type ValetTicket } from './valet'
+import { HANDOVER_EARLY_MIN, VALET_HOLD_MIN, canHandOver, dropQueueMin, retrievalMin, runnerFor, valetOpen, valetPhase, type ValetTicket } from './valet'
 
 const SAT = nextSaturdayAt(Date.UTC(2026, 8, 14), 14, 7)
 const MIN = 60_000
@@ -38,6 +38,15 @@ describe('valet', () => {
     expect(valetPhase(called, SAT + 70 * MIN)).toBe('fetching')
     expect(valetPhase(called, SAT + 72 * MIN)).toBe('ready')
     expect(valetPhase(ticket({ status: 'done' }), SAT)).toBe('done')
+  })
+
+  it('only takes the key once the arrival time is close', () => {
+    expect(canHandOver(ticket(), SAT - 24 * 60 * MIN)).toBe(false)
+    expect(canHandOver(ticket(), SAT - (HANDOVER_EARLY_MIN + 1) * MIN)).toBe(false)
+    expect(canHandOver(ticket(), SAT - HANDOVER_EARLY_MIN * MIN)).toBe(true)
+    expect(canHandOver(ticket(), SAT + 10 * MIN)).toBe(true)
+    expect(canHandOver(ticket({ droppedAt: SAT }), SAT + MIN)).toBe(false)
+    expect(canHandOver(ticket(), SAT + (VALET_HOLD_MIN + 1) * MIN)).toBe(false)
   })
 
   it('puts the same runner on a ticket every time', () => {

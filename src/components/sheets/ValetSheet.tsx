@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { VENUE_BY_ID } from '../../data/venues'
 import { occupancyAt } from '../../engine/occupancy'
 import { formatRupiah } from '../../engine/pricing'
-import { retrievalMin, runnerFor, valetPhase } from '../../engine/valet'
+import { canHandOver, retrievalMin, runnerFor, valetPhase } from '../../engine/valet'
 import { useDayLabel, useT } from '../../i18n'
 import { clock, stopwatch } from '../../lib/time'
 import { useApp, useVehicle } from '../../store/app'
@@ -93,9 +93,11 @@ export function ValetSheet({ id }: { id: string }) {
 
       {phase === 'booked' && (
         <>
-          <Button variant="dark" size="lg" block onClick={() => act.handover(ticket)}>
-            <Key size={17} weight="fill" /> {t.valet.handover}
-          </Button>
+          {canHandOver(ticket, now) && (
+            <Button variant="dark" size="lg" block onClick={() => act.handover(ticket)}>
+              <Key size={17} weight="fill" /> {t.valet.handover}
+            </Button>
+          )}
           <CancelConfirm
             className="mt-2"
             policy={t.activity.valetCancelPolicy}
