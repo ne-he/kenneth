@@ -56,7 +56,7 @@ Waktu tempuh diambil dari tabel OSRM (jarak jalan asli), dikali faktor lalu lint
 kosong: 2,1× di akhir pekan jam 11.00 sampai 21.00, 2,4× di jam sibuk hari kerja, 1,4 sampai 1,6× di luar itu. Kalau OSRM tidak
 bisa dihubungi, jarak garis lurus dikali 1,35 dengan kecepatan rata-rata 21 km/jam.
 
-Daftar di Jelajah diurutkan dari waktu sampai parkir paling kecil.
+Daftar di tab Parkir diurutkan dari waktu sampai parkir paling kecil.
 
 ## 4. Kapan lancar lagi
 
@@ -94,7 +94,7 @@ tanpa biaya.
 ## 6. Ganjil-genap (`gage.ts`)
 
 Berlaku Senin sampai Jumat, 06.00 sampai 10.00 dan 16.00 sampai 21.00, di koridor tertentu. Mobil listrik
-bebas. Di data demo hanya Grand Indonesia (Thamrin) yang ditandai koridor. Hari libur nasional belum dimodelkan,
+bebas. Di data demo yang ditandai koridor hanya Grand Indonesia (Thamrin) dan fX Sudirman. Hari libur nasional belum dimodelkan,
 jadi app menyebutnya pengingat, bukan jaminan hukum.
 
 ## 7. Dampak (`impact.ts`)
@@ -109,14 +109,15 @@ bensin adalah angka pembakaran yang umum dipakai. Mobil listrik dihitung hemat w
 
 ## 8. Angka dashboard mitra (`mitra.ts`)
 
-- Mobil masuk per jam = pertumbuhan okupansi × kapasitas + pergantian (okupansi × kapasitas / 2,6 jam rata-rata parkir).
+- Mobil masuk per jam = perubahan okupansi × kapasitas + pergantian (okupansi × kapasitas / 2,6 jam rata-rata parkir).
+  Perubahannya negatif saat parkiran mulai kosong, dan hasilnya tidak pernah di bawah nol.
 - Pengunjung yang batal datang: mulai muncul di atas 88%, naik linear sampai 22% dari kedatangan di 100%.
-- Pengalihan: dibagi ke lokasi terdekat yang tidak penuh, bobot `1 / jarak × (1 - okupansi)`, properti satu grup dikali 2,2.
-- Pemerataan gerbang (dihitung di jam 15.00): tanpa app, porsi mengikuti `pull`. Dengan app, 45% pengendara
+- Pengalihan: dibagi ke lokasi terdekat yang tidak penuh di jam tersibuk hari itu dan sejenis (mall ke mall, kampus ke kampus), bobot `1 / jarak × (1 - okupansi)`, properti satu grup dikali 2,2.
+- Pemerataan gerbang (dihitung di jam tersibuk hari itu, misalnya 15.00 untuk mall di hari Sabtu): tanpa app, porsi mengikuti `pull`. Dengan app, 45% pengendara
   dibagi ulang dengan bobot `1 / antrian gerbang`, jadi gerbang yang antriannya pendek dapat lebih banyak.
 
 ## Yang perlu divalidasi sebelum angka ini dipakai di luar demo
 
 Semua parameter di atas adalah asumsi awal tim. Yang paling menentukan, dan paling perlu dicek ke lapangan:
 kurva okupansi akhir pekan tiap mall, kurva kampus mengikuti jadwal kuliah yang sebenarnya, perbandingan slot motor
-dan mobil di tiap kampus, porsi pengunjung yang batal datang saat penuh, faktor lalu lintas, dan waktu ambil mobil valet runner, dan ukuran Zona KENNETH.
+dan mobil di tiap kampus, porsi pengunjung yang batal datang saat penuh, faktor lalu lintas, waktu ambil mobil valet runner, dan ukuran Zona KENNETH.

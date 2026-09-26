@@ -121,7 +121,8 @@ export default function Booth() {
   const submit = () => {
     if (!ready) return
     haptic('success')
-    add({ ...f, id: uid(), at: Date.now() } as BoothResponse)
+    // Question 2 hides when the visitor never drives, so drop an answer picked before switching.
+    add({ ...f, lostMin: f.lastTime === 'tidak' ? '' : f.lostMin, id: uid(), at: Date.now() } as BoothResponse)
     setF(EMPTY)
     setThanks(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -187,6 +188,7 @@ export default function Booth() {
                   <button
                     key={key}
                     type="button"
+                    aria-pressed={on}
                     onClick={() =>
                       set('features', on ? f.features.filter((x) => x !== key) : [...f.features, key].slice(-2))
                     }
@@ -275,7 +277,12 @@ export default function Booth() {
                 block
                 className="mt-2"
                 onClick={() => {
-                  if (!confirm) return setConfirm(true)
+                  if (!confirm) {
+                    // Arm for a few seconds only, so a stray tap hours later cannot wipe the day's answers.
+                    setConfirm(true)
+                    window.setTimeout(() => setConfirm(false), 4000)
+                    return
+                  }
                   clear()
                   setConfirm(false)
                 }}
