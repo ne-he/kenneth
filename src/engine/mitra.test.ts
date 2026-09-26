@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
 import { haversineKm } from '../lib/geo'
 import { atWib, nextSaturdayAt, wib } from '../lib/time'
-import { AVG_STAY_H, diversions, hourlyFlow, peakTs } from './mitra'
+import { AVG_STAY_H, diversions, hourlyFlow, peakTs, weekHeat } from './mitra'
 import { occupancyAt } from './occupancy'
 
 const SAT = nextSaturdayAt(Date.UTC(2026, 8, 14), 12, 0)
@@ -51,5 +51,17 @@ describe('peak hour', () => {
     }
     const count = (id: string) => div.find((d) => d.to === id)!.count
     expect(count('binus-syahdan') / count('binus-kijang')).toBeCloseTo(weight('binus-syahdan') / weight('binus-kijang'), 1)
+  })
+})
+
+describe('week heatmap', () => {
+  it('runs Monday to Sunday of one week in WIB, whatever the device timezone', () => {
+    // Saturday 05.00 WIB is still Friday in UTC, so a UTC day would shift the whole week.
+    const earlySat = atWib(SAT, 5, 0)
+    const rows = weekHeat(VENUE_BY_ID['central-park'], earlySat)
+    expect(rows.map((r) => wib(r.ts).day)).toEqual([1, 2, 3, 4, 5, 6, 0])
+    expect(rows.map((r) => r.day)).toEqual([1, 2, 3, 4, 5, 6, 0])
+    for (let i = 1; i < 7; i++) expect(rows[i].ts - rows[i - 1].ts).toBe(86_400_000)
+    expect(rows[5].ts).toBe(earlySat)
   })
 })

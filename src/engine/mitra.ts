@@ -1,7 +1,7 @@
 import type { Venue, VenueId } from '../data/types'
 import { VENUES } from '../data/venues'
 import { haversineKm } from '../lib/geo'
-import { atWib } from '../lib/time'
+import { atWib, wib } from '../lib/time'
 import { THRESHOLD, forecastDay, gateQueueMin, occupancyAt, statusOf } from './occupancy'
 import { zoneBasePrice } from './pricing'
 import { SLOT_MIN, baysLeft, zoneOf } from './zone'
@@ -99,11 +99,11 @@ export function gateBalance(venue: Venue, dayTs: number, steered = 0.45): GateSh
 }
 
 export function weekHeat(venue: Venue, anyTs: number) {
-  // Monday first, the way building managers read a week.
-  const order = [1, 2, 3, 4, 5, 6, 0]
-  const sunday = anyTs - new Date(anyTs + 7 * 3_600_000).getUTCDay() * 86_400_000
-  return order.map((day) => {
-    const ts = sunday + day * 86_400_000
+  // Monday first, the way building managers read a week, so Sunday is the one after Saturday.
+  const monday = anyTs - ((wib(anyTs).day + 6) % 7) * 86_400_000
+  return [0, 1, 2, 3, 4, 5, 6].map((i) => {
+    const ts = monday + i * 86_400_000
+    const day = wib(ts).day
     const hours = []
     for (let h = venue.hours[0]; h < venue.hours[1]; h++) hours.push({ hour: h, occ: occupancyAt(venue, atWib(ts, h, 0)) })
     return { day, ts, hours }
