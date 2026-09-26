@@ -44,7 +44,7 @@ menonjol seperti tombol QRIS di app bank. Nggak ada dashboard, dan app nggak per
 
 | Tab | Isi |
 |---|---|
-| **Aktivitas** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, runner valet yang lagi jalan, petak Zona KENNETH yang sedang ditahan. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
+| **Aktivitas** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, runner valet yang lagi jalan, petak Zona KENNETH yang sedang ditahan, charger yang sedang mengisi. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
 | **Parkir** (logo K, tengah) | Peta besar, search, dan dropdown "Mau ngapain?" di kanan search: Parkir, Zona KENNETH, Valet runner, Charger EV, plus pilihan kendaraan (mobil atau motor). Layoutnya selalu sama, yang berubah cuma angka di pin dan satu tombol utama di kartu tempat. Tap K lagi untuk balik ke tampilan awal |
 | **Akun** (kanan) | Masuk dengan Google atau tetap jadi tamu, kendaraan, paket, dampak bulan ini, opsi peta, notifikasi |
 
