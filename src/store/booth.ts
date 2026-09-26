@@ -72,5 +72,6 @@ export function download(name: string, text: string, type: string) {
   a.href = URL.createObjectURL(blob)
   a.download = name
   a.click()
-  URL.revokeObjectURL(a.href)
+  // Revoking right after the click can cancel the download on iPad Safari, the likely booth device.
+  window.setTimeout(() => URL.revokeObjectURL(a.href), 10_000)
 }
