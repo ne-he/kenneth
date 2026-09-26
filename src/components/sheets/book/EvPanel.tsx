@@ -31,7 +31,9 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
   }, [now, venue.hours])
   const units = Array.from({ length: venue.ev.chargers }, (_, i) => `${String.fromCharCode(65 + Math.floor(i / 4))}${(i % 4) + 1}`)
 
-  const [start, setStart] = useState(slots[0])
+  // The list moves on as time passes, so a pick that scrolled off falls back to the first start.
+  const [picked, setPicked] = useState<number | null>(null)
+  const start = slots.find((s) => s === picked) ?? slots[0]
   const [duration, setDuration] = useState<'30' | '60' | '90'>('60')
   const [unit, setUnit] = useState(units[0])
 
@@ -57,7 +59,7 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
           <button
             key={s}
             type="button"
-            onClick={() => setStart(s)}
+            onClick={() => setPicked(s)}
             className={clsx('h-11 shrink-0 rounded-[14px] px-3.5 text-[14px] font-bold tabular', s === start ? 'bg-ink text-canvas' : 'bg-surface-2')}
           >
             {clock(s)}
