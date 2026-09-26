@@ -132,6 +132,8 @@ export default function Mitra() {
   const heat = useMemo(() => weekHeat(venue, now), [venue, now])
   const prio = useMemo(() => zoneDay(venue, dayTs), [venue, dayTs])
   const busyVenue = peak.occ >= FULL_LINE
+  // Campuses sell nothing (docs/PRODUCT.md), so only the dashboard plan fits them.
+  const isMall = venue.category === 'mall'
   const nowHour = dayKey === 'today' ? wib(now).hourF : undefined
 
   return (
@@ -247,8 +249,8 @@ export default function Mitra() {
           </Card>
           <Card title={c.products} sub="">
             <div className="space-y-2">
-              <Product name={c.p1} price={c.p1p} desc={c.p1d} fit={!busyVenue} fitLabel={c.fit} />
-              <Product name={c.p2} price={c.p2p} desc={c.p2d} fit={busyVenue} fitLabel={c.fit} />
+              <Product name={c.p1} price={c.p1p} desc={c.p1d} fit={isMall && !busyVenue} fitLabel={c.fit} />
+              <Product name={c.p2} price={c.p2p} desc={c.p2d} fit={isMall && busyVenue} fitLabel={c.fit} />
               <Product name={c.p3} price={c.p3p} desc={c.p3d} fit fitLabel={c.fit} />
             </div>
           </Card>
