@@ -117,7 +117,9 @@ Tambahan di luar 11 fitur:
 - **Kampus tidak menjual apa pun.** Di kampus app cuma menunjukkan seberapa penuh dan ke mana kalau penuh.
 - **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
 - **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, booking, dan lokasi
-  parkir tetap di perangkat. Yang nantinya dijual ke pengelola hanya agregat per jam.
+  parkir tetap di perangkat. Untuk menghitung rute, titik awal (lokasimu kalau kamu menekan tombol lokasi) dan
+  tujuan dikirim ke server demo OSRM, dan potongan peta diambil dari OpenFreeMap. Yang nantinya dijual ke pengelola
+  hanya agregat per jam.
 
 ## Jalankan sendiri
 
