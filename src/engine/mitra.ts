@@ -1,7 +1,7 @@
 import type { Venue, VenueId } from '../data/types'
 import { VENUES } from '../data/venues'
 import { haversineKm } from '../lib/geo'
-import { atWib } from '../lib/time'
+import { atWib, wib } from '../lib/time'
 import { THRESHOLD, forecastDay, gateQueueMin, occupancyAt, statusOf } from './occupancy'
 import { zoneBasePrice } from './pricing'
 import { SLOT_MIN, baysLeft, zoneOf } from './zone'
@@ -35,12 +35,18 @@ export function hourlyFlow(venue: Venue, dayTs: number): HourRow[] {
   const series = forecastDay(venue, dayTs)
   return series.map((p, i) => {
     const prev = i === 0 ? occupancyAt(venue, atWib(dayTs, venue.hours[0] - 1, 0)) : series[i - 1].occ
-    const growth = Math.max(0, p.occ - prev) * venue.capacity
+    // Entries = change in cars parked + cars that left. When the lot empties the change is negative.
+    const change = (p.occ - prev) * venue.capacity
     const turnover = (p.occ * venue.capacity) / AVG_STAY_H
-    const entries = Math.round(growth + turnover)
+    const entries = Math.max(0, Math.round(change + turnover))
     const giveUp = Math.max(0, Math.min(1, (p.occ - GIVE_UP_FROM) / (1 - GIVE_UP_FROM))) * GIVE_UP_MAX
     return { hour: p.hour, occ: p.occ, entries, lost: Math.round(entries * giveUp) }
   })
+}
+
+/** The day's busiest hour, when most drivers give up and gate queues are longest. */
+export function peakTs(venue: Venue, dayTs: number): number {
+  return forecastDay(venue, dayTs).reduce((a, b) => (b.occ > a.occ ? b : a)).ts
 }
 
 export interface Diversion {
@@ -50,7 +56,7 @@ export interface Diversion {
 
 /** Where the drivers who gave up at `venue` were sent instead. */
 export function diversions(venue: Venue, dayTs: number, lost: number): Diversion[] {
-  const peak = atWib(dayTs, 15, 0)
+  const peak = peakTs(venue, dayTs)
   // A mall loses drivers to other malls, a campus to the other campuses.
   const candidates = VENUES.filter(
     (v) => v.id !== venue.id && v.category === venue.category && statusOf(occupancyAt(v, peak)) !== 'penuh',
@@ -79,8 +85,11 @@ export interface GateShare {
  * Without the app drivers follow habit (gate pull). With the app a part of
  * them is sent to whichever gate has the shortest queue, which flattens it.
  */
-export function gateBalance(venue: Venue, dayTs: number, steered = 0.45): GateShare[] {
-  const peak = atWib(dayTs, 15, 0)
+/** Share of drivers assumed to follow the app's gate tip. An assumption, shown on the page. */
+export const STEERED = 0.45
+
+export function gateBalance(venue: Venue, dayTs: number, steered = STEERED): GateShare[] {
+  const peak = peakTs(venue, dayTs)
   const occ = occupancyAt(venue, peak)
   const pullSum = venue.gates.reduce((a, g) => a + g.pull, 0)
   const inv = venue.gates.map((g) => 1 / Math.max(0.2, gateQueueMin(g, occ)))
@@ -93,11 +102,11 @@ export function gateBalance(venue: Venue, dayTs: number, steered = 0.45): GateSh
 }
 
 export function weekHeat(venue: Venue, anyTs: number) {
-  // Monday first, the way building managers read a week.
-  const order = [1, 2, 3, 4, 5, 6, 0]
-  const sunday = anyTs - new Date(anyTs + 7 * 3_600_000).getUTCDay() * 86_400_000
-  return order.map((day) => {
-    const ts = sunday + day * 86_400_000
+  // Monday first, the way building managers read a week, so Sunday is the one after Saturday.
+  const monday = anyTs - ((wib(anyTs).day + 6) % 7) * 86_400_000
+  return [0, 1, 2, 3, 4, 5, 6].map((i) => {
+    const ts = monday + i * 86_400_000
+    const day = wib(ts).day
     const hours = []
     for (let h = venue.hours[0]; h < venue.hours[1]; h++) hours.push({ hour: h, occ: occupancyAt(venue, atWib(ts, h, 0)) })
     return { day, ts, hours }
