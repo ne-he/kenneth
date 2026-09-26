@@ -41,14 +41,14 @@ export function zonePrice(occ: number, plan: Plan): number {
 /** Worth pointing out on the normal parking card: the lot is busy enough that a sure bay helps. */
 export const zoneWorthIt = (occ: number) => occ >= 0.8
 
+// Round before the integer check, so 1.96 reads 2, not 2,0.
+function oneDecimal(x: number): string {
+  const r = Math.round(x * 10) / 10
+  return Number.isInteger(r) ? String(r) : r.toFixed(1).replace('.', ',')
+}
+
 export function formatRupiah(v: number, compact = false): string {
-  if (compact && v >= 1_000_000) {
-    const m = v / 1_000_000
-    return `Rp${Number.isInteger(m) ? m : m.toFixed(1).replace('.', ',')}jt`
-  }
-  if (compact && v >= 1000) {
-    const k = v / 1000
-    return `Rp${Number.isInteger(k) ? k : k.toFixed(1).replace('.', ',')}rb`
-  }
+  if (compact && v >= 1_000_000) return `Rp${oneDecimal(v / 1_000_000)}jt`
+  if (compact && v >= 1000) return `Rp${oneDecimal(v / 1000)}rb`
   return `Rp${v.toLocaleString('id-ID')}`
 }

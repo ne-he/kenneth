@@ -19,6 +19,8 @@ Di prototipe:
 3. Ditambah "napas": dua gelombang sinus pelan (periode 17 dan 43 menit, amplitudo total sekitar 2%) supaya angka
    bergerak waktu layar dilihat lama.
 4. Status: **lega** di bawah 70%, **ramai** 70 sampai 89%, **penuh** 90% ke atas.
+   Persen di layar dibulatkan biasa, kecuali kalau pembulatan itu melewati batas status: 89,7% tetap tertulis
+   89% (ramai), bukan 90%.
 5. Jam operasional per lokasi: mall 10.00 sampai 22.00, kampus 06.00 sampai 21.00. Perkiraan per jam, jendela
    booking, dan pencarian "kapan lancar lagi" mengikuti jam lokasinya.
 
@@ -58,8 +60,9 @@ Daftar di tab Parkir diurutkan dari waktu sampai parkir paling kecil.
 
 ## 4. Kapan lancar lagi
 
-Mulai dari sekarang, maju 15 menit sekali sampai jam tutup, cari saat pertama antrian gerbang utama 3 menit
-atau kurang dan status tidak penuh. Hasilnya dibulatkan ke seperempat jam.
+Mulai dari seperempat jam berikutnya (14.07 mulai dari 14.15), maju 15 menit sekali sampai jam tutup, cari
+seperempat jam pertama saat antrian gerbang utama 3 menit atau kurang dan status tidak penuh. Jam yang tampil
+adalah jam yang dicek itu sendiri, jadi pengingat tidak bunyi sebelum antriannya benar-benar turun.
 
 ## 4b. Valet runner (`valet.ts`)
 
