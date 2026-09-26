@@ -188,6 +188,7 @@ export default function Booth() {
                   <button
                     key={key}
                     type="button"
+                    aria-pressed={on}
                     onClick={() =>
                       set('features', on ? f.features.filter((x) => x !== key) : [...f.features, key].slice(-2))
                     }
