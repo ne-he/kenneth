@@ -371,7 +371,6 @@ const id = {
     keepCode: 'Runner nganterin mobilmu balik ke lobi yang sama. Kode ini tetap dipakai.',
     openTicket: 'Buka tiket runner',
     lapsedHint: 'Jam kedatanganmu sudah lewat lebih dari 45 menit, jadi pesanan ini hangus.',
-    remove: 'Hapus tiket',
   },
   ev: {
     start: 'Mulai',

@@ -371,7 +371,6 @@ const en: Dict = {
     keepCode: 'The runner brings the car back to the same lobby. Keep this code.',
     openTicket: 'Open runner ticket',
     lapsedHint: 'Your arrival time passed more than 45 minutes ago, so this booking lapsed.',
-    remove: 'Remove ticket',
   },
   ev: {
     start: 'Start',

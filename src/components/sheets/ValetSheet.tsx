@@ -134,11 +134,9 @@ export function ValetSheet({ id }: { id: string }) {
       {phase === 'lapsed' && (
         <>
           <p className="mb-3 text-center text-[13px] text-ink-2">{t.valet.lapsedHint}</p>
-          <Button variant="secondary" block onClick={() => {
-              act.cancel(ticket)
-              close()
-            }}>
-            {t.valet.remove}
+          {/* Already in Riwayat as lapsed. Cancelling here would relabel it and promise a refund. */}
+          <Button variant="secondary" block onClick={close}>
+            {t.common.close}
           </Button>
         </>
       )}
