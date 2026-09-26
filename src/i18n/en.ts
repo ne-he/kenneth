@@ -231,6 +231,7 @@ const en: Dict = {
     less: 'Show less',
     again: 'Again',
     againLabel: (name: string) => `Book again at ${name}`,
+    againPark: (name: string) => `Park again at ${name}`,
     nothingNow: 'Nothing running right now. New bookings show up here.',
     startsIn: (t: string) => `arrive in ${t}`,
     endsIn: (t: string) => `held for ${t}`,

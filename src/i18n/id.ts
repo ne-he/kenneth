@@ -230,6 +230,7 @@ const id = {
     less: 'Lebih sedikit',
     again: 'Lagi',
     againLabel: (name: string) => `Pesan lagi di ${name}`,
+    againPark: (name: string) => `Parkir lagi di ${name}`,
     nothingNow: 'Belum ada yang berjalan. Pesanan baru muncul di sini.',
     startsIn: (t: string) => `datang dalam ${t}`,
     endsIn: (t: string) => `ditahan ${t} lagi`,

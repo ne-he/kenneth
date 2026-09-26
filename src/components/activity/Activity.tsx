@@ -441,7 +441,7 @@ function AgainButton({ venueId, service, motor, name }: { venueId: VenueId; serv
   return (
     <button
       type="button"
-      aria-label={t.activity.againLabel(name)}
+      aria-label={service === 'park' || motor ? t.activity.againPark(name) : t.activity.againLabel(name)}
       onClick={() => {
         haptic('tap')
         const ui = useUi.getState()
