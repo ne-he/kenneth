@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
-import { nextSaturdayAt } from '../lib/time'
+import { atWib, nextSaturdayAt } from '../lib/time'
 import { snapshot } from './occupancy'
 import { alternativesFor } from './recommend'
 import { servicesFor } from './services'
-import { HANDOVER_EARLY_MIN, VALET_HOLD_MIN, canHandOver, dropQueueMin, retrievalMin, runnerFor, valetOpen, valetPhase, type ValetTicket } from './valet'
+import { HANDOVER_EARLY_MIN, VALET_HOLD_MIN, canHandOver, dropQueueMin, retrievalMin, runnerFor, valetOpen, valetPhase, valetSlots, type ValetTicket } from './valet'
 
 const SAT = nextSaturdayAt(Date.UTC(2026, 8, 14), 14, 7)
 const MIN = 60_000
@@ -47,6 +47,14 @@ describe('valet', () => {
     expect(canHandOver(ticket(), SAT + 10 * MIN)).toBe(true)
     expect(canHandOver(ticket({ droppedAt: SAT }), SAT + MIN)).toBe(false)
     expect(canHandOver(ticket(), SAT + (VALET_HOLD_MIN + 1) * MIN)).toBe(false)
+  })
+
+  it('only offers runner slots while the building is open', () => {
+    const early = valetSlots([10, 22], atWib(SAT, 7, 0))
+    expect(early[0]).toBe(atWib(SAT, 10, 0))
+    expect(valetSlots([10, 22], SAT)[0]).toBe(atWib(SAT, 14, 30))
+    expect(valetSlots([10, 22], atWib(SAT, 20, 40)).at(-1)).toBe(atWib(SAT, 21, 0))
+    expect(valetSlots([10, 22], atWib(SAT, 21, 0))).toEqual([])
   })
 
   it('puts the same runner on a ticket every time', () => {
