@@ -30,4 +30,8 @@ describe('formatKm', () => {
     expect(formatKm(1.24)).toBe('1,2 km')
     expect(formatKm(12.345)).toBe('12,3 km')
   })
+
+  it('switches to kilometres when the metres round up to 1000', () => {
+    expect(formatKm(0.996)).toBe('1,0 km')
+  })
 })
