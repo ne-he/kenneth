@@ -276,7 +276,12 @@ export default function Booth() {
                 block
                 className="mt-2"
                 onClick={() => {
-                  if (!confirm) return setConfirm(true)
+                  if (!confirm) {
+                    // Arm for a few seconds only, so a stray tap hours later cannot wipe the day's answers.
+                    setConfirm(true)
+                    window.setTimeout(() => setConfirm(false), 4000)
+                    return
+                  }
                   clear()
                   setConfirm(false)
                 }}
