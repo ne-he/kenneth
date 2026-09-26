@@ -120,16 +120,16 @@ Sebelas risiko ini dari daftar risiko tim. Kolom terakhir menunjukkan di mana ja
 
 | # | Risiko | Jawaban | Di app |
 |---|---|---|---|
-| 1 | Orang booking lalu tidak keluar-keluar | Tidak jual petak, jual giliran masuk | Teks pembuka di layar booking |
-| 2 | Slot sedikit, peminat banyak | Bayar per pakai, jual 24 dari 30 | Sisa giliran di tiap jendela, label "Habis" |
+| 1 | Orang booking lalu tidak keluar-keluar | Yang dijual petak di zona kecil yang terpisah (sekitar 1 dari 100 petak). Petak ditahan 30 menit dari jam datang, petak lain tetap untuk semua orang | Catatan tahan 30 menit dan "Kok bisa ada zona khusus?" di layar booking |
+| 2 | Slot sedikit, peminat banyak | Bayar per pakai, zona dibatasi 12 sampai 40 petak per gedung | Sisa petak di tiap jam datang, label "Habis" |
 | 3 | Mall ramai tidak mau kerja sama | Produk berbeda untuk mall ramai, pengalihan ke properti satu grup dulu | Dashboard mitra, bagian "Ke mana mereka pergi" |
 | 4 | Pengelola belum tentu mau bayar | Prototipe tidak bergantung pada mereka. Data simulasi sah untuk tahap ini | Label "Estimasi" dan keterangan simulasi |
 | 5 | Data salah, pengguna kabur | Jujur soal sumber, uji toleransi meleset di booth | Label "Data palang" atau "Estimasi" di tiap lokasi, pertanyaan 3 di `/booth` |
 | 6 | Ayam dan telur | Mulai dari area sempit, laporan pengguna | Tombol "Kondisi di lokasi beda?" |
 | 7 | Google bisa bikin ini | Akuisisi jalan keluar yang sah. Yang harus dibangun komunitas dan hubungan dengan pengelola | Tidak ada di app |
 | 8 | Hanya terasa di akhir pekan | Visi jangka panjang: kantor, rumah sakit, kampus | Tidak ada di app. Pilot sengaja mall dulu |
-| 9 | Yang tidak bayar menunggu lebih lama | Mirip fast track bandara, dan fitur gratis ikut mengurangi antrian | "Kenapa ini adil" di layar booking |
-| 10 | Parkiran penuh total | Diakui di depan | Peringatan "hampir penuh total" di layar booking |
+| 9 | Yang tidak bayar menunggu lebih lama | Tidak ada antrian yang didahulukan. Zona punya petak sendiri, antrian gerbang biasa tidak ditahan untuk siapa pun, dan fitur gratis ikut mengurangi antrian | "Kok bisa ada zona khusus?" di layar booking |
+| 10 | Parkiran penuh total | Diakui di depan | Label "Habis" di jam yang petaknya sudah habis, dan "Masih lega di dekat sini" di lokasi yang penuh |
 | 11 | Privasi data lokasi | Yang dijual ke pengelola hanya agregat dan anonim | Profil, Privasi dan data. Semua data prototipe tinggal di HP |
 
 ## Yang diuji di BINUS Festival
