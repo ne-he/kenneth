@@ -85,7 +85,10 @@ export interface GateShare {
  * Without the app drivers follow habit (gate pull). With the app a part of
  * them is sent to whichever gate has the shortest queue, which flattens it.
  */
-export function gateBalance(venue: Venue, dayTs: number, steered = 0.45): GateShare[] {
+/** Share of drivers assumed to follow the app's gate tip. An assumption, shown on the page. */
+export const STEERED = 0.45
+
+export function gateBalance(venue: Venue, dayTs: number, steered = STEERED): GateShare[] {
   const peak = peakTs(venue, dayTs)
   const occ = occupancyAt(venue, peak)
   const pullSum = venue.gates.reduce((a, g) => a + g.pull, 0)

@@ -10,7 +10,7 @@ import { CountUp } from '../components/ui/Display'
 import { Wordmark } from '../components/ui/Logo'
 import type { VenueId } from '../data/types'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
-import { AVG_STAY_H, BUSY_LINE, FULL_LINE, diversions, gateBalance, hourlyFlow, zoneDay, weekHeat } from '../engine/mitra'
+import { AVG_STAY_H, BUSY_LINE, FULL_LINE, STEERED, diversions, gateBalance, hourlyFlow, zoneDay, weekHeat } from '../engine/mitra'
 import { formatRupiah } from '../engine/pricing'
 import { useLang } from '../i18n'
 import { useResolvedTheme } from '../lib/theme'
@@ -36,7 +36,7 @@ const COPY = {
     where: 'Ke mana mereka pergi',
     whereSub: 'Perkiraan tujuan mereka kalau semuanya pakai KENNETH. Properti satu grup diutamakan.',
     gates: 'Pemerataan gerbang saat puncak',
-    gatesSub: 'Porsi mobil per gerbang',
+    gatesSub: (pct: number) => `Porsi mobil per gerbang, kalau ${pct}% pengemudi ikut saran gerbang dari KENNETH`,
     without: 'Tanpa KENNETH',
     with: 'Dengan KENNETH',
     week: 'Pola seminggu',
@@ -77,7 +77,7 @@ const COPY = {
     where: 'Where they went',
     whereSub: 'Where they would go if they all used KENNETH. Same group properties first.',
     gates: 'Gate balance at peak',
-    gatesSub: 'Share of cars per gate',
+    gatesSub: (pct: number) => `Share of cars per gate, if ${pct}% of drivers follow the KENNETH gate tip`,
     without: 'Without KENNETH',
     with: 'With KENNETH',
     week: 'Week pattern',
@@ -237,7 +237,7 @@ export default function Mitra() {
               <p className="py-6 text-center text-[13px] text-ink-3">-</p>
             )}
           </Card>
-          <Card title={c.gates} sub={c.gatesSub}>
+          <Card title={c.gates} sub={c.gatesSub(Math.round(STEERED * 100))}>
             <PairedBars
               data={gates.map((g) => ({ label: g.name, a: g.without, b: g.with }))}
               colors={colors}
