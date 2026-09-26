@@ -43,11 +43,13 @@ export function OccupancyLine({
   color,
   nowHour,
   thresholds,
+  label,
 }: {
   data: { hour: number; occ: number }[]
   color: string
   nowHour?: number
   thresholds: { value: number; label: string }[]
+  label: string
 }) {
   const [box, w] = useWidth<HTMLDivElement>()
   const h = 220
@@ -75,7 +77,7 @@ export function OccupancyLine({
         }}
         onPointerLeave={() => setHover(null)}
         role="img"
-        aria-label="Okupansi per jam"
+        aria-label={label}
       >
         {[0, 0.25, 0.5, 0.75, 1].map((v) => (
           <g key={v}>

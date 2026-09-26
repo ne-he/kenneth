@@ -57,8 +57,10 @@ const COLUMNS: (keyof BoothResponse)[] = [
 ]
 
 const cell = (v: unknown) => {
-  const s = Array.isArray(v) ? v.join('; ') : typeof v === 'number' ? new Date(v).toISOString() : String(v ?? '')
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+  let s = Array.isArray(v) ? v.join('; ') : typeof v === 'number' ? new Date(v).toISOString() : String(v ?? '')
+  // Free text starting with = + - @ opens as a formula in Excel ("- cepat" shows #NAME?). A leading ' keeps it text.
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 }
 
 export function toCsv(rows: BoothResponse[]): string {
@@ -66,10 +68,12 @@ export function toCsv(rows: BoothResponse[]): string {
 }
 
 export function download(name: string, text: string, type: string) {
-  const blob = new Blob(['﻿' + text], { type })
+  // Excel needs the BOM to read a CSV as UTF-8. JSON must not have one, JSON.parse and Python reject it.
+  const blob = new Blob([type === 'text/csv' ? '﻿' + text : text], { type })
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
   a.download = name
   a.click()
-  URL.revokeObjectURL(a.href)
+  // Revoking right after the click can cancel the download on iPad Safari, the likely booth device.
+  window.setTimeout(() => URL.revokeObjectURL(a.href), 10_000)
 }

@@ -10,7 +10,7 @@ import { CountUp } from '../components/ui/Display'
 import { Wordmark } from '../components/ui/Logo'
 import type { VenueId } from '../data/types'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
-import { AVG_STAY_H, BUSY_LINE, FULL_LINE, diversions, gateBalance, hourlyFlow, zoneDay, weekHeat } from '../engine/mitra'
+import { AVG_STAY_H, BUSY_LINE, FULL_LINE, STEERED, diversions, gateBalance, hourlyFlow, zoneDay, weekHeat } from '../engine/mitra'
 import { formatRupiah } from '../engine/pricing'
 import { useLang } from '../i18n'
 import { useResolvedTheme } from '../lib/theme'
@@ -27,6 +27,7 @@ const COPY = {
     kpiIn: 'Mobil masuk',
     kpiPeak: 'Puncak okupansi',
     kpiLost: 'Batal datang karena penuh',
+    kpiLostNote: 'Estimasi model, tidak terukur dari palang',
     kpiZone: 'Booking Zona KENNETH',
     at: 'jam',
     occ: 'Okupansi per jam',
@@ -36,7 +37,7 @@ const COPY = {
     where: 'Ke mana mereka pergi',
     whereSub: 'Perkiraan tujuan mereka kalau semuanya pakai KENNETH. Properti satu grup diutamakan.',
     gates: 'Pemerataan gerbang saat puncak',
-    gatesSub: 'Porsi mobil per gerbang',
+    gatesSub: (pct: number) => `Porsi mobil per gerbang, kalau ${pct}% pengemudi ikut saran gerbang dari KENNETH`,
     without: 'Tanpa KENNETH',
     with: 'Dengan KENNETH',
     week: 'Pola seminggu',
@@ -56,6 +57,7 @@ const COPY = {
     assume: (h: number) =>
       `Asumsi model: rata-rata parkir ${h} jam, pengunjung mulai batal di atas 88% dan sampai 22% di 100%. Harga paket masih perkiraan, belum divalidasi ke pengelola mana pun.`,
     gross: 'nilai kotor',
+    noZone: 'Kampus tidak punya Zona KENNETH',
     table: 'Lihat sebagai tabel',
     hour: 'Jam',
   },
@@ -68,6 +70,7 @@ const COPY = {
     kpiIn: 'Cars in',
     kpiPeak: 'Peak occupancy',
     kpiLost: 'Gave up because full',
+    kpiLostNote: 'Model estimate, barriers cannot count it',
     kpiZone: 'KENNETH Zone bookings',
     at: 'at',
     occ: 'Occupancy by hour',
@@ -77,7 +80,7 @@ const COPY = {
     where: 'Where they went',
     whereSub: 'Where they would go if they all used KENNETH. Same group properties first.',
     gates: 'Gate balance at peak',
-    gatesSub: 'Share of cars per gate',
+    gatesSub: (pct: number) => `Share of cars per gate, if ${pct}% of drivers follow the KENNETH gate tip`,
     without: 'Without KENNETH',
     with: 'With KENNETH',
     week: 'Week pattern',
@@ -97,6 +100,7 @@ const COPY = {
     assume: (h: number) =>
       `Model assumptions: average stay ${h} hours, visitors start giving up above 88% and up to 22% at 100%. Plan prices are estimates, not validated with any manager yet.`,
     gross: 'gross value',
+    noZone: 'Campuses have no KENNETH Zone',
     table: 'View as table',
     hour: 'Hour',
   },
@@ -132,6 +136,8 @@ export default function Mitra() {
   const heat = useMemo(() => weekHeat(venue, now), [venue, now])
   const prio = useMemo(() => zoneDay(venue, dayTs), [venue, dayTs])
   const busyVenue = peak.occ >= FULL_LINE
+  // Campuses sell nothing (docs/PRODUCT.md), so only the dashboard plan fits them.
+  const isMall = venue.category === 'mall'
   const nowHour = dayKey === 'today' ? wib(now).hourF : undefined
 
   return (
@@ -192,12 +198,12 @@ export default function Mitra() {
             unit="%"
             note={`${c.at} ${String(peak.hour).padStart(2, '0')}.00`}
           />
-          <Kpi icon={<TrendDown size={18} weight="fill" />} label={c.kpiLost} value={totalLost} tone={totalLost > 0 ? 'bad' : undefined} />
+          <Kpi icon={<TrendDown size={18} weight="fill" />} label={c.kpiLost} value={totalLost} note={c.kpiLostNote} tone={totalLost > 0 ? 'bad' : undefined} />
           <Kpi
             icon={<ShieldCheck size={18} weight="fill" />}
             label={c.kpiZone}
-            value={prio.tickets}
-            note={prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
+            value={isMall ? prio.tickets : null}
+            note={!isMall ? c.noZone : prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
           />
         </section>
 
@@ -207,6 +213,7 @@ export default function Mitra() {
               data={flow}
               color={colors.mono}
               nowHour={nowHour}
+              label={c.occ}
               thresholds={[
                 { value: BUSY_LINE, label: `${lang === 'id' ? 'Ramai' : 'Busy'} 70%` },
                 { value: FULL_LINE, label: `${lang === 'id' ? 'Penuh' : 'Full'} 90%` },
@@ -237,7 +244,7 @@ export default function Mitra() {
               <p className="py-6 text-center text-[13px] text-ink-3">-</p>
             )}
           </Card>
-          <Card title={c.gates} sub={c.gatesSub}>
+          <Card title={c.gates} sub={c.gatesSub(Math.round(STEERED * 100))}>
             <PairedBars
               data={gates.map((g) => ({ label: g.name, a: g.without, b: g.with }))}
               colors={colors}
@@ -247,8 +254,8 @@ export default function Mitra() {
           </Card>
           <Card title={c.products} sub="">
             <div className="space-y-2">
-              <Product name={c.p1} price={c.p1p} desc={c.p1d} fit={!busyVenue} fitLabel={c.fit} />
-              <Product name={c.p2} price={c.p2p} desc={c.p2d} fit={busyVenue} fitLabel={c.fit} />
+              <Product name={c.p1} price={c.p1p} desc={c.p1d} fit={isMall && !busyVenue} fitLabel={c.fit} />
+              <Product name={c.p2} price={c.p2p} desc={c.p2d} fit={isMall && busyVenue} fitLabel={c.fit} />
               <Product name={c.p3} price={c.p3p} desc={c.p3d} fit fitLabel={c.fit} />
             </div>
           </Card>
@@ -277,7 +284,7 @@ export default function Mitra() {
   )
 }
 
-function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label: string; value: number; unit?: string; note?: string; tone?: 'bad' }) {
+function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label: string; value: number | null; unit?: string; note?: string; tone?: 'bad' }) {
   return (
     <div className="rounded-[22px] border border-line bg-surface p-4">
       <div className="flex items-center gap-2 text-[12px] font-semibold text-ink-3">
@@ -287,8 +294,8 @@ function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label:
         {label}
       </div>
       <div className="mt-3 text-[34px] leading-none font-extrabold tracking-tight">
-        <CountUp value={value} grouped />
-        {unit && <span className="text-[18px]">{unit}</span>}
+        {value === null ? '-' : <CountUp value={value} grouped />}
+        {unit && value !== null && <span className="text-[18px]">{unit}</span>}
       </div>
       {note && <div className="mt-1.5 text-[12px] text-ink-3">{note}</div>}
     </div>

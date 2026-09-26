@@ -44,7 +44,7 @@ menonjol seperti tombol QRIS di app bank. Nggak ada dashboard, dan app nggak per
 
 | Tab | Isi |
 |---|---|
-| **Aktivitas** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, runner valet yang lagi jalan, petak Zona KENNETH yang sedang ditahan. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
+| **Aktivitas** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, runner valet yang lagi jalan, petak Zona KENNETH yang sedang ditahan, charger yang sedang mengisi. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
 | **Parkir** (logo K, tengah) | Peta besar, search, dan dropdown "Mau ngapain?" di kanan search: Parkir, Zona KENNETH, Valet runner, Charger EV, plus pilihan kendaraan (mobil atau motor). Layoutnya selalu sama, yang berubah cuma angka di pin dan satu tombol utama di kartu tempat. Tap K lagi untuk balik ke tampilan awal |
 | **Akun** (kanan) | Masuk dengan Google atau tetap jadi tamu, kendaraan, paket, dampak bulan ini, opsi peta, notifikasi |
 
@@ -117,7 +117,9 @@ Tambahan di luar 11 fitur:
 - **Kampus tidak menjual apa pun.** Di kampus app cuma menunjukkan seberapa penuh dan ke mana kalau penuh.
 - **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
 - **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, booking, dan lokasi
-  parkir tetap di perangkat. Yang nantinya dijual ke pengelola hanya agregat per jam.
+  parkir tetap di perangkat. Untuk menghitung rute, titik awal (lokasimu kalau kamu menekan tombol lokasi) dan
+  tujuan dikirim ke server demo OSRM, dan potongan peta diambil dari OpenFreeMap. Yang nantinya dijual ke pengelola
+  hanya agregat per jam.
 
 ## Jalankan sendiri
 
@@ -142,7 +144,9 @@ npm run lint      # oxlint
 
 Konfigurasi ada di [firebase.json](firebase.json): semua rute diarahkan ke `index.html` (app satu halaman),
 file di `assets/` di-cache setahun karena namanya selalu berubah tiap build, sedangkan semua rute, `index.html`,
-dan service worker selalu dicek ulang supaya versi baru langsung sampai. Paket gratis (Spark) sudah cukup.
+dan service worker selalu dicek ulang supaya versi baru langsung sampai. Header keamanan (nosniff, Referrer-Policy,
+Permissions-Policy) ikut dikirim, begitu juga Content-Security-Policy dalam mode Report-Only: pelanggarannya cuma
+dicatat di console browser, belum diblokir. Paket gratis (Spark) sudah cukup.
 
 Folder ini sudah terhubung ke project `kenneth-9339d` lewat [.firebaserc](.firebaserc). Yang mau rilis harus
 ditambahkan dulu sebagai anggota project di Firebase console, lalu login sekali:
@@ -154,7 +158,7 @@ npx firebase-tools login
 Setelah itu setiap mau rilis:
 
 ```bash
-npm run deploy           # build lalu publish ke https://kenneth-9339d.web.app
+npm run deploy           # build lalu publish ke https://kenneth-9339d.web.app dan https://kenneth-park.web.app
 npm run deploy:preview   # link uji coba terpisah, hangus sendiri setelah 7 hari
 ```
 

@@ -99,6 +99,15 @@ export function statusOf(occ: number): OccupancyStatus {
   return 'lega'
 }
 
+/** Whole percent for the screen. Never rounds up across a status line: 89.7% full reads 89%, not "90% ramai". */
+export function pctOf(occ: number): number {
+  const pct = Math.round(occ * 100)
+  const status = statusOf(occ)
+  if (status === 'lega') return Math.min(pct, Math.round(THRESHOLD.ramai * 100) - 1)
+  if (status === 'ramai') return Math.min(pct, Math.round(THRESHOLD.penuh * 100) - 1)
+  return pct
+}
+
 export const freeSlots = (venue: Venue, occ: number) => Math.max(0, Math.round(venue.capacity * (1 - occ)))
 
 /**
@@ -148,7 +157,7 @@ export function snapshot(venue: Venue, ts: number): Snapshot {
   return {
     venue,
     occ,
-    pct: Math.round(occ * 100),
+    pct: pctOf(occ),
     status: statusOf(occ),
     free: freeSlots(venue, occ),
     queueMin: gateQueueMin(defaultGate(venue), occ),
@@ -182,19 +191,19 @@ export function forecastDay(venue: Venue, ts: number): ForecastPoint[] {
 }
 
 /**
- * First moment after `ts` (same day, before closing) when the default gate
- * queue drops to 3 minutes or less. Null when it does not happen today.
+ * First quarter hour after `ts` (same day, before closing) when the default
+ * gate queue drops to 3 minutes or less. Null when it does not happen today.
  */
 export function nextRelief(venue: Venue, ts: number): number | null {
   const now = snapshot(venue, ts)
   if (now.queueMin <= 3 && now.status !== 'penuh') return null
   const close = atWib(ts, venue.hours[1], 0)
-  for (let t = ts + 15 * 60_000; t <= close; t += 15 * 60_000) {
+  const q = 15 * 60_000
+  // Check the quarter hours themselves, so the time on screen is a time that was checked.
+  // WIB is a whole 7 hours off UTC, so flooring the timestamp lands on a WIB quarter hour.
+  for (let t = Math.floor(ts / q) * q + q; t <= close; t += q) {
     const occ = occupancyAt(venue, t)
-    if (gateQueueMin(defaultGate(venue), occ) <= 3 && statusOf(occ) !== 'penuh') {
-      // Round down to the quarter hour so the copy reads naturally.
-      return t - (t % (15 * 60_000))
-    }
+    if (gateQueueMin(defaultGate(venue), occ) <= 3 && statusOf(occ) !== 'penuh') return t
   }
   return null
 }

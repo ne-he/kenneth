@@ -3,7 +3,7 @@ import { BINUS_ANGGREK, VENUE_BY_ID, VENUES } from '../data/venues'
 import { atWib, nextSaturdayAt } from '../lib/time'
 import { checkGage, dateParity, plateParity } from './gage'
 import { CO2_KG_PER_L, impactOf, sumImpact } from './impact'
-import { ZONE_MAX, ZONE_MIN, parkingCost, zoneBasePrice, zonePrice } from './pricing'
+import { ZONE_MAX, ZONE_MIN, formatRupiah, parkingCost, zoneBasePrice, zonePrice } from './pricing'
 import { alternativesFor, rankVenues } from './recommend'
 import { bayFor, baysLeft, zoneOf } from './zone'
 import { passPhase } from './pass'
@@ -26,6 +26,14 @@ describe('pricing', () => {
     }
     expect(zoneBasePrice(0.3)).toBe(ZONE_MIN)
     expect(zoneBasePrice(0.99)).toBe(ZONE_MAX)
+  })
+
+  it('writes compact rupiah with at most one decimal and no trailing ,0', () => {
+    expect(formatRupiah(15_000)).toBe('Rp15.000')
+    expect(formatRupiah(500, true)).toBe('Rp500')
+    expect(formatRupiah(9_500, true)).toBe('Rp9,5rb')
+    expect(formatRupiah(2_152_000, true)).toBe('Rp2,2jt')
+    expect(formatRupiah(1_960_000, true)).toBe('Rp2jt')
   })
 
   it('gives premium members 40 percent off', () => {

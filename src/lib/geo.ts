@@ -23,7 +23,9 @@ export function estimateDrive(a: LngLat, b: LngLat) {
 }
 
 export function formatKm(km: number): string {
-  if (km < 1) return `${Math.round(km * 100) * 10} m`
+  // Round first, so 0.996 km reads 1,0 km and never 1000 m.
+  const m = Math.round(km * 100) * 10
+  if (m < 1000) return `${m} m`
   return `${km.toFixed(1).replace('.', ',')} km`
 }
 

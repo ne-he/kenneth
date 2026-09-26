@@ -29,6 +29,10 @@
             {
               "key": "Permissions-Policy",
               "value": "geolocation=(self), camera=(self), microphone=()"
+            },
+            {
+              "key": "Content-Security-Policy-Report-Only",
+              "value": "default-src 'self'; script-src 'self' 'sha256-O/tn7DGq+u2pUsvznShWHEMuduph/ffV7IgFXzn80MQ=' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org https://*.googleusercontent.com; font-src 'self' data:; connect-src 'self' https://tiles.openfreemap.org https://router.project-osrm.org https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src 'self' https://kenneth-9339d.web.app https://kenneth-9339d.firebaseapp.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
             }
           ]
         },
@@ -99,6 +103,10 @@
             {
               "key": "Permissions-Policy",
               "value": "geolocation=(self), camera=(self), microphone=()"
+            },
+            {
+              "key": "Content-Security-Policy-Report-Only",
+              "value": "default-src 'self'; script-src 'self' 'sha256-O/tn7DGq+u2pUsvznShWHEMuduph/ffV7IgFXzn80MQ=' https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tiles.openfreemap.org https://*.googleusercontent.com; font-src 'self' data:; connect-src 'self' https://tiles.openfreemap.org https://router.project-osrm.org https://identitytoolkit.googleapis.com https://securetoken.googleapis.com; frame-src 'self' https://kenneth-9339d.web.app https://kenneth-9339d.firebaseapp.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
             }
           ]
         },

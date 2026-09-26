@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
-import { atWib, nextSaturdayAt, wib } from '../lib/time'
+import { atWib, clock, nextSaturdayAt, wib } from '../lib/time'
 import {
   THRESHOLD,
+  defaultGate,
   forKind,
   forecastDay,
+  gateQueueMin,
   nextRelief,
   occupancyAt,
+  pctOf,
   reservedFree,
   snapshot,
   statusOf,
@@ -72,6 +75,23 @@ describe('occupancy model', () => {
     expect(h).toBeLessThanOrEqual(17)
   })
 
+  it('only promises relief at a quarter hour when the main gate really is calm', () => {
+    // Central Park at 12.54 used to say 16.15, when the main gate still had a 6 minute queue.
+    for (const v of VENUES) {
+      for (let m = 0; m < 24 * 60; m += 7) {
+        const ts = atWib(SAT_1407, 0, 0) + m * 60_000
+        const relief = nextRelief(v, ts)
+        if (relief === null) continue
+        const where = `${v.id} asked at ${clock(ts)}, told ${clock(relief)}`
+        expect(relief, where).toBeGreaterThan(ts)
+        expect(wib(relief).minute % 15, where).toBe(0)
+        const occ = occupancyAt(v, relief)
+        expect(gateQueueMin(defaultGate(v), occ), where).toBeLessThanOrEqual(3)
+        expect(statusOf(occ), where).not.toBe('penuh')
+      }
+    }
+  })
+
   it('returns no relief when the venue is already fine', () => {
     expect(nextRelief(VENUE_BY_ID['neo-soho'], SAT_1407)).toBeNull()
   })
@@ -81,6 +101,17 @@ describe('occupancy model', () => {
     expect(f[0].hour).toBe(10)
     expect(f.at(-1)!.hour).toBe(22)
     expect(f.length).toBe(13)
+  })
+
+  it('never shows a percent from the next status band', () => {
+    // Central Park at 13.23 on Saturday is 89.6% full: it used to read "90%" on a pin that still said ramai.
+    expect(pctOf(0.8965)).toBe(89)
+    expect(pctOf(0.6956)).toBe(69)
+    expect(pctOf(0.9)).toBe(90)
+    expect(pctOf(0.7)).toBe(70)
+    expect(pctOf(0.954)).toBe(95)
+    const snap = snapshot(VENUE_BY_ID['central-park'], atWib(SAT_1407, 13, 23))
+    expect(statusOf(snap.pct / 100)).toBe(snap.status)
   })
 
   it('maps thresholds to status labels', () => {
