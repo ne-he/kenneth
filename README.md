@@ -164,6 +164,9 @@ npm run deploy:preview   # link uji coba terpisah, hangus sendiri setelah 7 hari
 
 Login Google perlu diaktifkan sekali oleh pemilik project: Firebase console, Authentication, Get started,
 Sign-in method, Google, Enable, pilih email dukungan, Save. Tidak perlu deploy ulang setelahnya.
+Popup login selalu lewat `kenneth-9339d.firebaseapp.com` (diturunkan dari project ID di `src/lib/auth.ts`), karena
+cuma handler di domain itu yang terdaftar di OAuth client bawaan Google. Domain hosting baru cukup ditambahkan di
+Authentication, Settings, Authorized domains.
 
 ## Stack
 
