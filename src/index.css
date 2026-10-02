@@ -196,7 +196,7 @@
   .app-root {
     --nav-pad: max(10px, var(--safe-bottom, env(safe-area-inset-bottom)));
     /* Floating dock: its own height plus the gap below it. Sheets and scroll areas stop above this. */
-    --nav-h: calc(60px + var(--nav-pad));
+    --nav-h: calc(62px + var(--nav-pad));
   }
 }
 
