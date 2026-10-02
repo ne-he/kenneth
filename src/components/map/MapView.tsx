@@ -112,17 +112,17 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     if (!threeD) map.easeTo({ pitch: 0, bearing: 0, duration: 700 })
   }, [theme, look, threeD])
 
-  // Status halos under the pins.
+  // A soft status glow under the selected place only, so the map stays calm until you pick one.
   useEffect(() => {
     const src = mapRef.current?.getSource('venue-halo') as GeoJSONSource | undefined
     src?.setData({
       type: 'FeatureCollection',
       features: snapshots
-        .filter((s) => facts?.get(s.venue.id)?.kind !== 'none')
+        .filter((s) => s.venue.id === selected && facts?.get(s.venue.id)?.kind !== 'none')
         .map((s) => ({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: s.venue.coords },
-          properties: { color: factHex(facts?.get(s.venue.id), s), selected: s.venue.id === selected ? 1 : 0 },
+          properties: { color: factHex(facts?.get(s.venue.id), s) },
         })),
     })
   }, [snapshots, facts, selected, ready])
@@ -312,7 +312,7 @@ function addOverlays(map: MLMap) {
           'circle-color': ['get', 'color'],
           'circle-radius': ['interpolate', ['exponential', 2], ['zoom'], 11, 14, 14, 42, 17, 190],
           'circle-blur': 1,
-          'circle-opacity': ['case', ['==', ['get', 'selected'], 1], 0.5, 0.26],
+          'circle-opacity': 0.34,
           'circle-pitch-alignment': 'map',
         },
       },
