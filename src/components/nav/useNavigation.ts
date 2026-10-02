@@ -1,6 +1,8 @@
 import { VENUE_BY_ID } from '../../data/venues'
-import type { VenueId } from '../../data/types'
-import { forKind, snapshot } from '../../engine/occupancy'
+import type { Gate, VenueId } from '../../data/types'
+import type { ParkMode } from '../../engine/modes'
+import { forKind, snapshot, type Snapshot } from '../../engine/occupancy'
+import { zoneOf } from '../../engine/zone'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { NAV_APP_NAME, externalNavUrl } from '../../lib/navApps'
@@ -10,9 +12,18 @@ import { useUi } from '../../store/ui'
 import { fitPoints, flyTo } from '../map/mapApi'
 
 /**
- * Start and stop navigation to the quietest gate of a venue. With Google Maps
- * or Waze picked in Akun, the gate goes to that app instead and KENNETH stays
- * on the venue, ready for "Parkir" when the user arrives.
+ * The gate a route goes to when none is picked by hand: the quietest one, or
+ * with Zona KENNETH on, the gate with the plate reader that leads to the zone,
+ * whatever the queues say. Buttons that name the gate should use this too.
+ */
+export function routeGate(snap: Snapshot, mode: ParkMode): Gate {
+  return (mode === 'zone' ? zoneOf(snap.venue)?.gate : undefined) ?? snap.bestGate
+}
+
+/**
+ * Start and stop navigation to a gate of a venue, see `routeGate`. With
+ * Google Maps or Waze picked in Akun, the gate goes to that app instead and
+ * KENNETH stays on the venue, ready for "Parkir" when the user arrives.
  */
 export function useNavigation() {
   const t = useT()
@@ -22,8 +33,8 @@ export function useNavigation() {
     const venue = forKind(VENUE_BY_ID[venueId], activeVehicleOf(useApp.getState()).kind)
     const now = simNowOf(useApp.getState().clock)
     const snap = snapshot(venue, now)
-    const gate = venue.gates.find((g) => g.id === gateId) ?? snap.bestGate
-    const { origin, notify, setRoute, select } = useUi.getState()
+    const { origin, notify, setRoute, select, mode } = useUi.getState()
+    const gate = venue.gates.find((g) => g.id === gateId) ?? routeGate(snap, mode)
     const app = useApp.getState().mapPrefs.navApp
     haptic('success')
     if (app !== 'kenneth') {
