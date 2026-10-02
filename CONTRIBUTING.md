@@ -118,7 +118,7 @@ kejauhan dari gedungnya, dan field yang wajib ada.
 - Tombol "Masuk dengan Google" baru muncul kalau `.env.local` diisi (lihat `.env.example`).
 - Nggak ada yang boleh pindah tab otomatis. Setelah aksi berhasil, cukup toast dan titik di tab Aktivitas (`markActivity`).
   Satu-satunya perpindahan tab adalah yang ditekan pengguna sendiri, misalnya tombol "Lagi" di Riwayat.
-- Tab Parkir satu template untuk semua mode. Mode baru berarti isi pin dan tombol baru di `engine/modes.ts` dan
+- Beranda satu template untuk semua mode. Mode baru berarti isi pin dan tombol baru di `engine/modes.ts` dan
   `explore/PlaceCard.tsx`, bukan layar baru.
 - Booking yang bisa dibatalkan selalu pakai `CancelConfirm`, dan yang dibatalkan tetap tercatat (lihat `engine/activity.ts`).
 - Di mode dev, objek peta tersedia di console sebagai `window.__kmap`.

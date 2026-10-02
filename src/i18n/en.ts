@@ -227,7 +227,7 @@ const en: Dict = {
     next: 'Coming up',
     past: 'History',
     emptyTitle: 'Nothing here yet',
-    emptyHint: 'Book a KENNETH Zone bay, a runner or a charger from the Park tab. The parking spot you save shows up here too.',
+    emptyHint: 'Book a KENNETH Zone bay, a runner or a charger from Home. The parking spot you save shows up here too.',
     findParking: 'Find parking',
     all: (n: number) => `See all (${n})`,
     less: 'Show less',
@@ -527,7 +527,7 @@ const en: Dict = {
     what: [
       { title: 'See it before you go', body: 'How full it is and how long the queue is, at malls and BINUS campuses.' },
       { title: 'Full? Somewhere is open', body: 'The nearest alternative, plus the quickest gate.' },
-      { title: 'Book without fuss', body: 'KENNETH Zone bays, runner valet and electric car chargers. All from the Park button at the top right.' },
+      { title: 'Book without fuss', body: 'KENNETH Zone bays, runner valet and electric car chargers. Pick one from the sheet on Home.' },
     ],
     honest: 'The numbers come from the parking barriers already installed. Places whose operator is not connected yet are marked Estimate.',
     favTitle: 'Where do you usually park?',

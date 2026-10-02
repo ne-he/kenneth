@@ -49,7 +49,7 @@ disembunyikan di balik satu dropdown dan dua tab pinggir terasa setara dengan pe
 - **Batal selalu kelihatan.** Booking yang masih bisa dibatalkan punya tombol "Batalkan" di kartunya, dua langkah,
   dengan aturannya tertulis. Yang dibatalkan tetap tercatat di Riwayat supaya tidak ada uang atau pesanan yang
   terasa hilang.
-- **App tidak pernah pindah tab sendiri.** Yang lagi berjalan muncul sebagai satu baris di atas kartu tab Parkir.
+- **App tidak pernah pindah tab sendiri.** Yang lagi berjalan muncul sebagai satu baris di atas lembar Beranda.
 
 ## Yang dijual, dan yang sengaja tidak
 
