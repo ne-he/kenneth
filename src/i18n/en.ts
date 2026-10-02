@@ -129,6 +129,7 @@ const en: Dict = {
     locate: 'Use my location',
     locating: 'Finding you...',
     locateFail: 'Could not read your location, using BINUS Anggrek',
+    mapFail: 'The map could not load. Check your connection.',
   },
   venue: {
     sisaSlot: 'Free bays',

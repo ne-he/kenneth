@@ -129,6 +129,7 @@ const id = {
     locate: 'Pakai lokasiku',
     locating: 'Nyari lokasimu...',
     locateFail: 'Lokasi nggak kebaca, pakai BINUS Anggrek dulu',
+    mapFail: 'Peta gagal dimuat. Cek koneksi internet.',
   },
   venue: {
     sisaSlot: 'Sisa slot',
