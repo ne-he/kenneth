@@ -129,8 +129,9 @@ export function List({ children, className }: { children: ReactNode; className?:
 /** Occupancy as a small soft pill: dot, percent, word. The only coloured thing in a row. */
 export function StatusPill({ status, pct, label }: { status: OccupancyStatus; pct?: number; label?: string }) {
   return (
-    <span className={clsx('inline-flex h-[22px] items-center gap-1.5 rounded-full px-2 text-[11.5px] font-bold tabular', STATUS[status].soft)}>
-      <span className={clsx('size-1.5 rounded-full', STATUS[status].dot, status === 'penuh' && 'animate-pulse')} />
+    // Color lives in the dot only; the number stays ink so a long list reads calm.
+    <span className={clsx('inline-flex items-center gap-1.5 text-[12.5px] font-semibold tabular', status === 'penuh' ? STATUS.penuh.text : 'text-ink-2')}>
+      <span className={clsx('size-2 rounded-full', STATUS[status].dot)} />
       {pct !== undefined && `${pct}%`}
       {label && <span className="font-semibold">{label}</span>}
     </span>
