@@ -70,8 +70,9 @@ export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boole
       </div>
       <div className="pointer-events-auto relative mt-2 flex">
         <Chip onClick={() => open({ kind: 'clock' })} label={t.profile.clock}>
-          <span className={clockMode === 'live' ? 'size-1.5 animate-pulse rounded-full bg-brand-500' : 'size-1.5 rounded-full bg-ramai'} />
-          <span className="tabular">
+          {/* Yellow means ramai on this map, so the simulated clock gets a neutral dot. "Simulasi" always stays. */}
+          <span className={clockMode === 'live' ? 'size-1.5 animate-pulse rounded-full bg-brand-500' : 'size-1.5 rounded-full bg-ink-3'} />
+          <span className="font-semibold text-ink tabular">
             {dayName(now, lang)} {clock(now)}
           </span>
           <span className="text-ink-3">{clockMode === 'live' ? t.common.live : t.common.simulated}</span>
@@ -110,7 +111,7 @@ function Chip({ children, onClick, label }: { children: ReactNode; onClick: () =
         haptic('tap')
         onClick()
       }}
-      className="glass shadow-float flex h-8 items-center gap-1.5 rounded-full px-3 text-[12px] font-semibold"
+      className="glass flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[11.5px] font-medium text-ink-2 shadow-[0_1px_2px_rgb(0_0_0/0.05),0_4px_12px_-6px_rgb(0_0_0/0.16)]"
     >
       {children}
     </button>
