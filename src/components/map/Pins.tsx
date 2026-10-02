@@ -107,7 +107,7 @@ export function VenuePin({
           'absolute flex items-center rounded-full font-semibold whitespace-nowrap tabular',
           selected
             ? 'h-8 gap-2 pr-3.5 pl-3 text-[13px] bg-ink text-canvas shadow-[0_8px_20px_-6px_rgb(0_0_0/0.45)]'
-            : 'h-6 gap-1.5 pr-2.5 pl-2 text-[12px] bg-surface text-ink shadow-[0_1px_2px_rgb(0_0_0/0.1),0_4px_12px_-4px_rgb(0_0_0/0.22)] ring-1 ring-line',
+            : 'h-6 gap-1.5 pr-2.5 pl-2 text-[12px] bg-surface dark:bg-surface-3 text-ink shadow-[0_1px_2px_rgb(0_0_0/0.1),0_4px_12px_-4px_rgb(0_0_0/0.22)] ring-1 ring-line',
         )}
       >
         <span className="size-2 shrink-0 rounded-full" style={{ background: dot }} />
@@ -138,7 +138,7 @@ export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number
       transition={{ type: 'spring', stiffness: 500, damping: 28, delay: 0.5 }}
       data-pin-label=""
       className={clsx(
-        'flex h-6 items-center gap-1.5 rounded-lg bg-surface pr-2 pl-1.5 text-[11.5px] font-semibold whitespace-nowrap text-ink shadow-[0_1px_2px_rgb(0_0_0/0.1),0_4px_12px_-4px_rgb(0_0_0/0.22)]',
+        'flex h-6 items-center gap-1.5 rounded-lg bg-surface dark:bg-surface-3 pr-2 pl-1.5 text-[11.5px] font-semibold whitespace-nowrap text-ink shadow-[0_1px_2px_rgb(0_0_0/0.1),0_4px_12px_-4px_rgb(0_0_0/0.22)]',
         // The gate the route goes to gets an ink outline, the rest a hairline.
         best ? 'ring-[1.5px] ring-ink' : 'ring-1 ring-line',
       )}
