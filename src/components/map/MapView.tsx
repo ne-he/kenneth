@@ -157,7 +157,8 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     const map = mapRef.current
     if (!map) return
     const wanted = new Map<string, { at: LngLat; anchor: 'bottom' | 'center'; z: number }>()
-    snapshots.forEach((s) => wanted.set(`v:${s.venue.id}`, { at: s.venue.coords, anchor: 'center', z: s.venue.id === selected ? 3 : 2 }))
+    const lifted = (id: VenueId) => id === selected || id === focused
+    snapshots.forEach((s) => wanted.set(`v:${s.venue.id}`, { at: s.venue.coords, anchor: 'center', z: lifted(s.venue.id) ? 3 : 2 }))
     const sel = snapshots.find((s) => s.venue.id === selected)
     sel?.gates.forEach(({ gate }) => wanted.set(`g:${gate.id}`, { at: gate.coords, anchor: 'center', z: 1 }))
     // You are here sits on top: labels keep clear of it, so it only ever covers the dot of a place you are at.
@@ -182,11 +183,11 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
       markers.current.set(key, { marker, el })
     })
     setEls(() => new Map([...markers.current].map(([key, m]) => [key, m.el])))
-  }, [snapshots, selected, origin, ready])
+  }, [snapshots, selected, focused, origin, ready])
 
   // Lay the labels out after they render (their size depends on the text) and after every camera move.
-  // Priority: the selected place, then favourites, then the ranking the list uses. A label that has no
-  // room is dropped, never moved away from its dot.
+  // Priority: the selected place, the focused card, favourites, then the ranking the list uses. A label
+  // that has no room is dropped, never moved away from its dot.
   const layout = useEffectEvent(() => {
     const map = mapRef.current
     if (!map) return
@@ -198,12 +199,14 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     const here = map.project(origin)
     const dots: Dot[] = [{ id: 'origin', x: here.x, y: here.y, r: 9 }]
     const places: Label[] = []
-    const rank = (s: Snapshot) => (s.venue.id === selected ? 0 : favorites.includes(s.venue.id) ? 1 : 2)
+    const rank = (s: Snapshot) =>
+      s.venue.id === selected ? 0 : s.venue.id === focused ? 1 : favorites.includes(s.venue.id) ? 2 : 3
     const order = snapshots.map((s, i) => ({ s, i })).sort((a, b) => rank(a.s) - rank(b.s) || a.i - b.i)
     for (const { s } of order) {
       const { x, y } = map.project(s.venue.coords)
       dots.push({ id: s.venue.id, x, y, r: 6 })
-      const picked = s.venue.id === selected
+      // The selected place and the focused card both get the ink name pill, which never drops.
+      const picked = s.venue.id === selected || s.venue.id === focused
       if (!picked && facts?.get(s.venue.id)?.kind === 'none') continue
       const { w, h } = size(`v:${s.venue.id}`)
       places.push({ id: s.venue.id, x, y, w, h, spots: picked ? around(w, h, 9) : hang(w, LABEL_INSET), keep: picked })
@@ -218,8 +221,8 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     }
     const best = sel ? [gate(sel.bestGate)] : []
     const rest = (sel?.gates ?? []).filter(({ gate: g }) => g.id !== sel?.bestGate.id).map(({ gate: g }) => gate(g))
-    const picked = places.filter((l) => l.id === selected)
-    const labels = [...best, ...picked, ...rest, ...places.filter((l) => l.id !== selected)]
+    const top = places.filter((l) => l.id === selected)
+    const labels = [...best, ...top, ...rest, ...places.filter((l) => l.id !== selected)]
     const next = placeLabels(labels, dots)
     setOffsets((prev) => (sameOffsets(prev, next) ? prev : next))
   })
@@ -232,7 +235,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     return () => {
       map.off('moveend', onMove)
     }
-  }, [snapshots, facts, selected, origin, favorites, named, els, ready])
+  }, [snapshots, facts, selected, focused, origin, favorites, named, els, ready])
 
   const sel = snapshots.find((s) => s.venue.id === selected)
 

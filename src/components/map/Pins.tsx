@@ -18,9 +18,9 @@ export const LABEL_INSET = 11
  * off the dot only when MapView found room for it (`offset`); otherwise the
  * place stays a bare dot until you zoom in. The number follows the mode:
  * percent full, zone bay price, valet wait, free chargers. `named` adds the
- * short name when zoomed in. The selected place gets one ink pill above its
- * dot, "Central Park · 94%". A place that does not offer the mode is a faint
- * grey dot with no label.
+ * short name when zoomed in. The selected place, or the card in view on the
+ * home row, gets one ink pill above its dot, "Central Park · 94%". A place
+ * that does not offer the mode is a faint grey dot with no label.
  */
 export function VenuePin({
   snap,
