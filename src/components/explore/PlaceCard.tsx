@@ -56,10 +56,10 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
       <Card>
         <p className="mb-3 text-[13.5px] leading-snug text-ink-2">{t.modes.none[mode]}</p>
         <div className="grid grid-cols-2 gap-2">
-          <Btn tone="soft" onClick={route}>
+          <Btn tone="quiet" onClick={route}>
             <NavigationArrow size={17} weight="fill" /> {t.venue.actions.route}
           </Btn>
-          <Btn tone="dark" onClick={() => setMode('park')}>
+          <Btn tone="ink" onClick={() => setMode('park')}>
             {MODE_ICON.park({ size: 17, weight: 'fill' })} {t.modes.backToPark}
           </Btn>
         </div>
@@ -82,7 +82,7 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
         />
         {left === 0 && <Note>{t.card.zoneGone}</Note>}
         <Actions onRoute={route}>
-          <Btn tone="dark" onClick={() => open({ kind: 'book', id: venue.id, service: 'zone' })}>
+          <Btn tone="ink" onClick={() => open({ kind: 'book', id: venue.id, service: 'zone' })}>
             <Crown size={17} weight="fill" /> {t.card.zoneCta}
           </Btn>
         </Actions>
@@ -103,7 +103,7 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
           ]}
         />
         <Actions onRoute={route}>
-          <Btn tone="dark" onClick={() => open({ kind: 'book', id: venue.id, service: 'valet' })}>
+          <Btn tone="ink" onClick={() => open({ kind: 'book', id: venue.id, service: 'valet' })}>
             <Key size={17} weight="fill" /> {t.card.valetCta}
           </Btn>
         </Actions>
@@ -125,7 +125,7 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
         />
         {!vehicle.isEV && <Note>{t.card.evNotEv}</Note>}
         <Actions onRoute={route}>
-          <Btn tone="dark" onClick={() => open({ kind: 'book', id: venue.id, service: 'ev' })}>
+          <Btn tone="ink" onClick={() => open({ kind: 'book', id: venue.id, service: 'ev' })}>
             <ChargingStation size={17} weight="fill" /> {t.card.evCta}
           </Btn>
         </Actions>
@@ -176,8 +176,8 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
   return (
     <Card>
       <Line tone={!split && snap.bestGateQueueMin < 3 ? 'lega' : undefined}>{line}</Line>
-      <div className="grid grid-cols-[1fr_48px] gap-2">
-        <Btn tone="brand" onClick={() => nav.start(venue.id)}>
+      <div className="flex gap-2">
+        <Btn tone="ink" onClick={() => nav.start(venue.id)}>
           <NavigationArrow size={17} weight="fill" /> {t.card.routeTo(snap.bestGate.name)}
         </Btn>
         <button
@@ -188,7 +188,10 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
             haptic('tap')
             setMore(!more)
           }}
-          className={clsx('grid h-12 place-items-center rounded-[15px] transition-colors', more ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink')}
+          className={clsx(
+            'grid size-12 shrink-0 place-items-center rounded-full border transition-colors',
+            more ? 'border-transparent bg-ink text-canvas' : 'border-line-strong text-ink hover:bg-surface-2',
+          )}
         >
           <DotsThree size={22} weight="bold" />
         </button>
@@ -283,7 +286,7 @@ function Stats({ cells }: { cells: [string, string, string?][] }) {
 function Actions({ onRoute, children }: { onRoute: () => void; children: ReactNode }) {
   const t = useT()
   return (
-    <div className="grid grid-cols-[48px_1fr] gap-2">
+    <div className="flex gap-2">
       <button
         type="button"
         aria-label={t.venue.actions.route}
@@ -291,16 +294,17 @@ function Actions({ onRoute, children }: { onRoute: () => void; children: ReactNo
           haptic('tap')
           onRoute()
         }}
-        className="grid h-12 place-items-center rounded-[15px] bg-surface-2 text-ink transition-colors hover:bg-surface-3"
+        className="grid size-12 shrink-0 place-items-center rounded-full border border-line-strong text-ink transition-colors hover:bg-surface-2"
       >
-        <NavigationArrow size={19} weight="fill" />
+        <NavigationArrow size={18} weight="fill" />
       </button>
       {children}
     </div>
   )
 }
 
-function Btn({ tone, onClick, children }: { tone: 'brand' | 'dark' | 'soft'; onClick: () => void; children: ReactNode }) {
+/** The main action is an ink pill. The quiet one is an outline, never a grey fill. */
+function Btn({ tone, onClick, children }: { tone: 'ink' | 'quiet'; onClick: () => void; children: ReactNode }) {
   return (
     <motion.button
       type="button"
@@ -310,10 +314,9 @@ function Btn({ tone, onClick, children }: { tone: 'brand' | 'dark' | 'soft'; onC
         onClick()
       }}
       className={clsx(
-        'flex h-12 min-w-0 items-center justify-center gap-2 rounded-[15px] px-3 text-[14.5px] font-bold',
-        tone === 'brand' && 'bg-brand-600 text-white shadow-[0_10px_20px_-10px_rgb(5_150_105/0.8)]',
-        tone === 'dark' && 'bg-ink text-canvas',
-        tone === 'soft' && 'bg-surface-2 text-ink',
+        'flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-5 text-[14.5px] font-semibold tracking-tight transition-colors',
+        tone === 'ink' && 'bg-ink text-canvas hover:opacity-90',
+        tone === 'quiet' && 'border border-line-strong text-ink hover:bg-surface-2',
       )}
     >
       <span className="flex min-w-0 items-center gap-2 truncate">{children}</span>
