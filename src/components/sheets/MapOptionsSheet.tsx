@@ -103,7 +103,7 @@ function StyleCard({ style, active, onClick, children }: { style: MapStyle; acti
             <path d="M0 40 L120 22" stroke="#ffffff" strokeWidth="7" />
             <path d="M44 0 L60 64" stroke="#ffffff" strokeWidth="5" />
             <rect x="72" y="34" width="22" height="14" rx="2" fill="#e2e0d8" />
-            <circle cx="30" cy="24" r="5" fill="#0e9f6e" />
+            <circle cx="30" cy="24" r="5" fill="#2e9e6e" />
             <circle cx="84" cy="14" r="5" fill="#e5484d" />
           </>
         ) : (
@@ -116,7 +116,7 @@ function StyleCard({ style, active, onClick, children }: { style: MapStyle; acti
             <rect x="72" y="34" width="22" height="14" rx="2" fill="#dcd6ca" />
             <circle cx="92" cy="50" r="3" fill="#6c63d9" />
             <circle cx="20" cy="46" r="3" fill="#d9534f" />
-            <circle cx="30" cy="24" r="5" fill="#0e9f6e" />
+            <circle cx="30" cy="24" r="5" fill="#2e9e6e" />
             <circle cx="84" cy="14" r="5" fill="#e5484d" />
           </>
         )}

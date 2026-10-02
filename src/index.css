@@ -91,9 +91,9 @@
   --color-penuh-soft: #fbe6e3;
 
   /* LED signboard glow colors (the "sisa slot" boards at mall gates) */
-  --color-led-lega: #43ff9f;
-  --color-led-ramai: #ffc53d;
-  --color-led-penuh: #ff5a5f;
+  --color-led-lega: #5ed4a0;
+  --color-led-ramai: #f5c451;
+  --color-led-penuh: #ff6b5e;
 
   /* "You are here" and the P mark stay ink so they never compete with the accent. EV is a service, so it takes the accent. */
   --color-signal: var(--ink);

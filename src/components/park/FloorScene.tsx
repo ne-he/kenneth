@@ -179,7 +179,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
         p.castShadow = true
         scene.add(p)
       }
-      const zl = labelSprite(section, dark ? '#f1f4f2' : '#111512', dark ? 'rgba(255,255,255,0.08)' : 'rgba(17,21,18,0.08)', 1.3)
+      const zl = labelSprite(section, dark ? '#f2f2f4' : '#121216', dark ? 'rgba(255,255,255,0.08)' : 'rgba(18,18,22,0.08)', 1.3)
       zl.position.set(cx, 3.4, z0 + rows * BAY_W + 1.6)
       scene.add(zl)
     })
@@ -188,11 +188,11 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     const lobby = new THREE.Group()
     const lobbyBox = new THREE.Mesh(
       new THREE.BoxGeometry(3.2, 2.8, 1.6),
-      new THREE.MeshStandardMaterial({ color: 0x1f5fd6, roughness: 0.4, emissive: 0x1f5fd6, emissiveIntensity: 0.25 }),
+      new THREE.MeshStandardMaterial({ color: 0x2f5bd3, roughness: 0.4, emissive: 0x2f5bd3, emissiveIntensity: 0.25 }),
     )
     lobbyBox.position.y = 1.4
     lobby.add(lobbyBox)
-    const lobbyLabel = labelSprite(spot.lobby.toUpperCase(), '#ffffff', '#1f5fd6', 0.9)
+    const lobbyLabel = labelSprite(spot.lobby.toUpperCase(), '#ffffff', '#2f5bd3', 0.9)
     lobbyLabel.position.y = 3.6
     lobby.add(lobbyLabel)
     const lobbyPos = new THREE.Vector3(0, 0, z0 - 3)
@@ -207,12 +207,12 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     scene.add(mine)
     const ring = new THREE.Mesh(
       new THREE.RingGeometry(1.2, 1.45, 48),
-      new THREE.MeshBasicMaterial({ color: 0x43ff9f, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ color: 0x7c9bec, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
     )
     ring.rotation.x = -Math.PI / 2
     ring.position.set(target.x, 0.03, target.z)
     scene.add(ring)
-    const tag = labelSprite(`${spot.level} · ${spot.section}-${spot.pillar}`, '#0c0f0d', '#43ff9f', 1.1)
+    const tag = labelSprite(`${spot.level} · ${spot.section}-${spot.pillar}`, '#101014', '#a3baf5', 1.1)
     tag.position.set(target.x, 2.6, target.z)
     scene.add(tag)
 

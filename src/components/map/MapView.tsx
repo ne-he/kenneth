@@ -27,7 +27,7 @@ interface Props {
   initialBounds: LngLat[]
 }
 
-const ROUTE_COLOR = '#059669'
+const ROUTE_COLOR = '#2f5bd3'
 
 // MapLibre 6 finds its worker relative to its own module URL, which a bundler
 // cannot see. Hand it a bundled worker explicitly so dev and prod both work.
@@ -284,7 +284,7 @@ function addOverlays(map: MLMap) {
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
         'line-width': 5.5,
-        'line-gradient': ['interpolate', ['linear'], ['line-progress'], 0, '#34d399', 1, ROUTE_COLOR],
+        'line-gradient': ['interpolate', ['linear'], ['line-progress'], 0, '#7c9bec', 1, ROUTE_COLOR],
       },
     })
   }
