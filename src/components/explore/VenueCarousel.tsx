@@ -2,6 +2,7 @@ import { ChargingStation, Crown, Key, ListBullets, NavigationArrow } from '@phos
 import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
 import type { VenueId } from '../../data/types'
+import { cardIndexAt } from '../../engine/home'
 import type { PinFact } from '../../engine/modes'
 import { formatRupiah } from '../../engine/pricing'
 import type { Ranked } from '../../engine/recommend'
@@ -46,8 +47,7 @@ export function VenueCarousel({
     settle.current = window.setTimeout(() => {
       const el = scroller.current
       if (!el) return
-      const i = Math.round(el.scrollLeft / (CARD_W + GAP))
-      const r = ranked[Math.max(0, Math.min(ranked.length - 1, i))]
+      const r = ranked[cardIndexAt(el.scrollLeft, ranked.length, CARD_W, GAP)]
       if (r && r.venue.id !== focused) onFocus(r.venue.id)
     }, 90)
   }
