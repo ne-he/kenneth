@@ -32,29 +32,29 @@ export function ImpactSheet() {
   return (
     <div className="pb-5">
       <SheetHeader eyebrow={t.activity.impact} title={t.impactSheet.title} onClose={close} closeLabel={t.common.close} />
-      <div className="mb-5 grid grid-cols-3 gap-2">
+      <div className="mb-5 grid grid-cols-3 divide-x divide-line rounded-[20px] border border-line py-3.5">
         <Metric label={t.activity.impactTime} value={total.minutes} unit={t.unit.min} />
         <Metric label={t.activity.impactFuel} value={total.fuelL} unit="L" decimals={2} />
         <Metric label={t.activity.impactCo2} value={total.co2Kg} unit="kg" decimals={2} />
       </div>
       <PatternCard history={history} now={now} />
-      <Label className="mt-5">{t.activity.impactHow}</Label>
-      <p className="mb-3 px-1 text-[13px] leading-relaxed text-ink-2">{t.impactSheet.intro}</p>
-      <ol className="space-y-2">
+      <Label className="mt-6">{t.activity.impactHow}</Label>
+      <p className="mb-4 px-1 text-[13px] leading-relaxed text-ink-2">{t.impactSheet.intro}</p>
+      <ol className="space-y-3 px-1">
         {steps.map((s, i) => (
-          <li key={i} className="flex gap-3 rounded-[16px] bg-surface-2 p-3">
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-ink text-[12px] font-bold text-canvas">{i + 1}</span>
+          <li key={i} className="flex gap-3">
+            <span className="w-4 shrink-0 pt-px font-mono text-[12px] text-ink-3 tabular">{i + 1}</span>
             <span className="text-[13px] leading-relaxed">{s}</span>
           </li>
         ))}
       </ol>
-      <div className="mt-3 rounded-[16px] bg-surface-2 p-3 font-mono text-[12px] leading-relaxed text-ink-2">
+      <div className="mt-4 rounded-[14px] bg-surface-2 p-3 font-mono text-[12px] leading-relaxed text-ink-2">
         fuel_L = minutes × {FUEL_L_PER_MIN}
         <br />
         co2_kg = fuel_L × {CO2_KG_PER_L}
       </div>
-      <p className="mt-4 flex gap-2.5 rounded-[18px] bg-lega-soft p-3.5 text-[13px] leading-relaxed text-lega-ink dark:bg-lega/10 dark:text-led-lega">
-        <Leaf size={20} weight="fill" className="mt-[1px] shrink-0" />
+      <p className="mt-5 flex gap-2.5 border-t border-line px-1 pt-4 text-[13px] leading-relaxed text-ink-2">
+        <Leaf size={18} weight="fill" className="mt-[1px] shrink-0 text-ink-3" />
         {t.impactSheet.bigger}
       </p>
     </div>
@@ -63,9 +63,9 @@ export function ImpactSheet() {
 
 function Metric({ label, value, unit, decimals = 0 }: { label: string; value: number; unit: string; decimals?: number }) {
   return (
-    <div className="rounded-[16px] bg-surface-2 p-3">
-      <div className="text-[11.5px] font-medium text-ink-3">{label}</div>
-      <div className="mt-1 text-[19px] leading-none font-bold tracking-tight">
+    <div className="min-w-0 px-3.5">
+      <div className="truncate text-[11.5px] font-medium text-ink-3">{label}</div>
+      <div className="mt-1.5 text-[19px] leading-none font-semibold tracking-tight">
         <CountUp value={value} decimals={decimals} />
         <span className="ml-0.5 text-[11px] font-semibold text-ink-3">{unit}</span>
       </div>
@@ -102,7 +102,7 @@ function PatternCard({ history, now }: { history: Visit[]; now: number }) {
       <p className={clsx('mt-2 text-[14px] leading-relaxed font-medium', plan !== 'premium' && 'blur-[5px] select-none')}>{body}</p>
       {plan !== 'premium' && (
         <div className="absolute inset-0 grid place-items-center bg-surface/40">
-          <Button size="sm" variant="dark" onClick={() => open({ kind: 'premium' })}>
+          <Button size="sm" variant="primary" onClick={() => open({ kind: 'premium' })}>
             <LockSimple size={14} weight="fill" /> {t.premium.locked}
           </Button>
         </div>
