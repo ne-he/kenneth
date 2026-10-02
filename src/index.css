@@ -6,40 +6,41 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /*
-  Surface tokens. Light theme is warm paper, dark theme is a night-drive
-  cabin. Components only use the semantic names below, never raw hex.
+  Surface tokens. Light theme is porcelain, dark theme is onyx. Neutrals carry
+  the UI; color is kept for status and a quiet cornflower accent. Components
+  only use the semantic names below, never raw hex.
 */
 :root {
-  --canvas: #f3f2ee;
+  --canvas: #f6f6f3;
   --surface: #ffffff;
-  --surface-2: #efeee9;
-  --surface-3: #e6e5df;
-  --line: rgb(17 21 18 / 0.08);
-  --line-strong: rgb(17 21 18 / 0.14);
-  --ink: #111512;
-  --ink-2: #545a56;
-  --ink-3: #8a8f8b;
-  --glass: rgb(255 255 255 / 0.78);
+  --surface-2: #efefeb;
+  --surface-3: #e6e6e1;
+  --line: rgb(18 18 22 / 0.08);
+  --line-strong: rgb(18 18 22 / 0.14);
+  --ink: #121216;
+  --ink-2: #55555c;
+  --ink-3: #8a8a90;
+  --glass: rgb(255 255 255 / 0.8);
   --glass-line: rgb(255 255 255 / 0.9);
-  --shadow-color: 150 8% 12%;
-  --led-bg: #0c0f0d;
+  --shadow-color: 240 8% 12%;
+  --led-bg: #101014;
   color-scheme: light;
 }
 
 :root[data-theme='dark'] {
-  --canvas: #090b0a;
-  --surface: #131715;
-  --surface-2: #0e1110;
-  --surface-3: #1b201d;
+  --canvas: #0b0b0e;
+  --surface: #15151a;
+  --surface-2: #101014;
+  --surface-3: #1d1d23;
   --line: rgb(255 255 255 / 0.07);
   --line-strong: rgb(255 255 255 / 0.13);
-  --ink: #f1f4f2;
-  --ink-2: #a7aea9;
-  --ink-3: #6c746f;
-  --glass: rgb(19 23 21 / 0.74);
+  --ink: #f2f2f4;
+  --ink-2: #a8a8b0;
+  --ink-3: #6e6e77;
+  --glass: rgb(21 21 26 / 0.76);
   --glass-line: rgb(255 255 255 / 0.08);
-  --shadow-color: 150 20% 2%;
-  --led-bg: #050706;
+  --shadow-color: 240 20% 2%;
+  --led-bg: #08080b;
   color-scheme: dark;
 }
 
@@ -63,37 +64,40 @@
   --font-led: 'Doto', ui-monospace, monospace;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Menlo, monospace;
 
-  /* Brand: carried over from the team mockup (#10B981 / #059669) */
-  --color-brand-50: #ebfbf3;
-  --color-brand-100: #cff5e2;
-  --color-brand-200: #a0eac6;
-  --color-brand-300: #62d8a3;
-  --color-brand-400: #2cc283;
-  --color-brand-500: #10b981;
-  --color-brand-600: #059669;
-  --color-brand-700: #047857;
-  --color-brand-800: #065f46;
-  --color-brand-900: #053f30;
+  /*
+    Brand: cornflower. Picked so it never reads as a status color: green,
+    yellow and red stay reserved for lega, ramai and penuh.
+  */
+  --color-brand-50: #f0f4fe;
+  --color-brand-100: #e3eafd;
+  --color-brand-200: #c7d5fa;
+  --color-brand-300: #a3baf5;
+  --color-brand-400: #7c9bec;
+  --color-brand-500: #5279e3;
+  --color-brand-600: #2f5bd3;
+  --color-brand-700: #2649ae;
+  --color-brand-800: #213d8c;
+  --color-brand-900: #1d3370;
 
   /* Occupancy status. Always paired with a text label, never color alone. */
-  --color-lega: #0e9f6e;
-  --color-lega-ink: #047857;
-  --color-lega-soft: #e3f7ee;
-  --color-ramai: #f0a012;
-  --color-ramai-ink: #a45a05;
-  --color-ramai-soft: #fdf1da;
-  --color-penuh: #e5484d;
-  --color-penuh-ink: #c4262c;
-  --color-penuh-soft: #fde8e8;
+  --color-lega: #2e9e6e;
+  --color-lega-ink: #1f7a53;
+  --color-lega-soft: #e4f4ec;
+  --color-ramai: #e8a317;
+  --color-ramai-ink: #8f5e05;
+  --color-ramai-soft: #fcf1da;
+  --color-penuh: #d64535;
+  --color-penuh-ink: #b12a20;
+  --color-penuh-soft: #fbe6e3;
 
   /* LED signboard glow colors (the "sisa slot" boards at mall gates) */
   --color-led-lega: #43ff9f;
   --color-led-ramai: #ffc53d;
   --color-led-penuh: #ff5a5f;
 
-  /* Indonesian parking sign blue, used for the P mark and EV */
-  --color-signal: #1f5fd6;
-  --color-ev: #0b84f3;
+  /* "You are here" and the P mark stay ink so they never compete with the accent. EV is a service, so it takes the accent. */
+  --color-signal: var(--ink);
+  --color-ev: #2f5bd3;
 
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
