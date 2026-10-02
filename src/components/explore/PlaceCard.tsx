@@ -205,21 +205,21 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="mt-2 grid gap-1.5">
-              <MoreRow icon={<CarProfile size={17} weight="fill" />} onClick={() => open({ kind: 'save-spot', id: venue.id })}>
+            <Rows>
+              <Row icon={<CarProfile size={16} weight="fill" />} onClick={() => open({ kind: 'save-spot', id: venue.id })}>
                 {t.card.saveSpot}
-              </MoreRow>
+              </Row>
               {relief && (
-                <MoreRow
-                  icon={reminded ? <CheckCircle size={17} weight="fill" /> : <BellSimple size={17} weight="fill" />}
+                <Row
+                  icon={reminded ? <CheckCircle size={16} weight="fill" /> : <BellSimple size={16} weight="fill" />}
                   onClick={remind}
                   muted={reminded}
                 >
                   {reminded ? t.card.reminded : t.card.remind(clock(relief))}
-                </MoreRow>
+                </Row>
               )}
-              <MoreRow
-                icon={<ShareNetwork size={17} weight="bold" />}
+              <Row
+                icon={<ShareNetwork size={16} weight="bold" />}
                 onClick={() =>
                   shareSpot(t.venue.shareText(venue.name, snap.pct, t.status[snap.status], window.location.origin), () =>
                     notify(t.activity.shared),
@@ -227,29 +227,36 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
                 }
               >
                 {t.card.share}
-              </MoreRow>
-            </div>
+              </Row>
+            </Rows>
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* Nudges read as plain rows, not cards. Zona KENNETH keeps the one touch of cornflower. */}
       {(bookHint || alt) && (
-        <div className="mt-2.5 grid gap-1.5">
+        <Rows>
           {bookHint && (
-            <Hint icon={<Crown size={16} weight="fill" className="text-brand-600" />} onClick={() => open({ kind: 'book', id: venue.id, service: 'zone' })}>
+            <Row
+              icon={<Crown size={16} weight="fill" className="text-brand-600 dark:text-brand-300" />}
+              onClick={() => open({ kind: 'book', id: venue.id, service: 'zone' })}
+              next
+            >
               {t.card.bookHint(formatRupiah(zonePrice(snap.occ, plan), true))}
-            </Hint>
+            </Row>
           )}
           {alt && (
-            <Hint
+            <Row
               icon={alt.walk ? <PersonSimpleWalk size={16} weight="bold" /> : <CarProfile size={16} weight="fill" />}
               onClick={() => select(alt.snap.venue.id)}
+              next
             >
-              <span className={STATUS[alt.snap.status].text}>{t.card.altHint(alt.snap.venue.name, alt.snap.pct)}</span>
+              <span className={clsx('mr-1.5 inline-block size-2 rounded-full align-[1px]', STATUS[alt.snap.status].dot)} aria-hidden="true" />
+              {t.card.altHint(alt.snap.venue.name, alt.snap.pct)}
               <span className="text-ink-3">, {alt.walk ? t.venue.walk(alt.walk.minutes, alt.walk.via).toLowerCase() : t.venue.drive(formatKm(alt.km))}</span>
-            </Hint>
+            </Row>
           )}
-        </div>
+        </Rows>
       )}
     </Card>
   )
@@ -324,24 +331,25 @@ function Btn({ tone, onClick, children }: { tone: 'ink' | 'quiet'; onClick: () =
   )
 }
 
-function Hint({ icon, onClick, children }: { icon: ReactNode; onClick: () => void; children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        haptic('tap')
-        onClick()
-      }}
-      className="flex w-full items-center gap-2.5 rounded-[14px] bg-surface-2 px-3 py-2.5 text-left text-[12.5px] leading-snug font-semibold text-ink transition-colors hover:bg-surface-3"
-    >
-      <span className="shrink-0">{icon}</span>
-      <span className="min-w-0 flex-1">{children}</span>
-      <CaretRight size={13} weight="bold" className="shrink-0 text-ink-3" />
-    </button>
-  )
+/** A hairline list under the button: the extra actions and the nudges. */
+function Rows({ children }: { children: ReactNode }) {
+  return <div className="mt-3 divide-y divide-line border-t border-line">{children}</div>
 }
 
-function MoreRow({ icon, onClick, muted, children }: { icon: ReactNode; onClick: () => void; muted?: boolean; children: ReactNode }) {
+function Row({
+  icon,
+  onClick,
+  muted,
+  next,
+  children,
+}: {
+  icon: ReactNode
+  onClick: () => void
+  muted?: boolean
+  /** Opens something else, so it gets a caret. */
+  next?: boolean
+  children: ReactNode
+}) {
   return (
     <button
       type="button"
@@ -350,12 +358,13 @@ function MoreRow({ icon, onClick, muted, children }: { icon: ReactNode; onClick:
         onClick()
       }}
       className={clsx(
-        'flex h-11 w-full items-center gap-2.5 rounded-[13px] border border-line px-3 text-left text-[13px] font-semibold transition-colors hover:bg-surface-2',
+        'flex w-full items-center gap-3 py-3.5 text-left text-[13.5px] leading-snug transition-opacity hover:opacity-80 active:opacity-60',
         muted ? 'text-ink-3' : 'text-ink',
       )}
     >
-      <span className="shrink-0 text-ink-2">{icon}</span>
-      <span className="min-w-0 flex-1 truncate">{children}</span>
+      <span className="shrink-0 text-ink-3">{icon}</span>
+      <span className="min-w-0 flex-1">{children}</span>
+      {next && <CaretRight size={12} weight="bold" className="shrink-0 text-ink-3" />}
     </button>
   )
 }
