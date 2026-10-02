@@ -67,7 +67,10 @@ export function Label({ children, aside, className }: { children: ReactNode; asi
   )
 }
 
-/** A row that says the short version on the right and opens up for the long one. */
+/**
+ * A row that says the short version under its title and opens up for the long
+ * one. A small grey icon, no tile: the words carry the row.
+ */
 export function Disclosure({
   icon,
   title,
@@ -91,17 +94,17 @@ export function Disclosure({
           haptic('tap')
           setOpen(!open)
         }}
-        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-2/60"
+        className="flex w-full items-center gap-3 px-1 py-4 text-left transition-opacity hover:opacity-80"
       >
-        <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-surface-2 text-ink-2">{icon}</span>
+        <span className="grid size-5 shrink-0 place-items-center text-ink-3">{icon}</span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[14px] font-semibold">{title}</span>
+          <span className="block text-[14.5px] font-medium">{title}</span>
           {summary && (
-            <span className={clsx('mt-0.5 block truncate text-[12.5px]', tone ? STATUS[tone].text : 'text-ink-3')}>{summary}</span>
+            <span className={clsx('mt-0.5 block truncate text-[13px]', tone ? STATUS[tone].text : 'text-ink-3')}>{summary}</span>
           )}
         </span>
         <motion.span animate={{ rotate: open ? 180 : 0 }} className="text-ink-3">
-          <CaretDown size={15} weight="bold" />
+          <CaretDown size={13} weight="bold" />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>
@@ -113,7 +116,7 @@ export function Disclosure({
             transition={{ type: 'spring', stiffness: 420, damping: 40 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4">{children}</div>
+            <div className="pr-1 pb-4 pl-9">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
