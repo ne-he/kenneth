@@ -50,7 +50,7 @@ export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boole
           }}
           className="glass shadow-float flex h-12 min-w-0 flex-1 items-center gap-2.5 rounded-full px-4 text-left text-[15px] text-ink-3"
         >
-          <MagnifyingGlass size={18} weight="bold" className="shrink-0 text-ink-2" />
+          <MagnifyingGlass size={18} className="shrink-0 text-ink-2" />
           <span className="truncate">{t.explore.search}</span>
         </button>
         <button
@@ -59,7 +59,7 @@ export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boole
           aria-expanded={menuOpen}
           aria-label={`${t.modes.ask} ${t.modes[mode].label}`}
           onClick={toggleMenu}
-          className="shadow-float flex h-12 shrink-0 items-center gap-1.5 rounded-full bg-ink pr-3 pl-3.5 text-[14px] font-bold text-canvas"
+          className="shadow-float flex h-12 shrink-0 items-center gap-1.5 rounded-full bg-ink pr-3 pl-3.5 text-[14px] font-semibold text-canvas"
         >
           {kind === 'motor' ? <Motorcycle size={18} weight="fill" /> : MODE_ICON[mode]({ size: 18, weight: 'fill' })}
           <span>{kind === 'motor' ? t.explore.motorMode : t.modes[mode].short}</span>
