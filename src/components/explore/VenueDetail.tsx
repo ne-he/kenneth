@@ -119,7 +119,7 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
       <PlaceCard snap={snap} ts={ts} previewing={previewing} />
 
       {/* Below the fold: shows when the sheet is pulled up. */}
-      <div className="mt-5 space-y-5">
+      <div className="mt-6 space-y-8">
         <div className="border-t border-line pt-5">
           <SlotsLeft snap={snap} kind={vehicle.kind} source={<SourceChip venue={venue} />} />
         </div>
