@@ -21,17 +21,17 @@ export function HomeHeader() {
   const t = useT()
   const open = useUi((s) => s.open)
   return (
-    <div className="pb-4">
+    <div className="pb-3">
       <LiveStrip />
       <div className="px-5">
-        <h1 className="text-[21px] leading-tight font-semibold tracking-tight">{t.explore.search}</h1>
+        <h1 className="text-[19px] leading-tight font-semibold tracking-tight">{t.explore.search}</h1>
         <button
           type="button"
           onClick={() => {
             haptic('tap')
             open({ kind: 'search' })
           }}
-          className="mt-3 flex h-12 w-full items-center gap-2.5 rounded-full bg-surface-2 px-4 text-left text-[15px] text-ink-3 transition-colors hover:bg-surface-3"
+          className="mt-2.5 flex h-11 w-full items-center gap-2.5 rounded-full bg-surface-2 px-4 text-left text-[15px] text-ink-3 transition-colors hover:bg-surface-3"
         >
           <MagnifyingGlass size={18} className="shrink-0 text-ink-2" />
           <span className="truncate">{t.explore.searchField}</span>
@@ -50,7 +50,7 @@ function ServiceToggles() {
   const toggleService = useUi((s) => s.toggleService)
   const locked = useVehicle().kind === 'motor'
   return (
-    <div className="mt-3 grid grid-cols-3 gap-2" role="group" aria-label={t.modes.services}>
+    <div className="mt-2.5 grid grid-cols-3 gap-2" role="group" aria-label={t.modes.services}>
       {SERVICES.map((m) => {
         const on = m === mode
         return (
@@ -65,21 +65,15 @@ function ServiceToggles() {
               toggleService(m)
             }}
             className={clsx(
-              'relative flex flex-col items-start rounded-[18px] p-3 text-left transition-colors disabled:opacity-45',
+              'relative flex flex-col items-start rounded-[18px] p-2.5 text-left transition-colors disabled:opacity-45',
               on ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-100' : 'bg-surface-2 text-ink hover:bg-surface-3',
             )}
           >
-            <span
-              className={clsx(
-                'grid size-7 place-items-center rounded-full',
-                on ? 'bg-surface text-brand-700 dark:bg-brand-500/20 dark:text-brand-200' : 'bg-surface text-ink dark:bg-surface-3',
-              )}
-            >
-              {MODE_ICON[m]({ size: 15, weight: 'fill' })}
-            </span>
-            {on && <Check size={14} weight="bold" className="absolute top-3 right-3 text-brand-700 dark:text-brand-300" />}
-            <span className="mt-2.5 block text-[13px] leading-tight font-semibold tracking-tight">{t.modes[m].label}</span>
-            <span className={clsx('mt-0.5 line-clamp-2 text-[11.5px] leading-snug', on ? 'opacity-75' : 'text-ink-3')}>
+            <span className={on ? 'text-brand-700 dark:text-brand-300' : 'text-ink'}>{MODE_ICON[m]({ size: 18, weight: 'fill' })}</span>
+            {on && <Check size={14} weight="bold" className="absolute top-2.5 right-2.5 text-brand-700 dark:text-brand-300" />}
+            <span className="mt-2 block text-[13px] leading-tight font-semibold tracking-tight">{t.modes[m].label}</span>
+            {/* Hints sit on the same line across the three cards even when a name wraps. */}
+            <span className={clsx('mt-auto line-clamp-2 pt-1 text-[11.5px] leading-snug', on ? 'opacity-75' : 'text-ink-3')}>
               {locked ? t.modes.carOnly : t.modes[m].hint}
             </span>
           </button>
@@ -111,7 +105,7 @@ function VehicleRow() {
   }
 
   return (
-    <div className="no-scrollbar -mx-5 mt-3 flex gap-1.5 overflow-x-auto px-5" role="group" aria-label={t.modes.vehicle}>
+    <div className="no-scrollbar -mx-5 mt-2.5 flex gap-1.5 overflow-x-auto px-5" role="group" aria-label={t.modes.vehicle}>
       {vehicles.map((v) => {
         const on = v.id === active.id
         return (
