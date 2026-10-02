@@ -102,7 +102,7 @@ Pengguna baru diberi penunjuk satu kali ke menu layanan. Mode berlayanan tidak m
 | `/mitra` | Dashboard B2B untuk pengelola gedung: mobil masuk, puncak okupansi, perkiraan pengunjung batal datang (label estimasi model), booking Zona KENNETH dan nilai kotornya, okupansi per jam, ke mana yang batal pergi, beban gerbang di jam tersibuk, heatmap Senin sampai Minggu, produk yang cocok untuk lokasi itu |
 | `/booth` | Mode booth BiFest: form validasi 5 pertanyaan + pilih 2 fitur + feedback grid, tally jawaban, ekspor CSV dan JSON |
 
-Di laptop, app tampil di bingkai HP dengan QR di pojok. Splash: logo K dari jalan, mobil jalan keluar setelah peta siap.
+Di laptop, app tampil di bingkai HP dengan QR di pojok. Splash: layar tinta dengan ikon K kecil, memudar setelah peta siap.
 
 ## 4. Angka dan aturan yang tertanam di mesin (`src/engine`)
 
