@@ -186,7 +186,7 @@
   */
   .app-root .maplibregl-ctrl-bottom-right,
   .app-root .maplibregl-ctrl-bottom-left {
-    bottom: calc(var(--nav-h) + 2px);
+    bottom: calc(var(--nav-h) + 2px) !important;
   }
 
   /*
