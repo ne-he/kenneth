@@ -96,6 +96,8 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
         })
         map.once('load', () => {
           if (first.threeD) fitPoints(first.bounds, sheetPad(), 15.5, 0)
+          // The compact attribution opens on first paint and lands on the home sheet; start it folded to the (i).
+          map!.getContainer().querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show')
           signalMapReady()
         })
       })
