@@ -10,6 +10,7 @@ import type { Snapshot } from '../../engine/occupancy'
 import { signalMapReady } from '../../lib/splash'
 import { useApp } from '../../store/app'
 import type { Route } from '../../store/ui'
+import { placePins, type Offset, type PinBox } from './declutter'
 import { fitPoints, setMap, sheetPad } from './mapApi'
 import { GatePin, OriginPin, VenuePin } from './Pins'
 import { factHex } from './pinColor'
@@ -43,6 +44,8 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
   const markers = useRef(new Map<string, { marker: Marker; el: HTMLElement }>())
   // Marker elements live outside React. Mirror them in state so portals render from state, not a ref.
   const [els, setEls] = useState<ReadonlyMap<string, HTMLElement>>(() => new Map())
+  // Where each venue label sits relative to its point, so crowded places do not stack.
+  const [offsets, setOffsets] = useState<ReadonlyMap<string, Offset>>(() => new Map())
 
   const look = useApp((s) => s.mapPrefs.style)
   const threeD = useApp((s) => s.mapPrefs.threeD)
@@ -181,6 +184,49 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     setEls(() => new Map([...markers.current].map(([key, m]) => [key, m.el])))
   }, [snapshots, selected, origin, ready])
 
+  // Lay the labels out after they render (their size depends on the text) and after every camera move.
+  const layout = useEffectEvent(() => {
+    const map = mapRef.current
+    if (!map) return
+    const size = (key: string) => {
+      const label = markers.current.get(key)?.el.querySelector<HTMLElement>('[data-pin-label]')
+      return { w: label?.offsetWidth ?? 0, h: label?.offsetHeight ?? 0 }
+    }
+    const pins: PinBox[] = []
+    // Gate chips stay on their gate, the selected label goes next and keeps off its point, then the rest.
+    const sel = snapshots.find((s) => s.venue.id === selected)
+    sel?.gates.forEach(({ gate }) => {
+      const { x, y } = map.project(gate.coords)
+      pins.push({ id: `g:${gate.id}`, x, y, ...size(`g:${gate.id}`), dir: 'n', fixed: [0, 0] })
+    })
+    const order = [...snapshots].sort((a, b) => Number(b.venue.id === selected) - Number(a.venue.id === selected))
+    for (const s of order) {
+      const { x, y } = map.project(s.venue.coords)
+      const picked = s.venue.id === selected
+      pins.push({
+        id: s.venue.id,
+        x,
+        y,
+        ...size(`v:${s.venue.id}`),
+        dir: picked ? 'n' : s.venue.labelDir,
+        onPoint: !picked,
+        gap: picked ? 8 : undefined,
+      })
+    }
+    const next = placePins(pins)
+    setOffsets((prev) => (sameOffsets(prev, next) ? prev : next))
+  })
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map) return
+    layout()
+    const onMove = () => layout()
+    map.on('moveend', onMove)
+    return () => {
+      map.off('moveend', onMove)
+    }
+  }, [snapshots, facts, selected, els, ready])
+
   const sel = snapshots.find((s) => s.venue.id === selected)
 
   return (
@@ -199,6 +245,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
               <VenuePin
                 snap={s}
                 fact={facts?.get(s.venue.id)}
+                offset={offsets.get(s.venue.id)}
                 selected={s.venue.id === selected || s.venue.id === focused}
                 dimmed={!!selected && s.venue.id !== selected}
                 onClick={() => onSelect(s.venue.id)}
@@ -235,6 +282,15 @@ function boundsOf(points: LngLat[]): [LngLat, LngLat] {
     [Math.min(...lng), Math.min(...lat)],
     [Math.max(...lng), Math.max(...lat)],
   ]
+}
+
+function sameOffsets(a: ReadonlyMap<string, Offset>, b: ReadonlyMap<string, Offset>) {
+  if (a.size !== b.size) return false
+  for (const [k, [x, y]] of b) {
+    const o = a.get(k)
+    if (!o || Math.abs(o[0] - x) > 0.5 || Math.abs(o[1] - y) > 0.5) return false
+  }
+  return true
 }
 
 const emptyLine = () => ({ type: 'FeatureCollection' as const, features: [] })
