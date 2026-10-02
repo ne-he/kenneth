@@ -7,20 +7,22 @@ import { formatRupiah } from '../../engine/pricing'
 import { useT } from '../../i18n'
 import { STATUS, formatMin } from '../../lib/status'
 import type { Offset } from './declutter'
-import { factHex } from './pinColor'
+import { factDot } from './pinColor'
 
 /** How far the dot sits in from the end of a place label, so the pill hangs off the dot. MapView places labels by it. */
 export const LABEL_INSET = 11
 
 /**
- * Every place is a status dot with a white ring, right on the spot. Its
- * label, a small white pill with the number in ink ("titik + angka"), hangs
- * off the dot only when MapView found room for it (`offset`); otherwise the
- * place stays a bare dot until you zoom in. The number follows the mode:
- * percent full, zone bay price, valet wait, free chargers. `named` adds the
- * short name when zoomed in. The selected place, or the card in view on the
- * home row, gets one ink pill above its dot, "Central Park · 94%". A place
- * that does not offer the mode is a faint grey dot with no label.
+ * Every place is a dot with a white ring, right on the spot. Its label, a
+ * small white pill with the number in ink ("titik + angka"), hangs off the
+ * dot only when MapView found room for it (`offset`); otherwise the place
+ * stays a bare dot until you zoom in. The number follows the mode: percent
+ * full, zone bay price, valet wait, free chargers. So does the dot: the
+ * status colour when parking, cornflower when Zona KENNETH is on, ink for
+ * valet and chargers, red when the bays or chargers are gone. `named` adds
+ * the short name when zoomed in. The selected place, or the card in view on
+ * the home row, gets one ink pill above its dot, "Central Park · 94%". A
+ * place that does not offer the service on is a faint grey dot with no label.
  */
 export function VenuePin({
   snap,
@@ -42,8 +44,6 @@ export function VenuePin({
 }) {
   const t = useT()
   const off = fact.kind === 'none'
-  // Valet has no status to show, so its dot is plain ink.
-  const color = off ? 'var(--ink-3)' : fact.kind === 'wait' ? 'var(--ink)' : factHex(fact, snap)
   const shown = !!offset && (selected || !off)
   const [dx, dy] = offset ?? [1, 0]
   let value = ''
@@ -125,8 +125,8 @@ export function VenuePin({
           className={clsx(
             'rounded-full border-2 border-white shadow-[0_1px_3px_rgb(0_0_0/0.3)]',
             selected ? 'size-3.5' : off ? 'size-2.5' : 'size-3',
+            factDot(fact, snap),
           )}
-          style={{ background: color }}
         />
       </motion.button>
     </div>
