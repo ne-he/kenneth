@@ -164,6 +164,9 @@ npm run deploy:preview   # link uji coba terpisah, hangus sendiri setelah 7 hari
 
 Login Google perlu diaktifkan sekali oleh pemilik project: Firebase console, Authentication, Get started,
 Sign-in method, Google, Enable, pilih email dukungan, Save. Tidak perlu deploy ulang setelahnya.
+Popup login selalu lewat `kenneth-9339d.firebaseapp.com` (diturunkan dari project ID di `src/lib/auth.ts`), karena
+cuma handler di domain itu yang terdaftar di OAuth client bawaan Google. Domain hosting baru cukup ditambahkan di
+Authentication, Settings, Authorized domains.
 
 ## Stack
 
@@ -207,6 +210,7 @@ loop 6 detik versi kecil yang dipakai di layar sambutan onboarding. Versi loop u
 Guide desain carousel Instagram (warna, tipografi, jalan yang menyambung antar slide, dan aturan slide video)
 ada di [docs/social/GUIDE.md](docs/social/GUIDE.md), lengkap dengan dua contoh carousel dan generatornya.
 
+Status app terakhir, patokan untuk siapa pun yang melanjutkan: [docs/STATUS.md](docs/STATUS.md).
 Cara kerja simulasinya dijelaskan di [docs/MODEL.md](docs/MODEL.md). Panduan buat anggota tim ada di
 [CONTRIBUTING.md](CONTRIBUTING.md).
 

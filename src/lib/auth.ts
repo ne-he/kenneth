@@ -15,10 +15,20 @@ import type { Account } from '../store/app'
   user taps "Masuk dengan Google", never on first load.
 */
 
+const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined
+
 const config = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string | undefined,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string | undefined,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined,
+  /*
+    Always <project>.firebaseapp.com, never a hosting domain like kenneth-park.web.app.
+    The OAuth client Google creates for the project only lists
+    https://<project>.firebaseapp.com/__/auth/handler as a redirect URI, so any other
+    auth domain makes the popup answer "Error 400: redirect_uri_mismatch". Every
+    hosting site signs in through this one, as long as it is an authorized domain
+    in Firebase Authentication.
+  */
+  authDomain: projectId ? `${projectId}.firebaseapp.com` : undefined,
+  projectId,
   appId: import.meta.env.VITE_FIREBASE_APP_ID as string | undefined,
 }
 
