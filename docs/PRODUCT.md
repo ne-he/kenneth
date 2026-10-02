@@ -25,16 +25,25 @@ Tiga hal yang menentukan produk ini hidup atau mati, urut dari yang paling penti
 2. Terbaca sekilas. Angka besar, satu warna status, tanpa grafik yang harus dipelajari dulu.
 3. Kepadatan cakupan. Rekomendasi alternatif cuma berguna kalau mall sebelahnya juga tercakup.
 
-## Navigasi (keputusan tim, 22 Sep 2026)
+## Navigasi (keputusan tim, 22 Sep 2026, direvisi 2 Okt 2026)
 
-Tiga tab: Aktivitas di kiri, logo K (Parkir) di tengah, Akun di kanan. Masukan tim atas versi 0.2: pemisahan
+Tiga tab: Tiket di kiri, Beranda (peta) di tengah, Akun di kanan. Masukan tim atas versi 0.2: pemisahan
 tab kurang jelas, tab yang cuma berisi riwayat terasa boros, dan fitur sebaiknya diakses dari dalam fitur lain.
+Masukan survei atas versi 0.4: UI terasa penuh, dan hierarki fiturnya tidak terasa, karena empat layanan
+disembunyikan di balik satu dropdown dan dua tab pinggir terasa setara dengan peta padahal isinya kecil.
 
-- **Satu layar utama untuk semua hal.** Parkir biasa, Zona KENNETH, valet runner, dan charger EV memakai layar yang
-  sama: peta besar, search, dan dropdown "Mau ngapain?". Yang berubah hanya angka di pin dan satu tombol utama.
-  Pengguna tidak perlu belajar layar baru untuk tiap layanan. Karena semua layanan berbayar ada di balik
-  dropdown itu, pengguna baru sekali ditunjukkan tip di bawah tombolnya, dan onboarding menyebut letaknya.
-- **Satu tab satu tugas.** Parkir untuk memutuskan, Aktivitas untuk yang sudah dipesan, Akun untuk diri sendiri.
+- **Peta adalah panggungnya, hierarki ada di lembar bawah.** Seperti Uber: peta selalu jadi latar, dan lembar
+  bawah bertanya "Mau parkir di mana?". Di bawah pertanyaan itu, tiga layanan berbayar (Zona KENNETH, valet
+  runner, charger EV) tampil sebagai pilihan besar bersebelahan, Zona KENNETH disorot karena produk utama.
+- **Cek parkir bukan pilihan, tapi keadaan dasar.** Kalau tidak ada layanan yang dipilih, peta menampilkan
+  okupansi dan rute ke gerbang paling lancar. Layanan bisa dipilih dan dilepas; melepasnya kembali ke cek parkir.
+  Dropdown "Mau ngapain?" dari 22 Sep dihapus, karena menyembunyikan layanan dan kata "Parkir" jadi bermakna tiga.
+- **Satu layar untuk semua layanan tetap berlaku.** Yang berubah saat layanan dipilih hanya angka di pin, angka
+  di daftar, dan tombol utama di kartu tempat (dari "Rute ke Gerbang X" jadi "Pesan"). Rute ke gerbang tetap ada
+  sebagai baris di bawahnya, dan rute dalam gedung tetap di tiket, setelah tiba.
+- **Tab pinggir sengaja kecil.** Tiket berisi yang kamu pegang: mobil yang sedang parkir, tiket aktif, riwayat.
+  Akun berisi diri sendiri, dan juga bisa dibuka dari avatar di pojok kanan atas peta.
+- **Satu tab satu tugas.** Beranda untuk memutuskan, Tiket untuk yang sudah dipesan, Akun untuk diri sendiri.
 - **Riwayat bukan arsip.** Tiap baris punya tombol "Lagi", karena kebanyakan orang parkir di tempat yang sama
   berulang kali.
 - **Batal selalu kelihatan.** Booking yang masih bisa dibatalkan punya tombol "Batalkan" di kartunya, dua langkah,
