@@ -65,9 +65,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        // Inter ships seven unicode-range subsets; the app renders Latin only, so only those two go into the install.
-        // The others still load on demand if a glyph ever needs them.
-        globIgnores: ['**/inter-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2'],
+        // Kept out of the install, fetched on first use instead:
+        // - Inter ships seven unicode-range subsets; the app renders Latin only. The others load if a glyph needs them.
+        // - three (the 3D floor) and firebase (sign-in) are lazy chunks most sessions never reach. The shell, map,
+        //   list and booking stay fully precached; only those two features need a connection the first time.
+        globIgnores: ['**/inter-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2', '**/three-*.js', '**/firebase-*.js'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: '/index.html',
         // Firebase serves the Google sign-in handler under /__/auth. It must reach the network, not the app shell.
