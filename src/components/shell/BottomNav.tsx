@@ -7,8 +7,9 @@ import { haptic } from '../../lib/haptics'
 import { useUi, type Tab } from '../../store/ui'
 
 /**
- * Three icon tabs with Beranda (the map) in the middle. Labels are for screen
- * readers only; the active tab is marked by a filled icon and a small
+ * A floating dock: three icon tabs in one glass pill with Beranda (the map)
+ * in the middle, so the map runs underneath it edge to edge. Labels are for
+ * screen readers only; the active tab is marked by a filled icon and a small
  * cornflower dot. Tapping Beranda again while home brings the map back to the
  * overview. Nothing in the app switches tabs on its own: new bookings put a
  * dot on Aktivitas and the user decides when to look.
@@ -27,8 +28,8 @@ export function BottomNav() {
   }
 
   return (
-    <nav aria-label="Menu" className="pb-nav absolute inset-x-0 bottom-0 z-[45] border-t border-line bg-surface/90 backdrop-blur-xl">
-      <div className="grid h-14 grid-cols-3">
+    <nav aria-label="Menu" className="pb-nav pointer-events-none absolute inset-x-0 bottom-0 z-[45] flex justify-center">
+      <div className="glass shadow-float pointer-events-auto grid h-[60px] w-[232px] grid-cols-3 rounded-full px-2">
         <Item active={tab === 'activity'} onClick={() => go('activity')} label={t.tabs.activity} badge={badge}>
           <Ticket size={25} weight={tab === 'activity' ? 'fill' : 'regular'} />
         </Item>
@@ -65,7 +66,7 @@ function Item({
       transition={{ type: 'spring', stiffness: 600, damping: 30 }}
       onClick={onClick}
       className={clsx(
-        'relative flex flex-col items-center justify-center gap-1 transition-colors',
+        'relative flex flex-col items-center justify-center gap-1 rounded-full transition-colors',
         active ? 'text-ink' : 'text-ink-3 hover:text-ink-2',
       )}
     >
