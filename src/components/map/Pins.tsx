@@ -126,6 +126,7 @@ function gateTag(name: string) {
   return rest.charAt(0).toUpperCase() + rest.slice(1)
 }
 
+/** A white chip on each gate of the selected place: the status dot carries the queue colour, the text stays ink. */
 export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number; best: boolean }) {
   const t = useT()
   const tone = queueMin < 5 ? STATUS.lega : queueMin < 10 ? STATUS.ramai : STATUS.penuh
@@ -137,13 +138,14 @@ export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number
       transition={{ type: 'spring', stiffness: 500, damping: 28, delay: 0.5 }}
       data-pin-label=""
       className={clsx(
-        'flex h-6 items-center gap-1 rounded-md px-1.5 text-[10.5px] font-bold whitespace-nowrap text-white shadow-[0_4px_10px_-2px_rgb(0_0_0/0.35)]',
-        best && 'ring-2 ring-white',
+        'flex h-6 items-center gap-1.5 rounded-lg bg-surface pr-2 pl-1.5 text-[11.5px] font-semibold whitespace-nowrap text-ink shadow-[0_1px_2px_rgb(0_0_0/0.1),0_4px_12px_-4px_rgb(0_0_0/0.22)]',
+        // The gate the route goes to gets an ink outline, the rest a hairline.
+        best ? 'ring-[1.5px] ring-ink' : 'ring-1 ring-line',
       )}
-      style={{ background: tone.hex }}
     >
+      <span className="size-2 rounded-full" style={{ background: tone.hex }} />
       <span>{gateTag(gate.name)}</span>
-      <span className="opacity-85 tabular">
+      <span className="font-medium text-ink-2 tabular">
         {formatMin(queueMin)} {t.unit.min}
       </span>
     </motion.div>
