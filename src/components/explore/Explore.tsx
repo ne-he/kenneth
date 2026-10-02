@@ -148,15 +148,16 @@ export function Explore() {
         <LiveStrip />
         <div className="flex items-center justify-between gap-3 px-5 pb-3">
           <div className="min-w-0">
-            <h1 className="text-[20px] leading-tight font-bold tracking-tight">{t.modes.listTitle[mode]}</h1>
-            <p className="mt-0.5 truncate text-[12.5px] text-ink-3">{t.modes.count[mode](shown.length)}</p>
+            <h1 className="text-[21px] leading-tight font-semibold tracking-tight">{t.modes.listTitle[mode]}</h1>
+            <p className="mt-0.5 truncate text-[13px] text-ink-3">{t.modes.count[mode](shown.length)}</p>
           </div>
-          <span className="flex shrink-0 items-center gap-1 text-[12px] font-semibold whitespace-nowrap text-ink-2">
-            <MapPin size={13} weight="fill" className="text-signal" />
+          <span className="flex shrink-0 items-center gap-1 self-end pb-px text-[12.5px] whitespace-nowrap text-ink-3">
+            <MapPin size={12} weight="fill" />
             {originLabel === 'gps' ? t.explore.fromGps : t.explore.fromBinus}
           </span>
         </div>
-        <div className="no-scrollbar flex gap-1.5 overflow-x-auto px-5" role="radiogroup" aria-label={t.modes.listTitle[mode]}>
+        {/* The selected filter is the one ink pill in the row, the rest are plain words. */}
+        <div className="no-scrollbar flex gap-0.5 overflow-x-auto px-5" role="radiogroup" aria-label={t.modes.listTitle[mode]}>
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -168,8 +169,8 @@ export function Explore() {
                 setFilter(f)
               }}
               className={clsx(
-                'h-8 shrink-0 rounded-full px-3.5 text-[13px] font-semibold transition-colors',
-                filter === f ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2 hover:text-ink',
+                'h-8 shrink-0 rounded-full px-3.5 text-[13.5px] font-medium transition-colors',
+                filter === f ? 'bg-ink text-canvas' : 'text-ink-3 hover:text-ink',
               )}
             >
               {t.explore.filters[f]}
