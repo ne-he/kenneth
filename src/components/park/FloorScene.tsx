@@ -231,7 +231,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     // Catmull-Rom with low tension: corners get a slight walking curve, and
     // getPointAt never returns null at the ends (CurvePath can, at u = 1).
     const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.08)
-    const pathMat = new THREE.MeshBasicMaterial({ color: dark ? 0x43ff9f : 0x059669, transparent: true, opacity: 0.95 })
+    const pathMat = new THREE.MeshBasicMaterial({ color: dark ? 0xa3baf5 : 0x2f5bd3, transparent: true, opacity: 0.95 })
     const path = new THREE.Mesh(new THREE.TubeGeometry(curve, 220, 0.2, 8, false), pathMat)
     path.geometry.setDrawRange(0, 0)
     scene.add(path)
@@ -254,7 +254,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     sc.top = floorD
     sc.bottom = -floorD
     scene.add(sun)
-    const spot3 = new THREE.PointLight(0x43ff9f, 18, 9, 1.6)
+    const spot3 = new THREE.PointLight(0x7c9bec, 18, 9, 1.6)
     spot3.position.set(target.x, 2.2, target.z)
     scene.add(spot3)
 
