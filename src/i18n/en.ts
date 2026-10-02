@@ -294,9 +294,9 @@ const en: Dict = {
     title: 'Book',
     services: { zone: 'KENNETH Zone', valet: 'Runner valet', ev: 'EV charger' },
     serviceHint: {
-      zone: 'Bays by the lobby kept for KENNETH users, like the Lexus-only bays at some malls. Book your arrival time and the bay is guaranteed.',
-      valet: 'A KENNETH runner waits at the lobby, parks your car in the KENNETH Zone and brings it back when you call from your phone.',
-      ev: 'A charger held in your name. The charger itself is the sensor, so this promise can be kept.',
+      zone: 'A sure bay by the lobby. Pick your arrival time and the bay is guaranteed.',
+      valet: 'A runner takes your car at the lobby and brings it back when you call.',
+      ev: 'A charger held in your name for the time you pick.',
     },
     booked: { zone: 'KENNETH Zone bay booked', valet: 'Runner booked', ev: 'Charger booked' },
     savedToTickets: 'Saved in Activity',
