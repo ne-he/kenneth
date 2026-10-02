@@ -14,6 +14,19 @@ Guide resmi untuk carousel Instagram KENNETH. Contoh acuannya ada di `examples/`
 
 **Atmospheric wayfinding:** gradasi forest–emerald dengan sedikit tekstur, satu jalan yang menyambung di seluruh carousel, tipografi besar yang tenang, dan banyak ruang kosong. Tangkapan layar produk hanya muncul sekali per carousel, supaya rangkaian tetap terasa editorial dan bukan brosur fitur.
 
+## Palet app
+
+App KENNETH (web/PWA) memakai palet yang berbeda dari carousel, dan perbedaannya disengaja.
+
+| Peran | Warna |
+| --- | --- |
+| Ink (teks, ikon, splash) | `#121216` |
+| Kanvas terang (porcelain) | `#f6f6f3` |
+| Kanvas gelap | `#0b0b0e` |
+| Aksen cornflower | `#2f5bd3`; tint `#e3eafd`; terang `#7c9bec` |
+
+Di app, hijau, kuning, dan merah hanya dipakai untuk status okupansi (lega, ramai, penuh), bukan sebagai warna brand. Ikon PWA, splash, dan gambar OG mengikuti palet ini. Carousel Instagram untuk sementara tetap memakai sistem forest–emerald di bawah ini, supaya seri yang sudah terbit tetap konsisten. Jangan mencampur kedua palet dalam satu materi.
+
 ## Sistem dasar
 
 | Elemen | Aturan |
@@ -35,7 +48,7 @@ Kelima slide diperlakukan sebagai satu panorama 5400 × 1350 px. Jalannya satu g
 
 | Elemen | Aturan |
 | --- | --- |
-| Gaya rute | Sama dengan rute navigasi di app: glow `#059669` (blur), casing putih, inti bergradasi `#34D399` → `#059669` mengikuti progres rute |
+| Gaya rute | Mengikuti rute navigasi app versi hijau, sebelum palet cornflower (lihat Palet app): glow `#059669` (blur), casing putih, inti bergradasi `#34D399` → `#059669` mengikuti progres rute |
 | Ukuran (di 1080 px) | Badan jalan 38 px, glow 30, casing 15, inti 9; jalan samping 20 px |
 | Badan jalan | Latar gelap: putih-mint ±7%. Latar terang: ink ±6% |
 | Belokan | Siku 90° dengan radius 40 px, seperti jalan kota, bukan kurva bebas |
