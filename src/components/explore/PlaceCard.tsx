@@ -100,7 +100,12 @@ function ServiceChips({ services }: { services: Service[] }) {
   )
 }
 
-/** A service that is on and sold here: where it is, its three numbers, and the button that books it. */
+/**
+ * A service that is on and sold here: where it is, its numbers in one quiet
+ * line, the one brand-filled button in the app to book it, and the route as a
+ * hairline row under it. The price sits in the button, so the line does not
+ * repeat it.
+ */
 function ServiceCard({ mode, snap, ts }: { mode: Service; snap: Ranked; ts: number }) {
   const t = useT()
   const open = useUi((s) => s.open)
@@ -108,69 +113,61 @@ function ServiceCard({ mode, snap, ts }: { mode: Service; snap: Ranked; ts: numb
   const vehicle = useVehicle()
   const nav = useNavigation()
   const venue = snap.venue
-  const route = () => nav.start(venue.id)
 
+  let line: string
+  let facts: string
+  let dot: OccupancyStatus | undefined
+  let note: string | null = null
+  let cta: ReactNode
   if (mode === 'zone') {
     const zone = zoneOf(venue)!
     const left = baysLeft(venue, ts, snap.occ)
-    return (
+    line = t.card.zoneLine(zone.level, zone.lobby, zone.gate.name)
+    facts = t.card.zoneFacts(left, zone.bays)
+    dot = left === 0 ? 'penuh' : left <= 3 ? 'ramai' : 'lega'
+    if (left === 0) note = t.card.zoneGone
+    cta = (
       <>
-        <Line>{t.card.zoneLine(zone.level, zone.lobby, zone.gate.name)}</Line>
-        <Stats
-          cells={[
-            [`${left}/${zone.bays}`, t.card.zoneLeft, left === 0 ? 'penuh' : left <= 3 ? 'ramai' : 'lega'],
-            [formatRupiah(zonePrice(snap.occ, plan), true), t.card.zonePrice],
-            [`±1 ${t.unit.min}`, t.card.zoneWalk],
-          ]}
-        />
-        {left === 0 && <Note>{t.card.zoneGone}</Note>}
-        <Actions onRoute={route}>
-          <Btn tone="ink" onClick={() => open({ kind: 'book', id: venue.id, service: 'zone' })}>
-            <Crown size={17} weight="fill" /> {t.card.zoneCta}
-          </Btn>
-        </Actions>
+        <Crown size={17} weight="fill" /> {t.card.zoneCta} · {formatRupiah(zonePrice(snap.occ, plan), true)}
       </>
     )
-  }
-
-  if (mode === 'valet' && venue.valet) {
+  } else if (mode === 'valet' && venue.valet) {
     const f = valetFacts(snap)
-    return (
+    line = t.card.valetLine(venue.valet.lobbies.join(' / '))
+    facts = t.card.valetFacts(f.drop, f.back)
+    cta = (
       <>
-        <Line>{t.card.valetLine(venue.valet.lobbies.join(' / '))}</Line>
-        <Stats
-          cells={[
-            [`${f.drop} ${t.unit.min}`, t.card.valetDrop],
-            [`±${f.back} ${t.unit.min}`, t.card.valetReady],
-            [formatRupiah(venue.valet.price, true), t.card.valetPrice],
-          ]}
-        />
-        <Actions onRoute={route}>
-          <Btn tone="ink" onClick={() => open({ kind: 'book', id: venue.id, service: 'valet' })}>
-            <Key size={17} weight="fill" /> {t.card.valetCta}
-          </Btn>
-        </Actions>
+        <Key size={17} weight="fill" /> {t.card.valetCta} · {formatRupiah(venue.valet.price, true)}
+      </>
+    )
+  } else {
+    const free = chargersFree(snap, ts)
+    line = t.card.evLine(venue.ev.kw)
+    facts = t.card.evFacts(free, venue.ev.chargers, venue.ev.kw)
+    dot = free === 0 ? 'penuh' : 'lega'
+    if (!vehicle.isEV) note = t.card.evNotEv
+    cta = (
+      <>
+        <ChargingStation size={17} weight="fill" /> {t.card.evCta}
       </>
     )
   }
 
-  const free = chargersFree(snap, ts)
+  const queue = snap.bestGateQueueMin < 3 ? t.card.routeClear : t.card.routeQueue(formatMin(snap.bestGateQueueMin))
   return (
     <>
-      <Line>{t.card.evLine(venue.ev.kw)}</Line>
-      <Stats
-        cells={[
-          [t.modes.free(free, venue.ev.chargers), t.card.evFree, free === 0 ? 'penuh' : 'lega'],
-          [`${venue.ev.kw} kW`, t.card.evPower],
-          [String(venue.ev.chargers), t.card.evTotal],
-        ]}
-      />
-      {!vehicle.isEV && <Note>{t.card.evNotEv}</Note>}
-      <Actions onRoute={route}>
-        <Btn tone="ink" onClick={() => open({ kind: 'book', id: venue.id, service: 'ev' })}>
-          <ChargingStation size={17} weight="fill" /> {t.card.evCta}
-        </Btn>
-      </Actions>
+      <Line>{line}</Line>
+      <Facts dot={dot}>{facts}</Facts>
+      {note && <Note>{note}</Note>}
+      <Btn tone="brand" onClick={() => open({ kind: 'book', id: venue.id, service: mode })}>
+        {cta}
+      </Btn>
+      <Rows>
+        <Row icon={<NavigationArrow size={16} weight="fill" />} onClick={() => nav.start(venue.id)}>
+          {t.card.routeTo(snap.bestGate.name)}
+          <span className="text-ink-3">, {queue}</span>
+        </Row>
+      </Rows>
     </>
   )
 }
@@ -322,45 +319,21 @@ function Note({ children }: { children: ReactNode }) {
   return <p className="-mt-1 mb-4 text-[12.5px] leading-snug text-ink-3">{children}</p>
 }
 
-/** Three numbers side by side, split by hairlines. A dot marks the one that carries a status. */
-function Stats({ cells }: { cells: [string, string, OccupancyStatus?][] }) {
+/** The numbers of a service in one quiet line under the context. A dot marks the one that carries a status. */
+function Facts({ dot, children }: { dot?: OccupancyStatus; children: ReactNode }) {
   return (
-    <div className="mb-4 grid grid-cols-3 divide-x divide-line text-center">
-      {cells.map(([value, label, status]) => (
-        <div key={label} className="min-w-0 px-2">
-          <div className="flex items-center justify-center gap-1.5 text-[17px] leading-tight font-semibold tracking-tight tabular">
-            {status && <span className={clsx('size-2 shrink-0 rounded-full', STATUS[status].dot)} aria-hidden="true" />}
-            <span className="truncate">{value}</span>
-          </div>
-          <div className="mt-1 truncate text-[11.5px] text-ink-3">{label}</div>
-        </div>
-      ))}
-    </div>
+    <p className="-mt-2 mb-4 flex items-center gap-2 text-[12.5px] leading-snug text-ink-3 tabular">
+      {dot && <span className={clsx('size-2 shrink-0 rounded-full', STATUS[dot].dot)} aria-hidden="true" />}
+      <span>{children}</span>
+    </p>
   )
 }
 
-function Actions({ onRoute, children }: { onRoute: () => void; children: ReactNode }) {
-  const t = useT()
-  return (
-    <div className="flex gap-2">
-      <button
-        type="button"
-        aria-label={t.venue.actions.route}
-        onClick={() => {
-          haptic('tap')
-          onRoute()
-        }}
-        className="grid size-12 shrink-0 place-items-center rounded-full border border-line-strong text-ink transition-colors hover:bg-surface-2"
-      >
-        <NavigationArrow size={18} weight="fill" />
-      </button>
-      {children}
-    </div>
-  )
-}
-
-/** The main action is an ink pill. The quiet one is an outline, never a grey fill. */
-function Btn({ tone, onClick, children }: { tone: 'ink' | 'quiet'; onClick: () => void; children: ReactNode }) {
+/**
+ * The main action is an ink pill. Booking a service is the one brand-filled
+ * button in the app, so the paid step reads differently from the free one.
+ */
+function Btn({ tone, onClick, children }: { tone: 'ink' | 'brand'; onClick: () => void; children: ReactNode }) {
   return (
     <motion.button
       type="button"
@@ -372,7 +345,7 @@ function Btn({ tone, onClick, children }: { tone: 'ink' | 'quiet'; onClick: () =
       className={clsx(
         'flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-5 text-[14.5px] font-semibold tracking-tight transition-colors',
         tone === 'ink' && 'bg-ink text-canvas hover:opacity-90',
-        tone === 'quiet' && 'border border-line-strong text-ink hover:bg-surface-2',
+        tone === 'brand' && 'bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400',
       )}
     >
       <span className="flex min-w-0 items-center gap-2 truncate">{children}</span>

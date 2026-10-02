@@ -92,6 +92,13 @@ const id = {
     evTotal: 'Unit',
     evNotEv: 'Kendaraan aktif bukan mobil listrik. Ganti dari tombol mode di atas.',
     closed: 'Lagi tutup sekarang',
+    // The numbers of a service in one line, under the context line.
+    zoneFacts: (left: number, total: number) => `${left}/${total} petak kosong · ±1 mnt ke lift`,
+    valetFacts: (drop: number, back: number) => `Runner datang ${drop} mnt · mobil siap ±${back} mnt`,
+    evFacts: (free: number, total: number, kw: number) => `${free}/${total} charger kosong · ${kw} kW`,
+    // The route row under a booking button says what the gate queue is.
+    routeQueue: (min: string) => `antre ${min} mnt`,
+    routeClear: 'lancar',
   },
   source: {
     palang: 'Data palang',
