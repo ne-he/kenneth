@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { VENUE_BY_ID } from '../data/venues'
+import type { ValetTicket } from '../engine/valet'
 import { bayFor, zoneOf } from '../engine/zone'
 import { activeVehicleOf, migrateApp, NO_VEHICLE, useApp } from './app'
 
@@ -91,5 +92,54 @@ describe('booking a zone bay', () => {
     useApp.getState().cancelPass('drop0002', 99)
     const byId = Object.fromEntries(useApp.getState().passes.map((p) => [p.id, p.status]))
     expect(byId).toEqual({ keep0001: 'active', drop0002: 'cancelled' })
+  })
+})
+
+describe('finishing a runner valet', () => {
+  const MIN = 60_000
+  const H = 60 * MIN
+  const ticket = (patch: Partial<ValetTicket> = {}): ValetTicket => ({
+    id: 'v1',
+    venueId: 'central-park',
+    lobby: 'Lobi A',
+    arriveAt: 10 * H,
+    price: 50_000,
+    token: 'KNV-CP-V1',
+    createdAt: 9 * H,
+    status: 'active',
+    ...patch,
+  })
+
+  it('closes the ticket and records one visit from the key handover, with the minutes the call ahead saved', () => {
+    useApp.setState({ valets: [ticket({ droppedAt: 10 * H + 5 * MIN, requestedAt: 12 * H, readyAt: 12 * H + 8 * MIN })], history: [] })
+    useApp.getState().finishValet('v1', 12 * H + 10 * MIN)
+    const { valets, history } = useApp.getState()
+    expect(valets[0].status).toBe('done')
+    expect(valets[0].closedAt).toBe(12 * H + 10 * MIN)
+    expect(history).toHaveLength(1)
+    expect(history[0]).toMatchObject({ venueId: 'central-park', via: 'valet', kind: 'mobil', at: 10 * H + 5 * MIN, minutesSaved: 8 })
+    expect(history[0].durationH).toBeCloseTo(2 + 5 / 60, 5)
+  })
+
+  it('counts from the booked arrival when the key was never handed over, and saves nothing', () => {
+    useApp.setState({ valets: [ticket()], history: [] })
+    useApp.getState().finishValet('v1', 11 * H)
+    const [visit] = useApp.getState().history
+    expect(visit.at).toBe(10 * H)
+    expect(visit.minutesSaved).toBe(0)
+    expect(visit.durationH).toBe(1)
+  })
+
+  it('never records a stay shorter than a quarter hour', () => {
+    useApp.setState({ valets: [ticket({ droppedAt: 10 * H })], history: [] })
+    useApp.getState().finishValet('v1', 10 * H + 2 * MIN)
+    expect(useApp.getState().history[0].durationH).toBe(0.25)
+  })
+
+  it('does nothing for a ticket it does not have', () => {
+    useApp.setState({ valets: [ticket()], history: [] })
+    useApp.getState().finishValet('nope', 11 * H)
+    expect(useApp.getState().valets[0].status).toBe('active')
+    expect(useApp.getState().history).toHaveLength(0)
   })
 })
