@@ -35,7 +35,7 @@ import { useApp, useVehicle, type CommunityReport } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
-import { Disclosure, Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
+import { Disclosure, Label, List, StatusPill } from '../ui/Kit'
 import { PlaceCard } from './PlaceCard'
 import { SlotsLeft } from './SlotsLeft'
 import { TimeScrubber } from './TimeScrubber'
@@ -46,11 +46,10 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
   const toggleFavorite = useApp((s) => s.toggleFavorite)
   const notify = useUi((s) => s.notify)
   return (
-    <div className="flex items-center gap-3 px-5 pb-3">
-      <VenueGlyph category={venue.category} size={42} />
+    <div className="flex items-center gap-1.5 px-5 pt-1 pb-4">
       <div className="min-w-0 flex-1">
-        <h2 className="truncate text-[19px] leading-tight font-bold tracking-tight">{venue.name}</h2>
-        <div className="mt-0.5 flex items-center gap-1.5 overflow-hidden text-[12.5px] whitespace-nowrap text-ink-3">
+        <h2 className="truncate text-[21px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
+        <div className="mt-1 flex items-center gap-1.5 overflow-hidden text-[13px] whitespace-nowrap text-ink-3">
           <span>{t.venue.category[venue.category]}</span>
           <span>·</span>
           <SourceChip venue={venue} />
@@ -71,12 +70,9 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
           toggleFavorite(venue.id)
           notify(fav ? t.venue.unfavorited : t.venue.favorited)
         }}
-        className={clsx(
-          'grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 transition-colors',
-          fav ? 'text-ramai' : 'text-ink-3 hover:text-ink',
-        )}
+        className={clsx('grid size-9 shrink-0 place-items-center rounded-full transition-colors', fav ? 'text-ink' : 'text-ink-3 hover:text-ink')}
       >
-        <Star size={16} weight={fav ? 'fill' : 'bold'} />
+        <Star size={18} weight={fav ? 'fill' : 'regular'} />
       </button>
       <button
         type="button"
@@ -96,7 +92,7 @@ function SourceChip({ venue }: { venue: Venue }) {
   return (
     <span
       className={clsx(
-        'inline-flex items-center gap-1 font-semibold',
+        'inline-flex items-center gap-1 font-medium',
         palang ? 'text-brand-700 dark:text-brand-300' : 'text-ramai-ink dark:text-led-ramai',
       )}
     >
