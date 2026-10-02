@@ -29,7 +29,15 @@ interface Props {
   initialBounds: LngLat[]
 }
 
-const ROUTE_COLOR = '#2f5bd3'
+/**
+ * The route is the one cornflower line on the map. A casing in the map's own
+ * ground colour lifts it off the roads (white on porcelain, onyx at night),
+ * and a faint glow keeps it readable over 3D blocks.
+ */
+const ROUTE = {
+  light: { from: '#7c9bec', to: '#2f5bd3', casing: '#ffffff', glow: 0.14 },
+  dark: { from: '#a3baf5', to: '#5279e3', casing: '#0d0d10', glow: 0.22 },
+} as const
 
 /** From this zoom the place labels carry the short name too. */
 const NAMED_ZOOM = 14.5
@@ -57,6 +65,8 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
   // Create the map once. Theme and camera changes after that have their own effects,
   // so the first theme and bounds are read through an effect event, not dependencies.
   const initial = useEffectEvent(() => ({ theme, bounds: initialBounds, look, threeD }))
+  // Overlays are added again after every style swap, in the colours of the theme at that moment.
+  const overlays = useEffectEvent((map: MLMap) => addOverlays(map, theme))
   useEffect(() => {
     let cancelled = false
     let map: MLMap | null = null
@@ -79,7 +89,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
         setMap(map)
         if (import.meta.env.DEV) (window as unknown as { __kmap: MLMap }).__kmap = map
         map.on('style.load', () => {
-          addOverlays(map!)
+          overlays(map!)
           setReady((n) => n + 1)
         })
         map.once('load', () => {
@@ -296,7 +306,8 @@ function sameOffsets(a: ReadonlyMap<string, Offset | null>, b: ReadonlyMap<strin
 
 const emptyLine = () => ({ type: 'FeatureCollection' as const, features: [] })
 
-function addOverlays(map: MLMap) {
+function addOverlays(map: MLMap, theme: 'light' | 'dark') {
+  const r = ROUTE[theme]
   if (!map.getSource('route')) {
     map.addSource('route', { type: 'geojson', data: emptyLine(), lineMetrics: true })
   }
@@ -306,14 +317,14 @@ function addOverlays(map: MLMap) {
       type: 'line',
       source: 'route',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-color': ROUTE_COLOR, 'line-width': 16, 'line-opacity': 0.22, 'line-blur': 8 },
+      paint: { 'line-color': r.to, 'line-width': 14, 'line-opacity': r.glow, 'line-blur': 6 },
     })
     map.addLayer({
       id: 'route-casing',
       type: 'line',
       source: 'route',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-color': '#ffffff', 'line-width': 9 },
+      paint: { 'line-color': r.casing, 'line-width': 8.5 },
     })
     map.addLayer({
       id: 'route-line',
@@ -321,8 +332,8 @@ function addOverlays(map: MLMap) {
       source: 'route',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: {
-        'line-width': 5.5,
-        'line-gradient': ['interpolate', ['linear'], ['line-progress'], 0, '#7c9bec', 1, ROUTE_COLOR],
+        'line-width': 5,
+        'line-gradient': ['interpolate', ['linear'], ['line-progress'], 0, r.from, 1, r.to],
       },
     })
   }
