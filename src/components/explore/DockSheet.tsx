@@ -65,7 +65,8 @@ export function DockSheet({ snap, onSnap, header, children, footer, peek = 172, 
     <motion.div
       ref={wrap}
       style={{ height: h }}
-      className="shadow-sheet pointer-events-auto absolute inset-x-0 bottom-0 z-30 flex flex-col overflow-hidden rounded-t-[28px] border-t border-glass-line bg-surface/[0.96] backdrop-blur-2xl"
+      // Solid surface with one hairline and a soft lift off the map, the same top edge as the other sheets.
+      className="pointer-events-auto absolute inset-x-0 bottom-0 z-30 flex flex-col overflow-hidden rounded-t-[28px] border-t border-line bg-surface shadow-[0_-10px_30px_-16px_rgb(0_0_0/0.22)]"
     >
       <motion.div
         className="shrink-0 cursor-grab touch-none active:cursor-grabbing"
@@ -77,7 +78,7 @@ export function DockSheet({ snap, onSnap, header, children, footer, peek = 172, 
         onDoubleClick={() => onSnap(snap === 'full' ? 'half' : 'full')}
       >
         <div className="flex justify-center pt-2.5 pb-1.5">
-          <span className="h-[5px] w-10 rounded-full bg-line-strong" />
+          <span className="h-1 w-9 rounded-full bg-line-strong" />
         </div>
         {header}
       </motion.div>
