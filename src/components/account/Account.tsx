@@ -68,18 +68,27 @@ export function Account() {
 
   return (
     <div className="no-scrollbar h-full overflow-y-auto px-4 pt-safe pb-[calc(var(--nav-h)+24px)]">
-      <h1 className="pt-3 pb-5 text-[28px] leading-tight font-bold tracking-tight">{t.profile.title}</h1>
+      <h1 className="pt-3 pb-5 text-[28px] leading-tight font-semibold tracking-tight">{t.profile.title}</h1>
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
         <Identity />
       </motion.div>
 
       <Group>
+        {/* The plan row is the one brand moment on this screen, so its crown and upgrade pill take the cornflower. */}
         <Row
-          icon={<Crown size={17} weight="fill" />}
+          icon={<Crown size={18} weight="fill" className="text-brand-600 dark:text-brand-300" />}
           title={plan === 'premium' ? t.profile.premium : t.profile.free}
           hint={plan === 'premium' ? t.premium.active : t.profile.freeHint}
-          right={<Chevron text={plan === 'premium' ? undefined : t.profile.upgrade} />}
+          right={
+            plan === 'premium' ? (
+              <Chevron />
+            ) : (
+              <span className="shrink-0 rounded-full bg-brand-100 px-2.5 py-1 text-[12px] font-semibold text-brand-800 dark:bg-brand-500/15 dark:text-brand-200">
+                {t.profile.upgrade}
+              </span>
+            )
+          }
           onClick={() => open({ kind: 'premium' })}
         />
         <Row
@@ -216,17 +225,17 @@ function Identity() {
   const { available, busy, signIn, signOut } = useSignIn()
   const shown = account?.name ?? name ?? ''
   return (
-    <section className="mb-5 rounded-[22px] border border-line bg-surface p-4">
+    <section className="mb-6 rounded-[20px] border border-line bg-surface p-4">
       <div className="flex items-center gap-3.5">
         {account?.photo ? (
           <img src={account.photo} alt="" referrerPolicy="no-referrer" className="size-14 shrink-0 rounded-full object-cover" />
         ) : (
-          <span className="grid size-14 shrink-0 place-items-center rounded-full bg-ink text-[22px] font-bold text-canvas">
+          <span className="grid size-14 shrink-0 place-items-center rounded-full bg-ink text-[22px] font-semibold text-canvas">
             {(shown || t.profile.guest).slice(0, 1).toUpperCase()}
           </span>
         )}
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[17px] font-bold">{shown || t.profile.guest}</span>
+          <span className="block truncate text-[17px] font-semibold tracking-tight">{shown || t.profile.guest}</span>
           <span className="mt-0.5 block truncate text-[12.5px] text-ink-3">{account ? account.email : t.profile.guestHint}</span>
         </span>
       </div>
@@ -234,7 +243,7 @@ function Identity() {
         <button
           type="button"
           onClick={signOut}
-          className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-2xl bg-surface-2 text-[13.5px] font-semibold text-ink-2 hover:text-ink"
+          className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-full bg-surface-2 text-[13.5px] font-semibold text-ink-2 transition-colors hover:bg-surface-3 hover:text-ink"
         >
           <SignOut size={16} weight="bold" /> {t.profile.signOut}
         </button>
@@ -247,7 +256,7 @@ function Identity() {
               haptic('tap')
               void signIn()
             }}
-            className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-ink text-[14px] font-semibold text-canvas disabled:opacity-60"
+            className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-[14px] font-semibold text-canvas transition-opacity hover:opacity-90 disabled:opacity-60"
           >
             <GoogleLogo size={17} weight="bold" /> {busy ? t.profile.signingIn : t.profile.signIn}
           </button>
@@ -283,17 +292,17 @@ function Garage() {
               }}
               className="flex min-w-0 flex-1 items-center gap-3 text-left"
             >
-              <span className={clsx('grid size-8 shrink-0 place-items-center rounded-[10px]', on ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2')}>
-                {v.kind === 'motor' ? <Motorcycle size={17} weight="fill" /> : <CarProfile size={17} weight="fill" />}
+              <span className={clsx('grid w-5 shrink-0 place-items-center', on ? 'text-ink' : 'text-ink-3')}>
+                {v.kind === 'motor' ? <Motorcycle size={18} weight="fill" /> : <CarProfile size={18} weight="fill" />}
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[14px] font-semibold">{v.model || t.profile.kinds[v.kind]}</span>
+                <span className="block truncate text-[14.5px] font-medium">{v.model || t.profile.kinds[v.kind]}</span>
                 <span className="mt-1 flex items-center gap-2 text-[12px] text-ink-3">
                   <Plate plate={v.plate} small />
                   <span className="truncate">{v.isEV ? 'EV' : parity ? t.profile.parity(parity) : ''}</span>
                 </span>
               </span>
-              {on && <Check size={17} weight="bold" className="shrink-0 text-brand-600" />}
+              {on && <Check size={17} weight="bold" className="shrink-0 text-ink" />}
             </button>
             <button
               type="button"
@@ -312,7 +321,7 @@ function Garage() {
 
 function Group({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <section className="mb-5">
+    <section className="mb-6">
       {title && <Label>{title}</Label>}
       <List>{children}</List>
     </section>
@@ -339,10 +348,10 @@ function Row({
       onClick={onClick}
       className={clsx('flex w-full items-center gap-3 px-4 py-3.5 text-left', onClick && 'transition-colors hover:bg-surface-2/60 active:bg-surface-2')}
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-surface-2 text-ink-2">{icon}</span>
+      <span className="grid w-5 shrink-0 place-items-center text-ink-3">{icon}</span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[14px] leading-snug font-semibold">{title}</span>
-        {hint && <span className="mt-0.5 block text-[12px] leading-snug text-ink-3">{hint}</span>}
+        <span className="block text-[14.5px] leading-snug font-medium">{title}</span>
+        {hint && <span className="mt-0.5 block text-[12.5px] leading-snug text-ink-3">{hint}</span>}
       </span>
       {right}
     </Tag>
@@ -353,9 +362,9 @@ function Row({
 function SegRow({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
     <div className="px-4 py-3.5">
-      <div className="mb-2.5 flex items-center gap-3">
-        <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-surface-2 text-ink-2">{icon}</span>
-        <span className="text-[14px] font-semibold">{title}</span>
+      <div className="mb-3 flex items-center gap-3">
+        <span className="grid w-5 shrink-0 place-items-center text-ink-3">{icon}</span>
+        <span className="text-[14.5px] font-medium">{title}</span>
       </div>
       {children}
     </div>

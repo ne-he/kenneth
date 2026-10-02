@@ -140,7 +140,7 @@ export default function Booth() {
             <ArrowLeft size={16} weight="bold" />
           </Link>
           <Wordmark />
-          <span className="rounded-full bg-brand-600 px-2.5 py-1 text-[11px] font-bold text-white">{c.title}</span>
+          <span className="rounded-full bg-brand-100 px-2.5 py-1 text-[11px] font-semibold text-brand-800 dark:bg-brand-500/15 dark:text-brand-200">{c.title}</span>
           <span className="ml-auto rounded-full bg-surface-2 px-3 py-1 text-[12px] font-bold tabular">
             {responses.length} {c.total}
           </span>
@@ -158,7 +158,7 @@ export default function Booth() {
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-4 overflow-hidden"
               >
-                <div className="flex items-center gap-2 rounded-[18px] bg-brand-600 p-4 text-[15px] font-bold text-white">
+                <div className="flex items-center gap-2 rounded-[18px] bg-ink p-4 text-[15px] font-semibold text-canvas">
                   <Check size={20} weight="bold" /> {c.thanks}
                 </div>
               </motion.div>
@@ -233,7 +233,7 @@ export default function Booth() {
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
           <div className="rounded-[24px] border border-line bg-surface p-5">
-            <h2 className="text-[15px] font-extrabold">{c.summary}</h2>
+            <h2 className="text-[15px] font-semibold">{c.summary}</h2>
             <p className="mt-0.5 text-[12px] text-ink-3 tabular">
               {responses.length} {c.total}
             </p>
@@ -323,7 +323,7 @@ function Choices<T extends string>({ value, onChange, options }: { value: T | ''
           }}
           className={clsx(
             'h-12 min-w-24 rounded-2xl border px-5 text-[15px] font-semibold transition-colors',
-            value === k ? 'border-brand-600 bg-brand-600 text-white' : 'border-line bg-surface hover:bg-surface-2',
+            value === k ? 'border-ink bg-ink text-canvas' : 'border-line bg-surface hover:bg-surface-2',
           )}
         >
           {label}

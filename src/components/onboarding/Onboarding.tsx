@@ -143,7 +143,7 @@ function Welcome() {
   return (
     <div className="flex min-h-full flex-col">
       <div className="grid flex-1 place-items-center py-2">
-        <div className="relative aspect-square w-full max-w-[280px] overflow-hidden rounded-[32px] bg-black shadow-[0_30px_60px_-30px_rgb(0_0_0/0.6)]">
+        <div className="relative aspect-square w-full max-w-[280px] overflow-hidden rounded-[32px] bg-black">
           <video
             className="size-full object-cover"
             autoPlay
@@ -158,7 +158,7 @@ function Welcome() {
           </video>
         </div>
       </div>
-      <h1 className="mt-6 text-[30px] leading-[1.08] font-bold tracking-tight text-balance">{t.onboarding.welcomeTitle}</h1>
+      <h1 className="mt-6 text-[30px] leading-[1.08] font-semibold tracking-tight text-balance">{t.onboarding.welcomeTitle}</h1>
       <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{t.onboarding.welcomeBody}</p>
     </div>
   )
@@ -169,8 +169,8 @@ function What() {
   const icons = [<Gauge key="g" size={22} weight="duotone" />, <ArrowsSplit key="a" size={22} weight="duotone" />, <Ticket key="t" size={22} weight="duotone" />]
   return (
     <div>
-      <h1 className="text-[26px] leading-tight font-bold tracking-tight">{t.onboarding.whatTitle}</h1>
-      <ul className="mt-6 space-y-5">
+      <h1 className="text-[26px] leading-tight font-semibold tracking-tight">{t.onboarding.whatTitle}</h1>
+      <ul className="mt-7 space-y-6">
         {t.onboarding.what.map((w, i) => (
           <motion.li
             key={w.title}
@@ -179,7 +179,8 @@ function What() {
             transition={{ delay: 0.08 + i * 0.07 }}
             className="flex gap-4"
           >
-            <span className="grid size-12 shrink-0 place-items-center rounded-[16px] bg-surface-2 text-ink">{icons[i]}</span>
+            {/* Cornflower is the accent here, a plain icon instead of a filled tile. */}
+            <span className="shrink-0 pt-0.5 text-brand-600 dark:text-brand-300">{icons[i]}</span>
             <span>
               <span className="block text-[16px] font-semibold">{w.title}</span>
               <span className="mt-0.5 block text-[14px] leading-relaxed text-ink-2">{w.body}</span>
@@ -187,7 +188,7 @@ function What() {
           </motion.li>
         ))}
       </ul>
-      <p className="mt-8 rounded-[16px] bg-surface-2 p-3.5 text-[12.5px] leading-relaxed text-ink-2">{t.onboarding.honest}</p>
+      <p className="mt-8 border-t border-line pt-4 text-[12.5px] leading-relaxed text-ink-2">{t.onboarding.honest}</p>
     </div>
   )
 }
@@ -196,7 +197,7 @@ function Favorites({ favorites, toggle }: { favorites: VenueId[]; toggle: (id: V
   const t = useT()
   return (
     <div>
-      <h1 className="text-[26px] leading-tight font-bold tracking-tight">{t.onboarding.favTitle}</h1>
+      <h1 className="text-[26px] leading-tight font-semibold tracking-tight">{t.onboarding.favTitle}</h1>
       <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t.onboarding.favBody}</p>
       <Group icon={<GraduationCap size={15} weight="fill" />} title={t.onboarding.favCampus}>
         {CAMPUSES.map((v) => (
@@ -219,7 +220,7 @@ function Favorites({ favorites, toggle }: { favorites: VenueId[]; toggle: (id: V
 function Group({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
     <section className="mt-6">
-      <h2 className="mb-2.5 flex items-center gap-1.5 text-[13px] font-semibold text-ink-3">
+      <h2 className="mb-2.5 flex items-center gap-1.5 text-[13px] font-medium text-ink-3">
         {icon} {title}
       </h2>
       <div className="flex flex-wrap gap-2">{children}</div>
@@ -267,7 +268,7 @@ function VehicleStep(p: {
   const parity = plateParity(p.plate)
   return (
     <div>
-      <h1 className="text-[26px] leading-tight font-bold tracking-tight">{t.onboarding.vehicleTitle}</h1>
+      <h1 className="text-[26px] leading-tight font-semibold tracking-tight">{t.onboarding.vehicleTitle}</h1>
       <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{t.onboarding.vehicleBody}</p>
       <Segmented
         value={p.kind}
@@ -278,7 +279,7 @@ function VehicleStep(p: {
         ]}
         className="mt-5"
       />
-      <div className="my-5 grid place-items-center rounded-[22px] bg-surface-2 py-6">
+      <div className="my-5 grid place-items-center rounded-[20px] bg-surface-2 py-6">
         <Plate plate={(p.plate || t.onboarding.platePh).toUpperCase()} className="scale-[1.5]" />
         {parity && p.kind === 'mobil' && <span className="mt-6 text-[12px] font-semibold text-ink-2">{t.profile.parity(parity)}</span>}
       </div>
@@ -315,7 +316,7 @@ function VehicleStep(p: {
         <span
           className={clsx(
             'grid size-6 shrink-0 place-items-center rounded-md border-2',
-            p.sample ? 'border-brand-600 bg-brand-600 text-white' : 'border-line-strong',
+            p.sample ? 'border-ink bg-ink text-canvas' : 'border-line-strong',
           )}
         >
           {p.sample && <Check size={14} weight="bold" />}
@@ -329,7 +330,7 @@ function VehicleStep(p: {
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="mb-3 block">
-      <span className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-3">{label}</span>
+      <span className="mb-1.5 block px-1 text-[13px] font-medium text-ink-3">{label}</span>
       {children}
     </label>
   )

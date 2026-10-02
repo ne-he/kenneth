@@ -1,4 +1,4 @@
-import { CheckCircle, Crown, Ticket } from '@phosphor-icons/react'
+import { Check, Crown, Ticket } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { VENUE_BY_ID } from '../../../data/venues'
@@ -61,7 +61,7 @@ export function BookHub({ venueId, service }: { venueId: VenueId; service?: Serv
               className="mb-3"
             />
           )}
-          <p className="mb-4 px-1 text-[13px] leading-relaxed text-ink-2">{t.book.serviceHint[tab]}</p>
+          <p className="mb-5 px-1 text-[13px] leading-snug text-ink-3">{t.book.serviceHint[tab]}</p>
           <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
             {tab === 'zone' && <ZonePanel venueId={venueId} onDone={done} />}
             {tab === 'valet' && <ValetPanel venueId={venueId} onDone={done} />}
@@ -90,28 +90,29 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
   const policy =
     booked.service === 'zone' ? t.activity.cancelPolicy : booked.service === 'valet' ? t.activity.valetCancelPolicy : t.activity.evCancelPolicy
   return (
-    <div className="flex flex-col items-center pt-6 pb-5 text-center">
+    <div className="flex flex-col items-center pt-8 pb-5 text-center">
+      {/* A booking is the brand moment: a soft cornflower tint, no glow. */}
       <motion.span
-        initial={{ scale: 0, rotate: -30 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 16 }}
-        className="grid size-20 place-items-center rounded-full bg-brand-500 text-white shadow-[0_14px_30px_-10px_rgb(16_185_129/0.7)]"
+        initial={{ scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 420, damping: 22 }}
+        className="grid size-16 place-items-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300"
       >
-        <CheckCircle size={44} weight="fill" />
+        <Check size={30} weight="bold" />
       </motion.span>
-      <h2 className="mt-5 text-[21px] font-bold tracking-tight">{t.book.booked[booked.service]}</h2>
+      <h2 className="mt-5 text-[21px] font-semibold tracking-tight">{t.book.booked[booked.service]}</h2>
       <p className="mt-1.5 text-[13.5px] text-ink-2">
         {venueName} · {booked.line}
       </p>
-      <p className="mt-3 flex items-center gap-1.5 rounded-full bg-surface-2 px-3 py-1.5 text-[12px] font-semibold text-ink-2">
+      <p className="mt-2 flex items-center gap-1.5 text-[12.5px] text-ink-3">
         <Ticket size={14} weight="fill" /> {t.book.savedToTickets}
       </p>
-      <div className="mt-6 grid w-full grid-cols-2 gap-2">
+      <div className="mt-7 grid w-full grid-cols-2 gap-2">
         <Button variant="secondary" onClick={close}>
           {t.common.done}
         </Button>
         {booked.service === 'ev' ? (
-          <Button variant="dark" onClick={() => setTab('activity')}>
+          <Button variant="primary" onClick={() => setTab('activity')}>
             <Ticket size={17} weight="bold" /> {t.book.seeTickets}
           </Button>
         ) : booked.service === 'valet' ? (

@@ -28,7 +28,7 @@ export function MapOptionsSheet() {
       <div className="mb-5 grid grid-cols-2 gap-2">
         {STYLES.map((s) => (
           <StyleCard key={s} style={s} active={prefs.style === s} onClick={() => setMapPref('style', s)}>
-            <span className="block text-[14px] font-semibold">{t.mapOptions.styles[s]}</span>
+            <span className="block text-[14px] font-medium">{t.mapOptions.styles[s]}</span>
             <span className="mt-0.5 block text-[12px] leading-snug text-ink-3">{t.mapOptions.styleHints[s]}</span>
           </StyleCard>
         ))}
@@ -36,11 +36,11 @@ export function MapOptionsSheet() {
 
       <List className="mb-5">
         <div className="flex items-center gap-3 px-4 py-3.5">
-          <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-surface-2 text-ink-2">
-            <Buildings size={17} weight="fill" />
+          <span className="grid w-5 shrink-0 place-items-center text-ink-3">
+            <Buildings size={18} weight="fill" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[14px] font-semibold">{t.mapOptions.threeD}</span>
+            <span className="block text-[14px] font-medium">{t.mapOptions.threeD}</span>
             <span className="block text-[12px] text-ink-3">{t.mapOptions.threeDHint}</span>
           </span>
           <Toggle checked={prefs.threeD} onChange={(v) => setMapPref('threeD', v)} label={t.mapOptions.threeD} />
@@ -61,20 +61,20 @@ export function MapOptionsSheet() {
             }}
             className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-2/60"
           >
-            <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-surface-2 text-ink-2">
-              <NavigationArrow size={16} weight="fill" />
+            <span className="grid w-5 shrink-0 place-items-center text-ink-3">
+              <NavigationArrow size={17} weight="fill" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-[14px] font-semibold">{NAV_APP_NAME[a]}</span>
+              <span className="block text-[14px] font-medium">{NAV_APP_NAME[a]}</span>
               <span className="block text-[12px] text-ink-3">{t.mapOptions.navHints[a]}</span>
             </span>
             <span
               className={clsx(
-                'grid size-5 place-items-center rounded-full border-2',
-                prefs.navApp === a ? 'border-brand-600 bg-brand-600' : 'border-line-strong',
+                'grid size-5 shrink-0 place-items-center rounded-full border-2',
+                prefs.navApp === a ? 'border-ink bg-ink' : 'border-line-strong',
               )}
             >
-              {prefs.navApp === a && <span className="size-2 rounded-full bg-white" />}
+              {prefs.navApp === a && <span className="size-2 rounded-full bg-canvas" />}
             </span>
           </button>
         ))}

@@ -275,10 +275,10 @@ export function Heatmap({
   format: (v: number) => string
 }) {
   const [hover, setHover] = useState<string | null>(null)
-  // Brand ramp, light to dark. In dark mode the ramp runs the other way so magnitude still reads as "more ink".
+  // Cornflower ramp, light to dark. In dark mode the ramp runs the other way so magnitude still reads as "more ink".
   const ramp = dark
-    ? ['#12211b', '#123a2c', '#11573f', '#0f7a55', '#16a36f', '#43d99a']
-    : ['#eef8f3', '#cdeedd', '#9fdcc0', '#62c39b', '#239d72', '#0b6e4f']
+    ? ['#15192b', '#1b2a55', '#22408f', '#2f5bd3', '#5279e3', '#a3baf5']
+    : ['#f0f4fe', '#c7d5fa', '#a3baf5', '#7c9bec', '#5279e3', '#2649ae']
   const step = (v: number) => ramp[Math.min(ramp.length - 1, Math.floor(v * ramp.length))]
   const hours = rows[0]?.cells.map((c) => c.hour) ?? []
   return (

@@ -294,9 +294,9 @@ const id = {
     title: 'Pesan',
     services: { zone: 'Zona KENNETH', valet: 'Valet runner', ev: 'Charger EV' },
     serviceHint: {
-      zone: 'Petak khusus pengguna KENNETH di dekat lobi, kayak parkir khusus Lexus di mall. Booking jam datang, petaknya dijamin ada.',
-      valet: 'Runner KENNETH nunggu di lobi, bawa mobilmu ke Zona KENNETH, dan balikin pas kamu panggil dari HP.',
-      ev: 'Charger dikunci atas namamu. Charger-nya sendiri yang jadi penanda, jadi janji ini bisa ditepati.',
+      zone: 'Petak pasti di dekat lobi. Pilih jam datang, petaknya dijamin ada.',
+      valet: 'Runner terima mobilmu di lobi dan balikin pas kamu panggil.',
+      ev: 'Charger dikunci atas namamu di jam yang kamu pilih.',
     },
     booked: { zone: 'Petak Zona KENNETH dipesan', valet: 'Runner dipesan', ev: 'Charger dipesan' },
     savedToTickets: 'Tersimpan di Aktivitas',

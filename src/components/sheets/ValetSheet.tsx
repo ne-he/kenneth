@@ -15,7 +15,11 @@ import { Plate } from '../ui/Display'
 import { SheetHeader } from '../ui/Sheet'
 import { useValetActions } from './book/useValetActions'
 
-/** The runner ticket. One big next step at a time: hand over, call the car, pick it up. */
+/**
+ * The runner ticket. One big next step at a time: hand over, call the car,
+ * pick it up. The runner and the ready moment carry the cornflower tint,
+ * everything else stays ink on hairlines.
+ */
 export function ValetSheet({ id }: { id: string }) {
   const t = useT()
   const dayLabel = useDayLabel()
@@ -37,34 +41,34 @@ export function ValetSheet({ id }: { id: string }) {
       <SheetHeader eyebrow={`${t.book.services.valet} · ${t.valet.phases[phase]}`} title={venue.name} onClose={close} closeLabel={t.common.close} />
 
       {phase !== 'lapsed' && phase !== 'cancelled' && (
-        <div className="mb-3 flex items-center gap-3 rounded-[18px] bg-surface-2 px-4 py-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-500 text-white">
+        <div className="mb-3 flex items-center gap-3 rounded-[20px] bg-brand-50 px-4 py-3 dark:bg-brand-500/10">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
             <PersonSimpleRun size={20} weight="fill" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[11.5px] text-ink-3">{t.valet.runner}</span>
-            <span className="block text-[15px] font-bold">{runner.name}</span>
+            <span className="block text-[11.5px] text-brand-700 dark:text-brand-300">{t.valet.runner}</span>
+            <span className="block text-[15px] font-semibold">{runner.name}</span>
             <span className="block text-[11.5px] text-ink-3">{t.valet.runnerMeta(runner.badge)}</span>
           </span>
         </div>
       )}
 
       {(phase === 'booked' || phase === 'parked') && (
-        <div className="mb-4 rounded-[22px] border border-line px-4 py-5 text-center">
-          <div className="text-[11.5px] font-semibold text-ink-3">{t.valet.codeLabel}</div>
-          <div className="mt-1 font-mono text-[30px] leading-none font-bold tracking-[0.12em]">{ticket.token}</div>
+        <div className="mb-3 rounded-[20px] border border-line px-4 py-5 text-center">
+          <div className="text-[11.5px] font-medium text-ink-3">{t.valet.codeLabel}</div>
+          <div className="mt-1.5 font-mono text-[30px] leading-none font-semibold tracking-[0.12em]">{ticket.token}</div>
           <Plate plate={plate} className="mt-3.5 scale-125" />
           <p className="mt-4 text-[12.5px] text-ink-2">{phase === 'booked' ? t.valet.showTicket : t.valet.keepCode}</p>
         </div>
       )}
 
       {phase === 'fetching' && (
-        <div className="mb-4 flex flex-col items-center rounded-[22px] bg-surface-2 py-6">
-          <Timer size={26} className="text-ink-2" />
-          <div className="mt-2 font-mono text-[34px] leading-none font-bold tabular">{stopwatch(fetchLeft)}</div>
+        <div className="mb-3 flex flex-col items-center rounded-[20px] border border-line py-6">
+          <Timer size={24} className="text-ink-3" />
+          <div className="mt-2 font-mono text-[34px] leading-none font-semibold text-ink tabular">{stopwatch(fetchLeft)}</div>
           <div className="mt-1.5 text-[12.5px] text-ink-3">{t.valet.readyAt(clock(ticket.readyAt ?? now))}</div>
-          <div className="mt-4 h-1.5 w-2/3 overflow-hidden rounded-full bg-surface-3">
-            <motion.div className="h-full rounded-full bg-brand-500" animate={{ width: `${Math.min(100, (1 - fetchLeft / fetchTotal) * 100)}%` }} />
+          <div className="mt-4 h-1 w-2/3 overflow-hidden rounded-full bg-surface-2">
+            <motion.div className="h-full rounded-full bg-ink" animate={{ width: `${Math.min(100, (1 - fetchLeft / fetchTotal) * 100)}%` }} />
           </div>
         </div>
       )}
@@ -73,20 +77,20 @@ export function ValetSheet({ id }: { id: string }) {
         <motion.div
           initial={{ scale: 0.96, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="mb-4 flex flex-col items-center rounded-[22px] bg-brand-600 py-6 text-white"
+          className="mb-3 flex flex-col items-center rounded-[20px] bg-brand-100 py-6 text-brand-800 dark:bg-brand-500/15 dark:text-brand-100"
         >
           <CarProfile size={30} weight="fill" />
-          <div className="mt-2 text-[19px] font-bold">{t.valet.readyNow(ticket.lobby)}</div>
+          <div className="mt-2 text-[19px] font-semibold tracking-tight">{t.valet.readyNow(ticket.lobby)}</div>
         </motion.div>
       )}
 
-      <div className="mb-4 grid grid-cols-3 divide-x divide-line rounded-[18px] border border-line py-3 text-center">
+      <div className="mb-3 grid grid-cols-3 divide-x divide-line rounded-[20px] border border-line py-3 text-center">
         <Cell label={t.valet.lobbyShort} value={ticket.lobby} />
         <Cell label={t.valet.arriveShort} value={`${dayLabel(ticket.arriveAt, now) === t.common.today ? '' : dayLabel(ticket.arriveAt, now) + ' '}${clock(ticket.arriveAt)}`} />
         <Cell label={t.valet.price} value={formatRupiah(ticket.price, true)} />
       </div>
 
-      <div className="mb-4 flex items-center justify-between gap-3 rounded-[16px] bg-surface-2 px-4 py-3 text-[12.5px] text-ink-2">
+      <div className="mb-5 flex items-center justify-between gap-3 px-1 text-[12px] leading-snug text-ink-3">
         <span>{t.valet.payAtDesk}</span>
         {phase !== 'booked' && phase !== 'parked' && <Plate plate={plate} small />}
       </div>
@@ -94,7 +98,7 @@ export function ValetSheet({ id }: { id: string }) {
       {phase === 'booked' && (
         <>
           {canHandOver(ticket, now) && (
-            <Button variant="dark" size="lg" block onClick={() => act.handover(ticket)}>
+            <Button variant="primary" size="lg" block onClick={() => act.handover(ticket)}>
               <Key size={17} weight="fill" /> {t.valet.handover}
             </Button>
           )}
@@ -124,10 +128,15 @@ export function ValetSheet({ id }: { id: string }) {
         </Button>
       )}
       {phase === 'ready' && (
-        <Button variant="dark" size="lg" block onClick={() => {
+        <Button
+          variant="primary"
+          size="lg"
+          block
+          onClick={() => {
             act.pickUp(ticket)
             close()
-          }}>
+          }}
+        >
           {t.valet.pickedUp}
         </Button>
       )}
@@ -147,7 +156,7 @@ export function ValetSheet({ id }: { id: string }) {
 function Cell({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 px-2">
-      <div className="truncate text-[14px] font-bold tabular">{value}</div>
+      <div className="truncate text-[14px] font-semibold tabular">{value}</div>
       <div className="mt-0.5 text-[11px] text-ink-3">{label}</div>
     </div>
   )

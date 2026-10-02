@@ -47,27 +47,30 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
   return (
     <div>
       {!vehicle.isEV && (
-        <p className="mb-4 flex gap-2 rounded-[16px] bg-ramai-soft p-3 text-[12.5px] text-ramai-ink dark:bg-ramai/15 dark:text-led-ramai">
-          <Info size={16} className="mt-[1px] shrink-0" />
+        <p className="mb-5 flex gap-2 rounded-[16px] bg-surface-2 p-3 text-[12.5px] text-ink-2">
+          <Info size={16} weight="fill" className="mt-[1px] shrink-0 text-ink-3" />
           {t.ev.notEv}
         </p>
       )}
 
       <Label>{t.ev.start}</Label>
-      <div className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
+      <div className="no-scrollbar -mx-5 flex gap-1.5 overflow-x-auto px-5 pb-1">
         {slots.map((s) => (
           <button
             key={s}
             type="button"
             onClick={() => setPicked(s)}
-            className={clsx('h-11 shrink-0 rounded-[14px] px-3.5 text-[14px] font-bold tabular', s === start ? 'bg-ink text-canvas' : 'bg-surface-2')}
+            className={clsx(
+              'h-10 shrink-0 rounded-full px-4 text-[14px] font-semibold tabular transition-colors',
+              s === start ? 'bg-ink text-canvas' : 'bg-surface-2',
+            )}
           >
             {clock(s)}
           </button>
         ))}
       </div>
 
-      <Label className="mt-5">{t.ev.duration}</Label>
+      <Label className="mt-6">{t.ev.duration}</Label>
       <Segmented
         value={duration}
         onChange={setDuration}
@@ -78,7 +81,7 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
         ]}
       />
 
-      <Label className="mt-5">
+      <Label className="mt-6">
         {t.ev.charger} · {venue.ev.kw} kW
       </Label>
       <div className="grid grid-cols-4 gap-2">
@@ -91,8 +94,8 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
               disabled={busy}
               onClick={() => setUnit(u)}
               className={clsx(
-                'flex h-14 flex-col items-center justify-center rounded-[14px] text-[13px] font-bold',
-                u === unit && !busy ? 'bg-ev text-white' : 'bg-surface-2',
+                'flex h-14 flex-col items-center justify-center rounded-[16px] text-[13px] font-semibold transition-colors',
+                u === unit && !busy ? 'bg-ink text-canvas' : 'bg-surface-2',
                 busy && 'opacity-35 line-through',
               )}
             >
@@ -103,7 +106,7 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
       </div>
       <p className="mt-3 px-1 text-[11.5px] text-ink-3">{t.ev.idle}</p>
 
-      <div className="mt-4">
+      <div className="mt-5">
         <Button
           variant="primary"
           size="lg"

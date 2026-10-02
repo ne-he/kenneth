@@ -92,21 +92,19 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-3 rounded-[18px] bg-ink p-3.5 text-canvas">
-        <span className="grid size-11 shrink-0 place-items-center rounded-[14px] bg-brand-500 text-white">
-          <Crown size={22} weight="fill" />
+      {/* Where the zone is: the Zona KENNETH brand moment, a soft cornflower tint. */}
+      <div className="mb-5 rounded-[18px] bg-brand-50 px-4 py-3.5 dark:bg-brand-500/10">
+        <span className="flex items-center gap-1.5 text-[12px] font-medium text-brand-700 dark:text-brand-300">
+          <Crown size={14} weight="fill" /> {t.book.zoneWhere}
         </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[11px] font-semibold opacity-60">{t.book.zoneWhere}</span>
-          <span className="block text-[15px] leading-tight font-bold">{t.activity.bayWhere(zone.level, zone.lobby)}</span>
-          <span className="mt-0.5 flex items-center gap-1 text-[12px] opacity-70">
-            <DoorOpen size={13} weight="fill" /> {zone.gate.name} · {t.book.zoneBays(zone.bays)}
-          </span>
+        <span className="mt-1 block text-[15px] leading-tight font-semibold">{t.activity.bayWhere(zone.level, zone.lobby)}</span>
+        <span className="mt-1 flex items-center gap-1 text-[12.5px] text-ink-2">
+          <DoorOpen size={13} weight="fill" className="text-ink-3" /> {zone.gate.name} · {t.book.zoneBays(zone.bays)}
         </span>
       </div>
 
       <Label>{t.book.day}</Label>
-      <div className="no-scrollbar -mx-5 mb-4 flex gap-1.5 overflow-x-auto px-5 pb-1" role="radiogroup" aria-label={t.book.day}>
+      <div className="no-scrollbar -mx-5 mb-5 flex gap-1.5 overflow-x-auto px-5 pb-1" role="radiogroup" aria-label={t.book.day}>
         {days.map((d, i) => {
           const active = i === day
           return (
@@ -128,10 +126,10 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
                 d.locked && 'text-ink-3',
               )}
             >
-              <span className="text-[10.5px] font-semibold opacity-70">
+              <span className="text-[10.5px] font-medium opacity-70">
                 {i === 0 ? t.common.today : i === 1 ? t.common.tomorrow : dayName(d.ts, lang)}
               </span>
-              <span className="text-[17px] leading-tight font-bold tabular">{wib(d.ts).date}</span>
+              <span className="text-[17px] leading-tight font-semibold tabular">{wib(d.ts).date}</span>
               {d.locked ? (
                 <LockSimple size={11} weight="bold" className="mt-0.5" />
               ) : (
@@ -170,11 +168,9 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
                 disabled && 'opacity-40',
               )}
             >
-              <span className="text-[14px] font-bold tabular">{clock(s.start)}</span>
-              <span className={clsx('mt-0.5 text-[12px] font-bold tabular', active ? 'text-led-lega dark:text-brand-700' : 'text-brand-700 dark:text-brand-300')}>
-                {formatRupiah(s.price, true)}
-              </span>
-              <span className={clsx('mt-1 text-[10.5px] font-semibold', active ? 'text-canvas/60' : 'text-ink-3')}>
+              <span className="text-[14px] font-semibold tabular">{clock(s.start)}</span>
+              <span className="mt-0.5 text-[12px] font-medium tabular">{formatRupiah(s.price, true)}</span>
+              <span className={clsx('mt-1 text-[10.5px] font-medium', active ? 'text-canvas/60' : 'text-ink-3')}>
                 {disabled ? t.book.soldOut : t.book.seats(s.left)}
               </span>
             </button>
@@ -182,27 +178,26 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
         })}
       </div>
       {firstOpen < 0 && (
-        <p className="mt-3 rounded-[14px] bg-ramai-soft p-3 text-[12.5px] font-medium text-ramai-ink dark:bg-ramai/15 dark:text-led-ramai">
-          {day === 0 ? t.book.notWorth : t.book.noneThatDay}
-        </p>
+        <p className="mt-3 rounded-[14px] bg-surface-2 p-3 text-[12.5px] text-ink-2">{day === 0 ? t.book.notWorth : t.book.noneThatDay}</p>
       )}
-      <p className="mt-2 px-1 text-[11.5px] leading-snug text-ink-3">{t.book.holdNote(ZONE_HOLD_MIN)}</p>
-      <p className="mt-1 px-1 text-[11.5px] text-ink-3">
+      {/* The hold rule and the booking horizon read as one footnote, nothing dropped. */}
+      <p className="mt-3 px-1 text-[11.5px] leading-snug text-ink-3">
+        {t.book.holdNote(ZONE_HOLD_MIN)}{' '}
         {plan === 'premium' ? t.book.premiumOff(PREMIUM_BOOKING_AHEAD_D) : t.book.ahead(FREE_BOOKING_AHEAD_H, PREMIUM_BOOKING_AHEAD_D)}
       </p>
 
-      <Label className="mt-5">{t.book.payWith}</Label>
+      <Label className="mt-6">{t.book.payWith}</Label>
       <PayMethods value={method} onChange={setMethod} />
 
-      <details className="mt-4 rounded-[16px] bg-surface-2 p-3 text-[12.5px]">
-        <summary className="flex cursor-pointer list-none items-center gap-2 font-semibold">
-          <Question size={16} /> {t.book.fair}
+      <details className="mt-5 border-t border-line pt-4 text-[12.5px]">
+        <summary className="flex cursor-pointer list-none items-center gap-2 font-medium text-ink-2 hover:text-ink">
+          <Question size={16} className="text-ink-3" /> {t.book.fair}
         </summary>
         <p className="mt-2 leading-relaxed text-ink-2">{t.book.what}</p>
         <p className="mt-2 leading-relaxed text-ink-2">{t.book.fairBody}</p>
       </details>
 
-      <div className="sticky bottom-0 mt-4 bg-surface pt-2">
+      <div className="sticky bottom-0 z-10 -mx-5 mt-5 bg-surface px-5 pt-2 after:absolute after:inset-x-0 after:top-full after:h-6 after:bg-surface">
         <Button variant="primary" size="lg" block disabled={!pick || paying} onClick={pay}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.span key={String(paying)} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
@@ -233,7 +228,7 @@ export function PayMethods({ value, onChange }: { value: Method; onChange: (m: M
           type="button"
           onClick={() => onChange(key)}
           className={clsx(
-            'flex h-16 flex-col items-center justify-center gap-1 rounded-[16px] border text-[12px] font-semibold transition-colors',
+            'flex h-16 flex-col items-center justify-center gap-1 rounded-[16px] border text-[12px] font-medium transition-colors',
             value === key ? 'border-ink bg-surface text-ink' : 'border-transparent bg-surface-2 text-ink-2',
           )}
         >
