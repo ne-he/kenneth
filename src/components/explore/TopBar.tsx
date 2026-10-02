@@ -94,9 +94,9 @@ function ModesTip({ onClick }: { onClick: () => void }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
       transition={{ type: 'spring', stiffness: 420, damping: 30, delay: 0.6 }}
-      className="shadow-float absolute top-[40px] right-[64px] w-[196px] rounded-[16px] bg-ink px-3 py-2 text-left text-[12.5px] leading-snug font-semibold text-canvas"
+      className="absolute top-[36px] right-[50px] w-[184px] rounded-[14px] bg-ink px-3 py-2 text-left text-[12px] leading-snug font-medium text-canvas shadow-[0_8px_20px_-8px_rgb(0_0_0/0.4)]"
     >
-      <span aria-hidden="true" className="absolute -top-1.5 right-3 size-3 rotate-45 rounded-[2px] bg-ink" />
+      <span aria-hidden="true" className="absolute -top-1 right-3.5 size-2.5 rotate-45 rounded-[2px] bg-ink" />
       <span className="relative">{t.explore.modesTip}</span>
     </motion.button>
   )
