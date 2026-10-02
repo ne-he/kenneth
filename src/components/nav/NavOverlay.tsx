@@ -1,7 +1,9 @@
 import { ArrowBendUpRight, CarProfile, NavigationArrow } from '@phosphor-icons/react'
 import { AnimatePresence, motion } from 'motion/react'
+import type { Gate } from '../../data/types'
 import { VENUE_BY_ID } from '../../data/venues'
 import { forKind, snapshot } from '../../engine/occupancy'
+import { zoneOf } from '../../engine/zone'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { formatMin } from '../../lib/status'
@@ -21,10 +23,17 @@ export function NavBanner({ route, now }: { route: Route | null; now: number }) 
   )
 }
 
+/** The route goes to the zone gate because Zona KENNETH was on, so the driver should hear it is the booked one. */
+function useZoneGate(route: Route, gate: Gate) {
+  const mode = useUi((s) => s.mode)
+  return mode === 'zone' && gate.zoneLane && zoneOf(VENUE_BY_ID[route.venueId])?.gate.id === gate.id
+}
+
 function BannerBody({ route, now, t }: { route: Route; now: number; t: ReturnType<typeof useT> }) {
   // A motorbike queues against the motorbike bays, like everywhere else in the app.
   const venue = forKind(VENUE_BY_ID[route.venueId], useVehicle().kind)
   const gate = venue.gates.find((g) => g.id === route.gateId)!
+  const booked = useZoneGate(route, gate)
   // The queue that matters is the one waiting when you get there, not the one now.
   const eta = route.startedAt + route.minutes * 60_000
   const snap = snapshot(venue, Math.max(now, eta))
@@ -42,8 +51,8 @@ function BannerBody({ route, now, t }: { route: Route; now: number; t: ReturnTyp
           <ArrowBendUpRight size={26} weight="bold" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[11px] font-bold tracking-[0.14em] text-canvas/50 uppercase">
-            {venue.name}
+          <span className="block truncate text-[11px] font-bold tracking-[0.14em] text-canvas/50 uppercase">
+            {booked ? `${venue.name} · ${t.modes.zone.label}` : venue.name}
           </span>
           <span className="block truncate text-[17px] leading-tight font-bold">
             {t.nav.toward(gate.name)} <span className="font-medium text-canvas/60">· {gate.hint}</span>
@@ -57,12 +66,14 @@ function BannerBody({ route, now, t }: { route: Route; now: number; t: ReturnTyp
   )
 }
 
-/** Replaces the sheet body while driving: ETA, distance, and the two exits. */
+/** Replaces the sheet body while driving: ETA, distance, the booked gate when there is one, and the two exits. */
 export function DriveHud({ route, now }: { route: Route; now: number }) {
   const t = useT()
   const nav = useNavigation()
   const open = useUi((s) => s.open)
   const setRoute = useUi((s) => s.setRoute)
+  const gate = VENUE_BY_ID[route.venueId].gates.find((g) => g.id === route.gateId)!
+  const booked = useZoneGate(route, gate)
   const eta = route.startedAt + route.minutes * 60_000
   const left = Math.max(0, Math.round((eta - now) / 60_000))
   return (
@@ -82,6 +93,13 @@ export function DriveHud({ route, now }: { route: Route; now: number }) {
           <div className="mt-1 text-[12px] text-ink-3 tabular">
             {formatKm(route.km)} · {route.source === 'road' ? t.nav.roadRoute : t.nav.estRoute}
           </div>
+          {/* The one cornflower here matches the zone pins: this is the gate the bay is booked through. */}
+          {booked && (
+            <div className="mt-1 flex items-center gap-1.5 text-[12px] font-medium text-ink-2">
+              <span className="size-1.5 shrink-0 rounded-full bg-brand-600 dark:bg-brand-400" aria-hidden="true" />
+              <span className="truncate">{t.nav.zoneGate(gate.name)}</span>
+            </div>
+          )}
         </div>
       </div>
       <div className="mt-3.5 grid grid-cols-2 gap-2">
