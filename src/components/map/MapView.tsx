@@ -223,7 +223,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     const rest = (sel?.gates ?? []).filter(({ gate: g }) => g.id !== sel?.bestGate.id).map(({ gate: g }) => gate(g))
     const top = places.filter((l) => l.id === selected)
     const labels = [...best, ...top, ...rest, ...places.filter((l) => l.id !== selected)]
-    const canvas = map.getCanvasContainer()
+    const canvas = map.getContainer()
     const next = placeLabels(labels, dots, { w: canvas.clientWidth, h: canvas.clientHeight })
     setOffsets((prev) => (sameOffsets(prev, next) ? prev : next))
   })
