@@ -28,8 +28,8 @@ export function BottomNav() {
   }
 
   return (
-    <nav aria-label="Menu" className="pb-nav pointer-events-none absolute inset-x-0 bottom-0 z-[45] px-5">
-      <div className="glass shadow-float pointer-events-auto mx-auto grid h-[62px] w-full max-w-[420px] grid-cols-3 rounded-full px-3">
+    <nav aria-label="Menu" className="pb-nav pointer-events-none absolute inset-x-0 bottom-0 z-[45] px-3">
+      <div className="glass shadow-float pointer-events-auto grid h-[62px] w-full grid-cols-3 rounded-full px-3">
         <Item active={tab === 'activity'} onClick={() => go('activity')} label={t.tabs.activity} badge={badge}>
           <Ticket size={25} weight={tab === 'activity' ? 'fill' : 'regular'} />
         </Item>

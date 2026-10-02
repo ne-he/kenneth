@@ -63,7 +63,7 @@ export function VenueCarousel({
   }, [focused, ranked])
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 pb-3">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0">
       <div className="pointer-events-auto mb-2.5 flex justify-end px-3.5">
         <button
           type="button"
@@ -80,7 +80,7 @@ export function VenueCarousel({
       <div
         ref={scroller}
         onScroll={onScroll}
-        className="no-scrollbar pointer-events-auto flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-3.5 pb-1"
+        className="no-scrollbar pointer-events-auto flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-3.5"
         style={{ scrollPaddingLeft: 14 }}
       >
         {ranked.map((r) => {
@@ -89,7 +89,8 @@ export function VenueCarousel({
             <article
               key={r.venue.id}
               className={clsx(
-                'shadow-float shrink-0 snap-start rounded-[22px] bg-surface p-4 transition-opacity',
+                // Cards sit on the dock: rounded on top, flush at the bottom, so the row reads as the base of the screen.
+                'shadow-float shrink-0 snap-start rounded-t-[22px] bg-surface p-4 pb-5 transition-opacity',
                 on ? 'opacity-100' : 'opacity-85',
               )}
               style={{ width: CARD_W }}
