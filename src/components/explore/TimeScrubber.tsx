@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { motion } from 'motion/react'
 import { useMemo, useRef } from 'react'
 import type { Venue } from '../../data/types'
@@ -13,7 +14,8 @@ import { useUi } from '../../store/ui'
  * hour today: every pin, halo and list row on screen follows the thumb.
  * With one venue it shows that venue, with several the busiest one per hour.
  * The strip spans the earliest opening to the latest closing, so campuses
- * (from 06.00) and malls (to 22.00) share it.
+ * (from 06.00) and malls (to 22.00) share it. Bars stay a faint ink; only the
+ * hour you are looking at takes its status color.
  */
 export function TimeScrubber({ venues, now, title }: { venues: Venue[]; now: number; title?: string }) {
   const t = useT()
@@ -65,7 +67,7 @@ export function TimeScrubber({ venues, now, title }: { venues: Venue[]; now: num
           <button
             type="button"
             onClick={() => setPreview(null)}
-            className="rounded-full bg-ink px-2.5 py-1 text-[11.5px] font-bold text-canvas"
+            className="rounded-full bg-ink px-2.5 py-1 text-[11.5px] font-semibold text-canvas"
           >
             {t.explore.backToNow}
           </button>
@@ -96,17 +98,17 @@ export function TimeScrubber({ venues, now, title }: { venues: Venue[]; now: num
         onPointerUp={() => (lastHour.current = null)}
         className="relative h-[46px] cursor-ew-resize touch-none rounded-xl outline-none"
       >
-        <div className="absolute inset-x-0 bottom-[14px] flex h-[30px] items-end gap-[3px]">
+        <div className="absolute inset-x-0 bottom-[14px] flex h-[30px] items-end gap-2">
           {bars.map((b) => {
             const active = Math.round(viewHourF) === b.hour
             return (
               <motion.span
                 key={b.hour}
-                className="flex-1 rounded-[3px]"
+                className={clsx('flex-1 rounded-[3px] transition-colors', !active && 'bg-ink/20')}
                 initial={false}
-                animate={{ height: `${Math.max(10, b.occ * 100)}%`, opacity: active ? 1 : 0.5 }}
+                animate={{ height: `${Math.max(10, b.occ * 100)}%` }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                style={{ background: STATUS[b.status].hex }}
+                style={active ? { background: STATUS[b.status].hex } : undefined}
               />
             )
           })}
