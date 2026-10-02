@@ -144,15 +144,16 @@ function gateTag(name: string) {
 /**
  * A small neutral chip on each gate of the selected place, "G3 · 2 mnt": the
  * status dot carries the queue colour, the text stays ink. The gate the route
- * goes to is the one that stands out; the others step back.
+ * goes to is the one that stands out; the others step back. `shown` is false
+ * while there is no room for the chip, such as zoomed out over the building.
  */
-export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number; best: boolean }) {
+export function GatePin({ gate, queueMin, best, shown }: { gate: Gate; queueMin: number; best: boolean; shown: boolean }) {
   const t = useT()
   const tone = queueMin < 5 ? STATUS.lega : queueMin < 10 ? STATUS.ramai : STATUS.penuh
   return (
     <motion.div
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: best ? 1 : 0.72 }}
+      animate={{ scale: shown ? 1 : 0.8, opacity: shown ? (best ? 1 : 0.72) : 0 }}
       exit={{ scale: 0, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 500, damping: 28, delay: 0.5 }}
       data-pin-label=""

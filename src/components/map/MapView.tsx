@@ -4,7 +4,7 @@ import { Map as MLMap, Marker, setWorkerUrl, type GeoJSONSource } from 'maplibre
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { LngLat, VenueId } from '../../data/types'
+import type { Gate, LngLat, VenueId } from '../../data/types'
 import type { PinFact } from '../../engine/modes'
 import type { Snapshot } from '../../engine/occupancy'
 import { signalMapReady } from '../../lib/splash'
@@ -187,12 +187,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     }
     const here = map.project(origin)
     const dots: Dot[] = [{ id: 'origin', x: here.x, y: here.y, r: 9 }]
-    const labels: Label[] = []
-    const sel = snapshots.find((s) => s.venue.id === selected)
-    sel?.gates.forEach(({ gate }) => {
-      const { x, y } = map.project(gate.coords)
-      labels.push({ id: `g:${gate.id}`, x, y, ...size(`g:${gate.id}`), spots: [[0, 0]], keep: true })
-    })
+    const places: Label[] = []
     const rank = (s: Snapshot) => (s.venue.id === selected ? 0 : favorites.includes(s.venue.id) ? 1 : 2)
     const order = snapshots.map((s, i) => ({ s, i })).sort((a, b) => rank(a.s) - rank(b.s) || a.i - b.i)
     for (const { s } of order) {
@@ -201,8 +196,20 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
       const picked = s.venue.id === selected
       if (!picked && facts?.get(s.venue.id)?.kind === 'none') continue
       const { w, h } = size(`v:${s.venue.id}`)
-      labels.push({ id: s.venue.id, x, y, w, h, spots: picked ? around(w, h, 9) : hang(w, LABEL_INSET), keep: picked })
+      places.push({ id: s.venue.id, x, y, w, h, spots: picked ? around(w, h, 9) : hang(w, LABEL_INSET), keep: picked })
     }
+    // Gate chips sit on their gate. The recommended one goes before the selected label so that label steps
+    // round it, the others only show where there is room. Zoomed out a chip would cover the place itself,
+    // so it waits until the gates spread apart.
+    const sel = snapshots.find((s) => s.venue.id === selected)
+    const gate = (g: Gate): Label => {
+      const { x, y } = map.project(g.coords)
+      return { id: `g:${g.id}`, x, y, ...size(`g:${g.id}`), spots: [[0, 0]] }
+    }
+    const best = sel ? [gate(sel.bestGate)] : []
+    const rest = (sel?.gates ?? []).filter(({ gate: g }) => g.id !== sel?.bestGate.id).map(({ gate: g }) => gate(g))
+    const picked = places.filter((l) => l.id === selected)
+    const labels = [...best, ...picked, ...rest, ...places.filter((l) => l.id !== selected)]
     const next = placeLabels(labels, dots)
     setOffsets((prev) => (sameOffsets(prev, next) ? prev : next))
   })
@@ -251,7 +258,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
         return el
           ? createPortal(
               <AnimatePresence>
-                <GatePin gate={gate} queueMin={queueMin} best={gate.id === sel.bestGate.id} />
+                <GatePin gate={gate} queueMin={queueMin} best={gate.id === sel.bestGate.id} shown={!!offsets.get(`g:${gate.id}`)} />
               </AnimatePresence>,
               el,
               gate.id,
