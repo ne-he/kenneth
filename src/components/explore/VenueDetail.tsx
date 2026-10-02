@@ -131,7 +131,7 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
         {alts.length > 0 && (
           <section>
             <Label>{t.venue.alternatives}</Label>
-            <List>
+            <List plain>
               {alts.map((a) => (
                 <button
                   key={a.snap.venue.id}
@@ -140,12 +140,11 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
                     haptic('tap')
                     select(a.snap.venue.id)
                   }}
-                  className="flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors hover:bg-surface-2/60"
+                  className="flex w-full items-center gap-3 px-1 py-3.5 text-left transition-opacity hover:opacity-80"
                 >
-                  <VenueGlyph category={a.snap.venue.category} size={36} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-semibold">{a.snap.venue.name}</span>
-                    <span className="mt-0.5 flex items-start gap-1 text-[12px] leading-snug text-ink-3">
+                    <span className="block truncate text-[14.5px] font-medium">{a.snap.venue.name}</span>
+                    <span className="mt-0.5 flex items-start gap-1 text-[12.5px] leading-snug text-ink-3">
                       {a.walk ? <PersonSimpleWalk size={13} className="mt-px shrink-0" /> : <CarProfile size={13} className="mt-px shrink-0" />}
                       <span className="line-clamp-2">{a.walk ? t.venue.walk(a.walk.minutes, a.walk.via) : t.venue.drive(formatKm(a.km))}</span>
                     </span>
@@ -157,11 +156,11 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
           </section>
         )}
 
-        <section className="rounded-[18px] border border-line bg-surface p-3.5">
+        <section className="px-1">
           <TimeScrubber venues={[venue]} now={now} title={t.venue.forecast} />
         </section>
 
-        <List>
+        <List plain>
           <GatesRow snap={snap} />
           <CostRow venue={venue} />
           {services.length > 0 && <ServicesRow venue={venue} snap={snap} services={services} ts={ts} />}
@@ -192,7 +191,7 @@ function GatesRow({ snap }: { snap: Ranked }) {
   const nav = useNavigation()
   return (
     <Disclosure
-      icon={<DoorOpen size={17} weight="fill" />}
+      icon={<DoorOpen size={17} />}
       title={t.venue.gates}
       summary={gateSpread(t, snap.gates.map((g) => g.queueMin))}
     >
@@ -200,23 +199,24 @@ function GatesRow({ snap }: { snap: Ranked }) {
         {snap.gates.map(({ gate, queueMin }, i) => (
           <div key={gate.id} className="flex items-center gap-3 py-2.5">
             <span className="min-w-0 flex-1">
-              <span className="flex items-center gap-1.5 text-[13.5px] font-semibold">
+              <span className="flex items-baseline gap-2 text-[13.5px] font-medium">
                 {gate.name}
-                {i === 0 && <span className="text-[11px] font-bold text-brand-700 dark:text-brand-300">{t.venue.recommended}</span>}
+                {i === 0 && <span className="text-[11.5px] font-medium text-brand-600 dark:text-brand-300">{t.venue.recommended}</span>}
               </span>
               <span className="mt-0.5 block text-[12px] text-ink-3">
                 {gate.hint}
                 {gate.zoneLane ? ` · ${t.venue.zoneLane}` : ''}
               </span>
             </span>
-            <span className={clsx('text-[14px] font-bold tabular', STATUS[queueMin < 5 ? 'lega' : queueMin < 10 ? 'ramai' : 'penuh'].text)}>
+            <span className="flex items-center gap-1.5 text-[14px] font-semibold tabular">
+              <span className={clsx('size-2 rounded-full', STATUS[queueMin < 5 ? 'lega' : queueMin < 10 ? 'ramai' : 'penuh'].dot)} aria-hidden="true" />
               {formatMin(queueMin)} {t.unit.min}
             </span>
             <button
               type="button"
               aria-label={`${t.venue.actions.route} ${gate.name}`}
               onClick={() => nav.start(snap.venue.id, gate.id)}
-              className="grid size-8 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
+              className="grid size-8 place-items-center rounded-full border border-line-strong text-ink-2 transition-colors hover:text-ink"
             >
               <NavigationArrow size={14} weight="fill" />
             </button>
@@ -245,13 +245,13 @@ function CostRow({ venue }: { venue: Venue }) {
   const [hours, setHours] = useState(3)
   return (
     <Disclosure
-      icon={<CurrencyCircleDollar size={17} weight="fill" />}
+      icon={<CurrencyCircleDollar size={17} />}
       title={t.venue.cost}
       summary={t.venue.costSummary(formatRupiah(venue.tariff.firstHour, true))}
     >
       <div className="flex items-center justify-between gap-3">
         <Stepper value={hours} onChange={setHours} min={1} max={10} label={t.venue.cost} format={(v) => t.venue.stay(v)} />
-        <motion.span key={hours} initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[20px] font-bold tracking-tight tabular">
+        <motion.span key={hours} initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[20px] font-semibold tracking-tight tabular">
           {formatRupiah(parkingCost(venue, hours))}
         </motion.span>
       </div>
@@ -273,7 +273,7 @@ function ServicesRow({ venue, snap, services, ts }: { venue: Venue; snap: Ranked
   }
   return (
     <Disclosure
-      icon={<Sparkle size={17} weight="fill" />}
+      icon={<Sparkle size={17} />}
       title={t.venue.services}
       summary={services.map((s) => t.book.services[s]).join(' · ')}
     >
@@ -281,13 +281,13 @@ function ServicesRow({ venue, snap, services, ts }: { venue: Venue; snap: Ranked
         {services.map((s) => (
           <div key={s} className="flex items-center gap-3 py-2.5">
             <span className="min-w-0 flex-1">
-              <span className="block text-[13.5px] font-semibold">{t.book.services[s]}</span>
+              <span className="block text-[13.5px] font-medium">{t.book.services[s]}</span>
               <span className="mt-0.5 block text-[12px] leading-snug text-ink-3">{detail[s]}</span>
             </span>
             <button
               type="button"
               onClick={() => open({ kind: 'book', id: venue.id, service: s })}
-              className="h-8 shrink-0 rounded-full bg-ink px-3.5 text-[12.5px] font-bold text-canvas"
+              className="h-8 shrink-0 rounded-full bg-ink px-3.5 text-[12.5px] font-semibold text-canvas"
             >
               {t.venue.actions.book}
             </button>
@@ -303,8 +303,8 @@ function SpecialRow({ venue, snap, ts }: { venue: Venue; snap: Ranked; ts: numbe
   const d = reservedFree(venue.accessible.difabel, snap.occ, venue.id + 'd', ts)
   const h = reservedFree(venue.accessible.ibuHamil, snap.occ, venue.id + 'h', ts)
   return (
-    <Disclosure icon={<Wheelchair size={17} weight="fill" />} title={t.venue.special} summary={t.venue.specialSummary(d, h)}>
-      <div className="grid grid-cols-2 gap-2">
+    <Disclosure icon={<Wheelchair size={17} />} title={t.venue.special} summary={t.venue.specialSummary(d, h)}>
+      <div className="grid grid-cols-2 divide-x divide-line">
         <Reserved label={t.venue.difabel} free={d} total={venue.accessible.difabel} />
         <Reserved label={t.venue.ibuHamil} free={h} total={venue.accessible.ibuHamil} />
       </div>
@@ -316,12 +316,13 @@ function Reserved({ label, free, total }: { label: string; free: number; total: 
   const t = useT()
   const tone = free === 0 ? 'penuh' : free <= Math.ceil(total * 0.25) ? 'ramai' : 'lega'
   return (
-    <div className="rounded-[14px] bg-surface-2 p-3">
-      <span className={clsx('block text-[18px] leading-none font-bold tabular', STATUS[tone].text)}>
+    <div className="first:pr-4 last:pl-4">
+      <span className="flex items-center gap-1.5 text-[18px] leading-none font-semibold tabular">
+        <span className={clsx('size-2 rounded-full', STATUS[tone].dot)} aria-hidden="true" />
         {free}
-        <span className="text-[11px] font-semibold text-ink-3">/{total}</span>
+        <span className="text-[11.5px] font-medium text-ink-3">/{total}</span>
       </span>
-      <span className="mt-1 block text-[12px] text-ink-3">
+      <span className="mt-1.5 block text-[12px] text-ink-3">
         {label} {t.venue.available}
       </span>
     </div>
@@ -355,7 +356,7 @@ function GageRow({ venue, ts }: { venue: Venue; ts: number }) {
   }
   return (
     <Disclosure
-      icon={bad ? <Warning size={17} weight="fill" className="text-penuh" /> : <ShieldCheck size={17} weight="fill" />}
+      icon={bad ? <Warning size={17} weight="fill" className="text-penuh" /> : <ShieldCheck size={17} />}
       title={t.venue.gage}
       summary={text}
       tone={bad ? 'penuh' : undefined}
@@ -365,7 +366,7 @@ function GageRow({ venue, ts }: { venue: Venue; ts: number }) {
         <button
           type="button"
           onClick={() => open({ kind: 'vehicle' })}
-          className="mt-3 h-9 rounded-full bg-ink px-4 text-[12.5px] font-bold text-canvas"
+          className="mt-3 h-9 rounded-full bg-ink px-4 text-[12.5px] font-semibold text-canvas"
         >
           {t.venue.gageFill}
         </button>
@@ -377,15 +378,15 @@ function GageRow({ venue, ts }: { venue: Venue; ts: number }) {
 function TenantsRow({ venue }: { venue: Venue }) {
   const t = useT()
   return (
-    <Disclosure icon={<Storefront size={17} weight="fill" />} title={t.venue.tenants} summary={venue.tenants.map((x) => x.name).join(', ')}>
+    <Disclosure icon={<Storefront size={17} />} title={t.venue.tenants} summary={venue.tenants.map((x) => x.name).join(', ')}>
       <div className="divide-y divide-line">
         {venue.tenants.map((ten) => (
           <div key={ten.name} className="flex items-center gap-3 py-2.5">
             <span className="min-w-0 flex-1">
-              <span className="block text-[13.5px] font-semibold">{ten.name}</span>
+              <span className="block text-[13.5px] font-medium">{ten.name}</span>
               <span className="text-[12px] text-ink-3">{t.venue.tenantRoute(ten.lift, ten.floor)}</span>
             </span>
-            <span className="flex items-center gap-1 text-[12.5px] font-semibold text-ink-2 tabular">
+            <span className="flex items-center gap-1 text-[12.5px] font-medium text-ink-2 tabular">
               <PersonSimpleWalk size={14} /> {ten.walkMin} {t.unit.min}
             </span>
           </div>
@@ -406,10 +407,10 @@ function ReportRow({ venue, now }: { venue: Venue; now: number }) {
     addReport({ venueId: venue.id, kind, at: now })
     notify(t.venue.reportThanks)
   }
-  const chip = 'h-9 flex-1 rounded-full bg-surface-2 text-[12.5px] font-semibold transition-colors hover:bg-surface-3 active:scale-[0.97]'
+  const chip = 'h-9 flex-1 rounded-full border border-line-strong text-[12.5px] font-medium transition-colors hover:bg-surface-2 active:scale-[0.97]'
   return (
     <Disclosure
-      icon={<Megaphone size={17} weight="fill" />}
+      icon={<Megaphone size={17} />}
       title={t.venue.report}
       summary={recent > 0 ? t.venue.reportsRecent(recent) : t.venue.reportHint}
     >
