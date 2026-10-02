@@ -343,7 +343,7 @@ function Btn({ tone, onClick, children }: { tone: 'ink' | 'brand'; onClick: () =
         onClick()
       }}
       className={clsx(
-        'flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-5 text-[14.5px] font-semibold tracking-tight transition-colors',
+        'flex h-12 w-full min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-5 text-[14.5px] font-semibold tracking-tight transition-colors',
         tone === 'ink' && 'bg-ink text-canvas hover:opacity-90',
         tone === 'brand' && 'bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400',
       )}
