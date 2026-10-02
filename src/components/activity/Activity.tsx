@@ -18,10 +18,10 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import type { VenueId } from '../../data/types'
 import { splitActivity, type Past } from '../../engine/activity'
-import { forKind, occupancyAt } from '../../engine/occupancy'
+import { forKind } from '../../engine/occupancy'
 import { passPhase } from '../../engine/pass'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
-import { runnerFor, valetPhase, type ValetTicket } from '../../engine/valet'
+import { canHandOver, runnerFor, valetPhase, type ValetTicket } from '../../engine/valet'
 import { ZONE_HOLD_MIN, bayOf, zoneOf } from '../../engine/zone'
 import { useDayLabel, useLang, useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
@@ -226,7 +226,6 @@ function ParkedCard({ now }: { now: number }) {
   const venue = forKind(VENUE_BY_ID[spot.venueId], spot.kind ?? 'mobil')
   const elapsed = now - spot.at
   const cost = parkingCost(venue, elapsed / 3_600_000)
-  const exitMin = Math.max(1, Math.round(1 + occupancyAt(venue, now) * 3))
   return (
     <Card
       icon={spot.kind === 'motor' ? <Motorcycle size={22} weight="fill" /> : <CarProfile size={22} weight="fill" />}
@@ -241,15 +240,12 @@ function ParkedCard({ now }: { now: number }) {
         </span>
       }
     >
-      <p className="mt-3 rounded-[12px] bg-surface-2 px-3 py-2 text-[12px] text-ink-2">
-        {t.activity.exit}: <span className="font-semibold text-lega-ink dark:text-led-lega">{t.activity.exitSmooth(exitMin)}</span>
-      </p>
       <div className="mt-3 grid grid-cols-[1.4fr_1fr] gap-2">
         <Button variant="dark" onClick={() => open({ kind: 'find-car' })}>
           <MapTrifold size={17} weight="bold" /> {t.park.findCar}
         </Button>
         <Button
-          onClick={() => shareSpot(`${venue.name}, ${spot.level} ${spot.section}-${spot.pillar}, ${spot.lobby}`, () => notify(t.activity.shared))}
+          onClick={() => shareSpot(t.activity.spotText(venue.name, spot.level, `${spot.section}-${spot.pillar}`, spot.lobby), () => notify(t.activity.shared))}
         >
           <ShareNetwork size={17} weight="bold" /> {t.activity.share}
         </Button>
@@ -293,7 +289,7 @@ function ValetCard({ id, now }: { id: string; now: number }) {
           />
         </div>
       )}
-      {(phase === 'booked' || phase === 'parked' || phase === 'ready') && (
+      {((phase === 'booked' && canHandOver(ticket, now)) || phase === 'parked' || phase === 'ready') && (
         <Button
           variant={phase === 'parked' ? 'primary' : 'dark'}
           block
@@ -332,12 +328,19 @@ function PassCard({ id, now }: { id: string; now: number }) {
       title={venue.name}
       meta={`${clock(pass.windowStart)} · ${when}`}
       onClick={() => open({ kind: 'pass', id: pass.id })}
-      right={<span className="shrink-0 text-[13px] font-bold tabular">{formatRupiah(pass.price, true)}</span>}
+      right={
+        <span className="flex shrink-0 items-center gap-1 text-[13px] font-bold tabular">
+          {formatRupiah(pass.price, true)} <CaretRight size={16} className="text-ink-3" />
+        </span>
+      }
     >
-      <Button variant="dark" block className="mt-3" onClick={() => open({ kind: 'pass', id: pass.id })}>
-        <Ticket size={17} weight="fill" /> {t.activity.showQr}
-      </Button>
-      {phase === 'upcoming' && <CancelConfirm className="mt-1.5" policy={t.activity.cancelPolicy} onConfirm={() => cancel.pass(pass.id)} />}
+      {/* The QR only matters at the barrier, so the big button waits until the bay is held. */}
+      {phase === 'open' && (
+        <Button variant="dark" block className="mt-3" onClick={() => open({ kind: 'pass', id: pass.id })}>
+          <Ticket size={17} weight="fill" /> {t.activity.showQr}
+        </Button>
+      )}
+      {phase === 'upcoming' && <CancelConfirm className="mt-3" policy={t.activity.cancelPolicy} onConfirm={() => cancel.pass(pass.id)} />}
     </Card>
   )
 }
@@ -385,7 +388,7 @@ function ReminderCard({ id }: { id: string }) {
           remove(r.id)
           notify(t.activity.reminderCancelled)
         }}
-        aria-label={t.common.cancel}
+        aria-label={t.activity.reminderRemove(VENUE_BY_ID[r.venueId].name)}
         className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-surface-2"
       >
         <X size={15} weight="bold" />
@@ -438,7 +441,7 @@ function AgainButton({ venueId, service, motor, name }: { venueId: VenueId; serv
   return (
     <button
       type="button"
-      aria-label={t.activity.againLabel(name)}
+      aria-label={service === 'park' || motor ? t.activity.againPark(name) : t.activity.againLabel(name)}
       onClick={() => {
         haptic('tap')
         const ui = useUi.getState()

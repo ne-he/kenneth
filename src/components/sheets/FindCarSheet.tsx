@@ -1,7 +1,7 @@
 import { ArrowsClockwise, PersonSimpleWalk, ShareNetwork, SignOut } from '@phosphor-icons/react'
 import { lazy, Suspense, useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
-import { occupancyAt } from '../../engine/occupancy'
+import { forKind, occupancyAt } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { shareSpot } from '../../lib/share'
@@ -24,9 +24,9 @@ export function FindCarSheet() {
   const [metres, setMetres] = useState(0)
 
   if (!spot) return null
-  const venue = VENUE_BY_ID[spot.venueId]
+  const venue = forKind(VENUE_BY_ID[spot.venueId], spot.kind ?? 'mobil')
   const walkMin = Math.max(1, Math.round(metres / 1.2 / 60))
-  const text = `${venue.name}, ${spot.level} pilar ${spot.section}-${spot.pillar}, dekat ${spot.lobby}`
+  const text = t.activity.spotText(venue.name, spot.level, `${spot.section}-${spot.pillar}`, spot.lobby)
 
   return (
     <div className="pb-5">
