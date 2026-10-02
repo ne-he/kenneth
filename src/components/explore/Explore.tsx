@@ -146,15 +146,15 @@ export function Explore() {
     header = (
       <div className="pb-3">
         <LiveStrip />
-        <div className="flex items-center justify-between gap-3 px-5 pb-3">
-          <div className="min-w-0">
-            <h1 className="text-[21px] leading-tight font-semibold tracking-tight">{t.modes.listTitle[mode]}</h1>
-            <p className="mt-0.5 truncate text-[13px] text-ink-3">{t.modes.count[mode](shown.length)}</p>
+        <div className="px-5 pb-3">
+          <h1 className="truncate text-[21px] leading-tight font-semibold tracking-tight">{t.modes.listTitle[mode]}</h1>
+          <div className="mt-0.5 flex items-center justify-between gap-3 text-[13px] text-ink-3">
+            <p className="min-w-0 truncate">{t.modes.count[mode](shown.length)}</p>
+            <span className="flex shrink-0 items-center gap-1 whitespace-nowrap">
+              <MapPin size={12} weight="fill" />
+              {originLabel === 'gps' ? t.explore.fromGps : t.explore.fromBinus}
+            </span>
           </div>
-          <span className="flex shrink-0 items-center gap-1 self-end pb-px text-[12.5px] whitespace-nowrap text-ink-3">
-            <MapPin size={12} weight="fill" />
-            {originLabel === 'gps' ? t.explore.fromGps : t.explore.fromBinus}
-          </span>
         </div>
         {/* The selected filter is the one ink pill in the row, the rest are plain words. */}
         <div className="no-scrollbar flex gap-0.5 overflow-x-auto px-5" role="radiogroup" aria-label={t.modes.listTitle[mode]}>
