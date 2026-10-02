@@ -14,7 +14,7 @@ Buka di HP untuk app-nya. Di laptop, app yang sama tampil di bingkai HP dengan Q
   <img src="docs/screens/explore.png" width="200" alt="Beranda: peta dan daftar tempat" />
   <img src="docs/screens/modes.png" width="200" alt="Dropdown mode: Parkir, Zona KENNETH, Valet runner, Charger EV" />
   <img src="docs/screens/valet-card.png" width="200" alt="Mode Valet runner di Taman Anggrek" />
-  <img src="docs/screens/activity.png" width="200" alt="Tab Aktivitas: sekarang, nanti, riwayat" />
+  <img src="docs/screens/activity.png" width="200" alt="Tab Tiket: sekarang, nanti, riwayat" />
 </p>
 
 > **Status: prototipe.** Dibuat untuk mata kuliah ENPR6312 Venture Creation (BINUS, semester ganjil 2026/2027).
@@ -44,11 +44,11 @@ menonjol seperti tombol QRIS di app bank. Nggak ada dashboard, dan app nggak per
 
 | Tab | Isi |
 |---|---|
-| **Aktivitas** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, runner valet yang lagi jalan, petak Zona KENNETH yang sedang ditahan, charger yang sedang mengisi. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
+| **Tiket** (kiri) | Tiga bagian. Sekarang: lokasi parkirmu, runner valet yang lagi jalan, petak Zona KENNETH yang sedang ditahan, charger yang sedang mengisi. Nanti: booking yang belum mulai dan pengingat. Riwayat: yang sudah selesai, dibatalkan, atau hangus, masing-masing dengan tombol "Lagi" untuk pesan ulang sekali tap |
 | **Beranda** (tengah) | Peta besar dengan lembar bawah "Mau parkir di mana?": search, tiga layanan berbayar (Zona KENNETH, Valet runner, Charger EV) sebagai pilihan yang bisa dilepas, dan pilihan kendaraan (mobil atau motor). Tanpa layanan yang dipilih, peta menampilkan okupansi. Layoutnya selalu sama, yang berubah cuma angka di pin dan satu tombol utama di kartu tempat. Tap Beranda lagi untuk balik ke tampilan awal |
 | **Akun** (kanan) | Masuk dengan Google atau tetap jadi tamu, kendaraan, paket, dampak bulan ini, opsi peta, notifikasi |
 
-Tiap booking yang masih bisa dibatalkan punya tombol "Batalkan" yang kelihatan, di kartu Aktivitas, di tiketnya, dan
+Tiap booking yang masih bisa dibatalkan punya tombol "Batalkan" yang kelihatan, di kartu Tiket, di tiketnya, dan
 langsung setelah memesan. Batalnya dua langkah dengan aturannya ditulis. Yang dibatalkan tetap tercatat di Riwayat.
 Kalau ada yang lagi jalan (misalnya runner sedang membawa mobil balik), satu baris muncul di atas lembar Beranda.
 
@@ -87,13 +87,13 @@ Motor dan mobil punya slot, tingkat keterisian, dan tarif sendiri: ganti kendara
 |---|---|---|
 | 01 | Kondisi parkir real-time | Pin dan daftar di Beranda, angka sisa slot dan cincin okupansi di detail lokasi |
 | 02 | Rekomendasi alternatif | Detail lokasi yang penuh, bagian "Masih lega di dekat sini" |
-| 03 | Ingetin saat lega | Tombol ⋯ di kartu tempat, baris pengingat di daftar, pengingat aktif di Aktivitas |
+| 03 | Ingetin saat lega | Tombol ⋯ di kartu tempat, baris pengingat di daftar, pengingat aktif di Tiket |
 | 04 | Estimasi biaya parkir | Detail lokasi, baris "Biaya parkir" |
 | 05 | Arahkan ke gerbang yang bener | Chip antrian tiap gerbang di peta, tombol Rute ke gerbang paling lancar (di KENNETH, Google Maps, atau Waze) |
 | 06 | Inget lokasi mobil | Tombol ⋯ lalu "Simpan lokasi parkir", atau "Udah sampai" di akhir rute. Muncul di Tiket dan di baris atas Beranda |
 | 07 | Rute mobil ke tenant | Detail lokasi, "Dari parkir ke tujuan", plus denah basement 3D di "Cari kendaraan" |
 | 08 | Slot difabel dan ibu hamil | Detail lokasi, baris "Slot khusus" |
-| 09 | Booking petak Zona KENNETH | Mode Zona KENNETH, atau saran "Males muter?" di kartu tempat yang ramai. Tiket petak (nomor petak plus QR cadangan) di Aktivitas |
+| 09 | Booking petak Zona KENNETH | Mode Zona KENNETH, atau saran "Males muter?" di kartu tempat yang ramai. Tiket petak (nomor petak plus QR cadangan) di Tiket |
 | 10 | Booking charger EV | Mode Charger EV, pin menunjukkan charger yang kosong |
 | 11 | Pola kebiasaan pribadi | Akun, Dampak bulan ini, "Pola kebiasaanmu" (Premium) |
 
