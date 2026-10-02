@@ -88,7 +88,8 @@ function ServiceChips({ services }: { services: Service[] }) {
             }}
             className={clsx(
               'h-8 shrink-0 rounded-full px-3 text-[12.5px] font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:text-ink-3 disabled:opacity-50',
-              on ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200' : 'text-ink-2 hover:bg-surface-2 hover:text-ink',
+              // A resting fill so the row reads as toggles on touch too, where there is no hover. Same fill as the home cards.
+              on ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200' : 'bg-surface-2 text-ink-2 hover:bg-surface-3 hover:text-ink',
               on && !offered && 'opacity-60',
             )}
           >
