@@ -118,9 +118,10 @@ export function TimeScrubber({ venues, now, title }: { venues: Venue[]; now: num
             <span key={h}>{hourLabel(h)}</span>
           ))}
         </div>
-        <span className="absolute top-0 bottom-[12px] w-px bg-ink-3/60" style={{ left: pos(nowHourF) }} aria-hidden="true" />
+        {/* The now tick and the thumb stop level with the bars, so the hour labels under them stay readable. */}
+        <span className="absolute top-0 bottom-[14px] w-px bg-ink-3/60" style={{ left: pos(nowHourF) }} aria-hidden="true" />
         <motion.span
-          className="absolute top-[-3px] bottom-[10px] w-[3px] -translate-x-1/2 rounded-full bg-ink shadow-[0_0_0_3px_var(--surface)]"
+          className="absolute top-[-3px] bottom-[14px] w-[3px] -translate-x-1/2 rounded-full bg-ink shadow-[0_0_0_3px_var(--surface)]"
           animate={{ left: pos(viewHourF) }}
           transition={{ type: 'spring', stiffness: 500, damping: 40 }}
           aria-hidden="true"

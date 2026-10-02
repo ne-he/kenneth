@@ -199,6 +199,7 @@ const en: Dict = {
     arrive: 'I am here',
     roadRoute: 'Road route',
     estRoute: 'Estimated route',
+    zoneGate: (gate: string) => `Via ${gate}, KENNETH Zone access`,
   },
   park: {
     title: 'Save your parking spot',

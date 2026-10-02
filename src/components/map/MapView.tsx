@@ -2,7 +2,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { AnimatePresence } from 'motion/react'
 import { Map as MLMap, Marker, setWorkerUrl, type GeoJSONSource } from 'maplibre-gl'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
-import { useEffect, useEffectEvent, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Gate, LngLat, VenueId } from '../../data/types'
 import type { PinFact } from '../../engine/modes'
@@ -187,9 +187,9 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     setEls(() => new Map([...markers.current].map(([key, m]) => [key, m.el])))
   }, [snapshots, selected, focused, origin, ready])
 
-  // Lay the labels out after they render (their size depends on the text) and after every camera move.
-  // Priority: the selected place, the focused card, favourites, then the ranking the list uses. A label
-  // that has no room is dropped, never moved away from its dot.
+  // Lay the labels out once they are in the DOM (their size depends on the text) and after every camera
+  // move. Priority: the selected place, the focused card, favourites, then the ranking the list uses. A
+  // label that has no room is dropped, never moved away from its dot.
   const layout = useEffectEvent(() => {
     const map = mapRef.current
     if (!map) return
@@ -229,7 +229,9 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     const next = placeLabels(labels, dots, { w: canvas.clientWidth, h: canvas.clientHeight })
     setOffsets((prev) => (sameOffsets(prev, next) ? prev : next))
   })
-  useEffect(() => {
+  // A layout effect, so a mode switch (new text, new widths) is measured and placed before the frame
+  // paints: the pills never show at the spot their old width earned them.
+  useLayoutEffect(() => {
     const map = mapRef.current
     if (!map) return
     layout()

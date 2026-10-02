@@ -198,6 +198,7 @@ const id = {
     arrive: 'Udah sampai',
     roadRoute: 'Rute jalan',
     estRoute: 'Rute perkiraan',
+    zoneGate: (gate: string) => `Lewat ${gate}, akses Zona KENNETH`,
   },
   park: {
     title: 'Simpan lokasi parkir',
