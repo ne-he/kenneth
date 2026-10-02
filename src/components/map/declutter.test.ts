@@ -55,6 +55,14 @@ describe('placeLabels', () => {
     expect(out.get('sel')).not.toBeNull()
   })
 
+  it('keeps a label on screen, hanging it the other way at the edge', () => {
+    const view = { w: 390, h: 800 }
+    expect(placeLabels([label('a', 370, 100)], [dot('a', 370, 100)], view).get('a')).toEqual([-13, 0])
+    const sel = label('sel', 20, 400, { w: 140, h: 32, spots: around(140, 32, 9), keep: true })
+    const [dx] = placeLabels([sel], [], view).get('sel')!
+    expect(20 + dx - 70).toBeGreaterThanOrEqual(0)
+  })
+
   it('still places a label it must keep when every spot is taken', () => {
     const wall = label('wall', 100, 100, { w: 600, h: 600, spots: [[0, 0]], keep: true })
     const out = placeLabels([wall, label('sel', 100, 100, { spots: around(48, 22, 10), keep: true })], [])

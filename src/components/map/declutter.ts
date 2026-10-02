@@ -83,11 +83,18 @@ const overlap = (a: Rect, b: Rect) =>
  * are handled in the order given, so pass them by priority: a label that
  * would cover an earlier one, or another place's dot, is dropped (null) and
  * that place stays a bare dot until you zoom in. Nothing moves away from its
- * point, so no leader lines are needed.
+ * point, so no leader lines are needed. With `view` (the map size), a spot
+ * that runs off the edge counts as taken too.
  */
-export function placeLabels(labels: Label[], dots: Dot[], pad = 2): Map<string, Offset | null> {
+export function placeLabels(
+  labels: Label[],
+  dots: Dot[],
+  view?: { w: number; h: number },
+  pad = 2,
+): Map<string, Offset | null> {
   const out = new Map<string, Offset | null>()
   const placed: Rect[] = []
+  const inside = view && { l: 0, t: 0, r: view.w, b: view.h }
   const dotBoxes = dots.map((d) => ({ id: d.id, box: rect(d.x, d.y, d.r * 2, d.r * 2) }))
   for (const l of labels) {
     let best: Offset | null = null
@@ -98,6 +105,7 @@ export function placeLabels(labels: Label[], dots: Dot[], pad = 2): Map<string, 
       let score = 0
       for (const q of placed) score += overlap(box, q)
       for (const d of dotBoxes) if (d.id !== l.id) score += overlap(box, d.box)
+      if (inside) score += (box.r - box.l) * (box.b - box.t) - overlap(box, inside)
       if (score < bestScore) {
         best = s
         bestBox = box
