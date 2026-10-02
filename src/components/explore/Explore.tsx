@@ -112,15 +112,13 @@ export function Explore() {
     if (focus) flyTo(VENUE_BY_ID[focus].coords)
   }, [focus])
 
+  // The row always starts on the best option; a card that left the filter hands over to it.
+  const first = shown[0]?.venue.id ?? null
+  const inRow = focused && shown.some((r) => r.venue.id === focused) ? focused : first
   // The card in view on the home row: the camera glides to it, with the row's own height as padding.
   useEffect(() => {
-    if (focused && !selected && !route) glideTo(VENUE_BY_ID[focused].coords, 236)
-  }, [focused, selected, route])
-  // The row always starts on the best option.
-  const first = shown[0]?.venue.id ?? null
-  useEffect(() => {
-    if (!focused || !shown.some((r) => r.venue.id === focused)) setFocused(first)
-  }, [first, focused, shown])
+    if (inRow && !selected && !route) glideTo(VENUE_BY_ID[inRow].coords, 236)
+  }, [inRow, selected, route])
 
   // A new filter frames what it shows. The first render keeps the opening view.
   const framed = useRef(filter)
@@ -210,10 +208,10 @@ export function Explore() {
           snapshots={onMap}
           facts={facts}
           selected={selected}
-          focused={selected ? null : focused}
+          focused={selected ? null : inRow}
           onSelect={(id) => {
             // On the home row a tap on a pin brings its card over, a second tap opens it.
-            if (!listOpen && !selected && id && id !== focused) setFocused(id)
+            if (!listOpen && !selected && id && id !== inRow) setFocused(id)
             else select(id)
           }}
           origin={origin}
@@ -244,7 +242,7 @@ export function Explore() {
           <VenueCarousel
             ranked={shown}
             facts={facts}
-            focused={focused}
+            focused={inRow}
             onFocus={setFocused}
             onList={() => {
               setSnap('half')
