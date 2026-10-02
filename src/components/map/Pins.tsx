@@ -152,11 +152,12 @@ export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number
   )
 }
 
+/** You are here: an ink puck with a soft halo. Ink, so it never reads as a status or the accent. */
 export function OriginPin() {
   return (
-    <div className="relative grid size-6 place-items-center">
-      <span className="absolute inset-0 animate-ping rounded-full bg-signal/35" />
-      <span className="size-4 rounded-full border-[3px] border-white bg-signal shadow-[0_2px_8px_rgb(31_95_214/0.55)]" />
+    <div className="relative grid size-7 place-items-center">
+      <span className="absolute inset-0 rounded-full bg-signal/12" />
+      <span className="size-4 rounded-full border-[3px] border-surface bg-signal shadow-[0_1px_4px_rgb(0_0_0/0.3)]" />
     </div>
   )
 }
