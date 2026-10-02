@@ -16,11 +16,11 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useState, type ReactNode } from 'react'
 import type { OccupancyStatus } from '../../data/types'
 import { VENUES } from '../../data/venues'
-import { chargersFree, valetFacts } from '../../engine/modes'
+import { SERVICES, chargersFree, valetFacts } from '../../engine/modes'
 import { defaultGate, forKind, nextRelief } from '../../engine/occupancy'
 import { formatRupiah, zonePrice, zoneWorthIt } from '../../engine/pricing'
 import { alternativesFor, type Ranked } from '../../engine/recommend'
-import { servicesFor } from '../../engine/services'
+import { servicesFor, type Service } from '../../engine/services'
 import { baysLeft, zoneOf } from '../../engine/zone'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
@@ -32,47 +32,89 @@ import { clock } from '../../lib/time'
 import { uid, useApp, useVehicle } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
-import { MODE_ICON } from './modeIcons'
 
 /**
- * The top of a place, all a driver needs at a glance: one line of context,
- * three numbers when a service is involved, and one button that does what the
- * mode is for. Everything else sits below it and shows when the sheet is
- * pulled up.
+ * The top of a place, all a driver needs at a glance: the services as a chip
+ * row, one line of context, three numbers when a service is involved, and one
+ * button that does what the mode is for. Everything else sits below it and
+ * shows when the sheet is pulled up.
  */
 export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewing: boolean }) {
   const t = useT()
   const mode = useUi((s) => s.mode)
-  const setMode = useUi((s) => s.setMode)
+  const vehicle = useVehicle()
+  const venue = snap.venue
+  const services = servicesFor(venue, vehicle.kind)
+  // A service that is on but not sold here falls back to plain parking; the dimmed chip says why.
+  const active = mode !== 'park' && services.includes(mode) ? mode : null
+
+  return (
+    <Card>
+      <ServiceChips services={services} />
+      {mode !== 'park' && !active && <Note>{t.modes.none[mode]}</Note>}
+      {active ? <ServiceCard mode={active} snap={snap} ts={ts} /> : <ParkCard snap={snap} ts={ts} previewing={previewing} />}
+    </Card>
+  )
+}
+
+/**
+ * The three paid services as switches. The one that is on wears the brand
+ * tint; one this place does not sell is dimmed and cannot be turned on, but
+ * the active one can always be turned off, which is the way back to parking.
+ */
+function ServiceChips({ services }: { services: Service[] }) {
+  const t = useT()
+  const mode = useUi((s) => s.mode)
+  const toggleService = useUi((s) => s.toggleService)
+  const vehicle = useVehicle()
+  const car = vehicle.kind === 'mobil'
+  return (
+    <div role="group" aria-label={t.venue.services} className="no-scrollbar -mx-5 mb-3 flex gap-1 overflow-x-auto px-5">
+      {SERVICES.map((m) => {
+        const on = mode === m
+        const offered = services.includes(m)
+        const why = !car ? t.modes.carOnly : !offered ? t.modes.none[m] : undefined
+        return (
+          <button
+            key={m}
+            type="button"
+            role="switch"
+            aria-checked={on}
+            disabled={!car || (!offered && !on)}
+            title={why}
+            onClick={() => {
+              haptic('tap')
+              toggleService(m)
+            }}
+            className={clsx(
+              'h-8 shrink-0 rounded-full px-3 text-[12.5px] font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:text-ink-3 disabled:opacity-50',
+              on ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200' : 'text-ink-2 hover:bg-surface-2 hover:text-ink',
+              on && !offered && 'opacity-60',
+            )}
+          >
+            {t.book.services[m]}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+/** A service that is on and sold here: where it is, its three numbers, and the button that books it. */
+function ServiceCard({ mode, snap, ts }: { mode: Service; snap: Ranked; ts: number }) {
+  const t = useT()
   const open = useUi((s) => s.open)
   const plan = useApp((s) => s.plan)
   const vehicle = useVehicle()
   const nav = useNavigation()
   const venue = snap.venue
-  const services = servicesFor(venue, vehicle.kind)
   const route = () => nav.start(venue.id)
-
-  if (mode !== 'park' && !services.includes(mode)) {
-    return (
-      <Card>
-        <p className="mb-3 text-[13.5px] leading-snug text-ink-2">{t.modes.none[mode]}</p>
-        <div className="grid grid-cols-2 gap-2">
-          <Btn tone="quiet" onClick={route}>
-            <NavigationArrow size={17} weight="fill" /> {t.venue.actions.route}
-          </Btn>
-          <Btn tone="ink" onClick={() => setMode('park')}>
-            {MODE_ICON.park({ size: 17, weight: 'fill' })} {t.modes.backToPark}
-          </Btn>
-        </div>
-      </Card>
-    )
-  }
 
   if (mode === 'zone') {
     const zone = zoneOf(venue)!
     const left = baysLeft(venue, ts, snap.occ)
     return (
-      <Card>
+      <>
         <Line>{t.card.zoneLine(zone.level, zone.lobby, zone.gate.name)}</Line>
         <Stats
           cells={[
@@ -87,14 +129,14 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
             <Crown size={17} weight="fill" /> {t.card.zoneCta}
           </Btn>
         </Actions>
-      </Card>
+      </>
     )
   }
 
   if (mode === 'valet' && venue.valet) {
     const f = valetFacts(snap)
     return (
-      <Card>
+      <>
         <Line>{t.card.valetLine(venue.valet.lobbies.join(' / '))}</Line>
         <Stats
           cells={[
@@ -108,33 +150,29 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
             <Key size={17} weight="fill" /> {t.card.valetCta}
           </Btn>
         </Actions>
-      </Card>
+      </>
     )
   }
 
-  if (mode === 'ev') {
-    const free = chargersFree(snap, ts)
-    return (
-      <Card>
-        <Line>{t.card.evLine(venue.ev.kw)}</Line>
-        <Stats
-          cells={[
-            [t.modes.free(free, venue.ev.chargers), t.card.evFree, free === 0 ? 'penuh' : 'lega'],
-            [`${venue.ev.kw} kW`, t.card.evPower],
-            [String(venue.ev.chargers), t.card.evTotal],
-          ]}
-        />
-        {!vehicle.isEV && <Note>{t.card.evNotEv}</Note>}
-        <Actions onRoute={route}>
-          <Btn tone="ink" onClick={() => open({ kind: 'book', id: venue.id, service: 'ev' })}>
-            <ChargingStation size={17} weight="fill" /> {t.card.evCta}
-          </Btn>
-        </Actions>
-      </Card>
-    )
-  }
-
-  return <ParkCard snap={snap} ts={ts} previewing={previewing} />
+  const free = chargersFree(snap, ts)
+  return (
+    <>
+      <Line>{t.card.evLine(venue.ev.kw)}</Line>
+      <Stats
+        cells={[
+          [t.modes.free(free, venue.ev.chargers), t.card.evFree, free === 0 ? 'penuh' : 'lega'],
+          [`${venue.ev.kw} kW`, t.card.evPower],
+          [String(venue.ev.chargers), t.card.evTotal],
+        ]}
+      />
+      {!vehicle.isEV && <Note>{t.card.evNotEv}</Note>}
+      <Actions onRoute={route}>
+        <Btn tone="ink" onClick={() => open({ kind: 'book', id: venue.id, service: 'ev' })}>
+          <ChargingStation size={17} weight="fill" /> {t.card.evCta}
+        </Btn>
+      </Actions>
+    </>
+  )
 }
 
 /** Plain parking: which gate, the route there, and a nudge only when it would actually help. */
@@ -175,7 +213,7 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
   }
 
   return (
-    <Card>
+    <>
       <Line dot={!split && snap.bestGateQueueMin < 3 ? 'lega' : undefined}>{line}</Line>
       <div className="flex gap-2">
         <Btn tone="ink" onClick={() => nav.start(venue.id)}>
@@ -259,7 +297,7 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
           )}
         </Rows>
       )}
-    </Card>
+    </>
   )
 }
 
