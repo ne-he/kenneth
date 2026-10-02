@@ -132,6 +132,3 @@ function flatten(style: StyleSpecification): StyleSpecification {
     })
   return { ...style, layers }
 }
-
-/** Id of the first label layer, so app overlays can slot in underneath it. */
-export const firstSymbolId = (style: StyleSpecification) => style.layers.find((l) => l.type === 'symbol')?.id

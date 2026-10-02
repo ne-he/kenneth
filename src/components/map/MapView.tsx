@@ -13,8 +13,7 @@ import type { Route } from '../../store/ui'
 import { placePins, type Offset, type PinBox } from './declutter'
 import { fitPoints, setMap, sheetPad } from './mapApi'
 import { GatePin, OriginPin, VenuePin } from './Pins'
-import { factHex } from './pinColor'
-import { firstSymbolId, loadStyle } from './style'
+import { loadStyle } from './style'
 
 interface Props {
   theme: 'light' | 'dark'
@@ -111,21 +110,6 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     if (threeD && wasFlat) map.easeTo({ pitch: 50, bearing: -12, duration: 700 })
     if (!threeD) map.easeTo({ pitch: 0, bearing: 0, duration: 700 })
   }, [theme, look, threeD])
-
-  // A soft status glow under the selected place only, so the map stays calm until you pick one.
-  useEffect(() => {
-    const src = mapRef.current?.getSource('venue-halo') as GeoJSONSource | undefined
-    src?.setData({
-      type: 'FeatureCollection',
-      features: snapshots
-        .filter((s) => s.venue.id === selected && facts?.get(s.venue.id)?.kind !== 'none')
-        .map((s) => ({
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: s.venue.coords },
-          properties: { color: factHex(facts?.get(s.venue.id), s) },
-        })),
-    })
-  }, [snapshots, facts, selected, ready])
 
   // Route line with a short draw-on animation.
   useEffect(() => {
@@ -298,27 +282,6 @@ function sameOffsets(a: ReadonlyMap<string, Offset>, b: ReadonlyMap<string, Offs
 const emptyLine = () => ({ type: 'FeatureCollection' as const, features: [] })
 
 function addOverlays(map: MLMap) {
-  const beforeLabels = firstSymbolId(map.getStyle())
-  if (!map.getSource('venue-halo')) {
-    map.addSource('venue-halo', { type: 'geojson', data: emptyLine() })
-  }
-  if (!map.getLayer('venue-halo')) {
-    map.addLayer(
-      {
-        id: 'venue-halo',
-        type: 'circle',
-        source: 'venue-halo',
-        paint: {
-          'circle-color': ['get', 'color'],
-          'circle-radius': ['interpolate', ['exponential', 2], ['zoom'], 11, 14, 14, 42, 17, 190],
-          'circle-blur': 1,
-          'circle-opacity': 0.34,
-          'circle-pitch-alignment': 'map',
-        },
-      },
-      beforeLabels,
-    )
-  }
   if (!map.getSource('route')) {
     map.addSource('route', { type: 'geojson', data: emptyLine(), lineMetrics: true })
   }
