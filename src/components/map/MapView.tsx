@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom'
 import type { Gate, LngLat, VenueId } from '../../data/types'
 import type { PinFact } from '../../engine/modes'
 import type { Snapshot } from '../../engine/occupancy'
+import { useT } from '../../i18n'
 import { signalMapReady } from '../../lib/splash'
 import { useApp } from '../../store/app'
 import type { Route } from '../../store/ui'
@@ -47,6 +48,7 @@ const NAMED_ZOOM = 14.5
 setWorkerUrl(workerUrl)
 
 export function MapView({ theme, snapshots, facts, selected, focused = null, onSelect, origin, route, initialBounds }: Props) {
+  const t = useT()
   const box = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MLMap | null>(null)
   const [ready, setReady] = useState(0)
@@ -246,7 +248,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
       <div ref={box} className="h-full w-full bg-canvas" />
       {failed && (
         <div className="absolute inset-0 grid place-items-center bg-canvas text-[13px] text-ink-3">
-          Peta gagal dimuat. Cek koneksi internet.
+          {t.explore.mapFail}
         </div>
       )}
       {snapshots.map((s) => {

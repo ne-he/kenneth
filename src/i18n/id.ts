@@ -30,8 +30,8 @@ const id = {
     confirmDelete: 'Ya, hapus',
   },
   tabs: {
-    activity: 'Aktivitas',
-    park: 'Parkir',
+    activity: 'Tiket',
+    park: 'Beranda',
     account: 'Akun',
   },
   modes: {

@@ -1,4 +1,4 @@
-import { MapTrifold, Ticket, UserCircle } from '@phosphor-icons/react'
+import { House, Ticket, UserCircle } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
@@ -7,9 +7,9 @@ import { haptic } from '../../lib/haptics'
 import { useUi, type Tab } from '../../store/ui'
 
 /**
- * Three equal icon tabs, same place on every screen. Labels are for screen
+ * Three icon tabs with Beranda (the map) in the middle. Labels are for screen
  * readers only; the active tab is marked by a filled icon and a small
- * cornflower dot. Tapping Parkir again while home brings the map back to the
+ * cornflower dot. Tapping Beranda again while home brings the map back to the
  * overview. Nothing in the app switches tabs on its own: new bookings put a
  * dot on Aktivitas and the user decides when to look.
  */
@@ -33,7 +33,7 @@ export function BottomNav() {
           <Ticket size={25} weight={tab === 'activity' ? 'fill' : 'regular'} />
         </Item>
         <Item active={tab === 'park'} onClick={() => go('park')} label={t.tabs.park}>
-          <MapTrifold size={25} weight={tab === 'park' ? 'fill' : 'regular'} />
+          <House size={25} weight={tab === 'park' ? 'fill' : 'regular'} />
         </Item>
         <Item active={tab === 'account'} onClick={() => go('account')} label={t.tabs.account}>
           <UserCircle size={25} weight={tab === 'account' ? 'fill' : 'regular'} />

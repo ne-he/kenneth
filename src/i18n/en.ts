@@ -32,8 +32,8 @@ const en: Dict = {
     confirmDelete: 'Yes, delete',
   },
   tabs: {
-    activity: 'Activity',
-    park: 'Park',
+    activity: 'Tickets',
+    park: 'Home',
     account: 'Account',
   },
   modes: {
