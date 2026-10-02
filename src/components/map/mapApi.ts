@@ -1,6 +1,7 @@
 // Type-only import: the maplibre bundle stays in the lazy MapView chunk.
 import type { Map as MLMap } from 'maplibre-gl'
 import type { LngLat } from '../../data/types'
+import { glideZoom } from '../../lib/camera'
 import { useApp } from '../../store/app'
 
 /*
@@ -35,7 +36,7 @@ export function flyTo(center: LngLat, bottom = sheetPad(), zoom = 16.2) {
 export function glideTo(center: LngLat, bottom: number) {
   if (!map) return
   map.setPadding({ top: 0, right: 0, bottom: 0, left: 0 })
-  const zoom = Math.max(14.2, Math.min(15.6, map.getZoom()))
+  const zoom = glideZoom(map.getZoom())
   map.easeTo({ center, zoom, ...tilt(32, -10), padding: padding(bottom), duration: 700, essential: true })
 }
 
