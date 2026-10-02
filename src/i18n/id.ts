@@ -90,7 +90,7 @@ const id = {
     evFree: 'Kosong',
     evPower: 'Daya',
     evTotal: 'Unit',
-    evNotEv: 'Kendaraan aktif bukan mobil listrik. Ganti dari tombol mode di atas.',
+    evNotEv: 'Kendaraan aktif bukan mobil listrik. Ganti dari baris kendaraan di Beranda.',
     closed: 'Lagi tutup sekarang',
     // The numbers of a service in one line, under the context line.
     zoneFacts: (left: number, total: number) => `${left}/${total} petak kosong · ±1 mnt ke lift`,

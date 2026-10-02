@@ -92,7 +92,7 @@ const en: Dict = {
     evFree: 'Free',
     evPower: 'Power',
     evTotal: 'Units',
-    evNotEv: 'The active vehicle is not electric. Switch it from the mode button up top.',
+    evNotEv: 'The active vehicle is not electric. Switch it from the vehicle row on Home.',
     closed: 'Closed right now',
     // The numbers of a service in one line, under the context line.
     zoneFacts: (left: number, total: number) => `${left}/${total} bays free · ±1 min to the lift`,
