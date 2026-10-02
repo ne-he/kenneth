@@ -44,7 +44,7 @@ export function ActionButton({
         className={clsx(
           'grid size-[52px] place-items-center rounded-full transition-colors',
           tone === 'brand'
-            ? 'bg-brand-600 text-white shadow-[0_8px_18px_-8px_rgb(5_150_105/0.7)]'
+            ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200'
             : active
               ? 'bg-ink text-canvas'
               : 'bg-surface-2 text-ink group-hover:bg-surface-3',
