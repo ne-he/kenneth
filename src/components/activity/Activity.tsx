@@ -83,8 +83,9 @@ export function Activity() {
         </p>
       </header>
 
+      {/* Text above the button on narrow phones, side by side once there is room for both. */}
       {current.length === 0 && upcoming.length === 0 && past.length > 0 && (
-        <motion.section {...rise(i++)} className="mb-7 flex items-center gap-3 rounded-[20px] border border-line p-3.5 pl-4">
+        <motion.section {...rise(i++)} className="mb-7 flex flex-col gap-3 rounded-[20px] border border-line p-3.5 pl-4 min-[360px]:flex-row min-[360px]:items-center">
           <span className="min-w-0 flex-1 text-[13px] leading-snug text-ink-2">{t.activity.nothingNow}</span>
           <Button variant="primary" size="sm" onClick={() => setTab('park')}>
             <MapTrifold size={15} weight="bold" /> {t.activity.findParking}

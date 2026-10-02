@@ -12,8 +12,8 @@ Buka di HP untuk app-nya. Di laptop, app yang sama tampil di bingkai HP dengan Q
 
 <p align="center">
   <img src="docs/screens/explore.png" width="200" alt="Beranda: peta dan daftar tempat" />
-  <img src="docs/screens/modes.png" width="200" alt="Dropdown mode: Parkir, Zona KENNETH, Valet runner, Charger EV" />
-  <img src="docs/screens/valet-card.png" width="200" alt="Mode Valet runner di Taman Anggrek" />
+  <img src="docs/screens/modes.png" width="200" alt="Beranda dengan Zona KENNETH dipilih: pin menampilkan harga petak" />
+  <img src="docs/screens/valet-card.png" width="200" alt="Kartu tempat Taman Anggrek dengan Valet runner dipilih" />
   <img src="docs/screens/activity.png" width="200" alt="Tab Tiket: sekarang, nanti, riwayat" />
 </p>
 
