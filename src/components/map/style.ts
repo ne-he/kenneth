@@ -6,7 +6,9 @@ import type { MapStyle } from '../../store/app'
 
   Two looks, picked in Opsi peta:
   - calm: Positron and Dark, recoloured so the map sits inside the app
-    palette and the status colours are the loudest thing on screen.
+    palette and the status colours are the loudest thing on screen. Road
+    number shields and one-way arrows are left out, they only add noise
+    around the pins.
   - detail: Liberty and Fiord as published, with shop, transit and park
     labels, for people who want the map to look like a map.
 
@@ -78,9 +80,12 @@ export async function loadStyle(mode: Mode, look: MapStyle = 'calm', threeD = tr
   return threeD ? extrude(style, look === 'calm' ? [PALETTE[mode].building3d, PALETTE[mode].building3dTop] : DETAIL_BUILDINGS[mode]) : flatten(style)
 }
 
+/** Road number shields ("1", "2") and one-way arrows: clutter next to the pins in the calm look. */
+const isRoadNoise = (id: string) => id.includes('shield') || id.startsWith('road_oneway')
+
 function tint(style: StyleSpecification, mode: Mode): StyleSpecification {
   const p = PALETTE[mode]
-  const layers = style.layers.map((layer) => {
+  const layers = style.layers.filter((layer) => !isRoadNoise(layer.id)).map((layer) => {
     const color = p[layer.id]
     if (layer.type === 'background' && p.background) {
       return { ...layer, paint: { ...layer.paint, 'background-color': p.background } }
