@@ -67,12 +67,11 @@ describe('placePins', () => {
     expect(out.get('b')).not.toEqual([0, 0])
   })
 
-  it('lifts a pin that must not cover its point above it, or to another side when a chip is there', () => {
+  it('lifts a pin that must not cover its point above it, or to the next side round when a chip is there', () => {
     const sel = { onPoint: false, dir: 'n' as const, gap: 8 }
     expect(placePins([pin('sel', 100, 100, sel)]).get('sel')).toEqual(beside('n', 48, 24, 8))
-    const out = placePins([pin('gate', 100, 76, { fixed: [0, 0] }), pin('sel', 100, 100, sel)])
-    expect(out.get('sel')).not.toEqual(beside('n', 48, 24, 8))
-    expect(out.get('sel')).not.toEqual([0, 0])
+    const out = placePins([pin('gate', 66, 76, { w: 30, fixed: [0, 0] }), pin('sel', 100, 100, sel)])
+    expect(out.get('sel')).toEqual(beside('ne', 48, 24, 8))
   })
 
   it('still places a pin when every side is taken', () => {

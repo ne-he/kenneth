@@ -32,7 +32,18 @@ const SIDE: Record<LabelDir, [number, number]> = {
   sw: [-1, 1],
 }
 
-const ORDER: LabelDir[] = ['e', 'w', 'n', 's', 'ne', 'nw', 'se', 'sw']
+/** The sides going round, so a blocked label tries the sides next to its own before the far ones. */
+const RING: LabelDir[] = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']
+
+function sidesFrom(dir: LabelDir): LabelDir[] {
+  const at = RING.indexOf(dir)
+  const out: LabelDir[] = [dir]
+  for (let k = 1; k <= 4; k++) {
+    out.push(RING[(at + k) % 8])
+    if (k < 4) out.push(RING[(at - k + 8) % 8])
+  }
+  return out
+}
 
 /** Size of the area around each point that labels stay off, so no place hides under another's label. */
 const DOT = 10
@@ -82,7 +93,7 @@ export function placePins(pins: PinBox[], pad = 2): Map<string, Offset> {
       return
     }
     const gap = p.gap ?? 3
-    const sides = [p.dir, ...ORDER.filter((d) => d !== p.dir)].map((d) => beside(d, p.w, p.h, gap))
+    const sides = sidesFrom(p.dir).map((d) => beside(d, p.w, p.h, gap))
     const options: Offset[] = p.fixed ? [p.fixed] : p.onPoint === false ? sides : [[0, 0], ...sides]
     let best = options[0]
     let bestBox = rect(p.x + best[0], p.y + best[1], p.w + pad * 2, p.h + pad * 2)
