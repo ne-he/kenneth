@@ -197,7 +197,7 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
         <p className="mt-2 leading-relaxed text-ink-2">{t.book.fairBody}</p>
       </details>
 
-      <div className="sticky bottom-0 -mx-5 mt-5 bg-surface px-5 pt-2">
+      <div className="sticky bottom-0 z-10 -mx-5 mt-5 bg-surface px-5 pt-2 after:absolute after:inset-x-0 after:top-full after:h-6 after:bg-surface">
         <Button variant="primary" size="lg" block disabled={!pick || paying} onClick={pay}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.span key={String(paying)} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>

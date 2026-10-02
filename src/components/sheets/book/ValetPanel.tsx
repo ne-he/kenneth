@@ -133,7 +133,7 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
       <Label>{t.book.payWith}</Label>
       <PayMethods value={method} onChange={setMethod} />
 
-      <div className="sticky bottom-0 -mx-5 mt-5 bg-surface px-5 pt-2">
+      <div className="sticky bottom-0 z-10 -mx-5 mt-5 bg-surface px-5 pt-2 after:absolute after:inset-x-0 after:top-full after:h-6 after:bg-surface">
         <Button variant="primary" size="lg" block disabled={paying} onClick={book}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
@@ -153,8 +153,8 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
             </motion.span>
           </AnimatePresence>
         </Button>
+        <p className="mt-2 text-center text-[11px] leading-snug text-ink-3">{t.valet.demoNote}</p>
       </div>
-      <p className="mt-2 text-center text-[11px] leading-snug text-ink-3">{t.valet.demoNote}</p>
     </div>
   )
 }
