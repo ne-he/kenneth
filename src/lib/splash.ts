@@ -1,7 +1,7 @@
 /**
- * The splash car waits for the map. Building the map compiles its shaders and
- * blocks the main thread for a moment, which would freeze the car mid turn, so
- * the car only drives off once the first map has drawn (or has given up).
+ * The splash waits for the map. Building the map compiles its shaders and
+ * blocks the main thread for a moment, so the splash only fades once the
+ * first map has drawn (or has given up) and the app appears ready at once.
  */
 export const MAP_READY = 'kenneth:map-ready'
 
