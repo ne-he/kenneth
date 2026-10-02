@@ -79,7 +79,7 @@ export function FindCarSheet() {
 
       {spot.photo && <img src={spot.photo} alt="" className="mt-3 h-40 w-full rounded-[20px] object-cover" />}
 
-      <div className="mt-3 grid grid-cols-2 gap-2">
+      <div className="mt-3 grid grid-cols-[1fr_1.45fr] gap-2">
         <Button onClick={() => shareSpot(text, () => notify(t.activity.shared))}>
           <ShareNetwork size={17} weight="bold" /> {t.activity.share}
         </Button>

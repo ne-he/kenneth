@@ -107,7 +107,7 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
       <p className="mt-2 flex items-center gap-1.5 text-[12.5px] text-ink-3">
         <Ticket size={14} weight="fill" /> {t.book.savedToTickets}
       </p>
-      <div className="mt-7 grid w-full grid-cols-2 gap-2">
+      <div className="mt-7 grid w-full grid-cols-[1fr_1.45fr] gap-2">
         <Button variant="secondary" onClick={close}>
           {t.common.done}
         </Button>

@@ -115,7 +115,10 @@ export function PassSheet({ passId }: { passId: string }) {
 function Cell({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="border-r border-white/10 px-2 py-3 last:border-r-0">
-      <div className="text-[10px] font-semibold tracking-[0.12em] text-white/45 uppercase">{label}</div>
+      {/* Two lines are reserved so a wrapping label ("Datang dalam") keeps the three values on one baseline. */}
+      <div className="flex min-h-[26px] items-end justify-center text-[10px] leading-[13px] font-semibold tracking-[0.12em] text-white/45 uppercase">
+        {label}
+      </div>
       <div className={`mt-1 font-mono text-[15px] font-semibold tabular ${accent ? 'text-brand-300' : 'text-white'}`}>{value}</div>
     </div>
   )
