@@ -71,7 +71,7 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
       {valet.lobbies.length > 1 && (
         <>
           <Label>{t.valet.lobby}</Label>
-          <div className="mb-4 flex flex-wrap gap-1.5" role="radiogroup" aria-label={t.valet.lobby}>
+          <div className="mb-5 flex flex-wrap gap-1.5" role="radiogroup" aria-label={t.valet.lobby}>
             {valet.lobbies.map((l) => (
               <button
                 key={l}
@@ -95,7 +95,7 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
       )}
 
       <Label>{t.valet.arrive}</Label>
-      <div className="no-scrollbar -mx-5 mb-4 flex gap-2 overflow-x-auto px-5 pb-1">
+      <div className="no-scrollbar -mx-5 mb-5 flex gap-1.5 overflow-x-auto px-5 pb-1">
         {slots.map((s) => (
           <button
             key={s}
@@ -105,7 +105,7 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
               setPicked(s)
             }}
             className={clsx(
-              'h-11 shrink-0 rounded-[14px] px-3.5 text-[14px] font-bold tabular transition-colors',
+              'h-10 shrink-0 rounded-full px-4 text-[14px] font-semibold tabular transition-colors',
               s === arriveAt ? 'bg-ink text-canvas' : 'bg-surface-2',
             )}
           >
@@ -114,26 +114,26 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
         ))}
       </div>
 
-      <List className="mb-4">
-        <Fact icon={<HandCoins size={17} weight="fill" />} title={formatRupiah(valet.price)} hint={t.valet.payAtDesk} />
-        <Fact icon={<Clock size={17} weight="fill" />} title={t.valet.dropQueue(dropQueueMin(occ))} hint={t.valet.dropQueueHint(clock(arriveAt))} />
-        <Fact icon={<Timer size={17} weight="fill" />} title={t.valet.retrieval(retrievalMin(occ))} hint={t.valet.retrievalHint} />
+      {/* Price, timing and the plate the runner checks: one list instead of a card per fact. */}
+      <List className="mb-6">
+        <Fact icon={<HandCoins size={18} weight="fill" />} title={formatRupiah(valet.price)} hint={t.valet.payAtDesk} />
+        <Fact icon={<Clock size={18} weight="fill" />} title={t.valet.dropQueue(dropQueueMin(occ))} hint={t.valet.dropQueueHint(clock(arriveAt))} />
+        <Fact icon={<Timer size={18} weight="fill" />} title={t.valet.retrieval(retrievalMin(occ))} hint={t.valet.retrievalHint} />
+        <div className="flex items-center gap-3 px-4 py-3">
+          <Plate plate={vehicle.plate} small />
+          <span className="min-w-0 flex-1 text-[12px] leading-snug text-ink-3">{vehicle.plate ? t.valet.plateNote : t.valet.plateMissing}</span>
+          {!vehicle.plate && (
+            <button type="button" onClick={() => open({ kind: 'vehicle' })} className="text-[12.5px] font-semibold text-ink underline underline-offset-2">
+              {t.common.fill}
+            </button>
+          )}
+        </div>
       </List>
-
-      <div className="mb-4 flex items-center gap-3 rounded-[16px] bg-surface-2 px-4 py-3">
-        <Plate plate={vehicle.plate} />
-        <span className="min-w-0 flex-1 text-[12.5px] leading-snug text-ink-2">{vehicle.plate ? t.valet.plateNote : t.valet.plateMissing}</span>
-        {!vehicle.plate && (
-          <button type="button" onClick={() => open({ kind: 'vehicle' })} className="text-[12.5px] font-bold text-ink underline underline-offset-2">
-            {t.common.fill}
-          </button>
-        )}
-      </div>
 
       <Label>{t.book.payWith}</Label>
       <PayMethods value={method} onChange={setMethod} />
 
-      <div className="sticky bottom-0 mt-4 bg-surface pt-2">
+      <div className="sticky bottom-0 -mx-5 mt-5 bg-surface px-5 pt-2">
         <Button variant="primary" size="lg" block disabled={paying} onClick={book}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
@@ -162,9 +162,9 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
 function Fact({ icon, title, hint }: { icon: ReactNode; title: string; hint: string }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3">
-      <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-surface-2 text-ink-2">{icon}</span>
+      <span className="grid w-5 shrink-0 place-items-center text-ink-3">{icon}</span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[14px] font-semibold tabular">{title}</span>
+        <span className="block text-[14px] font-medium tabular">{title}</span>
         <span className="block text-[12px] leading-snug text-ink-3">{hint}</span>
       </span>
     </div>
