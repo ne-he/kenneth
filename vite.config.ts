@@ -65,6 +65,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Inter ships seven unicode-range subsets; the app renders Latin only, so only those two go into the install.
+        // The others still load on demand if a glyph ever needs them.
+        globIgnores: ['**/inter-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: '/index.html',
         // Firebase serves the Google sign-in handler under /__/auth. It must reach the network, not the app shell.
