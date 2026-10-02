@@ -21,6 +21,8 @@ interface Props {
   /** What each pin says in the current mode. Missing means percent full. */
   facts?: ReadonlyMap<VenueId, PinFact>
   selected: VenueId | null
+  /** The card in view on the home row: its pin is lifted without opening it. */
+  focused?: VenueId | null
   onSelect: (id: VenueId) => void
   origin: LngLat
   route: Route | null
@@ -33,7 +35,7 @@ const ROUTE_COLOR = '#2f5bd3'
 // cannot see. Hand it a bundled worker explicitly so dev and prod both work.
 setWorkerUrl(workerUrl)
 
-export function MapView({ theme, snapshots, facts, selected, onSelect, origin, route, initialBounds }: Props) {
+export function MapView({ theme, snapshots, facts, selected, focused = null, onSelect, origin, route, initialBounds }: Props) {
   const box = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MLMap | null>(null)
   const [ready, setReady] = useState(0)
@@ -197,7 +199,7 @@ export function MapView({ theme, snapshots, facts, selected, onSelect, origin, r
               <VenuePin
                 snap={s}
                 fact={facts?.get(s.venue.id)}
-                selected={s.venue.id === selected}
+                selected={s.venue.id === selected || s.venue.id === focused}
                 dimmed={!!selected && s.venue.id !== selected}
                 onClick={() => onSelect(s.venue.id)}
               />,

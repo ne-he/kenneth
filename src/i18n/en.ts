@@ -105,6 +105,7 @@ const en: Dict = {
   explore: {
     modesTip: 'Book a KENNETH Zone bay, a runner or a charger from here',
     search: 'Where do you want to park?',
+    list: (n: number) => `List (${n})`,
     filters: { all: 'All', fav: 'Favourites', mall: 'Malls', kampus: 'Campuses' },
     fastest: 'Quickest',
     empty: 'No places in this filter.',

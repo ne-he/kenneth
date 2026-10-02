@@ -14,13 +14,14 @@ import { useResolvedTheme } from '../../lib/theme'
 import { useApp, useVehicle } from '../../store/app'
 import { useViewTs } from '../../store/clock'
 import { useUi, type VenueFilter } from '../../store/ui'
-import { fitPoints, flyTo } from '../map/mapApi'
+import { fitPoints, flyTo, glideTo } from '../map/mapApi'
 import { DriveHud, NavBanner } from '../nav/NavOverlay'
 import { DockSheet, type Snap } from './DockSheet'
 import { LiveStrip } from './LiveStrip'
 import { ModeMenu } from './ModeMenu'
 import { MapButtons, TopBar } from './TopBar'
 import { VenueDetail, VenueDetailHeader } from './VenueDetail'
+import { VenueCarousel } from './VenueCarousel'
 import { VenueList } from './VenueList'
 
 const MapView = lazy(() => import('../map/MapView').then((m) => ({ default: m.MapView })))
@@ -56,6 +57,9 @@ export function Explore() {
   const kind = useVehicle().kind
   const [snap, setSnap] = useState<Snap>('half')
   const [menu, setMenu] = useState(false)
+  // Home is map first: the list stays hidden until asked for, cards ride over the map.
+  const [listOpen, setListOpen] = useState(false)
+  const [focused, setFocused] = useState<VenueId | null>(null)
 
   // A motorbike only parks. Switching to one (from anywhere) drops back to the parking mode.
   useEffect(() => {
@@ -99,11 +103,24 @@ export function Explore() {
   const [lastFocus, setLastFocus] = useState(focus)
   if (focus !== lastFocus) {
     setLastFocus(focus)
-    if (focus) setSnap('half')
+    if (focus) {
+      setSnap('half')
+      setListOpen(false)
+    }
   }
   useEffect(() => {
     if (focus) flyTo(VENUE_BY_ID[focus].coords)
   }, [focus])
+
+  // The card in view on the home row: the camera glides to it, with the row's own height as padding.
+  useEffect(() => {
+    if (focused && !selected && !route) glideTo(VENUE_BY_ID[focused].coords, 236)
+  }, [focused, selected, route])
+  // The row always starts on the best option.
+  const first = shown[0]?.venue.id ?? null
+  useEffect(() => {
+    if (!focused || !shown.some((r) => r.venue.id === focused)) setFocused(first)
+  }, [first, focused, shown])
 
   // A new filter frames what it shows. The first render keeps the opening view.
   const framed = useRef(filter)
@@ -120,14 +137,17 @@ export function Explore() {
     if (home.current === homeTick) return
     home.current = homeTick
     setSnap('half')
+    setListOpen(false)
     fitPoints([origin, ...INITIAL_BOUNDS.slice(1)])
   }, [homeTick, origin])
 
   const back = () => {
     select(null)
     setSnap('half')
-    fitPoints([origin, ...INITIAL_BOUNDS.slice(1)])
+    fitPoints([origin, ...INITIAL_BOUNDS.slice(1)], 236)
   }
+
+  const showSheet = !!route || !!current || listOpen
 
   let header
   let body
@@ -190,7 +210,12 @@ export function Explore() {
           snapshots={onMap}
           facts={facts}
           selected={selected}
-          onSelect={select}
+          focused={selected ? null : focused}
+          onSelect={(id) => {
+            // On the home row a tap on a pin brings its card over, a second tap opens it.
+            if (!listOpen && !selected && id && id !== focused) setFocused(id)
+            else select(id)
+          }}
           origin={origin}
           route={route}
           initialBounds={INITIAL_BOUNDS}
@@ -201,15 +226,32 @@ export function Explore() {
       {!route && <MapButtons />}
       {/* The sheet lives above the tab bar, the map runs underneath both. */}
       <div className="pointer-events-none absolute inset-x-0 top-0" style={{ bottom: route ? 0 : 'var(--nav-h)' }}>
-        <DockSheet
-          snap={route ? 'peek' : snap}
-          onSnap={setSnap}
-          peek={route ? 176 : 214}
-          contentKey={route ? 'route' : (selected ?? `list-${filter}-${mode}`)}
-          header={header}
-        >
-          {body}
-        </DockSheet>
+        {showSheet ? (
+          <DockSheet
+            snap={route ? 'peek' : snap}
+            onSnap={(s) => {
+              // Dragging the list all the way down hands the screen back to the map.
+              if (s === 'peek' && !route && !current) setListOpen(false)
+              else setSnap(s)
+            }}
+            peek={route ? 176 : 214}
+            contentKey={route ? 'route' : (selected ?? `list-${filter}-${mode}`)}
+            header={header}
+          >
+            {body}
+          </DockSheet>
+        ) : (
+          <VenueCarousel
+            ranked={shown}
+            facts={facts}
+            focused={focused}
+            onFocus={setFocused}
+            onList={() => {
+              setSnap('half')
+              setListOpen(true)
+            }}
+          />
+        )}
       </div>
       {!route && <ModeMenu open={menu} onClose={() => setMenu(false)} />}
     </div>

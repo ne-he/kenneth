@@ -104,6 +104,7 @@ const id = {
   },
   explore: {
     search: 'Mau parkir di mana?',
+    list: (n: number) => `Daftar (${n})`,
     modesTip: 'Pesan Zona KENNETH, valet runner, atau charger dari sini',
     filters: { all: 'Semua', fav: 'Favorit', mall: 'Mall', kampus: 'Kampus' },
     fastest: 'Tercepat',
