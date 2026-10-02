@@ -266,7 +266,7 @@ const en: Dict = {
     showQr: 'Open bay ticket',
     qrHint: 'The barrier reads your plate. This QR is the backup if the camera misses.',
     bayWhere: (level: string, lobby: string) => `${level}, by ${lobby}`,
-    followSigns: (gate: string) => `Enter at ${gate}, then follow the green KENNETH Zone signs.`,
+    followSigns: (gate: string) => `Enter at ${gate}, then follow the KENNETH Zone signs.`,
     upcoming: 'Arrive in',
     open: 'Held for',
     expired: 'Expired',
@@ -343,7 +343,7 @@ const en: Dict = {
     demoNote: 'Payment in this prototype is simulated. The runners and their fee are an idea, there is no real fleet yet.',
     closedToday: 'Runners here are done for today. Try again tomorrow.',
     runner: 'Your runner',
-    runnerMeta: (badge: string) => `${badge} · green KENNETH uniform`,
+    runnerMeta: (badge: string) => `${badge} · KENNETH uniform`,
     phases: {
       booked: 'Waiting for you',
       lapsed: 'Expired',

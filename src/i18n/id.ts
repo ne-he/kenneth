@@ -265,7 +265,7 @@ const id = {
     showQr: 'Buka tiket petak',
     qrHint: 'Palang baca pelatmu. QR ini cadangan kalau kamera palang gagal.',
     bayWhere: (level: string, lobby: string) => `${level}, dekat ${lobby}`,
-    followSigns: (gate: string) => `Masuk lewat ${gate}, lalu ikuti tanda hijau Zona KENNETH.`,
+    followSigns: (gate: string) => `Masuk lewat ${gate}, lalu ikuti tanda Zona KENNETH.`,
     upcoming: 'Datang dalam',
     open: 'Ditahan lagi',
     expired: 'Lewat',
@@ -343,7 +343,7 @@ const id = {
     demoNote: 'Pembayaran di prototipe ini simulasi. Runner dan tarifnya masih ide, belum ada armada beneran.',
     closedToday: 'Runner di sini udah selesai untuk hari ini. Coba lagi besok.',
     runner: 'Runner kamu',
-    runnerMeta: (badge: string) => `${badge} · seragam hijau KENNETH`,
+    runnerMeta: (badge: string) => `${badge} · seragam KENNETH`,
     phases: {
       booked: 'Menunggu kamu datang',
       lapsed: 'Lewat waktu',
