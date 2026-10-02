@@ -149,9 +149,10 @@ export function MapButtons() {
   }
 
   return (
-    <div className="absolute top-[calc(max(12px,var(--safe-top,env(safe-area-inset-top)))+60px)] right-3.5 z-20">
-      <IconButton label={t.explore.locate} onClick={locate} disabled={busy} big>
-        <Crosshair size={19} weight="bold" className={busy ? 'animate-spin' : ''} />
+    // Level with the clock chip, the same quiet glass size, so the top right stays light.
+    <div className="absolute top-[calc(max(12px,var(--safe-top,env(safe-area-inset-top)))+56px)] right-3.5 z-20">
+      <IconButton label={t.explore.locate} onClick={locate} disabled={busy}>
+        <Crosshair size={18} className={busy ? 'animate-spin' : ''} />
       </IconButton>
     </div>
   )
