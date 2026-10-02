@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/plus-jakarta-sans/wght.css';
+@import '@fontsource-variable/manrope/wght.css';
 @import '@fontsource/doto/latin-700.css';
 @import '@fontsource/doto/latin-900.css';
 
@@ -60,7 +60,11 @@
 }
 
 @theme {
-  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  /*
+    SF Pro where the device ships it (iPhone, iPad, Mac), Manrope everywhere
+    else. SF Pro is only licensed on Apple platforms, so it is never bundled.
+  */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Manrope Variable', ui-sans-serif, sans-serif;
   --font-led: 'Doto', ui-monospace, monospace;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Menlo, monospace;
 
@@ -114,7 +118,6 @@
 
   body {
     @apply bg-canvas text-ink font-sans antialiased;
-    font-feature-settings: 'ss01', 'cv11';
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
   }
