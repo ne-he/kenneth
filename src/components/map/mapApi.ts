@@ -1,7 +1,6 @@
 // Type-only import: the maplibre bundle stays in the lazy MapView chunk.
 import type { Map as MLMap } from 'maplibre-gl'
 import type { LngLat } from '../../data/types'
-import { glideZoom } from '../../lib/camera'
 import { useApp } from '../../store/app'
 
 /*
@@ -27,17 +26,6 @@ const tilt = (pitch: number, bearing: number) => (useApp.getState().mapPrefs.thr
 
 export function flyTo(center: LngLat, bottom = sheetPad(), zoom = 16.2) {
   map?.flyTo({ center, zoom, ...tilt(58, -18), padding: padding(bottom), duration: 1400, essential: true })
-}
-
-/**
- * Glide to a place without changing the zoom much: used while swiping the
- * home cards, so the map pans between neighbours instead of re-zooming.
- */
-export function glideTo(center: LngLat, bottom: number) {
-  if (!map) return
-  map.setPadding({ top: 0, right: 0, bottom: 0, left: 0 })
-  const zoom = glideZoom(map.getZoom())
-  map.easeTo({ center, zoom, ...tilt(32, -10), padding: padding(bottom), duration: 700, essential: true })
 }
 
 export function fitPoints(points: LngLat[], bottom = sheetPad(), maxZoom = 15.5, duration = 1300) {
