@@ -130,8 +130,8 @@ const en: Dict = {
     locateFail: 'Could not read your location, using BINUS Anggrek',
   },
   venue: {
-    sisaSlot: 'FREE BAYS',
-    sisaSlotMotor: 'FREE MOTORBIKE BAYS',
+    sisaSlot: 'Free bays',
+    sisaSlotMotor: 'Free motorbike bays',
     of: 'of',
     category: { mall: 'Mall', kampus: 'Campus' },
     favorite: 'Favourite',

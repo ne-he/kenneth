@@ -130,8 +130,8 @@ const id = {
     locateFail: 'Lokasi nggak kebaca, pakai BINUS Anggrek dulu',
   },
   venue: {
-    sisaSlot: 'SISA SLOT',
-    sisaSlotMotor: 'SISA SLOT MOTOR',
+    sisaSlot: 'Sisa slot',
+    sisaSlotMotor: 'Sisa slot motor',
     of: 'dari',
     category: { mall: 'Mall', kampus: 'Kampus' },
     favorite: 'Favorit',

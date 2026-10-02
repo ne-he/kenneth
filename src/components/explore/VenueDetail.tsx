@@ -36,8 +36,8 @@ import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
 import { Disclosure, Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
-import { LedBoard } from './LedBoard'
 import { PlaceCard } from './PlaceCard'
+import { SlotsLeft } from './SlotsLeft'
 import { TimeScrubber } from './TimeScrubber'
 
 export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?: Ranked; onBack: () => void }) {
@@ -124,7 +124,9 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
 
       {/* Below the fold: shows when the sheet is pulled up. */}
       <div className="mt-5 space-y-5">
-        <LedBoard snap={snap} kind={vehicle.kind} />
+        <div className="border-t border-line pt-5">
+          <SlotsLeft snap={snap} kind={vehicle.kind} source={<SourceChip venue={venue} />} />
+        </div>
 
         {alts.length > 0 && (
           <section>
