@@ -86,16 +86,12 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
   )
 }
 
+/** Where the numbers come from. Always shown; yellow stays reserved for "Ramai", so an estimate reads in ink. */
 function SourceChip({ venue }: { venue: Venue }) {
   const t = useT()
   const palang = venue.source === 'palang'
   return (
-    <span
-      className={clsx(
-        'inline-flex items-center gap-1 font-medium',
-        palang ? 'text-brand-700 dark:text-brand-300' : 'text-ramai-ink dark:text-led-ramai',
-      )}
-    >
+    <span className={clsx('inline-flex items-center gap-1 font-medium', palang ? 'text-brand-700 dark:text-brand-300' : 'text-ink-2')}>
       {palang ? <Database size={11} weight="fill" /> : <Info size={11} weight="fill" />}
       {palang ? t.source.palang : t.source.estimasi}
     </span>
