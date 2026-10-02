@@ -1,9 +1,12 @@
 import {
   CarProfile,
+  ChargingStation,
+  Crown,
   CurrencyCircleDollar,
   Database,
   DoorOpen,
   Info,
+  Key,
   Megaphone,
   NavigationArrow,
   PersonSimpleWalk,
@@ -21,6 +24,7 @@ import { useMemo, useState } from 'react'
 import { VENUES } from '../../data/venues'
 import type { Venue } from '../../data/types'
 import { checkGage } from '../../engine/gage'
+import { pinFact } from '../../engine/modes'
 import { forKind, reservedFree } from '../../engine/occupancy'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
 import { alternativesFor, type Ranked } from '../../engine/recommend'
@@ -32,6 +36,7 @@ import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
 import { STATUS, formatMin } from '../../lib/status'
 import { useApp, useVehicle, type CommunityReport } from '../../store/app'
+import { useViewTs } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
@@ -61,6 +66,7 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
           )}
         </div>
       </div>
+      {snap && <HeaderFact snap={snap} />}
       <button
         type="button"
         aria-pressed={fav}
@@ -83,6 +89,67 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
         <X size={15} weight="bold" />
       </button>
     </div>
+  )
+}
+
+/**
+ * The number the mode is about, on the right of the name: how full when just
+ * parking, otherwise the bay price, the minutes until the car is back, or the
+ * free chargers. The same number the row in the list showed before the tap.
+ */
+function HeaderFact({ snap }: { snap: Ranked }) {
+  const t = useT()
+  const mode = useUi((s) => s.mode)
+  const plan = useApp((s) => s.plan)
+  const vehicle = useVehicle()
+  const { ts } = useViewTs()
+  const fact = pinFact(snap, mode, vehicle.kind, plan, ts)
+  const num = 'flex items-center gap-1 text-[16px] leading-none font-semibold tracking-tight tabular'
+  let value
+  let label: string
+  switch (fact.kind) {
+    case 'price':
+      label = t.card.zonePrice
+      value = (
+        <span className={num}>
+          <Crown size={12} weight="fill" className="text-brand-600 dark:text-brand-300" />
+          {fact.left > 0 ? formatRupiah(fact.price, true) : <span className="text-[13px] text-penuh-ink dark:text-led-penuh">{t.modes.soldOut}</span>}
+        </span>
+      )
+      break
+    case 'wait':
+      label = t.card.valetReady
+      value = (
+        <span className={num}>
+          <Key size={12} weight="fill" className="text-ink-3" />
+          {fact.min} <span className="text-[11.5px] font-medium text-ink-3">{t.unit.min}</span>
+        </span>
+      )
+      break
+    case 'chargers':
+      label = t.card.evFree
+      value = (
+        <span className={num}>
+          <ChargingStation size={12} weight="fill" className="text-ev" />
+          {t.modes.free(fact.free, fact.total)}
+        </span>
+      )
+      break
+    default:
+      // Plain parking, or a service this place does not sell: how full it is.
+      label = t.status[snap.status]
+      value = (
+        <span className={num}>
+          <span className={clsx('size-2 rounded-full', STATUS[snap.status].dot)} aria-hidden="true" />
+          {snap.pct}%
+        </span>
+      )
+  }
+  return (
+    <span className="mr-1.5 flex shrink-0 flex-col items-end gap-1">
+      {value}
+      <span className="text-[11.5px] leading-none text-ink-3">{label}</span>
+    </span>
   )
 }
 
