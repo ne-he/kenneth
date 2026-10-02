@@ -1,7 +1,5 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/manrope/wght.css';
-@import '@fontsource/doto/latin-700.css';
-@import '@fontsource/doto/latin-900.css';
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
@@ -23,7 +21,6 @@
   --glass: rgb(255 255 255 / 0.8);
   --glass-line: rgb(255 255 255 / 0.9);
   --shadow-color: 240 8% 12%;
-  --led-bg: #101014;
   color-scheme: light;
 }
 
@@ -40,7 +37,6 @@
   --glass: rgb(21 21 26 / 0.76);
   --glass-line: rgb(255 255 255 / 0.08);
   --shadow-color: 240 20% 2%;
-  --led-bg: #08080b;
   color-scheme: dark;
 }
 
@@ -56,7 +52,6 @@
   --color-ink-3: var(--ink-3);
   --color-glass: var(--glass);
   --color-glass-line: var(--glass-line);
-  --color-led-bg: var(--led-bg);
 }
 
 @theme {
@@ -65,7 +60,6 @@
     else. SF Pro is only licensed on Apple platforms, so it is never bundled.
   */
   --font-sans: -apple-system, BlinkMacSystemFont, 'Manrope Variable', ui-sans-serif, sans-serif;
-  --font-led: 'Doto', ui-monospace, monospace;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Menlo, monospace;
 
   /*
@@ -106,7 +100,7 @@
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 
-  --radius-sheet: 30px;
+  --radius-sheet: 28px;
 }
 
 @layer base {
