@@ -161,7 +161,8 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     snapshots.forEach((s) => wanted.set(`v:${s.venue.id}`, { at: s.venue.coords, anchor: 'center', z: s.venue.id === selected ? 3 : 2 }))
     const sel = snapshots.find((s) => s.venue.id === selected)
     sel?.gates.forEach(({ gate }) => wanted.set(`g:${gate.id}`, { at: gate.coords, anchor: 'center', z: 1 }))
-    wanted.set('origin', { at: origin, anchor: 'center', z: 1 })
+    // You are here sits on top: labels keep clear of it, so it only ever covers the dot of a place you are at.
+    wanted.set('origin', { at: origin, anchor: 'center', z: 4 })
 
     markers.current.forEach(({ marker }, key) => {
       if (!wanted.has(key)) {
@@ -192,8 +193,9 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
       const label = markers.current.get(key)?.el.querySelector<HTMLElement>('[data-pin-label]')
       return { w: label?.offsetWidth ?? 0, h: label?.offsetHeight ?? 0 }
     }
-    const pins: PinBox[] = []
-    // Gate chips stay on their gate, the selected label goes next and keeps off its point, then the rest.
+    // You are here and the gate chips never move, the selected label goes next and keeps off its point, then the rest.
+    const here = map.project(origin)
+    const pins: PinBox[] = [{ id: 'origin', x: here.x, y: here.y, ...size('origin'), dir: 'n', fixed: [0, 0] }]
     const sel = snapshots.find((s) => s.venue.id === selected)
     sel?.gates.forEach(({ gate }) => {
       const { x, y } = map.project(gate.coords)
@@ -225,7 +227,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     return () => {
       map.off('moveend', onMove)
     }
-  }, [snapshots, facts, selected, els, ready])
+  }, [snapshots, facts, selected, origin, els, ready])
 
   const sel = snapshots.find((s) => s.venue.id === selected)
 
