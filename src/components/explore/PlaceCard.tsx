@@ -14,6 +14,7 @@ import {
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useState, type ReactNode } from 'react'
+import type { OccupancyStatus } from '../../data/types'
 import { VENUES } from '../../data/venues'
 import { chargersFree, valetFacts } from '../../engine/modes'
 import { defaultGate, forKind, nextRelief } from '../../engine/occupancy'
@@ -75,7 +76,7 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
         <Line>{t.card.zoneLine(zone.level, zone.lobby, zone.gate.name)}</Line>
         <Stats
           cells={[
-            [`${left}/${zone.bays}`, t.card.zoneLeft, STATUS[left === 0 ? 'penuh' : left <= 3 ? 'ramai' : 'lega'].text],
+            [`${left}/${zone.bays}`, t.card.zoneLeft, left === 0 ? 'penuh' : left <= 3 ? 'ramai' : 'lega'],
             [formatRupiah(zonePrice(snap.occ, plan), true), t.card.zonePrice],
             [`±1 ${t.unit.min}`, t.card.zoneWalk],
           ]}
@@ -118,7 +119,7 @@ export function PlaceCard({ snap, ts, previewing }: { snap: Ranked; ts: number; 
         <Line>{t.card.evLine(venue.ev.kw)}</Line>
         <Stats
           cells={[
-            [t.modes.free(free, venue.ev.chargers), t.card.evFree, free === 0 ? STATUS.penuh.text : 'text-ev'],
+            [t.modes.free(free, venue.ev.chargers), t.card.evFree, free === 0 ? 'penuh' : 'lega'],
             [`${venue.ev.kw} kW`, t.card.evPower],
             [String(venue.ev.chargers), t.card.evTotal],
           ]}
@@ -175,7 +176,7 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
 
   return (
     <Card>
-      <Line tone={!split && snap.bestGateQueueMin < 3 ? 'lega' : undefined}>{line}</Line>
+      <Line dot={!split && snap.bestGateQueueMin < 3 ? 'lega' : undefined}>{line}</Line>
       <div className="flex gap-2">
         <Btn tone="ink" onClick={() => nav.start(venue.id)}>
           <NavigationArrow size={17} weight="fill" /> {t.card.routeTo(snap.bestGate.name)}
@@ -269,21 +270,31 @@ function Card({ children }: { children: ReactNode }) {
   return <section className="px-1 pb-2">{children}</section>
 }
 
-function Line({ children, tone }: { children: ReactNode; tone?: 'lega' }) {
-  return <p className={clsx('mb-3 text-[13px] leading-snug font-medium', tone ? STATUS[tone].text : 'text-ink-2')}>{children}</p>
+/** The one line of context above the button. A status dot only when the line is about how clear it is. */
+function Line({ children, dot }: { children: ReactNode; dot?: OccupancyStatus }) {
+  return (
+    <p className="mb-4 flex items-baseline gap-2 text-[13.5px] leading-snug text-ink-2">
+      {dot && <span className={clsx('size-2 shrink-0 -translate-y-px rounded-full', STATUS[dot].dot)} aria-hidden="true" />}
+      <span>{children}</span>
+    </p>
+  )
 }
 
 function Note({ children }: { children: ReactNode }) {
-  return <p className="-mt-1 mb-3 text-[12.5px] leading-snug text-ink-3">{children}</p>
+  return <p className="-mt-1 mb-4 text-[12.5px] leading-snug text-ink-3">{children}</p>
 }
 
-function Stats({ cells }: { cells: [string, string, string?][] }) {
+/** Three numbers side by side, split by hairlines. A dot marks the one that carries a status. */
+function Stats({ cells }: { cells: [string, string, OccupancyStatus?][] }) {
   return (
-    <div className="mb-3 grid grid-cols-3 divide-x divide-line rounded-[16px] border border-line-strong py-2.5 text-center">
-      {cells.map(([value, label, tone]) => (
+    <div className="mb-4 grid grid-cols-3 divide-x divide-line text-center">
+      {cells.map(([value, label, status]) => (
         <div key={label} className="min-w-0 px-2">
-          <div className={clsx('truncate text-[15.5px] font-bold tabular', tone)}>{value}</div>
-          <div className="mt-0.5 truncate text-[11px] text-ink-3">{label}</div>
+          <div className="flex items-center justify-center gap-1.5 text-[17px] leading-tight font-semibold tracking-tight tabular">
+            {status && <span className={clsx('size-2 shrink-0 rounded-full', STATUS[status].dot)} aria-hidden="true" />}
+            <span className="truncate">{value}</span>
+          </div>
+          <div className="mt-1 truncate text-[11.5px] text-ink-3">{label}</div>
         </div>
       ))}
     </div>
