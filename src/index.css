@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/manrope/wght.css';
+@import '@fontsource-variable/inter/wght.css';
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
@@ -56,10 +56,11 @@
 
 @theme {
   /*
-    SF Pro where the device ships it (iPhone, iPad, Mac), Manrope everywhere
-    else. SF Pro is only licensed on Apple platforms, so it is never bundled.
+    SF Pro where the device ships it (iPhone, iPad, Mac), Inter everywhere
+    else: the closest open font to SF Pro. SF Pro is only licensed on Apple
+    platforms, so it is never bundled.
   */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Manrope Variable', ui-sans-serif, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter Variable', ui-sans-serif, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Menlo, monospace;
 
   /*
