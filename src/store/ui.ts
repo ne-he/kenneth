@@ -59,6 +59,8 @@ interface UiState {
 
   setTab: (t: Tab) => void
   setMode: (m: ParkMode) => void
+  /** Pick a paid service, or drop it when it is already on: back to plain parking. */
+  toggleService: (m: Exclude<ParkMode, 'park'>) => void
   goHome: () => void
   open: (s: SheetKey) => void
   close: () => void
@@ -89,6 +91,7 @@ export const useUi = create<UiState>()((set) => ({
 
   setTab: (tab) => set((s) => ({ tab, sheet: null, activityBadge: tab === 'activity' ? false : s.activityBadge })),
   setMode: (mode) => set({ mode }),
+  toggleService: (m) => set((s) => ({ mode: s.mode === m ? 'park' : m })),
   goHome: () => set((s) => ({ selected: null, sheet: null, homeTick: s.homeTick + 1 })),
   open: (sheet) => set({ sheet }),
   close: () => set({ sheet: null }),

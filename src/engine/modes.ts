@@ -12,9 +12,17 @@ import { baysLeft } from './zone'
   never changes, only the number on each pin and the one button on the card.
 */
 
+/**
+ * 'park' is the default, not a choice: it is what the map shows when no paid
+ * service is picked. The three services are toggles; dropping the active one
+ * returns to 'park'.
+ */
 export type ParkMode = 'park' | 'zone' | 'valet' | 'ev'
 
 export const MODES: ParkMode[] = ['park', 'zone', 'valet', 'ev']
+
+/** The three paid services, in the order the home sheet shows them. */
+export const SERVICES: Exclude<ParkMode, 'park'>[] = ['zone', 'valet', 'ev']
 
 /** Whether this venue can serve this mode for this vehicle. Parking is everywhere. */
 export function offers(venue: Venue, kind: VehicleKind, mode: ParkMode): boolean {
