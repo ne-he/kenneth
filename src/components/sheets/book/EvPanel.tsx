@@ -35,10 +35,12 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
   const [picked, setPicked] = useState<number | null>(null)
   const start = slots.find((s) => s === picked) ?? slots[0]
   const [duration, setDuration] = useState<'30' | '60' | '90'>('60')
-  const [unit, setUnit] = useState(units[0])
 
   // A unit is taken if its index lines up with the slot, deterministic so the grid is stable.
   const taken = (u: string, s: number) => (u.charCodeAt(0) + Number(u[1]) + s / HALF_HOUR) % 3 === 0
+
+  // Open on a unit that is free for the first start, so the pay button is never disabled with no hint why.
+  const [unit, setUnit] = useState(() => units.find((u) => !taken(u, slots[0])) ?? units[0])
 
   if (slots.length === 0) {
     return <p className="rounded-[16px] bg-surface-2 p-4 text-[13.5px] leading-relaxed text-ink-2">{t.ev.closedToday}</p>
