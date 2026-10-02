@@ -222,23 +222,23 @@ export function PrivacySheet() {
   return (
     <div className="pb-5">
       <SheetHeader title={t.privacy.title} onClose={close} closeLabel={t.common.close} />
-      <p className="mb-4 text-[13.5px] leading-relaxed text-ink-2">{t.privacy.intro}</p>
-      <ul className="space-y-2">
+      <p className="mb-5 text-[13.5px] leading-relaxed text-ink-2">{t.privacy.intro}</p>
+      <ul className="divide-y divide-line rounded-[20px] border border-line">
         {rules.map((r) => (
-          <li key={r} className="flex gap-3 rounded-[16px] bg-surface-2 p-3 text-[13px] leading-relaxed">
-            <LockKey size={18} weight="fill" className="mt-[1px] shrink-0 text-brand-600" />
+          <li key={r} className="flex gap-3 px-4 py-3 text-[13px] leading-relaxed">
+            <LockKey size={16} weight="fill" className="mt-[3px] shrink-0 text-ink-3" />
             {r}
           </li>
         ))}
       </ul>
-      <div className="mt-4 flex items-center gap-3 rounded-[18px] border border-line bg-surface p-3.5">
+      <div className="mt-3 flex items-center gap-3 rounded-[20px] border border-line bg-surface px-4 py-3.5">
         <span className="flex-1">
-          <span className="block text-[14px] font-semibold">{t.privacy.share}</span>
+          <span className="block text-[14px] font-medium">{t.privacy.share}</span>
           <span className="text-[12px] text-ink-3">{t.privacy.shareHint}</span>
         </span>
         <Toggle checked={shareAnonymous} onChange={(v) => setPref('shareAnonymous', v)} label={t.privacy.share} />
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-2">
+      <div className="mt-5 grid grid-cols-2 gap-2">
         <Button variant="secondary" onClick={exportData}>
           <DownloadSimple size={16} weight="bold" /> {t.privacy.exportShort}
         </Button>
