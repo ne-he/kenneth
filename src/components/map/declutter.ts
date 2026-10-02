@@ -13,7 +13,11 @@ export interface PinBox {
   h: number
   /** Side to try first when the point itself is taken. */
   dir: LabelDir
-  /** A fixed spot, for the selected pin. */
+  /** False keeps the label off its own point, so the dot under it stays visible. */
+  onPoint?: boolean
+  /** Space between the point and a label moved beside it. */
+  gap?: number
+  /** A spot that never moves, such as a gate chip. */
   fixed?: Offset
 }
 
@@ -65,10 +69,10 @@ const overlap = (a: Rect, b: Rect) =>
  * Labels sit on their own point when there is room. When two places are a
  * few hundred metres apart and the map is zoomed out, the later one moves
  * beside its point instead, its preferred side first, so nothing stacks and
- * no leader line is needed. Pins are placed in the order given, so pass the
- * selected one first.
+ * no leader line is needed. Pins are placed in the order given, so pass fixed
+ * chips first, then the selected pin.
  */
-export function placePins(pins: PinBox[], gap = 3, pad = 2): Map<string, Offset> {
+export function placePins(pins: PinBox[], pad = 2): Map<string, Offset> {
   const out = new Map<string, Offset>()
   const dots = pins.map((p) => rect(p.x, p.y, DOT, DOT))
   const placed: Rect[] = []
@@ -77,9 +81,9 @@ export function placePins(pins: PinBox[], gap = 3, pad = 2): Map<string, Offset>
       out.set(p.id, [0, 0])
       return
     }
-    const options: Offset[] = p.fixed
-      ? [p.fixed]
-      : [[0, 0], beside(p.dir, p.w, p.h, gap), ...ORDER.filter((d) => d !== p.dir).map((d) => beside(d, p.w, p.h, gap))]
+    const gap = p.gap ?? 3
+    const sides = [p.dir, ...ORDER.filter((d) => d !== p.dir)].map((d) => beside(d, p.w, p.h, gap))
+    const options: Offset[] = p.fixed ? [p.fixed] : p.onPoint === false ? sides : [[0, 0], ...sides]
     let best = options[0]
     let bestBox = rect(p.x + best[0], p.y + best[1], p.w + pad * 2, p.h + pad * 2)
     let bestScore = Infinity

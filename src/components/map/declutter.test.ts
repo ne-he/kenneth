@@ -61,10 +61,18 @@ describe('placePins', () => {
     expect(out.get('a')).not.toEqual([0, 0])
   })
 
-  it('uses a fixed spot as given', () => {
-    const out = placePins([pin('sel', 100, 100, { fixed: [0, -26] }), pin('b', 100, 74)])
-    expect(out.get('sel')).toEqual([0, -26])
+  it('keeps a fixed chip where it is and moves labels off it', () => {
+    const out = placePins([pin('gate', 100, 100, { fixed: [0, 0] }), pin('b', 100, 104)])
+    expect(out.get('gate')).toEqual([0, 0])
     expect(out.get('b')).not.toEqual([0, 0])
+  })
+
+  it('lifts a pin that must not cover its point above it, or to another side when a chip is there', () => {
+    const sel = { onPoint: false, dir: 'n' as const, gap: 8 }
+    expect(placePins([pin('sel', 100, 100, sel)]).get('sel')).toEqual(beside('n', 48, 24, 8))
+    const out = placePins([pin('gate', 100, 76, { fixed: [0, 0] }), pin('sel', 100, 100, sel)])
+    expect(out.get('sel')).not.toEqual(beside('n', 48, 24, 8))
+    expect(out.get('sel')).not.toEqual([0, 0])
   })
 
   it('still places a pin when every side is taken', () => {
