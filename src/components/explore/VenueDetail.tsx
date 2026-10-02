@@ -11,7 +11,6 @@ import {
   NavigationArrow,
   PersonSimpleWalk,
   ShieldCheck,
-  Sparkle,
   Star,
   Storefront,
   Warning,
@@ -28,9 +27,7 @@ import { pinFact } from '../../engine/modes'
 import { forKind, reservedFree } from '../../engine/occupancy'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
 import { alternativesFor, type Ranked } from '../../engine/recommend'
-import { servicesFor, type Service } from '../../engine/services'
-import { dropQueueMin, retrievalMin } from '../../engine/valet'
-import { baysLeft, zoneOf } from '../../engine/zone'
+import { servicesFor } from '../../engine/services'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
@@ -222,7 +219,7 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
         <List plain>
           <GatesRow snap={snap} />
           <CostRow venue={venue} />
-          {services.length > 0 && <ServicesRow venue={venue} snap={snap} services={services} ts={ts} />}
+          {/* Which services this place sells is the chip row at the top of the card, so no row repeats it. */}
           <SpecialRow venue={venue} snap={snap} ts={ts} />
           {/* Odd-even plates only matter on a corridor route; elsewhere the row would only say it does not apply. */}
           {vehicle.kind === 'mobil' && venue.gageCorridor && <GageRow venue={venue} ts={ts} />}
@@ -317,42 +314,6 @@ function CostRow({ venue }: { venue: Venue }) {
       <p className="mt-2.5 text-[12px] leading-snug text-ink-3">
         {t.venue.tariff(formatRupiah(venue.tariff.firstHour), formatRupiah(venue.tariff.nextHour))}. {t.venue.tariffNote}
       </p>
-    </Disclosure>
-  )
-}
-
-function ServicesRow({ venue, snap, services, ts }: { venue: Venue; snap: Ranked; services: Service[]; ts: number }) {
-  const t = useT()
-  const open = useUi((s) => s.open)
-  const zone = zoneOf(venue)
-  const detail: Record<Service, string> = {
-    zone: zone ? t.venue.zoneDetail(baysLeft(venue, ts, snap.occ), zone.bays, zone.level) : '',
-    valet: venue.valet ? t.venue.valetDetail(formatRupiah(venue.valet.price, true), dropQueueMin(snap.occ), retrievalMin(snap.occ)) : '',
-    ev: t.venue.evDetail(reservedFree(venue.ev.chargers, snap.occ * 0.9, venue.id + 'e', ts), venue.ev.chargers, venue.ev.kw),
-  }
-  return (
-    <Disclosure
-      icon={<Sparkle size={17} />}
-      title={t.venue.services}
-      summary={services.map((s) => t.book.services[s]).join(' · ')}
-    >
-      <div className="divide-y divide-line">
-        {services.map((s) => (
-          <div key={s} className="flex items-center gap-3 py-2.5">
-            <span className="min-w-0 flex-1">
-              <span className="block text-[13.5px] font-medium">{t.book.services[s]}</span>
-              <span className="mt-0.5 block text-[12px] leading-snug text-ink-3">{detail[s]}</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => open({ kind: 'book', id: venue.id, service: s })}
-              className="h-8 shrink-0 rounded-full bg-ink px-3.5 text-[12.5px] font-semibold text-canvas"
-            >
-              {t.venue.actions.book}
-            </button>
-          </div>
-        ))}
-      </div>
     </Disclosure>
   )
 }
