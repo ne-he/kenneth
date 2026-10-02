@@ -141,27 +141,31 @@ function gateTag(name: string) {
   return rest.charAt(0).toUpperCase() + rest.slice(1)
 }
 
-/** A white chip on each gate of the selected place: the status dot carries the queue colour, the text stays ink. */
+/**
+ * A small neutral chip on each gate of the selected place, "G3 · 2 mnt": the
+ * status dot carries the queue colour, the text stays ink. The gate the route
+ * goes to is the one that stands out; the others step back.
+ */
 export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number; best: boolean }) {
   const t = useT()
   const tone = queueMin < 5 ? STATUS.lega : queueMin < 10 ? STATUS.ramai : STATUS.penuh
   return (
     <motion.div
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      animate={{ scale: 1, opacity: best ? 1 : 0.72 }}
       exit={{ scale: 0, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 500, damping: 28, delay: 0.5 }}
       data-pin-label=""
       className={clsx(
-        'flex h-6 items-center gap-1.5 rounded-lg bg-surface dark:bg-surface-3 pr-2 pl-1.5 text-[11.5px] font-semibold whitespace-nowrap text-ink shadow-[0_1px_2px_rgb(0_0_0/0.1),0_4px_12px_-4px_rgb(0_0_0/0.22)]',
-        // The gate the route goes to gets an ink outline, the rest a hairline.
-        best ? 'ring-[1.5px] ring-ink' : 'ring-1 ring-line',
+        'flex h-6 items-center gap-1.5 rounded-full pr-2.5 pl-2 text-[11.5px] whitespace-nowrap tabular',
+        best
+          ? 'bg-surface font-semibold text-ink ring-[1.5px] ring-ink shadow-[0_1px_2px_rgb(0_0_0/0.08),0_3px_10px_-4px_rgb(0_0_0/0.2)] dark:bg-surface-3'
+          : 'bg-surface/90 font-medium text-ink-2 ring-1 ring-line dark:bg-surface-3/90',
       )}
     >
       <span className="size-2 rounded-full" style={{ background: tone.hex }} />
-      <span>{gateTag(gate.name)}</span>
-      <span className="font-medium text-ink-2 tabular">
-        {formatMin(queueMin)} {t.unit.min}
+      <span>
+        {gateTag(gate.name)} · {formatMin(queueMin)} {t.unit.min}
       </span>
     </motion.div>
   )
