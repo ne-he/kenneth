@@ -1,14 +1,16 @@
 import {
   CarProfile,
+  ChargingStation,
+  Crown,
   CurrencyCircleDollar,
   Database,
   DoorOpen,
   Info,
+  Key,
   Megaphone,
   NavigationArrow,
   PersonSimpleWalk,
   ShieldCheck,
-  Sparkle,
   Star,
   Storefront,
   Warning,
@@ -21,17 +23,17 @@ import { useMemo, useState } from 'react'
 import { VENUES } from '../../data/venues'
 import type { Venue } from '../../data/types'
 import { checkGage } from '../../engine/gage'
+import { pinFact } from '../../engine/modes'
 import { forKind, reservedFree } from '../../engine/occupancy'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
 import { alternativesFor, type Ranked } from '../../engine/recommend'
-import { servicesFor, type Service } from '../../engine/services'
-import { dropQueueMin, retrievalMin } from '../../engine/valet'
-import { baysLeft, zoneOf } from '../../engine/zone'
+import { servicesFor } from '../../engine/services'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
 import { STATUS, formatMin } from '../../lib/status'
 import { useApp, useVehicle, type CommunityReport } from '../../store/app'
+import { useViewTs } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
@@ -46,10 +48,34 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
   const toggleFavorite = useApp((s) => s.toggleFavorite)
   const notify = useUi((s) => s.notify)
   return (
-    <div className="flex items-center gap-1.5 px-5 pt-1 pb-4">
-      <div className="min-w-0 flex-1">
-        <h2 className="truncate text-[21px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
-        <div className="mt-1 flex items-center gap-1.5 overflow-hidden text-[13px] whitespace-nowrap text-ink-3">
+    <div className="px-5 pt-1 pb-4">
+      {/* The round buttons pull in a little so the title row stays as tall as the name. */}
+      <div className="flex items-center gap-1.5">
+        <h2 className="min-w-0 flex-1 truncate text-[21px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
+        <button
+          type="button"
+          aria-pressed={fav}
+          aria-label={t.venue.favorite}
+          onClick={() => {
+            haptic(fav ? 'tap' : 'success')
+            toggleFavorite(venue.id)
+            notify(fav ? t.venue.unfavorited : t.venue.favorited)
+          }}
+          className={clsx('-my-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors', fav ? 'text-ink' : 'text-ink-3 hover:text-ink')}
+        >
+          <Star size={18} weight={fav ? 'fill' : 'regular'} />
+        </button>
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label={t.common.close}
+          className="-my-1 grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
+        >
+          <X size={15} weight="bold" />
+        </button>
+      </div>
+      <div className="mt-1 flex items-baseline justify-between gap-3 text-[13px] text-ink-3">
+        <div className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
           <span>{t.venue.category[venue.category]}</span>
           <span>·</span>
           <SourceChip venue={venue} />
@@ -60,30 +86,64 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
             </>
           )}
         </div>
+        {snap && <HeaderFact snap={snap} />}
       </div>
-      <button
-        type="button"
-        aria-pressed={fav}
-        aria-label={t.venue.favorite}
-        onClick={() => {
-          haptic(fav ? 'tap' : 'success')
-          toggleFavorite(venue.id)
-          notify(fav ? t.venue.unfavorited : t.venue.favorited)
-        }}
-        className={clsx('grid size-9 shrink-0 place-items-center rounded-full transition-colors', fav ? 'text-ink' : 'text-ink-3 hover:text-ink')}
-      >
-        <Star size={18} weight={fav ? 'fill' : 'regular'} />
-      </button>
-      <button
-        type="button"
-        onClick={onBack}
-        aria-label={t.common.close}
-        className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
-      >
-        <X size={15} weight="bold" />
-      </button>
     </div>
   )
+}
+
+/**
+ * The number the mode is about, at the right end of the header: how full when
+ * just parking, otherwise the bay price, the minutes until the car is back, or
+ * the free chargers. The same number the row in the list showed before the tap.
+ */
+function HeaderFact({ snap }: { snap: Ranked }) {
+  const t = useT()
+  const mode = useUi((s) => s.mode)
+  const plan = useApp((s) => s.plan)
+  const vehicle = useVehicle()
+  const { ts } = useViewTs()
+  const fact = pinFact(snap, mode, vehicle.kind, plan, ts)
+  const icon = 'shrink-0 self-center'
+  const word = 'text-[12.5px] font-medium text-ink-3'
+  let body
+  switch (fact.kind) {
+    case 'price':
+      body = (
+        <>
+          <Crown size={12} weight="fill" className={clsx(icon, 'text-brand-600 dark:text-brand-300')} />
+          {fact.left > 0 ? formatRupiah(fact.price, true) : <span className="text-[13px] text-penuh-ink dark:text-led-penuh">{t.modes.soldOut}</span>}
+        </>
+      )
+      break
+    case 'wait':
+      body = (
+        <>
+          <Key size={12} weight="fill" className={clsx(icon, 'text-ink-3')} />
+          {fact.min}
+          <span className={word}>{t.unit.min}</span>
+        </>
+      )
+      break
+    case 'chargers':
+      body = (
+        <>
+          <ChargingStation size={12} weight="fill" className={clsx(icon, 'text-ev')} />
+          {t.modes.free(fact.free, fact.total)}
+          <span className={word}>{t.card.evFree.toLowerCase()}</span>
+        </>
+      )
+      break
+    default:
+      // Plain parking, or a service this place does not sell: how full it is, dot in the status color.
+      body = (
+        <>
+          <span className={clsx(icon, 'size-2 rounded-full', STATUS[snap.status].dot)} aria-hidden="true" />
+          {snap.pct}%<span className={word}>{t.status[snap.status]}</span>
+        </>
+      )
+  }
+  return <span className="flex shrink-0 items-baseline gap-1 text-[15px] font-semibold tracking-tight text-ink tabular">{body}</span>
 }
 
 /** Where the numbers come from. Always shown; yellow stays reserved for "Ramai", so an estimate reads in ink. */
@@ -155,7 +215,7 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
         <List plain>
           <GatesRow snap={snap} />
           <CostRow venue={venue} />
-          {services.length > 0 && <ServicesRow venue={venue} snap={snap} services={services} ts={ts} />}
+          {/* Which services this place sells is the chip row at the top of the card, so no row repeats it. */}
           <SpecialRow venue={venue} snap={snap} ts={ts} />
           {/* Odd-even plates only matter on a corridor route; elsewhere the row would only say it does not apply. */}
           {vehicle.kind === 'mobil' && venue.gageCorridor && <GageRow venue={venue} ts={ts} />}
@@ -250,42 +310,6 @@ function CostRow({ venue }: { venue: Venue }) {
       <p className="mt-2.5 text-[12px] leading-snug text-ink-3">
         {t.venue.tariff(formatRupiah(venue.tariff.firstHour), formatRupiah(venue.tariff.nextHour))}. {t.venue.tariffNote}
       </p>
-    </Disclosure>
-  )
-}
-
-function ServicesRow({ venue, snap, services, ts }: { venue: Venue; snap: Ranked; services: Service[]; ts: number }) {
-  const t = useT()
-  const open = useUi((s) => s.open)
-  const zone = zoneOf(venue)
-  const detail: Record<Service, string> = {
-    zone: zone ? t.venue.zoneDetail(baysLeft(venue, ts, snap.occ), zone.bays, zone.level) : '',
-    valet: venue.valet ? t.venue.valetDetail(formatRupiah(venue.valet.price, true), dropQueueMin(snap.occ), retrievalMin(snap.occ)) : '',
-    ev: t.venue.evDetail(reservedFree(venue.ev.chargers, snap.occ * 0.9, venue.id + 'e', ts), venue.ev.chargers, venue.ev.kw),
-  }
-  return (
-    <Disclosure
-      icon={<Sparkle size={17} />}
-      title={t.venue.services}
-      summary={services.map((s) => t.book.services[s]).join(' · ')}
-    >
-      <div className="divide-y divide-line">
-        {services.map((s) => (
-          <div key={s} className="flex items-center gap-3 py-2.5">
-            <span className="min-w-0 flex-1">
-              <span className="block text-[13.5px] font-medium">{t.book.services[s]}</span>
-              <span className="mt-0.5 block text-[12px] leading-snug text-ink-3">{detail[s]}</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => open({ kind: 'book', id: venue.id, service: s })}
-              className="h-8 shrink-0 rounded-full bg-ink px-3.5 text-[12.5px] font-semibold text-canvas"
-            >
-              {t.venue.actions.book}
-            </button>
-          </div>
-        ))}
-      </div>
     </Disclosure>
   )
 }

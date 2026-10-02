@@ -94,6 +94,13 @@ const en: Dict = {
     evTotal: 'Units',
     evNotEv: 'The active vehicle is not electric. Switch it from the mode button up top.',
     closed: 'Closed right now',
+    // The numbers of a service in one line, under the context line.
+    zoneFacts: (left: number, total: number) => `${left}/${total} bays free · ±1 min to the lift`,
+    valetFacts: (drop: number, back: number) => `Runner in ${drop} min · car back in ±${back} min`,
+    evFacts: (free: number, total: number, kw: number) => `${free}/${total} chargers free · ${kw} kW`,
+    // The route row under a booking button says what the gate queue is.
+    routeQueue: (min: string) => `${min} min queue`,
+    routeClear: 'clear',
   },
   source: {
     palang: 'Barrier data',
