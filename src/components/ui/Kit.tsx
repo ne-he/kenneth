@@ -124,9 +124,19 @@ export function Disclosure({
   )
 }
 
-/** Grouped rows on one card, separated by hairlines. */
-export function List({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={clsx('divide-y divide-line overflow-hidden rounded-[20px] border border-line bg-surface', className)}>{children}</div>
+/** Grouped rows separated by hairlines. On a card by default; `plain` drops the card and keeps only the lines. */
+export function List({ children, className, plain }: { children: ReactNode; className?: string; plain?: boolean }) {
+  return (
+    <div
+      className={clsx(
+        'divide-y divide-line',
+        plain ? 'border-y border-line' : 'overflow-hidden rounded-[20px] border border-line bg-surface',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 /** Occupancy as a small soft pill: dot, percent, word. The only coloured thing in a row. */
