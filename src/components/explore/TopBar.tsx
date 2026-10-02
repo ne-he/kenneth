@@ -1,75 +1,33 @@
-import { CaretDown, Crosshair, MagnifyingGlass, Motorcycle } from '@phosphor-icons/react'
-import clsx from 'clsx'
-import { AnimatePresence, motion } from 'motion/react'
+import { Crosshair, User } from '@phosphor-icons/react'
+import { motion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
 import { useT, useLang } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { clock, dayName } from '../../lib/time'
-import { useApp, useVehicle } from '../../store/app'
+import { useApp } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { IconButton } from '../ui/Button'
-import { MODE_ICON } from './modeIcons'
 
 // Jabodetabek, so Alam Sutera and Bekasi count as "here" too.
 const AREA = { minLat: -6.45, maxLat: -6.05, minLng: 106.55, maxLng: 107.1 }
 
 /**
- * Search, and next to it the one dropdown that decides what the map is for.
- * Under it only the demo clock. Everything else lives in the sheet.
+ * One quiet row over the map: the demo clock on the left, locate and the
+ * account on the right. Search and the services live in the sheet below.
  */
-export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boolean; onMenu: () => void }) {
+export function TopBar({ now }: { now: number }) {
   const t = useT()
   const lang = useLang()
   const clockMode = useApp((s) => s.clock.mode)
-  const mode = useUi((s) => s.mode)
-  const kind = useVehicle().kind
-  const open = useUi((s) => s.open)
-  const onboarded = useApp((s) => s.onboarded)
-  const seenModeMenu = useApp((s) => s.seenModeMenu)
-  const markModeMenuSeen = useApp((s) => s.markModeMenuSeen)
-  // The paid services all live behind the mode button. Point at it once, until the menu has been opened.
-  const tip = onboarded && !seenModeMenu && !menuOpen && kind !== 'motor'
-  const toggleMenu = () => {
-    haptic('tap')
-    if (!menuOpen) markModeMenuSeen()
-    onMenu()
-  }
   return (
     <motion.div
       initial={{ y: -24, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.1 }}
-      className={clsx('pt-safe pointer-events-none absolute inset-x-0 top-0 px-3.5', menuOpen ? 'z-[49]' : 'z-20')}
+      className="pt-safe pointer-events-none absolute inset-x-0 top-0 z-20 px-3.5"
     >
-      <div className="pointer-events-auto flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => {
-            haptic('tap')
-            open({ kind: 'search' })
-          }}
-          className="glass shadow-float flex h-12 min-w-0 flex-1 items-center gap-2.5 rounded-full px-4 text-left text-[15px] text-ink-3"
-        >
-          <MagnifyingGlass size={18} className="shrink-0 text-ink-2" />
-          <span className="truncate">{t.explore.search}</span>
-        </button>
-        <button
-          type="button"
-          aria-haspopup="dialog"
-          aria-expanded={menuOpen}
-          aria-label={`${t.modes.ask} ${t.modes[mode].label}`}
-          onClick={toggleMenu}
-          className="shadow-float flex h-12 shrink-0 items-center gap-1.5 rounded-full bg-ink pr-3 pl-3.5 text-[14px] font-semibold text-canvas"
-        >
-          {kind === 'motor' ? <Motorcycle size={18} weight="fill" /> : MODE_ICON[mode]({ size: 18, weight: 'fill' })}
-          <span>{kind === 'motor' ? t.explore.motorMode : t.modes[mode].short}</span>
-          <motion.span animate={{ rotate: menuOpen ? 180 : 0 }} className="grid place-items-center">
-            <CaretDown size={13} weight="bold" />
-          </motion.span>
-        </button>
-      </div>
-      <div className="pointer-events-auto relative mt-2 flex">
-        <Chip onClick={() => open({ kind: 'clock' })} label={t.profile.clock}>
+      <div className="flex items-center justify-between gap-2">
+        <Chip onClick={() => useUi.getState().open({ kind: 'clock' })} label={t.profile.clock}>
           {/* Yellow means ramai on this map, so the simulated clock gets a neutral dot. "Simulasi" always stays. */}
           <span className={clockMode === 'live' ? 'size-1.5 animate-pulse rounded-full bg-brand-500' : 'size-1.5 rounded-full bg-ink-3'} />
           <span className="font-semibold text-ink tabular">
@@ -77,27 +35,35 @@ export function TopBar({ now, menuOpen, onMenu }: { now: number; menuOpen: boole
           </span>
           <span className="text-ink-3">{clockMode === 'live' ? t.common.live : t.common.simulated}</span>
         </Chip>
-        <AnimatePresence>{tip && <ModesTip key="tip" onClick={toggleMenu} />}</AnimatePresence>
+        <div className="pointer-events-auto flex items-center gap-2">
+          <LocateButton />
+          <AvatarButton />
+        </div>
       </div>
     </motion.div>
   )
 }
 
-/** A one-time pointer to the mode button. It sits left of the locate button so neither covers the other. */
-function ModesTip({ onClick }: { onClick: () => void }) {
+/** You, top right of the map: the first letter of your name, or your photo once signed in. Opens Akun. */
+function AvatarButton() {
   const t = useT()
+  const name = useApp((s) => s.name)
+  const photo = useApp((s) => s.account?.photo)
+  const setTab = useUi((s) => s.setTab)
+  const initial = name.trim().charAt(0).toUpperCase()
   return (
     <motion.button
       type="button"
-      onClick={onClick}
-      initial={{ opacity: 0, y: -6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      transition={{ type: 'spring', stiffness: 420, damping: 30, delay: 0.6 }}
-      className="absolute top-[36px] right-[50px] w-[184px] rounded-[14px] bg-ink px-3 py-2 text-left text-[12px] leading-snug font-medium text-canvas shadow-[0_8px_20px_-8px_rgb(0_0_0/0.4)]"
+      aria-label={t.tabs.account}
+      title={t.tabs.account}
+      whileTap={{ scale: 0.9 }}
+      onClick={() => {
+        haptic('tap')
+        setTab('account')
+      }}
+      className="glass shadow-float grid size-10 place-items-center overflow-hidden rounded-full text-[15px] font-semibold text-ink"
     >
-      <span aria-hidden="true" className="absolute -top-1 right-3.5 size-2.5 rotate-45 rounded-[2px] bg-ink" />
-      <span className="relative">{t.explore.modesTip}</span>
+      {photo ? <img src={photo} alt="" className="size-full object-cover" /> : initial || <User size={18} weight="bold" className="text-ink-2" />}
     </motion.button>
   )
 }
@@ -111,14 +77,14 @@ function Chip({ children, onClick, label }: { children: ReactNode; onClick: () =
         haptic('tap')
         onClick()
       }}
-      className="glass flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[11.5px] font-medium text-ink-2 shadow-[0_1px_2px_rgb(0_0_0/0.05),0_4px_12px_-6px_rgb(0_0_0/0.16)]"
+      className="glass pointer-events-auto flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[11.5px] font-medium text-ink-2 shadow-[0_1px_2px_rgb(0_0_0/0.05),0_4px_12px_-6px_rgb(0_0_0/0.16)]"
     >
       {children}
     </button>
   )
 }
 
-export function MapButtons() {
+function LocateButton() {
   const t = useT()
   const setOrigin = useUi((s) => s.setOrigin)
   const notify = useUi((s) => s.notify)
@@ -149,11 +115,8 @@ export function MapButtons() {
   }
 
   return (
-    // Level with the clock chip, the same quiet glass size, so the top right stays light.
-    <div className="absolute top-[calc(max(12px,var(--safe-top,env(safe-area-inset-top)))+56px)] right-3.5 z-20">
-      <IconButton label={t.explore.locate} onClick={locate} disabled={busy}>
-        <Crosshair size={18} className={busy ? 'animate-spin' : ''} />
-      </IconButton>
-    </div>
+    <IconButton label={t.explore.locate} onClick={locate} disabled={busy}>
+      <Crosshair size={18} className={busy ? 'animate-spin' : ''} />
+    </IconButton>
   )
 }

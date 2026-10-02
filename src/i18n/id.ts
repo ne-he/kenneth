@@ -35,7 +35,6 @@ const id = {
     account: 'Akun',
   },
   modes: {
-    ask: 'Mau ngapain?',
     park: { label: 'Parkir', short: 'Parkir', hint: 'Gratis, cek penuh atau lega' },
     zone: { label: 'Zona KENNETH', short: 'Zona K', hint: 'Petak pasti dekat lobi' },
     valet: { label: 'Valet runner', short: 'Valet', hint: 'Turun, runner yang parkir' },
@@ -105,15 +104,12 @@ const id = {
   },
   explore: {
     search: 'Mau parkir di mana?',
-    list: (n: number) => `Daftar (${n})`,
-    modesTip: 'Pesan Zona KENNETH, valet runner, atau charger dari sini',
     filters: { all: 'Semua', fav: 'Favorit', mall: 'Mall', kampus: 'Kampus' },
     fastest: 'Tercepat',
     empty: 'Nggak ada lokasi di filter ini.',
     emptyFav: 'Belum ada favorit. Buka satu lokasi, lalu ketuk bintangnya.',
     forecastToday: 'Perkiraan hari ini',
     toParkHint: 'Angka kanan = menit sampai dapet parkir: perjalanan, antri gerbang, dan muter nyari petak.',
-    motorMode: 'Motor',
     queue: 'antri',
     noQueue: 'Tanpa antri',
     fromBinus: 'Dari BINUS Anggrek',

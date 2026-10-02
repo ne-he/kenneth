@@ -15,8 +15,7 @@ import { DriveHud, NavBanner } from '../nav/NavOverlay'
 import { DockSheet, type Snap } from './DockSheet'
 import { HomeHeader, ListHeader } from './HomeSheet'
 import { LiveStrip } from './LiveStrip'
-import { ModeMenu } from './ModeMenu'
-import { MapButtons, TopBar } from './TopBar'
+import { TopBar } from './TopBar'
 import { VenueDetail, VenueDetailHeader } from './VenueDetail'
 import { VenueList } from './VenueList'
 
@@ -50,7 +49,6 @@ export function Explore() {
   const [snap, setSnap] = useState<Snap>('peek')
   // The home sheet at rest, measured by the sheet: the camera keeps the map above it.
   const [homePeek, setHomePeek] = useState(280)
-  const [menu, setMenu] = useState(false)
 
   // A motorbike only parks. Switching to one (from anywhere) drops back to the parking mode.
   useEffect(() => {
@@ -165,9 +163,8 @@ export function Explore() {
           initialBounds={INITIAL_BOUNDS}
         />
       </Suspense>
-      {!route && <TopBar now={now} menuOpen={menu} onMenu={() => setMenu(!menu)} />}
+      {!route && <TopBar now={now} />}
       <NavBanner route={route} now={now} />
-      {!route && <MapButtons />}
       {/* The sheet lives above the tab bar, the map runs underneath both. */}
       <div className="pointer-events-none absolute inset-x-0 top-0" style={{ bottom: route ? 0 : 'var(--nav-h)' }}>
         <DockSheet
@@ -181,7 +178,6 @@ export function Explore() {
           {body}
         </DockSheet>
       </div>
-      {!route && <ModeMenu open={menu} onClose={() => setMenu(false)} />}
     </div>
   )
 }
