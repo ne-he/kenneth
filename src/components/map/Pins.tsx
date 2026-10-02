@@ -1,7 +1,5 @@
-import { ChargingStation, Crown, Key } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
-import type { ReactNode } from 'react'
 import type { Gate, LabelDir } from '../../data/types'
 import type { PinFact } from '../../engine/modes'
 import type { Snapshot } from '../../engine/occupancy'
@@ -24,9 +22,12 @@ const DIR: Record<LabelDir, [number, number]> = {
 /**
  * Callout pin: a dot on the exact spot, the label pushed out along a leader
  * line. Central Park, Neo Soho and Taman Anggrek sit a couple hundred metres
- * apart, so plain pins would pile on top of each other at city zoom. The
- * number in the badge follows the mode: percent full, zone bay price, valet
- * wait, free chargers. A place that does not offer the mode goes grey.
+ * apart, so plain pins would pile on top of each other at city zoom.
+ *
+ * The label is "titik + angka": a status dot and the number in ink. The number
+ * follows the mode: percent full, zone bay price, valet wait, free chargers.
+ * Only the selected pin adds the venue name. A place that does not offer the
+ * mode is a faint grey dot.
  */
 export function VenuePin({
   snap,
@@ -44,46 +45,54 @@ export function VenuePin({
   const t = useT()
   const hex = factHex(fact, snap)
   const off = fact.kind === 'none'
+  // Valet has no status to show, so its dot follows the text: ink on a light pill, white on the selected one.
+  const dot = fact.kind === 'wait' ? 'currentColor' : hex
   // The selected label lifts straight up so the gate chips around the building stay visible.
   const [dx, dy] = selected ? [0, -66] : DIR[snap.venue.labelDir]
   const faded = dimmed || (off && !selected)
-  let badge: ReactNode = null
+  let value = ''
   let spoken = `${snap.pct}%`
   switch (fact.kind) {
     case 'pct':
-      badge = `${fact.pct}%`
+      value = `${fact.pct}%`
       break
     case 'price':
-      badge =
-        fact.left > 0 ? (
-          <>
-            <Crown size={10} weight="fill" /> {formatRupiah(fact.price, true).replace('Rp', '')}
-          </>
-        ) : (
-          t.modes.soldOut
-        )
+      value = fact.left > 0 ? formatRupiah(fact.price, true) : t.modes.soldOut
       spoken = fact.left > 0 ? `${t.modes.zone.label} ${formatRupiah(fact.price)}` : t.modes.soldOut
       break
     case 'wait':
-      badge = (
-        <>
-          <Key size={10} weight="fill" /> {fact.min} {t.unit.min}
-        </>
-      )
+      value = `${fact.min} ${t.unit.min}`
       spoken = `${t.modes.valet.label} ${fact.min} ${t.unit.min}`
       break
     case 'chargers':
-      badge = (
-        <>
-          <ChargingStation size={10} weight="fill" /> {t.modes.free(fact.free, fact.total)}
-        </>
-      )
+      value = t.modes.free(fact.free, fact.total)
       spoken = `${t.modes.ev.label} ${fact.free}/${fact.total}`
       break
     case 'none':
       spoken = ''
       break
   }
+  const label = `${snap.venue.name} ${spoken}`.trim()
+
+  // Not offered here: a quiet grey dot that still opens the place.
+  if (off && !selected) {
+    return (
+      <div className="relative size-0">
+        <motion.button
+          type="button"
+          onClick={onClick}
+          aria-label={label}
+          initial={{ scale: 0.3, opacity: 0, x: '-50%', y: '-50%' }}
+          animate={{ scale: 1, opacity: dimmed ? 0.35 : 0.7, x: '-50%', y: '-50%' }}
+          whileTap={{ scale: 0.9 }}
+          className="absolute top-0 left-0 grid size-6 place-items-center"
+        >
+          <span className="size-2.5 rounded-full border-2 border-surface bg-ink-3 shadow-[0_1px_2px_rgb(0_0_0/0.2)]" />
+        </motion.button>
+      </div>
+    )
+  }
+
   return (
     <div className="relative size-0">
       <svg className="pointer-events-none absolute overflow-visible" width="1" height="1" aria-hidden="true">
@@ -101,41 +110,25 @@ export function VenuePin({
       <span
         className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_1px_4px_rgb(0_0_0/0.35)]"
         style={{ background: hex }}
-      >
-        {fact.kind === 'pct' && snap.status === 'penuh' && (
-          <span className="absolute -inset-1 animate-ping rounded-full opacity-50" style={{ background: hex }} />
-        )}
-      </span>
+      />
       <motion.button
         type="button"
         onClick={onClick}
-        aria-label={`${snap.venue.name} ${spoken}`.trim()}
+        aria-label={label}
         initial={{ scale: 0.3, opacity: 0, x: '-50%', y: '-50%', left: 0, top: 0 }}
-        animate={{ scale: selected ? 1.06 : 1, opacity: faded ? 0.5 : 1, left: dx, top: dy, x: '-50%', y: '-50%' }}
+        animate={{ scale: 1, opacity: faded ? 0.55 : 1, left: dx, top: dy, x: '-50%', y: '-50%' }}
         whileTap={{ scale: 0.94 }}
         transition={{ type: 'spring', stiffness: 300, damping: 24 }}
         className={clsx(
-          'absolute flex h-[32px] items-center gap-1.5 rounded-full pr-2.5 whitespace-nowrap',
-          off ? 'pl-2.5' : 'pl-1',
-          selected ? 'bg-ink text-canvas shadow-[0_10px_24px_-6px_rgb(0_0_0/0.45)]' : 'glass shadow-float text-ink',
+          'absolute flex items-center rounded-full font-semibold whitespace-nowrap tabular',
+          selected
+            ? 'h-8 gap-2 pr-3.5 pl-3 text-[13px] bg-ink text-canvas shadow-[0_8px_20px_-6px_rgb(0_0_0/0.45)]'
+            : 'h-6 gap-1.5 pr-2.5 pl-2 text-[12px] bg-surface text-ink shadow-[0_1px_2px_rgb(0_0_0/0.1),0_4px_12px_-4px_rgb(0_0_0/0.22)] ring-1 ring-line',
         )}
       >
-        {!off && (
-          <span
-            className="flex h-6 min-w-6 items-center justify-center gap-0.5 rounded-full px-1.5 text-[11px] font-extrabold text-white tabular"
-            style={{ background: fact.kind === 'wait' && selected ? '#2a302c' : hex }}
-          >
-            {badge}
-          </span>
-        )}
-        <span className={clsx('text-[11.5px] font-bold', off && !selected && 'text-ink-3')}>
-          {selected ? snap.venue.name : snap.venue.short}
-        </span>
-        {selected && fact.kind === 'pct' && snap.queueMin >= 3 && (
-          <span className="text-[11px] font-semibold opacity-70">
-            {t.explore.queue} {formatMin(snap.queueMin)} {t.unit.min}
-          </span>
-        )}
+        <span className="size-2 shrink-0 rounded-full" style={{ background: dot }} />
+        {value && <span>{value}</span>}
+        {selected && <span className={clsx(value && 'font-medium opacity-70')}>{snap.venue.name}</span>}
       </motion.button>
     </div>
   )
