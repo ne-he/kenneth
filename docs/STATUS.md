@@ -9,11 +9,11 @@ Kalau ada yang bertabrakan dengan ingatan atau catatan lama, yang benar adalah k
 | Hal | Nilai |
 |---|---|
 | Versi | `0.4.0` (package.json), tag `v0.4.0` plus perbaikan sesudahnya |
-| Commit patokan | `5c2fd59` di `main` (28 Sep 2026), "fix: sign in through the firebaseapp.com auth domain" |
+| Commit patokan | `3c87868` di `main` (2 Okt 2026), merge PR #12 "Review tab Aktivitas dan tiket" |
 | Live | https://kenneth-park.web.app dan https://kenneth-9339d.web.app (dua situs, satu deploy) |
 | Repo | https://github.com/ne-he/kenneth (publik) |
-| Test | 106 test di 14 file, semua lolos (`npm test`) |
-| PR yang masih terbuka | #12 "Review tab Aktivitas dan tiket", branch `review/activity-tickets`, 18 commit, **belum di-merge**. Lihat bagian 8 |
+| Test | 109 test di 14 file, semua lolos (`npm test`) |
+| PR yang masih terbuka | Tidak ada. PR #12 "Review tab Aktivitas dan tiket" sudah di-merge 2 Okt 2026 (`3c87868`) |
 | Versi lama | branch `v0.1`, `v0.2`, `v0.3` (v0.3 = versi jalur prioritas sebelum diganti Zona KENNETH) |
 | Status data | Semua angka okupansi, antrian, tarif, petak, runner adalah **simulasi**. Belum ada pengelola gedung yang terhubung |
 
@@ -28,10 +28,12 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
 2. **Zona KENNETH menggantikan jalur prioritas.** Seperti zona parkir khusus Lexus di beberapa mall, tapi mereknya
    KENNETH. Jalur prioritas dibuang karena banyak gedung cuma punya satu lajur masuk dan mobil biasa jadi menunggu.
 3. **Valet dijalankan armada runner KENNETH sendiri**, bukan valet gedung. Bayar di app. Tanpa Face ID, cukup
-   kode pesanan dan pelat.
+   kode pesanan dan pelat. Runner adalah **karyawan KENNETH**, bukan mitra lepas (keputusan 2 Okt 2026).
 4. **Booking bayar per pakai.** Premium hanya menjual hal yang tidak pernah habis stoknya (pesan lebih awal,
    diskon, notifikasi).
-5. **Kampus tidak menjual apa pun**, cuma informasi. Motor tidak bisa memesan layanan apa pun.
+5. **Kampus dan gedung kantor boleh menjual layanan, dengan aturan yang sama** (keputusan 2 Okt 2026, menggantikan
+   "kampus tidak menjual apa pun"). Kode masih memakai aturan lama: kampus cuma informasi dan belum ada lokasi
+   kantor. Motor tetap tidak bisa memesan layanan apa pun.
 6. **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
 7. **Data pribadi tinggal di HP.** Tidak ada database server. Login Google hanya untuk nama, email, foto.
 8. **App tidak pernah pindah tab sendiri.** Setelah aksi, cukup toast plus titik di tab Aktivitas.
@@ -179,25 +181,30 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 
 ## 8. Yang belum selesai atau belum ada
 
-- **PR #12 belum di-merge** (18 commit di `review/activity-tickets`): tombol serah kunci baru muncul 30 menit sebelum
-  jam datang, tiket runner yang hangus tidak lagi jadi "Dibatalkan", slot runner dan charger dibatasi jam buka
-  gedung, pengingat yang lewat hilang dari Nanti, denah 3D pakai angka motor, beberapa perbaikan nama dan
-  aksesibilitas. Putuskan merge atau tutup dulu sebelum mengubah file yang sama (`Activity.tsx`, `ValetSheet.tsx`,
-  `ValetPanel.tsx`, `EvPanel.tsx`, `valet.ts`, i18n), supaya tidak bentrok.
 - Semua angka simulasi. Tidak ada palang, gedung, runner, atau pembayaran sungguhan. Pembayaran hanya animasi.
 - Notifikasi "ada yang batal" (Premium) baru tertulis di halaman paket.
 - Laporan kondisi pengguna dan jawaban booth hanya tersimpan di perangkat itu.
 - Data tidak sinkron antar perangkat walau sudah login (disengaja).
 - Ganjil-genap belum menghitung hari libur nasional.
-- Masukan dari presentasi terakhir: **belum tercatat di sini**. Tulis di bagian 9 sebelum mulai mengubah.
+- Kampus dan kantor belum bisa memesan layanan di app, walau keputusannya sudah berubah (bagian 1 no. 5).
 
 ## 9. Masukan presentasi dan rencana update
 
-(Diisi tim yang melanjutkan. Format yang disarankan: masukan, dari siapa, keputusan, status.)
+Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AUDIT.md](UX-AUDIT.md).
 
 | Masukan | Dari | Keputusan | Status |
 |---|---|---|---|
-| | | | |
+| Idenya oke | Kelas, Epen | Tidak ada perubahan | Selesai |
+| Pesanan perlu penghalang, khawatir pengguna non-KENNETH mengambil petak KENNETH. Gimana memastikan yang parkir di zona itu pengguna KENNETH? | Kelas, Epen | Konsepnya sudah ada (gerbang zona membaca pelat, QR cadangan di tiket), tapi belum kelihatan saat demo. Tambahkan palang atau *parking lock* per petak di konsep, dan tunjukkan di tiket petak | Belum dikerjakan |
+| Ke Neo Soho, langsung ditunjukkan petaknya atau harus cari lagi? | Epen | Tiket sudah memberi nomor petak, lantai, dan gerbang. Tambah denah kecil letak petak di tiket, dan tunjukkan alur pesan sampai tiket saat demo | Belum dikerjakan |
+| Kalau pengguna batal, app dan gedung rugi | Epen | Belum diputuskan. Usulan: gratis sampai 60 menit sebelum jam datang, setelah itu dipotong dari bayaran pesanan, tidak datang berarti hangus. Premium tetap tidak menggantikan bayar per pesanan | Perlu keputusan tim |
+| Kampus bisa pakai valet juga? | Epen | Ya. Kampus dan kantor boleh menjual layanan dengan aturan yang sama (bagian 1 no. 5) | Belum dikerjakan di kode |
+| Buat apa mall menyisihkan petak, kalau margin KENNETH kecil? | Diskusi tim | Untuk sekarang mall tetap memakai Zona KENNETH | Selesai |
+| Runner itu mitra lepas? Keamanannya gimana? | Diskusi tim | Runner karyawan KENNETH (bagian 1 no. 3) | Selesai |
+| Tambah pilihan mall | Ellyn | Setuju, tambah mall baru dengan data demo | Belum dikerjakan |
+| Ganti nama | Ellyn | Tidak diganti | Selesai |
+| UI bikin pusing, butuh waktu untuk paham | Ellyn | Setuju. Rombak dengan acuan app Apple, urutan kerja di [UX-AUDIT.md](UX-AUDIT.md) | Audit selesai, perbaikan belum |
+| Desain oke, tapi kombinasi warnanya kurang | Delon | Tema terang, gelap, dan ikut sistem sudah ada. Tambah pilihan warna aksen di Akun | Belum dikerjakan |
 
 ## 10. Riwayat versi singkat
 
@@ -208,3 +215,4 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 | v0.3 | 22 Sep 2026 | 3 tab (Aktivitas, Parkir, Akun), mode di satu layar, Batalkan yang kelihatan |
 | v0.4 | 24 Sep 2026 | Zona KENNETH menggantikan jalur prioritas, valet runner menggantikan valet gedung |
 | v0.4 + review | 25 sampai 28 Sep 2026 | PR #1 sampai #11: nama layanan konsisten (`zone`, `section`), cari lewat layanan dan tenant, penunjuk menu layanan, dashboard mitra lebih jujur, booth lebih aman, CSP Report-Only, perbaikan login, 106 test |
+| v0.4 + review | 2 Okt 2026 | PR #12: tab Aktivitas dan tiket runner lebih rapi, slot ikut jam buka gedung, 109 test |
