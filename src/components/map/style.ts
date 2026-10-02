@@ -27,28 +27,30 @@ const STYLE_URL: Record<MapStyle, Record<Mode, string>> = {
   },
 }
 
+// Porcelain and onyx, the same neutrals as the app surfaces. Green and blue are only a hint, so parks and water
+// still read as such without competing with the status dots.
 const PALETTE: Record<Mode, Record<string, string>> = {
   light: {
-    background: '#f1f0eb',
-    park: '#e2eadf',
-    landcover_wood: '#e2eadf',
-    landuse_park: '#e2eadf',
-    water: '#c6d5d6',
-    landuse_residential: '#ecebe5',
-    highway_minor: '#e3e2dc',
-    building3d: '#e6e4dd',
-    building3dTop: '#f7f6f2',
+    background: '#efefeb',
+    park: '#e4e8e0',
+    landcover_wood: '#e4e8e0',
+    landuse_park: '#e4e8e0',
+    water: '#d3dade',
+    landuse_residential: '#ebebe7',
+    highway_minor: '#e2e2dd',
+    building3d: '#e4e4df',
+    building3dTop: '#f6f6f3',
   },
   dark: {
-    background: '#0a0d0c',
-    park: '#0f1813',
-    landcover_wood: '#0f1813',
-    landuse_park: '#0f1813',
-    water: '#0c1515',
-    landuse_residential: '#0d1110',
-    highway_minor: '#161b19',
-    building3d: '#18201c',
-    building3dTop: '#222b26',
+    background: '#0d0d10',
+    park: '#111412',
+    landcover_wood: '#111412',
+    landuse_park: '#111412',
+    water: '#0e1116',
+    landuse_residential: '#101013',
+    highway_minor: '#19191e',
+    building3d: '#1b1b21',
+    building3dTop: '#27272e',
   },
 }
 
