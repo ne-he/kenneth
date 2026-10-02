@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { lazy, Suspense, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react'
 import { BINUS_ANGGREK, VENUE_BY_ID, VENUES } from '../../data/venues'
 import type { VenueId } from '../../data/types'
+import { cardInRow } from '../../engine/home'
 import { offers, pinFact, type PinFact } from '../../engine/modes'
 import { forKind } from '../../engine/occupancy'
 import { rankVenues } from '../../engine/recommend'
@@ -113,8 +114,7 @@ export function Explore() {
   }, [focus])
 
   // The row always starts on the best option; a card that left the filter hands over to it.
-  const first = shown[0]?.venue.id ?? null
-  const inRow = focused && shown.some((r) => r.venue.id === focused) ? focused : first
+  const inRow = cardInRow(focused, shown.map((r) => r.venue.id))
   // The card in view on the home row: the camera glides to it, with the row's own height as padding.
   useEffect(() => {
     if (inRow && !selected && !route) glideTo(VENUE_BY_ID[inRow].coords, 236)
