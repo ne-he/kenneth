@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#f3f2ee" />
+    <meta name="theme-color" content="#f6f6f3" />
     <meta name="description" content="KENNETH: cek kondisi parkir mall di Jakarta sebelum berangkat. Seberapa penuh, antri gerbang berapa menit, dan ke mana kalau penuh." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -29,7 +29,7 @@
         z-index: 2147483000;
         display: grid;
         place-items: center;
-        background: #000;
+        background: #121216;
         transition: opacity 0.45s ease;
       }
       #splash.out {
@@ -55,6 +55,8 @@
       }
       #splash-video {
         display: none;
+        /* The clip is on a pure black field; lighten lifts that field to the ink splash so the frame has no edge. */
+        mix-blend-mode: lighten;
       }
       #splash.has-video #splash-video {
         display: block;

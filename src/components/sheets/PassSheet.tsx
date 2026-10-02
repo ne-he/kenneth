@@ -15,9 +15,10 @@ import { CancelConfirm } from '../ui/CancelConfirm'
 import { Plate } from '../ui/Display'
 
 /**
- * The Zona KENNETH ticket, styled like a boarding pass: dark, high contrast,
- * the bay number big enough to read from the driver's seat, and the QR as a
- * backup for when the barrier camera misses the plate.
+ * The Zona KENNETH ticket, styled like a boarding pass: always dark, high
+ * contrast, the bay number big enough to read from the driver's seat, and
+ * the QR on plain white as a backup for when the barrier camera misses the
+ * plate. Cornflower marks the brand and the live countdown, nothing else.
  */
 export function PassSheet({ passId }: { passId: string }) {
   const t = useT()
@@ -35,7 +36,7 @@ export function PassSheet({ passId }: { passId: string }) {
       margin: 1,
       width: 480,
       errorCorrectionLevel: 'M',
-      color: { dark: '#0c0f0d', light: '#ffffff' },
+      color: { dark: '#121216', light: '#ffffff' },
     }).then(setQr)
   }, [pass])
 
@@ -52,31 +53,31 @@ export function PassSheet({ passId }: { passId: string }) {
     <div className="pb-5 text-white">
       <div className="mb-4 flex items-start justify-between">
         <div>
-          <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-[0.16em] text-led-lega uppercase">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.16em] text-brand-300 uppercase">
             <Crown size={12} weight="fill" /> {t.activity.passTitle}
           </div>
-          <h2 className="mt-1 text-[22px] leading-tight font-extrabold">{venue.name}</h2>
-          {zone && <p className="text-[13px] text-white/60">{t.activity.bayWhere(zone.level, zone.lobby)}</p>}
+          <h2 className="mt-1.5 text-[22px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
+          {zone && <p className="mt-0.5 text-[13px] text-white/55">{t.activity.bayWhere(zone.level, zone.lobby)}</p>}
         </div>
         <Plate plate={plate} />
       </div>
 
-      <div className="mb-4 flex items-end justify-between rounded-[20px] bg-white/[0.06] px-4 py-3">
+      <div className="mb-5 flex items-end justify-between rounded-[20px] border border-white/10 px-4 py-3.5">
         <div>
-          <div className="text-[10px] font-bold tracking-[0.12em] text-white/45 uppercase">{t.activity.bay}</div>
-          <div className="font-mono text-[44px] leading-none font-extrabold tracking-tight text-led-lega">{bay}</div>
+          <div className="text-[10px] font-semibold tracking-[0.12em] text-white/45 uppercase">{t.activity.bay}</div>
+          <div className="mt-1 font-mono text-[44px] leading-none font-semibold tracking-tight text-white">{bay}</div>
         </div>
-        <p className="flex max-w-[55%] items-start gap-1.5 text-right text-[12px] leading-snug text-white/60">
+        <p className="flex max-w-[55%] items-start gap-1.5 text-right text-[12px] leading-snug text-white/55">
           <DoorOpen size={15} weight="fill" className="mt-px shrink-0" />
           {t.activity.followSigns(gate.name)}
         </p>
       </div>
 
-      <div className="mx-auto w-full max-w-[260px] rounded-[26px] bg-white p-3.5 shadow-[0_0_0_6px_rgb(67_255_159/0.15),0_24px_50px_-18px_rgb(67_255_159/0.35)]">
+      <div className="mx-auto w-full max-w-[260px] rounded-[24px] bg-white p-3.5">
         {qr ? <img src={qr} alt={pass.token} className="aspect-square w-full" /> : <div className="aspect-square w-full" />}
-        <div className="mt-2 text-center font-mono text-[12px] font-bold tracking-[0.2em] text-[#0c0f0d]">{pass.token}</div>
+        <div className="mt-2 text-center font-mono text-[12px] font-semibold tracking-[0.2em] text-[#121216]">{pass.token}</div>
       </div>
-      <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-white/55">
+      <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-white/50">
         <SunDim size={15} /> {t.activity.qrHint}
       </p>
 
@@ -114,8 +115,11 @@ export function PassSheet({ passId }: { passId: string }) {
 function Cell({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="border-r border-white/10 px-2 py-3 last:border-r-0">
-      <div className="text-[10px] font-bold tracking-[0.12em] text-white/45 uppercase">{label}</div>
-      <div className={`mt-1 font-mono text-[15px] font-bold tabular ${accent ? 'text-led-lega' : 'text-white'}`}>{value}</div>
+      {/* Two lines are reserved so a wrapping label ("Datang dalam") keeps the three values on one baseline. */}
+      <div className="flex min-h-[26px] items-end justify-center text-[10px] leading-[13px] font-semibold tracking-[0.12em] text-white/45 uppercase">
+        {label}
+      </div>
+      <div className={`mt-1 font-mono text-[15px] font-semibold tabular ${accent ? 'text-brand-300' : 'text-white'}`}>{value}</div>
     </div>
   )
 }

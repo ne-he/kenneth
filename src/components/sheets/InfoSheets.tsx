@@ -32,29 +32,29 @@ export function ImpactSheet() {
   return (
     <div className="pb-5">
       <SheetHeader eyebrow={t.activity.impact} title={t.impactSheet.title} onClose={close} closeLabel={t.common.close} />
-      <div className="mb-5 grid grid-cols-3 gap-2">
+      <div className="mb-5 grid grid-cols-3 divide-x divide-line rounded-[20px] border border-line py-3.5">
         <Metric label={t.activity.impactTime} value={total.minutes} unit={t.unit.min} />
         <Metric label={t.activity.impactFuel} value={total.fuelL} unit="L" decimals={2} />
         <Metric label={t.activity.impactCo2} value={total.co2Kg} unit="kg" decimals={2} />
       </div>
       <PatternCard history={history} now={now} />
-      <Label className="mt-5">{t.activity.impactHow}</Label>
-      <p className="mb-3 px-1 text-[13px] leading-relaxed text-ink-2">{t.impactSheet.intro}</p>
-      <ol className="space-y-2">
+      <Label className="mt-6">{t.activity.impactHow}</Label>
+      <p className="mb-4 px-1 text-[13px] leading-relaxed text-ink-2">{t.impactSheet.intro}</p>
+      <ol className="space-y-3 px-1">
         {steps.map((s, i) => (
-          <li key={i} className="flex gap-3 rounded-[16px] bg-surface-2 p-3">
-            <span className="grid size-6 shrink-0 place-items-center rounded-full bg-ink text-[12px] font-bold text-canvas">{i + 1}</span>
+          <li key={i} className="flex gap-3">
+            <span className="w-4 shrink-0 pt-px font-mono text-[12px] text-ink-3 tabular">{i + 1}</span>
             <span className="text-[13px] leading-relaxed">{s}</span>
           </li>
         ))}
       </ol>
-      <div className="mt-3 rounded-[16px] bg-surface-2 p-3 font-mono text-[12px] leading-relaxed text-ink-2">
+      <div className="mt-4 rounded-[14px] bg-surface-2 p-3 font-mono text-[12px] leading-relaxed text-ink-2">
         fuel_L = minutes × {FUEL_L_PER_MIN}
         <br />
         co2_kg = fuel_L × {CO2_KG_PER_L}
       </div>
-      <p className="mt-4 flex gap-2.5 rounded-[18px] bg-lega-soft p-3.5 text-[13px] leading-relaxed text-lega-ink dark:bg-lega/10 dark:text-led-lega">
-        <Leaf size={20} weight="fill" className="mt-[1px] shrink-0" />
+      <p className="mt-5 flex gap-2.5 border-t border-line px-1 pt-4 text-[13px] leading-relaxed text-ink-2">
+        <Leaf size={18} weight="fill" className="mt-[1px] shrink-0 text-ink-3" />
         {t.impactSheet.bigger}
       </p>
     </div>
@@ -63,9 +63,9 @@ export function ImpactSheet() {
 
 function Metric({ label, value, unit, decimals = 0 }: { label: string; value: number; unit: string; decimals?: number }) {
   return (
-    <div className="rounded-[16px] bg-surface-2 p-3">
-      <div className="text-[11.5px] font-medium text-ink-3">{label}</div>
-      <div className="mt-1 text-[19px] leading-none font-bold tracking-tight">
+    <div className="min-w-0 px-3.5">
+      <div className="truncate text-[11.5px] font-medium text-ink-3">{label}</div>
+      <div className="mt-1.5 text-[19px] leading-none font-semibold tracking-tight">
         <CountUp value={value} decimals={decimals} />
         <span className="ml-0.5 text-[11px] font-semibold text-ink-3">{unit}</span>
       </div>
@@ -102,7 +102,7 @@ function PatternCard({ history, now }: { history: Visit[]; now: number }) {
       <p className={clsx('mt-2 text-[14px] leading-relaxed font-medium', plan !== 'premium' && 'blur-[5px] select-none')}>{body}</p>
       {plan !== 'premium' && (
         <div className="absolute inset-0 grid place-items-center bg-surface/40">
-          <Button size="sm" variant="dark" onClick={() => open({ kind: 'premium' })}>
+          <Button size="sm" variant="primary" onClick={() => open({ kind: 'premium' })}>
             <LockSimple size={14} weight="fill" /> {t.premium.locked}
           </Button>
         </div>
@@ -120,32 +120,42 @@ export function PremiumSheet() {
   const tiers = [
     { key: 'free', name: p.freeName, price: p.freePrice, unit: '', tag: p.freeTag, items: p.freeItems, tone: 'plain' },
     { key: 'pay', name: p.payName, price: p.payPrice, unit: p.payUnit, tag: p.payTag, items: p.payItems, tone: 'plain' },
-    { key: 'premium', name: p.premName, price: p.premPrice, unit: p.premUnit, tag: p.premTag, items: p.premItems, tone: 'dark' },
+    { key: 'premium', name: p.premName, price: p.premPrice, unit: p.premUnit, tag: p.premTag, items: p.premItems, tone: 'accent' },
   ] as const
   return (
     <div className="pb-5">
       <SheetHeader title={p.title} onClose={close} closeLabel={t.common.close} />
-      <p className="mb-4 text-[13px] leading-relaxed text-ink-2">{p.principle}</p>
-      <div className="space-y-2.5">
+      <p className="mb-5 text-[13px] leading-relaxed text-ink-2">{p.principle}</p>
+      {/* Premium is the brand moment here: a soft cornflower tint instead of a solid black card. */}
+      <div className="space-y-3">
         {tiers.map((tier) => (
           <div
             key={tier.key}
-            className={clsx('rounded-[20px] border p-4', tier.tone === 'dark' ? 'border-transparent bg-ink text-canvas' : 'border-line bg-surface')}
+            className={clsx(
+              'rounded-[20px] border p-4',
+              tier.tone === 'accent' ? 'border-brand-200 bg-brand-50 dark:border-brand-400/20 dark:bg-brand-500/10' : 'border-line bg-surface',
+            )}
           >
             <div className="flex items-start justify-between">
               <div>
-                <div className={clsx('text-[12px] font-semibold', tier.tone === 'dark' ? 'text-canvas/60' : 'text-ink-3')}>{tier.tag}</div>
-                <div className="mt-0.5 text-[17px] font-bold">{tier.name}</div>
+                <div className={clsx('text-[12px] font-medium', tier.tone === 'accent' ? 'text-brand-700 dark:text-brand-300' : 'text-ink-3')}>
+                  {tier.tag}
+                </div>
+                <div className="mt-0.5 text-[17px] font-semibold tracking-tight">{tier.name}</div>
               </div>
               <div className="text-right">
-                <div className="text-[20px] font-bold tracking-tight tabular">{tier.price}</div>
-                {tier.unit && <div className={clsx('text-[11px]', tier.tone === 'dark' ? 'text-canvas/60' : 'text-ink-3')}>{tier.unit}</div>}
+                <div className="text-[20px] font-semibold tracking-tight tabular">{tier.price}</div>
+                {tier.unit && <div className="text-[11px] text-ink-3">{tier.unit}</div>}
               </div>
             </div>
             <ul className="mt-3 space-y-1.5">
               {tier.items.map((it) => (
-                <li key={it} className={clsx('flex gap-2 text-[12.5px]', tier.tone === 'dark' ? 'text-canvas/80' : 'text-ink-2')}>
-                  <Check size={14} weight="bold" className={clsx('mt-[2px] shrink-0', tier.tone === 'dark' ? 'text-brand-400' : 'text-brand-600')} />
+                <li key={it} className="flex gap-2 text-[12.5px] text-ink-2">
+                  <Check
+                    size={14}
+                    weight="bold"
+                    className={clsx('mt-[2px] shrink-0', tier.tone === 'accent' ? 'text-brand-600 dark:text-brand-300' : 'text-ink-3')}
+                  />
                   {it}
                 </li>
               ))}
@@ -212,23 +222,23 @@ export function PrivacySheet() {
   return (
     <div className="pb-5">
       <SheetHeader title={t.privacy.title} onClose={close} closeLabel={t.common.close} />
-      <p className="mb-4 text-[13.5px] leading-relaxed text-ink-2">{t.privacy.intro}</p>
-      <ul className="space-y-2">
+      <p className="mb-5 text-[13.5px] leading-relaxed text-ink-2">{t.privacy.intro}</p>
+      <ul className="divide-y divide-line rounded-[20px] border border-line">
         {rules.map((r) => (
-          <li key={r} className="flex gap-3 rounded-[16px] bg-surface-2 p-3 text-[13px] leading-relaxed">
-            <LockKey size={18} weight="fill" className="mt-[1px] shrink-0 text-brand-600" />
+          <li key={r} className="flex gap-3 px-4 py-3 text-[13px] leading-relaxed">
+            <LockKey size={16} weight="fill" className="mt-[3px] shrink-0 text-ink-3" />
             {r}
           </li>
         ))}
       </ul>
-      <div className="mt-4 flex items-center gap-3 rounded-[18px] border border-line bg-surface p-3.5">
+      <div className="mt-3 flex items-center gap-3 rounded-[20px] border border-line bg-surface px-4 py-3.5">
         <span className="flex-1">
-          <span className="block text-[14px] font-semibold">{t.privacy.share}</span>
+          <span className="block text-[14px] font-medium">{t.privacy.share}</span>
           <span className="text-[12px] text-ink-3">{t.privacy.shareHint}</span>
         </span>
         <Toggle checked={shareAnonymous} onChange={(v) => setPref('shareAnonymous', v)} label={t.privacy.share} />
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-2">
+      <div className="mt-5 grid grid-cols-2 gap-2">
         <Button variant="secondary" onClick={exportData}>
           <DownloadSimple size={16} weight="bold" /> {t.privacy.exportShort}
         </Button>

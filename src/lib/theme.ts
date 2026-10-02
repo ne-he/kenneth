@@ -23,7 +23,7 @@ export function useApplyTheme() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     const meta = document.querySelector('meta[name="theme-color"]')
-    meta?.setAttribute('content', theme === 'dark' ? '#090b0a' : '#f3f2ee')
+    meta?.setAttribute('content', theme === 'dark' ? '#0b0b0e' : '#f6f6f3')
   }, [theme])
   return theme
 }

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import type { Venue } from '../data/types'
 import { BINUS_ANGGREK, VENUE_BY_ID, VENUES } from '../data/venues'
 import { atWib, nextSaturdayAt } from '../lib/time'
 import { checkGage, dateParity, plateParity } from './gage'
@@ -138,6 +139,29 @@ describe('recommendation', () => {
     const ranked = rankVenues(VENUES, SAT, BINUS_ANGGREK)
     const cpRank = ranked.find((r) => r.venue.id === 'central-park')!
     expect(cpRank.timeToParkBlind - cpRank.timeToPark).toBeGreaterThan(8)
+  })
+
+  it('never puts a slower place above a faster one', () => {
+    const times = rankVenues(VENUES, SAT, BINUS_ANGGREK).map((r) => r.timeToPark)
+    for (let i = 1; i < times.length; i++) expect(times[i]).toBeGreaterThanOrEqual(times[i - 1])
+  })
+
+  it('keeps the data order for places that tie on time to park, so the card row and the list agree', () => {
+    // Three copies of one place at 3 am: closed, so no per-id breathing, and one spot, so one drive time.
+    const NIGHT = nextSaturdayAt(Date.UTC(2026, 8, 14), 3, 0)
+    const twins: Venue[] = [
+      { ...cp, id: 'taman-anggrek', name: 'Zeta' },
+      { ...cp, id: 'central-park', name: 'Alpha' },
+      { ...cp, id: 'neo-soho', name: 'Mu' },
+    ]
+    const ranked = rankVenues(twins, NIGHT, BINUS_ANGGREK)
+    expect(new Set(ranked.map((r) => r.timeToPark)).size).toBe(1)
+    expect(ranked.map((r) => r.venue.id)).toEqual(['taman-anggrek', 'central-park', 'neo-soho'])
+    expect(rankVenues([...twins].reverse(), NIGHT, BINUS_ANGGREK).map((r) => r.venue.id)).toEqual([
+      'neo-soho',
+      'central-park',
+      'taman-anggrek',
+    ])
   })
 
   it('offers Neo Soho first when Central Park is full, since you can walk over', () => {

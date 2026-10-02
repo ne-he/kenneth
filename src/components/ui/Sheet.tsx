@@ -37,7 +37,7 @@ export function Sheet({ open, onClose, children, label, bodyClassName, tone = 'd
       {open && (
         <div className="absolute inset-0 z-50 flex flex-col justify-end">
           <motion.div
-            className="absolute inset-0 bg-[rgb(8_10_9/0.42)]"
+            className="absolute inset-0 bg-[rgb(10_10_14/0.36)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -51,8 +51,8 @@ export function Sheet({ open, onClose, children, label, bodyClassName, tone = 'd
             aria-label={label}
             tabIndex={-1}
             className={clsx(
-              'shadow-sheet relative flex max-h-[92%] flex-col rounded-t-[30px] outline-none',
-              tone === 'dark' ? 'bg-[#0c0f0d] text-white' : 'bg-surface',
+              'relative flex max-h-[92%] flex-col rounded-t-[28px] outline-none',
+              tone === 'dark' ? 'bg-[#0b0b0e] text-white' : 'bg-surface',
             )}
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
@@ -71,7 +71,7 @@ export function Sheet({ open, onClose, children, label, bodyClassName, tone = 'd
               className="flex shrink-0 cursor-grab touch-none justify-center pt-2.5 pb-2 active:cursor-grabbing"
               onPointerDown={(e) => controls.start(e)}
             >
-              <span className={clsx('h-[5px] w-10 rounded-full', tone === 'dark' ? 'bg-white/25' : 'bg-line-strong')} />
+              <span className={clsx('h-1 w-9 rounded-full', tone === 'dark' ? 'bg-white/20' : 'bg-line-strong')} />
             </div>
             <div className={clsx('no-scrollbar overflow-y-auto overscroll-contain px-5 pb-safe', bodyClassName)}>
               {children}
@@ -97,14 +97,10 @@ export function SheetHeader({
   right?: ReactNode
 }) {
   return (
-    <div className="mb-4 flex items-start justify-between gap-3">
+    <div className="mb-5 flex items-start justify-between gap-3">
       <div className="min-w-0">
-        {eyebrow && (
-          <div className="mb-0.5 text-[13px] font-semibold text-ink-3">
-            {eyebrow}
-          </div>
-        )}
-        <h2 className="text-[21px] font-bold leading-tight tracking-tight">{title}</h2>
+        {eyebrow && <div className="mb-1 text-[13px] font-medium text-ink-3">{eyebrow}</div>}
+        <h2 className="text-[21px] font-semibold leading-tight tracking-tight">{title}</h2>
       </div>
       {right}
       {onClose && (
@@ -112,7 +108,7 @@ export function SheetHeader({
           type="button"
           onClick={onClose}
           aria-label={closeLabel ?? 'Close'}
-          className="grid size-8 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 transition-colors hover:text-ink"
+          className="grid size-8 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 transition-colors hover:bg-surface-3 hover:text-ink"
         >
           <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
             <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

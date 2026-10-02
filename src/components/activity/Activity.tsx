@@ -76,7 +76,7 @@ export function Activity() {
   return (
     <div className="no-scrollbar h-full overflow-y-auto px-4 pt-safe pb-[calc(var(--nav-h)+36px)]">
       <header className="pt-3 pb-4">
-        <h1 className="text-[28px] leading-tight font-bold tracking-tight">{t.activity.title}</h1>
+        <h1 className="text-[28px] leading-tight font-semibold tracking-tight">{t.activity.title}</h1>
         <p className="mt-0.5 text-[13px] text-ink-3">
           {dayName(now, lang, false)}, {clock(now)}
           {clockMode === 'scenario' ? ` · ${t.common.simulated}` : ''}
@@ -84,31 +84,29 @@ export function Activity() {
       </header>
 
       {current.length === 0 && upcoming.length === 0 && past.length > 0 && (
-        <motion.section {...rise(i++)} className="mb-6 flex items-center gap-3 rounded-[20px] border border-dashed border-line-strong p-3.5 pl-4">
+        <motion.section {...rise(i++)} className="mb-7 flex items-center gap-3 rounded-[20px] border border-line p-3.5 pl-4">
           <span className="min-w-0 flex-1 text-[13px] leading-snug text-ink-2">{t.activity.nothingNow}</span>
-          <Button variant="dark" size="sm" onClick={() => setTab('park')}>
+          <Button variant="primary" size="sm" onClick={() => setTab('park')}>
             <MapTrifold size={15} weight="bold" /> {t.activity.findParking}
           </Button>
         </motion.section>
       )}
 
       {current.length === 0 && upcoming.length === 0 && past.length === 0 && (
-        <motion.section {...rise(i++)} className="mb-6 flex flex-col items-center rounded-[22px] border border-dashed border-line-strong px-6 py-8 text-center">
-          <span className="grid size-14 place-items-center rounded-full bg-surface-2 text-ink-3">
-            <Ticket size={26} />
-          </span>
-          <h2 className="mt-3 text-[16px] font-bold">{t.activity.emptyTitle}</h2>
-          <p className="mt-1 max-w-[280px] text-[13px] leading-relaxed text-ink-3">{t.activity.emptyHint}</p>
-          <Button variant="dark" size="md" className="mt-4" onClick={() => setTab('park')}>
+        <motion.section {...rise(i++)} className="mb-7 flex flex-col items-center px-6 pt-16 pb-8 text-center">
+          <Ticket size={30} className="text-ink-3" />
+          <h2 className="mt-4 text-[17px] font-semibold tracking-tight">{t.activity.emptyTitle}</h2>
+          <p className="mt-1.5 max-w-[280px] text-[13.5px] leading-relaxed text-ink-3">{t.activity.emptyHint}</p>
+          <Button variant="primary" size="md" className="mt-6" onClick={() => setTab('park')}>
             <MapTrifold size={17} weight="bold" /> {t.activity.findParking}
           </Button>
         </motion.section>
       )}
 
       {current.length > 0 && (
-        <section className="mb-6">
+        <section className="mb-7">
           <Label>{t.activity.now}</Label>
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {current.map((c) => (
               <motion.div key={c.kind === 'parked' ? 'parked' : `${c.kind}:${c.id}`} {...rise(i++)}>
                 {c.kind === 'parked' && <ParkedCard now={now} />}
@@ -122,9 +120,9 @@ export function Activity() {
       )}
 
       {upcoming.length > 0 && (
-        <section className="mb-6">
+        <section className="mb-7">
           <Label>{t.activity.next}</Label>
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {upcoming.map((u) => (
               <motion.div key={`${u.kind}:${u.id}`} {...rise(i++)}>
                 {u.kind === 'valet' && <ValetCard id={u.id} now={now} />}
@@ -142,7 +140,7 @@ export function Activity() {
           <Label
             aside={
               past.length > PAST_PREVIEW && (
-                <button type="button" onClick={() => setAll(!all)} className="font-semibold text-brand-700 hover:text-brand-600 dark:text-brand-300">
+                <button type="button" onClick={() => setAll(!all)} className="font-semibold text-ink-2 hover:text-ink">
                   {all ? t.activity.less : t.activity.all(past.length)}
                 </button>
               )
@@ -159,11 +157,11 @@ export function Activity() {
             <button
               type="button"
               onClick={() => open({ kind: 'impact' })}
-              className="mt-3 flex w-full items-center justify-between gap-3 rounded-[16px] bg-lega-soft px-4 py-3 text-left text-[13px] font-bold text-lega-ink dark:bg-lega/15 dark:text-led-lega"
+              className="mt-3 flex w-full items-center justify-between gap-3 rounded-[20px] border border-line px-4 py-3.5 text-left text-[13px] transition-colors hover:bg-surface-2/60"
             >
-              <span>{t.activity.summary(month.length)}</span>
-              <span className="flex items-center gap-1">
-                {t.activity.summarySaved(savedMin)} <CaretRight size={13} weight="bold" />
+              <span className="font-semibold">{t.activity.summary(month.length)}</span>
+              <span className="flex items-center gap-1 text-ink-2 tabular">
+                {t.activity.summarySaved(savedMin)} <CaretRight size={13} weight="bold" className="text-ink-3" />
               </span>
             </button>
           )}
@@ -173,7 +171,11 @@ export function Activity() {
   )
 }
 
-/** Shared frame for every booking: icon, what and where, then one line of state. */
+/**
+ * Shared frame for every booking: one small line saying what it is, the
+ * place, then one line of state. No icon tiles. Zona KENNETH and the runner
+ * are the brand moments, so only their small line takes the cornflower.
+ */
 function Card({
   icon,
   tone,
@@ -185,7 +187,7 @@ function Card({
   children,
 }: {
   icon: ReactNode
-  tone: 'brand' | 'ev' | 'ink'
+  tone: 'brand' | 'plain'
   eyebrow: string
   title: string
   meta: ReactNode
@@ -195,22 +197,20 @@ function Card({
 }) {
   const Tag = onClick ? 'button' : 'div'
   return (
-    <section className="rounded-[22px] border border-line bg-surface p-4">
+    <section className="rounded-[20px] border border-line bg-surface p-4">
       <Tag type={onClick ? 'button' : undefined} onClick={onClick} className="flex w-full items-center gap-3 text-left">
-        <span
-          className={clsx(
-            'grid size-11 shrink-0 place-items-center rounded-[14px]',
-            tone === 'brand' && 'bg-brand-600/10 text-brand-700 dark:bg-brand-400/15 dark:text-brand-300',
-            tone === 'ev' && 'bg-ev/12 text-ev',
-            tone === 'ink' && 'bg-surface-2 text-ink',
-          )}
-        >
-          {icon}
-        </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[12px] font-semibold text-ink-3">{eyebrow}</span>
-          <span className="block truncate text-[15.5px] font-bold tracking-tight">{title}</span>
-          <span className="mt-0.5 block truncate text-[12.5px] text-ink-2">{meta}</span>
+          <span
+            className={clsx(
+              'flex items-center gap-1.5 text-[12px] font-medium',
+              tone === 'brand' ? 'text-brand-700 dark:text-brand-300' : 'text-ink-3',
+            )}
+          >
+            <span className="shrink-0">{icon}</span>
+            <span className="truncate">{eyebrow}</span>
+          </span>
+          <span className="mt-1 block truncate text-[16px] font-semibold tracking-tight">{title}</span>
+          <span className="mt-0.5 block truncate text-[13px] text-ink-2">{meta}</span>
         </span>
         {right ?? (onClick && <CaretRight size={16} className="shrink-0 text-ink-3" />)}
       </Tag>
@@ -228,20 +228,20 @@ function ParkedCard({ now }: { now: number }) {
   const cost = parkingCost(venue, elapsed / 3_600_000)
   return (
     <Card
-      icon={spot.kind === 'motor' ? <Motorcycle size={22} weight="fill" /> : <CarProfile size={22} weight="fill" />}
-      tone="brand"
+      icon={spot.kind === 'motor' ? <Motorcycle size={14} weight="fill" /> : <CarProfile size={14} weight="fill" />}
+      tone="plain"
       eyebrow={spot.kind === 'motor' ? t.activity.parkedMotor : t.activity.parked}
       title={venue.name}
       meta={`${spot.level} · ${spot.section}-${spot.pillar} · ${spot.lobby}`}
       right={
         <span className="shrink-0 text-right">
-          <span className="block font-mono text-[15px] font-bold tabular">{stopwatch(elapsed)}</span>
-          <span className="text-[11.5px] text-ink-3 tabular">{formatRupiah(cost, true)}</span>
+          <span className="block font-mono text-[16px] font-semibold text-ink tabular">{stopwatch(elapsed)}</span>
+          <span className="text-[12px] text-ink-3 tabular">{formatRupiah(cost, true)}</span>
         </span>
       }
     >
-      <div className="mt-3 grid grid-cols-[1.4fr_1fr] gap-2">
-        <Button variant="dark" onClick={() => open({ kind: 'find-car' })}>
+      <div className="mt-4 grid grid-cols-[1.4fr_1fr] gap-2">
+        <Button variant="primary" onClick={() => open({ kind: 'find-car' })}>
           <MapTrifold size={17} weight="bold" /> {t.park.findCar}
         </Button>
         <Button
@@ -272,17 +272,17 @@ function ValetCard({ id, now }: { id: string; now: number }) {
           : `${t.valet.phases[phase]} · ${ticket.lobby}`
   return (
     <Card
-      icon={<Key size={22} weight="fill" />}
-      tone={phase === 'ready' ? 'brand' : 'ink'}
+      icon={<Key size={14} weight="fill" />}
+      tone="brand"
       eyebrow={`${t.book.services.valet} · ${runnerFor(ticket.id).name}`}
       title={venue.name}
       meta={meta}
       onClick={() => open({ kind: 'valet', id: ticket.id })}
     >
       {phase === 'fetching' && (
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-2">
+        <div className="mt-4 h-1 overflow-hidden rounded-full bg-surface-2">
           <motion.div
-            className="h-full rounded-full bg-brand-500"
+            className="h-full rounded-full bg-ink"
             animate={{
               width: `${Math.min(100, ((now - (ticket.requestedAt ?? now)) / Math.max(1, (ticket.readyAt ?? now) - (ticket.requestedAt ?? now))) * 100)}%`,
             }}
@@ -291,9 +291,9 @@ function ValetCard({ id, now }: { id: string; now: number }) {
       )}
       {((phase === 'booked' && canHandOver(ticket, now)) || phase === 'parked' || phase === 'ready') && (
         <Button
-          variant={phase === 'parked' ? 'primary' : 'dark'}
+          variant="primary"
           block
-          className="mt-3"
+          className="mt-4"
           onClick={() => (phase === 'booked' ? act.handover(ticket) : phase === 'parked' ? act.call(ticket) : act.pickUp(ticket))}
         >
           {phase === 'booked' ? t.valet.handover : phase === 'parked' ? t.valet.callCar : t.valet.pickedUp}
@@ -322,21 +322,21 @@ function PassCard({ id, now }: { id: string; now: number }) {
         : t.activity.endsIn(stopwatch(end - now))
   return (
     <Card
-      icon={<Crown size={22} weight="fill" />}
+      icon={<Crown size={14} weight="fill" />}
       tone="brand"
       eyebrow={`${t.activity.passTitle} · ${bayOf(pass, venue)}${zone ? ` · ${zone.level}` : ''}`}
       title={venue.name}
       meta={`${clock(pass.windowStart)} · ${when}`}
       onClick={() => open({ kind: 'pass', id: pass.id })}
       right={
-        <span className="flex shrink-0 items-center gap-1 text-[13px] font-bold tabular">
+        <span className="flex shrink-0 items-center gap-1 text-[13px] font-semibold tabular">
           {formatRupiah(pass.price, true)} <CaretRight size={16} className="text-ink-3" />
         </span>
       }
     >
       {/* The QR only matters at the barrier, so the big button waits until the bay is held. */}
       {phase === 'open' && (
-        <Button variant="dark" block className="mt-3" onClick={() => open({ kind: 'pass', id: pass.id })}>
+        <Button variant="accent" block className="mt-4" onClick={() => open({ kind: 'pass', id: pass.id })}>
           <Ticket size={17} weight="fill" /> {t.activity.showQr}
         </Button>
       )}
@@ -356,15 +356,15 @@ function EvCard({ id, now }: { id: string; now: number }) {
   const pct = charging ? Math.min(100, Math.round(((now - b.start) / (end - b.start)) * 100)) : 0
   return (
     <Card
-      icon={<ChargingStation size={22} weight="fill" />}
-      tone="ev"
+      icon={<ChargingStation size={14} weight="fill" />}
+      tone="plain"
       eyebrow={`${t.activity.evTitle} · ${b.charger}`}
       title={venue.name}
       meta={`${charging ? '' : `${dayLabel(b.start, now)}, `}${clock(b.start)}-${clock(end)} · ${venue.ev.kw} kW`}
     >
       {charging ? (
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface-2">
-          <motion.div className="h-full rounded-full bg-ev" initial={{ width: 0 }} animate={{ width: `${pct}%` }} />
+        <div className="mt-4 h-1 overflow-hidden rounded-full bg-surface-2">
+          <motion.div className="h-full rounded-full bg-ink" initial={{ width: 0 }} animate={{ width: `${pct}%` }} />
         </div>
       ) : (
         <CancelConfirm className="mt-3" policy={t.activity.evCancelPolicy} onConfirm={() => cancel.ev(b.id)} />
@@ -379,8 +379,8 @@ function ReminderCard({ id }: { id: string }) {
   const remove = useApp((s) => s.removeReminder)
   const notify = useUi((s) => s.notify)
   return (
-    <div className="flex items-center gap-3 rounded-[18px] border border-line bg-surface px-4 py-3">
-      <BellSimple size={18} weight="fill" className="shrink-0 text-ink-2" />
+    <div className="flex items-center gap-3 rounded-[20px] border border-line bg-surface py-2.5 pr-2.5 pl-4">
+      <BellSimple size={16} weight="fill" className="shrink-0 text-ink-3" />
       <span className="flex-1 text-[13.5px] font-medium">{t.activity.reminderAt(VENUE_BY_ID[r.venueId].name, clock(r.at))}</span>
       <button
         type="button"
@@ -418,15 +418,8 @@ function PastRow({ p }: { p: Past }) {
     if (p.visit.divertedFrom) bits.push(t.activity.diverted(VENUE_BY_ID[p.visit.divertedFrom].name))
   }
   return (
-    <div className="flex items-center gap-3 px-3.5 py-3">
-      <span
-        className={clsx(
-          'grid size-9 shrink-0 place-items-center rounded-[12px]',
-          p.outcome === 'done' ? 'bg-surface-2 text-ink-2' : 'bg-surface-2 text-ink-3',
-        )}
-      >
-        {PAST_ICON[p.service](motor)}
-      </span>
+    <div className="flex items-center gap-3 px-4 py-3">
+      <span className="grid w-5 shrink-0 place-items-center text-ink-3">{PAST_ICON[p.service](motor)}</span>
       <span className="min-w-0 flex-1">
         <span className={clsx('block truncate text-[14px] font-semibold', p.outcome !== 'done' && 'text-ink-2')}>{venue.name}</span>
         <span className="block truncate text-[12px] text-ink-3">{bits.join(' · ')}</span>
@@ -451,7 +444,7 @@ function AgainButton({ venueId, service, motor, name }: { venueId: VenueId; serv
         ui.select(venueId)
         if (service !== 'park' && !motor) ui.open({ kind: 'book', id: venueId, service })
       }}
-      className="flex h-8 shrink-0 items-center gap-1 rounded-full bg-surface-2 px-3 text-[12px] font-bold text-brand-700 transition-colors hover:bg-surface-3 dark:text-brand-300"
+      className="flex h-8 shrink-0 items-center gap-1 rounded-full bg-surface-2 px-3 text-[12px] font-semibold text-ink transition-colors hover:bg-surface-3"
     >
       <ArrowClockwise size={13} weight="bold" /> {t.activity.again}
     </button>

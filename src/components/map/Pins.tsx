@@ -1,141 +1,133 @@
-import { ChargingStation, Crown, Key } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
-import type { ReactNode } from 'react'
-import type { Gate, LabelDir } from '../../data/types'
+import type { Gate } from '../../data/types'
 import type { PinFact } from '../../engine/modes'
 import type { Snapshot } from '../../engine/occupancy'
 import { formatRupiah } from '../../engine/pricing'
 import { useT } from '../../i18n'
 import { STATUS, formatMin } from '../../lib/status'
-import { factHex } from './pinColor'
+import type { Offset } from './declutter'
+import { factDot } from './pinColor'
 
-const DIR: Record<LabelDir, [number, number]> = {
-  n: [0, -54],
-  s: [0, 54],
-  e: [72, 0],
-  w: [-72, 0],
-  ne: [58, -42],
-  nw: [-58, -42],
-  se: [58, 42],
-  sw: [-58, 42],
-}
+/** How far the dot sits in from the end of a place label, so the pill hangs off the dot. MapView places labels by it. */
+export const LABEL_INSET = 11
 
 /**
- * Callout pin: a dot on the exact spot, the label pushed out along a leader
- * line. Central Park, Neo Soho and Taman Anggrek sit a couple hundred metres
- * apart, so plain pins would pile on top of each other at city zoom. The
- * number in the badge follows the mode: percent full, zone bay price, valet
- * wait, free chargers. A place that does not offer the mode goes grey.
+ * Every place is a dot with a white ring, right on the spot. Its label, a
+ * small white pill with the number in ink ("titik + angka"), hangs off the
+ * dot only when MapView found room for it (`offset`); otherwise the place
+ * stays a bare dot until you zoom in. The number follows the mode: percent
+ * full, zone bay price, valet wait, free chargers. So does the dot: the
+ * status colour when parking, cornflower when Zona KENNETH is on, ink for
+ * valet and chargers, red when the bays or chargers are gone. `named` adds
+ * the short name when zoomed in. The selected place, or the card in view on
+ * the home row, gets one ink pill above its dot, "Central Park · 94%". A
+ * place that does not offer the service on is a faint grey dot with no label.
  */
 export function VenuePin({
   snap,
   fact = { kind: 'pct', pct: snap.pct },
+  offset,
+  named,
   selected,
   dimmed,
   onClick,
 }: {
   snap: Snapshot
   fact?: PinFact
+  /** Where the label sits. Missing or null: no room, show the dot only. */
+  offset?: Offset | null
+  named: boolean
   selected: boolean
   dimmed: boolean
   onClick: () => void
 }) {
   const t = useT()
-  const hex = factHex(fact, snap)
   const off = fact.kind === 'none'
-  // The selected label lifts straight up so the gate chips around the building stay visible.
-  const [dx, dy] = selected ? [0, -66] : DIR[snap.venue.labelDir]
-  const faded = dimmed || (off && !selected)
-  let badge: ReactNode = null
+  const shown = !!offset && (selected || !off)
+  const [dx, dy] = offset ?? [1, 0]
+  let value = ''
   let spoken = `${snap.pct}%`
   switch (fact.kind) {
     case 'pct':
-      badge = `${fact.pct}%`
+      value = `${fact.pct}%`
       break
     case 'price':
-      badge =
-        fact.left > 0 ? (
-          <>
-            <Crown size={10} weight="fill" /> {formatRupiah(fact.price, true).replace('Rp', '')}
-          </>
-        ) : (
-          t.modes.soldOut
-        )
+      value = fact.left > 0 ? formatRupiah(fact.price, true) : t.modes.soldOut
       spoken = fact.left > 0 ? `${t.modes.zone.label} ${formatRupiah(fact.price)}` : t.modes.soldOut
       break
     case 'wait':
-      badge = (
-        <>
-          <Key size={10} weight="fill" /> {fact.min} {t.unit.min}
-        </>
-      )
+      value = `${fact.min} ${t.unit.min}`
       spoken = `${t.modes.valet.label} ${fact.min} ${t.unit.min}`
       break
     case 'chargers':
-      badge = (
-        <>
-          <ChargingStation size={10} weight="fill" /> {t.modes.free(fact.free, fact.total)}
-        </>
-      )
+      value = t.modes.free(fact.free, fact.total)
       spoken = `${t.modes.ev.label} ${fact.free}/${fact.total}`
       break
     case 'none':
       spoken = ''
       break
   }
+  const label = `${snap.venue.name} ${spoken}`.trim()
+  const fade = dimmed ? 0.5 : 1
+
   return (
     <div className="relative size-0">
-      <svg className="pointer-events-none absolute overflow-visible" width="1" height="1" aria-hidden="true">
-        <motion.line
-          x1={0}
-          y1={0}
-          initial={{ x2: 0, y2: 0 }}
-          animate={{ x2: dx, y2: dy, opacity: faded ? 0.35 : 0.9 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-          stroke={selected ? 'var(--ink)' : hex}
-          strokeWidth={selected ? 2 : 1.5}
-          strokeLinecap="round"
-        />
-      </svg>
-      <span
-        className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_1px_4px_rgb(0_0_0/0.35)]"
-        style={{ background: hex }}
-      >
-        {fact.kind === 'pct' && snap.status === 'penuh' && (
-          <span className="absolute -inset-1 animate-ping rounded-full opacity-50" style={{ background: hex }} />
-        )}
-      </span>
+      {(selected || !off) && (
+        <motion.div
+          aria-hidden="true"
+          data-pin-label=""
+          onClick={onClick}
+          initial={false}
+          animate={{ opacity: shown ? fade : 0, scale: shown ? 1 : 0.85, x: '-50%', y: '-50%' }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          style={{ left: dx, top: dy }}
+          className={clsx(
+            'absolute flex cursor-pointer items-center rounded-full whitespace-nowrap tabular',
+            !shown && 'pointer-events-none',
+            selected
+              ? 'h-8 gap-1.5 px-3.5 text-[13px] font-semibold bg-ink text-canvas shadow-[0_8px_20px_-6px_rgb(0_0_0/0.45)]'
+              : clsx(
+                  'h-[22px] gap-1 text-[11.5px] font-semibold bg-surface text-ink ring-1 ring-line shadow-[0_1px_2px_rgb(0_0_0/0.08),0_3px_10px_-4px_rgb(0_0_0/0.2)] dark:bg-surface-3',
+                  // The dot sits in the padded end, so the pill hangs off it on either side.
+                  dx >= 0 ? 'pr-2 pl-[21px]' : 'flex-row-reverse pr-[21px] pl-2',
+                ),
+          )}
+        >
+          {selected ? (
+            <>
+              <span>{snap.venue.name}</span>
+              {value && (
+                <>
+                  <span className="opacity-50">·</span>
+                  <span>{value}</span>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <span>{value}</span>
+              {named && <span className="font-medium text-ink-2">{snap.venue.short}</span>}
+            </>
+          )}
+        </motion.div>
+      )}
       <motion.button
         type="button"
         onClick={onClick}
-        aria-label={`${snap.venue.name} ${spoken}`.trim()}
-        initial={{ scale: 0.3, opacity: 0, x: '-50%', y: '-50%', left: 0, top: 0 }}
-        animate={{ scale: selected ? 1.06 : 1, opacity: faded ? 0.5 : 1, left: dx, top: dy, x: '-50%', y: '-50%' }}
-        whileTap={{ scale: 0.94 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-        className={clsx(
-          'absolute flex h-[32px] items-center gap-1.5 rounded-full pr-2.5 whitespace-nowrap',
-          off ? 'pl-2.5' : 'pl-1',
-          selected ? 'bg-ink text-canvas shadow-[0_10px_24px_-6px_rgb(0_0_0/0.45)]' : 'glass shadow-float text-ink',
-        )}
+        aria-label={label}
+        initial={{ scale: 0.3, opacity: 0, x: '-50%', y: '-50%' }}
+        animate={{ scale: 1, opacity: off && !selected ? fade * 0.7 : fade, x: '-50%', y: '-50%' }}
+        whileTap={{ scale: 0.85 }}
+        className="absolute top-0 left-0 grid size-7 place-items-center"
       >
-        {!off && (
-          <span
-            className="flex h-6 min-w-6 items-center justify-center gap-0.5 rounded-full px-1.5 text-[11px] font-extrabold text-white tabular"
-            style={{ background: fact.kind === 'wait' && selected ? '#2a302c' : hex }}
-          >
-            {badge}
-          </span>
-        )}
-        <span className={clsx('text-[11.5px] font-bold', off && !selected && 'text-ink-3')}>
-          {selected ? snap.venue.name : snap.venue.short}
-        </span>
-        {selected && fact.kind === 'pct' && snap.queueMin >= 3 && (
-          <span className="text-[11px] font-semibold opacity-70">
-            {t.explore.queue} {formatMin(snap.queueMin)} {t.unit.min}
-          </span>
-        )}
+        <span
+          className={clsx(
+            'rounded-full border-2 border-white shadow-[0_1px_3px_rgb(0_0_0/0.3)]',
+            selected ? 'size-3.5' : off ? 'size-2.5' : 'size-3',
+            factDot(fact, snap),
+          )}
+        />
       </motion.button>
     </div>
   )
@@ -149,34 +141,43 @@ function gateTag(name: string) {
   return rest.charAt(0).toUpperCase() + rest.slice(1)
 }
 
-export function GatePin({ gate, queueMin, best }: { gate: Gate; queueMin: number; best: boolean }) {
+/**
+ * A small neutral chip on each gate of the selected place, "G3 · 2 mnt": the
+ * status dot carries the queue colour, the text stays ink. The gate the route
+ * goes to is the one that stands out; the others step back. `shown` is false
+ * while there is no room for the chip, such as zoomed out over the building.
+ */
+export function GatePin({ gate, queueMin, best, shown }: { gate: Gate; queueMin: number; best: boolean; shown: boolean }) {
   const t = useT()
   const tone = queueMin < 5 ? STATUS.lega : queueMin < 10 ? STATUS.ramai : STATUS.penuh
   return (
     <motion.div
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      animate={{ scale: shown ? 1 : 0.8, opacity: shown ? (best ? 1 : 0.72) : 0 }}
       exit={{ scale: 0, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 500, damping: 28, delay: 0.5 }}
+      data-pin-label=""
       className={clsx(
-        'flex h-6 items-center gap-1 rounded-md px-1.5 text-[10.5px] font-bold whitespace-nowrap text-white shadow-[0_4px_10px_-2px_rgb(0_0_0/0.35)]',
-        best && 'ring-2 ring-white',
+        'flex h-6 items-center gap-1.5 rounded-full pr-2.5 pl-2 text-[11.5px] whitespace-nowrap tabular',
+        best
+          ? 'bg-surface font-semibold text-ink ring-[1.5px] ring-ink shadow-[0_1px_2px_rgb(0_0_0/0.08),0_3px_10px_-4px_rgb(0_0_0/0.2)] dark:bg-surface-3'
+          : 'bg-surface/90 font-medium text-ink-2 ring-1 ring-line dark:bg-surface-3/90',
       )}
-      style={{ background: tone.hex }}
     >
-      <span>{gateTag(gate.name)}</span>
-      <span className="opacity-85 tabular">
-        {formatMin(queueMin)} {t.unit.min}
+      <span className="size-2 rounded-full" style={{ background: tone.hex }} />
+      <span>
+        {gateTag(gate.name)} · {formatMin(queueMin)} {t.unit.min}
       </span>
     </motion.div>
   )
 }
 
+/** You are here: an ink puck with a soft halo. Ink, so it never reads as a status or the accent. */
 export function OriginPin() {
   return (
-    <div className="relative grid size-6 place-items-center">
-      <span className="absolute inset-0 animate-ping rounded-full bg-signal/35" />
-      <span className="size-4 rounded-full border-[3px] border-white bg-signal shadow-[0_2px_8px_rgb(31_95_214/0.55)]" />
+    <div data-pin-label="" className="relative grid size-7 place-items-center">
+      <span className="absolute inset-0 rounded-full bg-signal/12" />
+      <span className="size-4 rounded-full border-[3px] border-surface bg-signal shadow-[0_1px_4px_rgb(0_0_0/0.3)]" />
     </div>
   )
 }

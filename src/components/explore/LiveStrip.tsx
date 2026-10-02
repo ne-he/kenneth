@@ -79,13 +79,19 @@ export function LiveStrip() {
         go()
       }}
       className={clsx(
-        'mx-4 mb-3 flex w-[calc(100%-2rem)] items-center gap-2.5 rounded-[14px] px-3 py-2.5 text-left text-[13px] font-semibold',
-        hot ? 'bg-brand-600 text-white' : 'bg-lega-soft text-lega-ink dark:bg-lega/15 dark:text-led-lega',
+        'mx-4 mb-3 flex w-[calc(100%-2rem)] items-center gap-2.5 rounded-[14px] px-3 py-2.5 text-left text-[13px] font-medium',
+        // Green is for lega, so a booking in progress is neutral, and the moment to act gets the cornflower tint.
+        hot ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-100' : 'bg-surface-2 text-ink',
       )}
     >
-      <span className={clsx('relative grid size-6 shrink-0 place-items-center rounded-full', hot ? 'bg-white/20' : 'bg-lega/15')}>
+      <span
+        className={clsx(
+          'relative grid size-6 shrink-0 place-items-center rounded-full',
+          hot ? 'bg-surface text-brand-700 dark:bg-brand-500/20 dark:text-brand-200' : 'bg-surface text-ink-2 dark:bg-surface-3',
+        )}
+      >
         {icon}
-        <span className={clsx('absolute -top-0.5 -right-0.5 size-2 animate-pulse rounded-full', hot ? 'bg-white' : 'bg-lega')} />
+        <span className="absolute -top-0.5 -right-0.5 size-2 animate-pulse rounded-full bg-brand-500" />
       </span>
       <span className="min-w-0 flex-1 truncate">{text}</span>
       <CaretRight size={14} weight="bold" className="shrink-0 opacity-70" />

@@ -1,14 +1,16 @@
 import {
   CarProfile,
+  ChargingStation,
+  Crown,
   CurrencyCircleDollar,
   Database,
   DoorOpen,
   Info,
+  Key,
   Megaphone,
   NavigationArrow,
   PersonSimpleWalk,
   ShieldCheck,
-  Sparkle,
   Star,
   Storefront,
   Warning,
@@ -21,23 +23,23 @@ import { useMemo, useState } from 'react'
 import { VENUES } from '../../data/venues'
 import type { Venue } from '../../data/types'
 import { checkGage } from '../../engine/gage'
+import { pinFact } from '../../engine/modes'
 import { forKind, reservedFree } from '../../engine/occupancy'
 import { formatRupiah, parkingCost } from '../../engine/pricing'
 import { alternativesFor, type Ranked } from '../../engine/recommend'
-import { servicesFor, type Service } from '../../engine/services'
-import { dropQueueMin, retrievalMin } from '../../engine/valet'
-import { baysLeft, zoneOf } from '../../engine/zone'
+import { servicesFor } from '../../engine/services'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
 import { STATUS, formatMin } from '../../lib/status'
 import { useApp, useVehicle, type CommunityReport } from '../../store/app'
+import { useViewTs } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
-import { Disclosure, Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
-import { LedBoard } from './LedBoard'
+import { Disclosure, Label, List, StatusPill } from '../ui/Kit'
 import { PlaceCard } from './PlaceCard'
+import { SlotsLeft } from './SlotsLeft'
 import { TimeScrubber } from './TimeScrubber'
 
 export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?: Ranked; onBack: () => void }) {
@@ -46,11 +48,34 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
   const toggleFavorite = useApp((s) => s.toggleFavorite)
   const notify = useUi((s) => s.notify)
   return (
-    <div className="flex items-center gap-3 px-5 pb-3">
-      <VenueGlyph category={venue.category} size={42} />
-      <div className="min-w-0 flex-1">
-        <h2 className="truncate text-[19px] leading-tight font-bold tracking-tight">{venue.name}</h2>
-        <div className="mt-0.5 flex items-center gap-1.5 overflow-hidden text-[12.5px] whitespace-nowrap text-ink-3">
+    <div className="px-5 pt-1 pb-4">
+      {/* The round buttons pull in a little so the title row stays as tall as the name. */}
+      <div className="flex items-center gap-1.5">
+        <h2 className="min-w-0 flex-1 truncate text-[21px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
+        <button
+          type="button"
+          aria-pressed={fav}
+          aria-label={t.venue.favorite}
+          onClick={() => {
+            haptic(fav ? 'tap' : 'success')
+            toggleFavorite(venue.id)
+            notify(fav ? t.venue.unfavorited : t.venue.favorited)
+          }}
+          className={clsx('-my-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors', fav ? 'text-ink' : 'text-ink-3 hover:text-ink')}
+        >
+          <Star size={18} weight={fav ? 'fill' : 'regular'} />
+        </button>
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label={t.common.close}
+          className="-my-1 grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
+        >
+          <X size={15} weight="bold" />
+        </button>
+      </div>
+      <div className="mt-1 flex items-baseline justify-between gap-3 text-[13px] text-ink-3">
+        <div className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
           <span>{t.venue.category[venue.category]}</span>
           <span>·</span>
           <SourceChip venue={venue} />
@@ -61,45 +86,72 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
             </>
           )}
         </div>
+        {snap && <HeaderFact snap={snap} />}
       </div>
-      <button
-        type="button"
-        aria-pressed={fav}
-        aria-label={t.venue.favorite}
-        onClick={() => {
-          haptic(fav ? 'tap' : 'success')
-          toggleFavorite(venue.id)
-          notify(fav ? t.venue.unfavorited : t.venue.favorited)
-        }}
-        className={clsx(
-          'grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 transition-colors',
-          fav ? 'text-ramai' : 'text-ink-3 hover:text-ink',
-        )}
-      >
-        <Star size={16} weight={fav ? 'fill' : 'bold'} />
-      </button>
-      <button
-        type="button"
-        onClick={onBack}
-        aria-label={t.common.close}
-        className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
-      >
-        <X size={15} weight="bold" />
-      </button>
     </div>
   )
 }
 
+/**
+ * The number the mode is about, at the right end of the header: how full when
+ * just parking, otherwise the bay price, the minutes until the car is back, or
+ * the free chargers. The same number the row in the list showed before the tap.
+ */
+function HeaderFact({ snap }: { snap: Ranked }) {
+  const t = useT()
+  const mode = useUi((s) => s.mode)
+  const plan = useApp((s) => s.plan)
+  const vehicle = useVehicle()
+  const { ts } = useViewTs()
+  const fact = pinFact(snap, mode, vehicle.kind, plan, ts)
+  const icon = 'shrink-0 self-center'
+  const word = 'text-[12.5px] font-medium text-ink-3'
+  let body
+  switch (fact.kind) {
+    case 'price':
+      body = (
+        <>
+          <Crown size={12} weight="fill" className={clsx(icon, 'text-brand-600 dark:text-brand-300')} />
+          {fact.left > 0 ? formatRupiah(fact.price, true) : <span className="text-[13px] text-penuh-ink dark:text-led-penuh">{t.modes.soldOut}</span>}
+        </>
+      )
+      break
+    case 'wait':
+      body = (
+        <>
+          <Key size={12} weight="fill" className={clsx(icon, 'text-ink-3')} />
+          {fact.min}
+          <span className={word}>{t.unit.min}</span>
+        </>
+      )
+      break
+    case 'chargers':
+      body = (
+        <>
+          <ChargingStation size={12} weight="fill" className={clsx(icon, 'text-ev')} />
+          {t.modes.free(fact.free, fact.total)}
+          <span className={word}>{t.card.evFree.toLowerCase()}</span>
+        </>
+      )
+      break
+    default:
+      // Plain parking, or a service this place does not sell: how full it is, dot in the status color.
+      body = (
+        <>
+          <span className={clsx(icon, 'size-2 rounded-full', STATUS[snap.status].dot)} aria-hidden="true" />
+          {snap.pct}%<span className={word}>{t.status[snap.status]}</span>
+        </>
+      )
+  }
+  return <span className="flex shrink-0 items-baseline gap-1 text-[15px] font-semibold tracking-tight text-ink tabular">{body}</span>
+}
+
+/** Where the numbers come from. Always shown; yellow stays reserved for "Ramai", so an estimate reads in ink. */
 function SourceChip({ venue }: { venue: Venue }) {
   const t = useT()
   const palang = venue.source === 'palang'
   return (
-    <span
-      className={clsx(
-        'inline-flex items-center gap-1 font-semibold',
-        palang ? 'text-brand-700 dark:text-brand-300' : 'text-ramai-ink dark:text-led-ramai',
-      )}
-    >
+    <span className={clsx('inline-flex items-center gap-1 font-medium', palang ? 'text-brand-700 dark:text-brand-300' : 'text-ink-2')}>
       {palang ? <Database size={11} weight="fill" /> : <Info size={11} weight="fill" />}
       {palang ? t.source.palang : t.source.estimasi}
     </span>
@@ -123,13 +175,15 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
       <PlaceCard snap={snap} ts={ts} previewing={previewing} />
 
       {/* Below the fold: shows when the sheet is pulled up. */}
-      <div className="mt-5 space-y-5">
-        <LedBoard snap={snap} kind={vehicle.kind} />
+      <div className="mt-6 space-y-8">
+        <div className="border-t border-line pt-5">
+          <SlotsLeft snap={snap} kind={vehicle.kind} source={<SourceChip venue={venue} />} />
+        </div>
 
         {alts.length > 0 && (
           <section>
             <Label>{t.venue.alternatives}</Label>
-            <List>
+            <List plain>
               {alts.map((a) => (
                 <button
                   key={a.snap.venue.id}
@@ -138,12 +192,11 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
                     haptic('tap')
                     select(a.snap.venue.id)
                   }}
-                  className="flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors hover:bg-surface-2/60"
+                  className="flex w-full items-center gap-3 px-1 py-3.5 text-left transition-opacity hover:opacity-80"
                 >
-                  <VenueGlyph category={a.snap.venue.category} size={36} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-semibold">{a.snap.venue.name}</span>
-                    <span className="mt-0.5 flex items-start gap-1 text-[12px] leading-snug text-ink-3">
+                    <span className="block truncate text-[14.5px] font-medium">{a.snap.venue.name}</span>
+                    <span className="mt-0.5 flex items-start gap-1 text-[12.5px] leading-snug text-ink-3">
                       {a.walk ? <PersonSimpleWalk size={13} className="mt-px shrink-0" /> : <CarProfile size={13} className="mt-px shrink-0" />}
                       <span className="line-clamp-2">{a.walk ? t.venue.walk(a.walk.minutes, a.walk.via) : t.venue.drive(formatKm(a.km))}</span>
                     </span>
@@ -155,14 +208,14 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
           </section>
         )}
 
-        <section className="rounded-[18px] border border-line bg-surface p-3.5">
+        <section className="px-1">
           <TimeScrubber venues={[venue]} now={now} title={t.venue.forecast} />
         </section>
 
-        <List>
+        <List plain>
           <GatesRow snap={snap} />
           <CostRow venue={venue} />
-          {services.length > 0 && <ServicesRow venue={venue} snap={snap} services={services} ts={ts} />}
+          {/* Which services this place sells is the chip row at the top of the card, so no row repeats it. */}
           <SpecialRow venue={venue} snap={snap} ts={ts} />
           {/* Odd-even plates only matter on a corridor route; elsewhere the row would only say it does not apply. */}
           {vehicle.kind === 'mobil' && venue.gageCorridor && <GageRow venue={venue} ts={ts} />}
@@ -190,7 +243,7 @@ function GatesRow({ snap }: { snap: Ranked }) {
   const nav = useNavigation()
   return (
     <Disclosure
-      icon={<DoorOpen size={17} weight="fill" />}
+      icon={<DoorOpen size={17} />}
       title={t.venue.gates}
       summary={gateSpread(t, snap.gates.map((g) => g.queueMin))}
     >
@@ -198,23 +251,24 @@ function GatesRow({ snap }: { snap: Ranked }) {
         {snap.gates.map(({ gate, queueMin }, i) => (
           <div key={gate.id} className="flex items-center gap-3 py-2.5">
             <span className="min-w-0 flex-1">
-              <span className="flex items-center gap-1.5 text-[13.5px] font-semibold">
+              <span className="flex items-baseline gap-2 text-[13.5px] font-medium">
                 {gate.name}
-                {i === 0 && <span className="text-[11px] font-bold text-brand-700 dark:text-brand-300">{t.venue.recommended}</span>}
+                {i === 0 && <span className="text-[11.5px] font-medium text-brand-600 dark:text-brand-300">{t.venue.recommended}</span>}
               </span>
               <span className="mt-0.5 block text-[12px] text-ink-3">
                 {gate.hint}
                 {gate.zoneLane ? ` · ${t.venue.zoneLane}` : ''}
               </span>
             </span>
-            <span className={clsx('text-[14px] font-bold tabular', STATUS[queueMin < 5 ? 'lega' : queueMin < 10 ? 'ramai' : 'penuh'].text)}>
+            <span className="flex items-center gap-1.5 text-[14px] font-semibold tabular">
+              <span className={clsx('size-2 rounded-full', STATUS[queueMin < 5 ? 'lega' : queueMin < 10 ? 'ramai' : 'penuh'].dot)} aria-hidden="true" />
               {formatMin(queueMin)} {t.unit.min}
             </span>
             <button
               type="button"
               aria-label={`${t.venue.actions.route} ${gate.name}`}
               onClick={() => nav.start(snap.venue.id, gate.id)}
-              className="grid size-8 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
+              className="grid size-8 place-items-center rounded-full border border-line-strong text-ink-2 transition-colors hover:text-ink"
             >
               <NavigationArrow size={14} weight="fill" />
             </button>
@@ -243,13 +297,13 @@ function CostRow({ venue }: { venue: Venue }) {
   const [hours, setHours] = useState(3)
   return (
     <Disclosure
-      icon={<CurrencyCircleDollar size={17} weight="fill" />}
+      icon={<CurrencyCircleDollar size={17} />}
       title={t.venue.cost}
       summary={t.venue.costSummary(formatRupiah(venue.tariff.firstHour, true))}
     >
       <div className="flex items-center justify-between gap-3">
         <Stepper value={hours} onChange={setHours} min={1} max={10} label={t.venue.cost} format={(v) => t.venue.stay(v)} />
-        <motion.span key={hours} initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[20px] font-bold tracking-tight tabular">
+        <motion.span key={hours} initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="text-[20px] font-semibold tracking-tight tabular">
           {formatRupiah(parkingCost(venue, hours))}
         </motion.span>
       </div>
@@ -260,49 +314,13 @@ function CostRow({ venue }: { venue: Venue }) {
   )
 }
 
-function ServicesRow({ venue, snap, services, ts }: { venue: Venue; snap: Ranked; services: Service[]; ts: number }) {
-  const t = useT()
-  const open = useUi((s) => s.open)
-  const zone = zoneOf(venue)
-  const detail: Record<Service, string> = {
-    zone: zone ? t.venue.zoneDetail(baysLeft(venue, ts, snap.occ), zone.bays, zone.level) : '',
-    valet: venue.valet ? t.venue.valetDetail(formatRupiah(venue.valet.price, true), dropQueueMin(snap.occ), retrievalMin(snap.occ)) : '',
-    ev: t.venue.evDetail(reservedFree(venue.ev.chargers, snap.occ * 0.9, venue.id + 'e', ts), venue.ev.chargers, venue.ev.kw),
-  }
-  return (
-    <Disclosure
-      icon={<Sparkle size={17} weight="fill" />}
-      title={t.venue.services}
-      summary={services.map((s) => t.book.services[s]).join(' · ')}
-    >
-      <div className="divide-y divide-line">
-        {services.map((s) => (
-          <div key={s} className="flex items-center gap-3 py-2.5">
-            <span className="min-w-0 flex-1">
-              <span className="block text-[13.5px] font-semibold">{t.book.services[s]}</span>
-              <span className="mt-0.5 block text-[12px] leading-snug text-ink-3">{detail[s]}</span>
-            </span>
-            <button
-              type="button"
-              onClick={() => open({ kind: 'book', id: venue.id, service: s })}
-              className="h-8 shrink-0 rounded-full bg-ink px-3.5 text-[12.5px] font-bold text-canvas"
-            >
-              {t.venue.actions.book}
-            </button>
-          </div>
-        ))}
-      </div>
-    </Disclosure>
-  )
-}
-
 function SpecialRow({ venue, snap, ts }: { venue: Venue; snap: Ranked; ts: number }) {
   const t = useT()
   const d = reservedFree(venue.accessible.difabel, snap.occ, venue.id + 'd', ts)
   const h = reservedFree(venue.accessible.ibuHamil, snap.occ, venue.id + 'h', ts)
   return (
-    <Disclosure icon={<Wheelchair size={17} weight="fill" />} title={t.venue.special} summary={t.venue.specialSummary(d, h)}>
-      <div className="grid grid-cols-2 gap-2">
+    <Disclosure icon={<Wheelchair size={17} />} title={t.venue.special} summary={t.venue.specialSummary(d, h)}>
+      <div className="grid grid-cols-2 divide-x divide-line">
         <Reserved label={t.venue.difabel} free={d} total={venue.accessible.difabel} />
         <Reserved label={t.venue.ibuHamil} free={h} total={venue.accessible.ibuHamil} />
       </div>
@@ -314,12 +332,13 @@ function Reserved({ label, free, total }: { label: string; free: number; total: 
   const t = useT()
   const tone = free === 0 ? 'penuh' : free <= Math.ceil(total * 0.25) ? 'ramai' : 'lega'
   return (
-    <div className="rounded-[14px] bg-surface-2 p-3">
-      <span className={clsx('block text-[18px] leading-none font-bold tabular', STATUS[tone].text)}>
+    <div className="first:pr-4 last:pl-4">
+      <span className="flex items-center gap-1.5 text-[18px] leading-none font-semibold tabular">
+        <span className={clsx('size-2 rounded-full', STATUS[tone].dot)} aria-hidden="true" />
         {free}
-        <span className="text-[11px] font-semibold text-ink-3">/{total}</span>
+        <span className="text-[11.5px] font-medium text-ink-3">/{total}</span>
       </span>
-      <span className="mt-1 block text-[12px] text-ink-3">
+      <span className="mt-1.5 block text-[12px] text-ink-3">
         {label} {t.venue.available}
       </span>
     </div>
@@ -353,7 +372,7 @@ function GageRow({ venue, ts }: { venue: Venue; ts: number }) {
   }
   return (
     <Disclosure
-      icon={bad ? <Warning size={17} weight="fill" className="text-penuh" /> : <ShieldCheck size={17} weight="fill" />}
+      icon={bad ? <Warning size={17} weight="fill" className="text-penuh" /> : <ShieldCheck size={17} />}
       title={t.venue.gage}
       summary={text}
       tone={bad ? 'penuh' : undefined}
@@ -363,7 +382,7 @@ function GageRow({ venue, ts }: { venue: Venue; ts: number }) {
         <button
           type="button"
           onClick={() => open({ kind: 'vehicle' })}
-          className="mt-3 h-9 rounded-full bg-ink px-4 text-[12.5px] font-bold text-canvas"
+          className="mt-3 h-9 rounded-full bg-ink px-4 text-[12.5px] font-semibold text-canvas"
         >
           {t.venue.gageFill}
         </button>
@@ -375,15 +394,15 @@ function GageRow({ venue, ts }: { venue: Venue; ts: number }) {
 function TenantsRow({ venue }: { venue: Venue }) {
   const t = useT()
   return (
-    <Disclosure icon={<Storefront size={17} weight="fill" />} title={t.venue.tenants} summary={venue.tenants.map((x) => x.name).join(', ')}>
+    <Disclosure icon={<Storefront size={17} />} title={t.venue.tenants} summary={venue.tenants.map((x) => x.name).join(', ')}>
       <div className="divide-y divide-line">
         {venue.tenants.map((ten) => (
           <div key={ten.name} className="flex items-center gap-3 py-2.5">
             <span className="min-w-0 flex-1">
-              <span className="block text-[13.5px] font-semibold">{ten.name}</span>
+              <span className="block text-[13.5px] font-medium">{ten.name}</span>
               <span className="text-[12px] text-ink-3">{t.venue.tenantRoute(ten.lift, ten.floor)}</span>
             </span>
-            <span className="flex items-center gap-1 text-[12.5px] font-semibold text-ink-2 tabular">
+            <span className="flex items-center gap-1 text-[12.5px] font-medium text-ink-2 tabular">
               <PersonSimpleWalk size={14} /> {ten.walkMin} {t.unit.min}
             </span>
           </div>
@@ -404,10 +423,10 @@ function ReportRow({ venue, now }: { venue: Venue; now: number }) {
     addReport({ venueId: venue.id, kind, at: now })
     notify(t.venue.reportThanks)
   }
-  const chip = 'h-9 flex-1 rounded-full bg-surface-2 text-[12.5px] font-semibold transition-colors hover:bg-surface-3 active:scale-[0.97]'
+  const chip = 'h-9 flex-1 rounded-full border border-line-strong text-[12.5px] font-medium transition-colors hover:bg-surface-2 active:scale-[0.97]'
   return (
     <Disclosure
-      icon={<Megaphone size={17} weight="fill" />}
+      icon={<Megaphone size={17} />}
       title={t.venue.report}
       summary={recent > 0 ? t.venue.reportsRecent(recent) : t.venue.reportHint}
     >
