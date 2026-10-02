@@ -37,9 +37,9 @@ const id = {
   modes: {
     ask: 'Mau ngapain?',
     park: { label: 'Parkir', short: 'Parkir', hint: 'Gratis, cek penuh atau lega' },
-    zone: { label: 'Zona KENNETH', short: 'Zona K', hint: 'Pesan petak pasti dekat lobi' },
-    valet: { label: 'Valet runner', short: 'Valet', hint: 'Turun di lobi, runner yang parkir' },
-    ev: { label: 'Charger EV', short: 'EV', hint: 'Pesan charger mobil listrik' },
+    zone: { label: 'Zona KENNETH', short: 'Zona K', hint: 'Petak pasti dekat lobi' },
+    valet: { label: 'Valet runner', short: 'Valet', hint: 'Turun, runner yang parkir' },
+    ev: { label: 'Charger EV', short: 'EV', hint: 'Charger mobil listrik' },
     carOnly: 'Khusus mobil',
     vehicle: 'Kendaraan',
     addVehicle: 'Tambah',
@@ -61,6 +61,7 @@ const id = {
     soldOut: 'habis',
     free: (n: number, total: number) => `${n}/${total}`,
     motorSwitched: 'Pakai motor. Zona KENNETH, valet runner, dan charger khusus mobil.',
+    services: 'Layanan',
   },
   card: {
     routeTo: (gate: string) => `Rute ke ${gate}`,
@@ -130,6 +131,7 @@ const id = {
     locating: 'Nyari lokasimu...',
     locateFail: 'Lokasi nggak kebaca, pakai BINUS Anggrek dulu',
     mapFail: 'Peta gagal dimuat. Cek koneksi internet.',
+    searchField: 'Cari mall atau kampus',
   },
   venue: {
     sisaSlot: 'Sisa slot',

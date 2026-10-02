@@ -39,9 +39,9 @@ const en: Dict = {
   modes: {
     ask: 'What do you need?',
     park: { label: 'Park', short: 'Park', hint: 'Free, see full or clear' },
-    zone: { label: 'KENNETH Zone', short: 'Zone K', hint: 'Book a sure bay by the lobby' },
-    valet: { label: 'Runner valet', short: 'Valet', hint: 'Drop off at the lobby, a runner parks' },
-    ev: { label: 'EV charger', short: 'EV', hint: 'Book a charger for your EV' },
+    zone: { label: 'KENNETH Zone', short: 'Zone K', hint: 'Sure bay, lobby side' },
+    valet: { label: 'Runner valet', short: 'Valet', hint: 'Runner parks for you' },
+    ev: { label: 'EV charger', short: 'EV', hint: 'Charger for your EV' },
     carOnly: 'Cars only',
     vehicle: 'Vehicle',
     addVehicle: 'Add',
@@ -63,6 +63,7 @@ const en: Dict = {
     soldOut: 'full',
     free: (n: number, total: number) => `${n}/${total}`,
     motorSwitched: 'Using the motorbike. The KENNETH Zone, runner valet and chargers are for cars.',
+    services: 'Services',
   },
   card: {
     routeTo: (gate: string) => `Route to ${gate}`,
@@ -130,6 +131,7 @@ const en: Dict = {
     locating: 'Finding you...',
     locateFail: 'Could not read your location, using BINUS Anggrek',
     mapFail: 'The map could not load. Check your connection.',
+    searchField: 'Search a mall or campus',
   },
   venue: {
     sisaSlot: 'Free bays',
