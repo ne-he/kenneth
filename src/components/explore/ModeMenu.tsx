@@ -79,22 +79,25 @@ export function ModeMenu({ open, onClose }: { open: boolean; onClose: () => void
                     onClick={() => pick(m)}
                     className={clsx(
                       'flex w-full items-center gap-3 rounded-[16px] p-2.5 text-left transition-colors disabled:opacity-45',
-                      on ? 'bg-lega-soft dark:bg-lega/15' : 'hover:bg-surface-2',
+                      // The picked mode is the one brand moment here: a cornflower tint, not a fill.
+                      on ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-100' : 'hover:bg-surface-2',
                     )}
                   >
                     <span
                       className={clsx(
                         'grid size-10 shrink-0 place-items-center rounded-[13px]',
-                        on ? 'bg-brand-600 text-white' : 'bg-surface-2 text-ink',
+                        on ? 'bg-surface text-brand-700 dark:bg-brand-500/20 dark:text-brand-200' : 'bg-surface-2 text-ink',
                       )}
                     >
                       {MODE_ICON[m]({ size: 20, weight: 'fill' })}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[15px] font-bold">{t.modes[m].label}</span>
-                      <span className="block truncate text-[12.5px] text-ink-2">{locked ? t.modes.carOnly : t.modes[m].hint}</span>
+                      <span className="block text-[15px] font-semibold">{t.modes[m].label}</span>
+                      <span className={clsx('block truncate text-[12.5px]', on ? 'opacity-75' : 'text-ink-2')}>
+                        {locked ? t.modes.carOnly : t.modes[m].hint}
+                      </span>
                     </span>
-                    {on && <Check size={20} weight="bold" className="shrink-0 text-brand-600 dark:text-brand-400" />}
+                    {on && <Check size={18} weight="bold" className="shrink-0 text-brand-700 dark:text-brand-300" />}
                   </button>
                 )
               })}
