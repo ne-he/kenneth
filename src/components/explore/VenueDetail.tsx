@@ -48,10 +48,34 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
   const toggleFavorite = useApp((s) => s.toggleFavorite)
   const notify = useUi((s) => s.notify)
   return (
-    <div className="flex items-center gap-1.5 px-5 pt-1 pb-4">
-      <div className="min-w-0 flex-1">
-        <h2 className="truncate text-[21px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
-        <div className="mt-1 flex items-center gap-1.5 overflow-hidden text-[13px] whitespace-nowrap text-ink-3">
+    <div className="px-5 pt-1 pb-4">
+      {/* The round buttons pull in a little so the title row stays as tall as the name. */}
+      <div className="flex items-center gap-1.5">
+        <h2 className="min-w-0 flex-1 truncate text-[21px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
+        <button
+          type="button"
+          aria-pressed={fav}
+          aria-label={t.venue.favorite}
+          onClick={() => {
+            haptic(fav ? 'tap' : 'success')
+            toggleFavorite(venue.id)
+            notify(fav ? t.venue.unfavorited : t.venue.favorited)
+          }}
+          className={clsx('-my-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors', fav ? 'text-ink' : 'text-ink-3 hover:text-ink')}
+        >
+          <Star size={18} weight={fav ? 'fill' : 'regular'} />
+        </button>
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label={t.common.close}
+          className="-my-1 grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
+        >
+          <X size={15} weight="bold" />
+        </button>
+      </div>
+      <div className="mt-1 flex items-baseline justify-between gap-3 text-[13px] text-ink-3">
+        <div className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
           <span>{t.venue.category[venue.category]}</span>
           <span>·</span>
           <SourceChip venue={venue} />
@@ -62,37 +86,16 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
             </>
           )}
         </div>
+        {snap && <HeaderFact snap={snap} />}
       </div>
-      {snap && <HeaderFact snap={snap} />}
-      <button
-        type="button"
-        aria-pressed={fav}
-        aria-label={t.venue.favorite}
-        onClick={() => {
-          haptic(fav ? 'tap' : 'success')
-          toggleFavorite(venue.id)
-          notify(fav ? t.venue.unfavorited : t.venue.favorited)
-        }}
-        className={clsx('grid size-9 shrink-0 place-items-center rounded-full transition-colors', fav ? 'text-ink' : 'text-ink-3 hover:text-ink')}
-      >
-        <Star size={18} weight={fav ? 'fill' : 'regular'} />
-      </button>
-      <button
-        type="button"
-        onClick={onBack}
-        aria-label={t.common.close}
-        className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
-      >
-        <X size={15} weight="bold" />
-      </button>
     </div>
   )
 }
 
 /**
- * The number the mode is about, on the right of the name: how full when just
- * parking, otherwise the bay price, the minutes until the car is back, or the
- * free chargers. The same number the row in the list showed before the tap.
+ * The number the mode is about, at the right end of the header: how full when
+ * just parking, otherwise the bay price, the minutes until the car is back, or
+ * the free chargers. The same number the row in the list showed before the tap.
  */
 function HeaderFact({ snap }: { snap: Ranked }) {
   const t = useT()
@@ -101,53 +104,46 @@ function HeaderFact({ snap }: { snap: Ranked }) {
   const vehicle = useVehicle()
   const { ts } = useViewTs()
   const fact = pinFact(snap, mode, vehicle.kind, plan, ts)
-  const num = 'flex items-center gap-1 text-[16px] leading-none font-semibold tracking-tight tabular'
-  let value
-  let label: string
+  const icon = 'shrink-0 self-center'
+  const word = 'text-[12.5px] font-medium text-ink-3'
+  let body
   switch (fact.kind) {
     case 'price':
-      label = t.card.zonePrice
-      value = (
-        <span className={num}>
-          <Crown size={12} weight="fill" className="text-brand-600 dark:text-brand-300" />
+      body = (
+        <>
+          <Crown size={12} weight="fill" className={clsx(icon, 'text-brand-600 dark:text-brand-300')} />
           {fact.left > 0 ? formatRupiah(fact.price, true) : <span className="text-[13px] text-penuh-ink dark:text-led-penuh">{t.modes.soldOut}</span>}
-        </span>
+        </>
       )
       break
     case 'wait':
-      label = t.card.valetReady
-      value = (
-        <span className={num}>
-          <Key size={12} weight="fill" className="text-ink-3" />
-          {fact.min} <span className="text-[11.5px] font-medium text-ink-3">{t.unit.min}</span>
-        </span>
+      body = (
+        <>
+          <Key size={12} weight="fill" className={clsx(icon, 'text-ink-3')} />
+          {fact.min}
+          <span className={word}>{t.unit.min}</span>
+        </>
       )
       break
     case 'chargers':
-      label = t.card.evFree
-      value = (
-        <span className={num}>
-          <ChargingStation size={12} weight="fill" className="text-ev" />
+      body = (
+        <>
+          <ChargingStation size={12} weight="fill" className={clsx(icon, 'text-ev')} />
           {t.modes.free(fact.free, fact.total)}
-        </span>
+          <span className={word}>{t.card.evFree.toLowerCase()}</span>
+        </>
       )
       break
     default:
-      // Plain parking, or a service this place does not sell: how full it is.
-      label = t.status[snap.status]
-      value = (
-        <span className={num}>
-          <span className={clsx('size-2 rounded-full', STATUS[snap.status].dot)} aria-hidden="true" />
-          {snap.pct}%
-        </span>
+      // Plain parking, or a service this place does not sell: how full it is, dot in the status color.
+      body = (
+        <>
+          <span className={clsx(icon, 'size-2 rounded-full', STATUS[snap.status].dot)} aria-hidden="true" />
+          {snap.pct}%<span className={word}>{t.status[snap.status]}</span>
+        </>
       )
   }
-  return (
-    <span className="mr-1.5 flex shrink-0 flex-col items-end gap-1">
-      {value}
-      <span className="text-[11.5px] leading-none text-ink-3">{label}</span>
-    </span>
-  )
+  return <span className="flex shrink-0 items-baseline gap-1 text-[15px] font-semibold tracking-tight text-ink tabular">{body}</span>
 }
 
 /** Where the numbers come from. Always shown; yellow stays reserved for "Ramai", so an estimate reads in ink. */
