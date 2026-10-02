@@ -120,32 +120,42 @@ export function PremiumSheet() {
   const tiers = [
     { key: 'free', name: p.freeName, price: p.freePrice, unit: '', tag: p.freeTag, items: p.freeItems, tone: 'plain' },
     { key: 'pay', name: p.payName, price: p.payPrice, unit: p.payUnit, tag: p.payTag, items: p.payItems, tone: 'plain' },
-    { key: 'premium', name: p.premName, price: p.premPrice, unit: p.premUnit, tag: p.premTag, items: p.premItems, tone: 'dark' },
+    { key: 'premium', name: p.premName, price: p.premPrice, unit: p.premUnit, tag: p.premTag, items: p.premItems, tone: 'accent' },
   ] as const
   return (
     <div className="pb-5">
       <SheetHeader title={p.title} onClose={close} closeLabel={t.common.close} />
-      <p className="mb-4 text-[13px] leading-relaxed text-ink-2">{p.principle}</p>
-      <div className="space-y-2.5">
+      <p className="mb-5 text-[13px] leading-relaxed text-ink-2">{p.principle}</p>
+      {/* Premium is the brand moment here: a soft cornflower tint instead of a solid black card. */}
+      <div className="space-y-3">
         {tiers.map((tier) => (
           <div
             key={tier.key}
-            className={clsx('rounded-[20px] border p-4', tier.tone === 'dark' ? 'border-transparent bg-ink text-canvas' : 'border-line bg-surface')}
+            className={clsx(
+              'rounded-[20px] border p-4',
+              tier.tone === 'accent' ? 'border-brand-200 bg-brand-50 dark:border-brand-400/20 dark:bg-brand-500/10' : 'border-line bg-surface',
+            )}
           >
             <div className="flex items-start justify-between">
               <div>
-                <div className={clsx('text-[12px] font-semibold', tier.tone === 'dark' ? 'text-canvas/60' : 'text-ink-3')}>{tier.tag}</div>
-                <div className="mt-0.5 text-[17px] font-bold">{tier.name}</div>
+                <div className={clsx('text-[12px] font-medium', tier.tone === 'accent' ? 'text-brand-700 dark:text-brand-300' : 'text-ink-3')}>
+                  {tier.tag}
+                </div>
+                <div className="mt-0.5 text-[17px] font-semibold tracking-tight">{tier.name}</div>
               </div>
               <div className="text-right">
-                <div className="text-[20px] font-bold tracking-tight tabular">{tier.price}</div>
-                {tier.unit && <div className={clsx('text-[11px]', tier.tone === 'dark' ? 'text-canvas/60' : 'text-ink-3')}>{tier.unit}</div>}
+                <div className="text-[20px] font-semibold tracking-tight tabular">{tier.price}</div>
+                {tier.unit && <div className="text-[11px] text-ink-3">{tier.unit}</div>}
               </div>
             </div>
             <ul className="mt-3 space-y-1.5">
               {tier.items.map((it) => (
-                <li key={it} className={clsx('flex gap-2 text-[12.5px]', tier.tone === 'dark' ? 'text-canvas/80' : 'text-ink-2')}>
-                  <Check size={14} weight="bold" className={clsx('mt-[2px] shrink-0', tier.tone === 'dark' ? 'text-brand-400' : 'text-brand-600')} />
+                <li key={it} className="flex gap-2 text-[12.5px] text-ink-2">
+                  <Check
+                    size={14}
+                    weight="bold"
+                    className={clsx('mt-[2px] shrink-0', tier.tone === 'accent' ? 'text-brand-600 dark:text-brand-300' : 'text-ink-3')}
+                  />
                   {it}
                 </li>
               ))}
