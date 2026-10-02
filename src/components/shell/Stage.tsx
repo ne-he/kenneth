@@ -18,7 +18,7 @@ export function Stage({ children }: { children: ReactNode }) {
   const [scale, setScale] = useState(1)
 
   useEffect(() => {
-    QRCode.toDataURL(window.location.origin, { margin: 1, width: 240, color: { dark: '#111512', light: '#ffffff' } }).then(setQr)
+    QRCode.toDataURL(window.location.origin, { margin: 1, width: 240, color: { dark: '#121216', light: '#ffffff' } }).then(setQr)
   }, [])
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export function Stage({ children }: { children: ReactNode }) {
         style={{ width: (PHONE_W + 24) * scale, height: (PHONE_H + 24) * scale }}
       >
         <div
-          className="origin-top-left rounded-[64px] bg-[#0c0f0d] p-3 shadow-[0_60px_120px_-40px_rgb(0_0_0/0.55),0_0_0_1.5px_rgb(255_255_255/0.08)_inset]"
+          className="origin-top-left rounded-[64px] bg-[#121216] p-3 shadow-[0_60px_120px_-40px_rgb(0_0_0/0.55),0_0_0_1.5px_rgb(255_255_255/0.08)_inset]"
           style={{ width: PHONE_W + 24, height: PHONE_H + 24, transform: `scale(${scale})` }}
         >
           <div
