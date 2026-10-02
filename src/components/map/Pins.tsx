@@ -9,39 +9,43 @@ import { STATUS, formatMin } from '../../lib/status'
 import type { Offset } from './declutter'
 import { factHex } from './pinColor'
 
+/** How far the dot sits in from the end of a place label, so the pill hangs off the dot. MapView places labels by it. */
+export const LABEL_INSET = 11
+
 /**
- * "Titik + angka": a small pill with a status dot and the number in ink, sat
- * right on the place. The number follows the mode: percent full, zone bay
- * price, valet wait, free chargers. Only the selected pin adds the venue name.
- * A place that does not offer the mode is a faint grey dot.
- *
- * Central Park, Neo Soho and Taman Anggrek sit a couple hundred metres apart,
- * so at city zoom MapView moves crowded labels beside their point (`offset`).
- * A bare dot then stays on the exact spot.
+ * Every place is a status dot with a white ring, right on the spot. Its
+ * label, a small white pill with the number in ink ("titik + angka"), hangs
+ * off the dot only when MapView found room for it (`offset`); otherwise the
+ * place stays a bare dot until you zoom in. The number follows the mode:
+ * percent full, zone bay price, valet wait, free chargers. `named` adds the
+ * short name when zoomed in. The selected place gets one ink pill above its
+ * dot, "Central Park · 94%". A place that does not offer the mode is a faint
+ * grey dot with no label.
  */
 export function VenuePin({
   snap,
   fact = { kind: 'pct', pct: snap.pct },
-  offset = [0, 0],
+  offset,
+  named,
   selected,
   dimmed,
   onClick,
 }: {
   snap: Snapshot
   fact?: PinFact
-  offset?: Offset
+  /** Where the label sits. Missing or null: no room, show the dot only. */
+  offset?: Offset | null
+  named: boolean
   selected: boolean
   dimmed: boolean
   onClick: () => void
 }) {
   const t = useT()
-  const hex = factHex(fact, snap)
   const off = fact.kind === 'none'
-  // Valet has no status to show, so its dot follows the text: ink on a light pill, white on the selected one.
-  const dot = fact.kind === 'wait' ? 'currentColor' : hex
-  const [dx, dy] = offset
-  const moved = dx !== 0 || dy !== 0
-  const faded = dimmed || (off && !selected)
+  // Valet has no status to show, so its dot is plain ink.
+  const color = off ? 'var(--ink-3)' : fact.kind === 'wait' ? 'var(--ink)' : factHex(fact, snap)
+  const shown = !!offset && (selected || !off)
+  const [dx, dy] = offset ?? [1, 0]
   let value = ''
   let spoken = `${snap.pct}%`
   switch (fact.kind) {
@@ -65,54 +69,65 @@ export function VenuePin({
       break
   }
   const label = `${snap.venue.name} ${spoken}`.trim()
-
-  // Not offered here: a quiet grey dot that still opens the place.
-  if (off && !selected) {
-    return (
-      <div className="relative size-0">
-        <motion.button
-          type="button"
-          onClick={onClick}
-          aria-label={label}
-          initial={{ scale: 0.3, opacity: 0, x: '-50%', y: '-50%' }}
-          animate={{ scale: 1, opacity: dimmed ? 0.35 : 0.7, x: '-50%', y: '-50%' }}
-          whileTap={{ scale: 0.9 }}
-          className="absolute top-0 left-0 grid size-6 place-items-center"
-        >
-          <span className="size-2.5 rounded-full border-2 border-surface bg-ink-3 shadow-[0_1px_2px_rgb(0_0_0/0.2)]" />
-        </motion.button>
-      </div>
-    )
-  }
+  const fade = dimmed ? 0.5 : 1
 
   return (
     <div className="relative size-0">
-      <motion.span
-        aria-hidden="true"
-        initial={false}
-        animate={{ opacity: moved ? (faded ? 0.5 : 1) : 0, scale: moved ? 1 : 0.4, x: '-50%', y: '-50%' }}
-        className="absolute top-0 left-0 size-2.5 rounded-full border-2 border-surface shadow-[0_1px_3px_rgb(0_0_0/0.3)]"
-        style={{ background: fact.kind === 'wait' ? 'var(--ink)' : hex }}
-      />
+      {(selected || !off) && (
+        <motion.div
+          aria-hidden="true"
+          data-pin-label=""
+          onClick={onClick}
+          initial={false}
+          animate={{ opacity: shown ? fade : 0, scale: shown ? 1 : 0.85, x: '-50%', y: '-50%' }}
+          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          style={{ left: dx, top: dy }}
+          className={clsx(
+            'absolute flex cursor-pointer items-center rounded-full whitespace-nowrap tabular',
+            !shown && 'pointer-events-none',
+            selected
+              ? 'h-8 gap-1.5 px-3.5 text-[13px] font-semibold bg-ink text-canvas shadow-[0_8px_20px_-6px_rgb(0_0_0/0.45)]'
+              : clsx(
+                  'h-[22px] gap-1 text-[11.5px] font-semibold bg-surface text-ink ring-1 ring-line shadow-[0_1px_2px_rgb(0_0_0/0.08),0_3px_10px_-4px_rgb(0_0_0/0.2)] dark:bg-surface-3',
+                  // The dot sits in the padded end, so the pill hangs off it on either side.
+                  dx >= 0 ? 'pr-2 pl-[21px]' : 'flex-row-reverse pr-[21px] pl-2',
+                ),
+          )}
+        >
+          {selected ? (
+            <>
+              <span>{snap.venue.name}</span>
+              {value && (
+                <>
+                  <span className="opacity-50">·</span>
+                  <span>{value}</span>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <span>{value}</span>
+              {named && <span className="font-medium text-ink-2">{snap.venue.short}</span>}
+            </>
+          )}
+        </motion.div>
+      )}
       <motion.button
         type="button"
         onClick={onClick}
         aria-label={label}
-        data-pin-label=""
-        initial={{ scale: 0.3, opacity: 0, x: '-50%', y: '-50%', left: 0, top: 0 }}
-        animate={{ scale: 1, opacity: faded ? 0.55 : 1, left: dx, top: dy, x: '-50%', y: '-50%' }}
-        whileTap={{ scale: 0.94 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-        className={clsx(
-          'absolute flex items-center rounded-full font-semibold whitespace-nowrap tabular',
-          selected
-            ? 'h-8 gap-2 pr-3.5 pl-3 text-[13px] bg-ink text-canvas shadow-[0_8px_20px_-6px_rgb(0_0_0/0.45)]'
-            : 'h-6 gap-1.5 pr-2.5 pl-2 text-[12px] bg-surface dark:bg-surface-3 text-ink shadow-[0_1px_2px_rgb(0_0_0/0.1),0_4px_12px_-4px_rgb(0_0_0/0.22)] ring-1 ring-line',
-        )}
+        initial={{ scale: 0.3, opacity: 0, x: '-50%', y: '-50%' }}
+        animate={{ scale: 1, opacity: off && !selected ? fade * 0.7 : fade, x: '-50%', y: '-50%' }}
+        whileTap={{ scale: 0.85 }}
+        className="absolute top-0 left-0 grid size-7 place-items-center"
       >
-        <span className="size-2 shrink-0 rounded-full" style={{ background: dot }} />
-        {value && <span>{value}</span>}
-        {selected && <span className={clsx(value && 'font-medium opacity-70')}>{snap.venue.name}</span>}
+        <span
+          className={clsx(
+            'rounded-full border-2 border-white shadow-[0_1px_3px_rgb(0_0_0/0.3)]',
+            selected ? 'size-3.5' : off ? 'size-2.5' : 'size-3',
+          )}
+          style={{ background: color }}
+        />
       </motion.button>
     </div>
   )

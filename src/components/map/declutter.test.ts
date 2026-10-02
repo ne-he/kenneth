@@ -1,83 +1,73 @@
 import { describe, expect, it } from 'vitest'
-import { beside, placePins, type Offset, type PinBox } from './declutter'
+import { around, beside, hang, placeLabels, type Dot, type Label } from './declutter'
 
-const pin = (id: string, x: number, y: number, extra: Partial<PinBox> = {}): PinBox => ({
+/** A venue label that hangs to the right of its dot, the way the map draws them. */
+const label = (id: string, x: number, y: number, extra: Partial<Label> = {}): Label => ({
   id,
   x,
   y,
   w: 48,
-  h: 24,
-  dir: 'e',
+  h: 22,
+  spots: hang(48, 11),
   ...extra,
 })
 
-/** Screen box of a placed label. */
-const box = (p: PinBox, [dx, dy]: Offset) => ({
-  l: p.x + dx - p.w / 2,
-  r: p.x + dx + p.w / 2,
-  t: p.y + dy - p.h / 2,
-  b: p.y + dy + p.h / 2,
+const dot = (id: string, x: number, y: number): Dot => ({ id, x, y, r: 6 })
+
+describe('placeLabels', () => {
+  it('shows a lone label at its spot', () => {
+    expect(placeLabels([label('a', 100, 100)], [dot('a', 100, 100)]).get('a')).toEqual([13, 0])
+  })
+
+  it('shows labels that have room, however many', () => {
+    const out = placeLabels([label('a', 100, 100), label('b', 100, 200)], [dot('a', 100, 100), dot('b', 100, 200)])
+    expect(out.get('a')).toEqual([13, 0])
+    expect(out.get('b')).toEqual([13, 0])
+  })
+
+  it('hangs a label left of its dot when the right side would cover another place', () => {
+    const out = placeLabels([label('a', 100, 100)], [dot('a', 100, 100), dot('b', 130, 100)])
+    expect(out.get('a')).toEqual([-13, 0])
+  })
+
+  it('drops the lower-priority label when both sides are taken, so that place stays a dot', () => {
+    const out = placeLabels([label('first', 100, 100), label('later', 125, 112)], [dot('first', 100, 100), dot('later', 125, 112)])
+    expect(out.get('first')).toEqual([-13, 0])
+    expect(out.get('later')).toBeNull()
+  })
+
+  it('drops a label that would cover another place on both sides', () => {
+    const out = placeLabels([label('a', 100, 100)], [dot('a', 100, 100), dot('b', 130, 100), dot('c', 70, 100)])
+    expect(out.get('a')).toBeNull()
+  })
+
+  it('drops a label that would cover you-are-here', () => {
+    const out = placeLabels([label('a', 100, 100)], [dot('a', 100, 100), { id: 'origin', x: 100, y: 100, r: 9 }])
+    expect(out.get('a')).toBeNull()
+  })
+
+  it('moves a label it must keep to the next free spot round its point', () => {
+    const spots = around(120, 32, 10)
+    const gate = label('gate', 100, 70, { w: 40, spots: [[0, 0]], keep: true })
+    const out = placeLabels([gate, label('sel', 100, 100, { w: 120, h: 32, spots, keep: true })], [dot('sel', 100, 100)])
+    expect(out.get('gate')).toEqual([0, 0])
+    expect(out.get('sel')).not.toEqual(spots[0])
+    expect(out.get('sel')).not.toBeNull()
+  })
+
+  it('still places a label it must keep when every spot is taken', () => {
+    const wall = label('wall', 100, 100, { w: 600, h: 600, spots: [[0, 0]], keep: true })
+    const out = placeLabels([wall, label('sel', 100, 100, { spots: around(48, 22, 10), keep: true })], [])
+    expect(out.get('sel')).toHaveLength(2)
+  })
 })
 
-const apart = (a: ReturnType<typeof box>, b: ReturnType<typeof box>) => a.r <= b.l || b.r <= a.l || a.b <= b.t || b.b <= a.t
-
-describe('placePins', () => {
-  it('keeps a lone pin right on its point', () => {
-    expect(placePins([pin('a', 100, 100)]).get('a')).toEqual([0, 0])
-  })
-
-  it('leaves pins that are far apart on their points', () => {
-    const out = placePins([pin('a', 100, 100), pin('b', 300, 100)])
-    expect(out.get('a')).toEqual([0, 0])
-    expect(out.get('b')).toEqual([0, 0])
-  })
-
-  it('moves stacked pins beside their points, preferred side first, so no label hides the other place', () => {
-    const a = pin('a', 100, 100, { dir: 'n' })
-    const b = pin('b', 104, 110, { dir: 's' })
-    const out = placePins([a, b])
-    expect(out.get('a')).toEqual(beside('n', 48, 24, 3))
-    expect(out.get('b')).toEqual(beside('s', 48, 24, 3))
-    const ba = box(a, out.get('a')!)
-    const bb = box(b, out.get('b')!)
-    expect(apart(ba, bb)).toBe(true)
-    expect(b.y < ba.t || b.y > ba.b).toBe(true)
-    expect(a.y < bb.t || a.y > bb.b).toBe(true)
-  })
-
-  it('pulls three places a few pixels apart into labels that do not touch', () => {
-    const pins = [pin('cp', 218, 226, { dir: 'sw' }), pin('neo', 212, 212, { dir: 'nw' }), pin('mta', 223, 232, { dir: 'se' })]
-    const out = placePins(pins)
-    for (let i = 0; i < pins.length; i++) {
-      for (let j = i + 1; j < pins.length; j++) {
-        expect(apart(box(pins[i], out.get(pins[i].id)!), box(pins[j], out.get(pins[j].id)!))).toBe(true)
-      }
-    }
-  })
-
-  it('keeps labels off another place even when that place is only a dot', () => {
-    const out = placePins([pin('dot', 100, 100, { w: 0, h: 0 }), pin('a', 104, 100)])
-    expect(out.get('dot')).toEqual([0, 0])
-    expect(out.get('a')).not.toEqual([0, 0])
-  })
-
-  it('keeps a fixed chip where it is and moves labels off it', () => {
-    const out = placePins([pin('gate', 100, 100, { fixed: [0, 0] }), pin('b', 100, 104)])
-    expect(out.get('gate')).toEqual([0, 0])
-    expect(out.get('b')).not.toEqual([0, 0])
-  })
-
-  it('lifts a pin that must not cover its point above it, or to the next side round when a chip is there', () => {
-    const sel = { onPoint: false, dir: 'n' as const, gap: 8 }
-    expect(placePins([pin('sel', 100, 100, sel)]).get('sel')).toEqual(beside('n', 48, 24, 8))
-    const out = placePins([pin('gate', 66, 76, { w: 30, fixed: [0, 0] }), pin('sel', 100, 100, sel)])
-    expect(out.get('sel')).toEqual(beside('ne', 48, 24, 8))
-  })
-
-  it('still places a pin when every side is taken', () => {
-    const ring = [-1, 0, 1].flatMap((i) => [-1, 0, 1].map((j) => pin(`r${i}${j}`, 100 + i * 52, 100 + j * 28)))
-    const out = placePins([...ring, pin('late', 100, 100)])
-    expect(out.get('late')).toHaveLength(2)
+describe('hang', () => {
+  it('puts the dot the inset in from either end of the pill', () => {
+    expect(hang(48, 11)).toEqual([
+      [13, 0],
+      [-13, 0],
+    ])
   })
 })
 

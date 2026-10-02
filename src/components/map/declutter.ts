@@ -1,24 +1,28 @@
 import type { LabelDir } from '../../data/types'
 
-/** Where a pin's label sits, relative to its point, in screen pixels. */
+/** Where a label sits, as the offset of its centre from its point, in screen pixels. */
 export type Offset = [number, number]
 
-export interface PinBox {
+export interface Label {
   id: string
-  /** The venue on screen, in pixels. */
+  /** The place on screen, in pixels. */
   x: number
   y: number
-  /** Size of the label. Zero for a bare dot, which never moves but still keeps labels off it. */
+  /** Size of the label. */
   w: number
   h: number
-  /** Side to try first when the point itself is taken. */
-  dir: LabelDir
-  /** False keeps the label off its own point, so the dot under it stays visible. */
-  onPoint?: boolean
-  /** Space between the point and a label moved beside it. */
-  gap?: number
-  /** A spot that never moves, such as a gate chip. */
-  fixed?: Offset
+  /** Spots to try, best first. */
+  spots: Offset[]
+  /** Never dropped: takes the least crowded spot when none is free. For the selected place and gate chips. */
+  keep?: boolean
+}
+
+/** A point labels must not cover, such as another place or you-are-here. */
+export interface Dot {
+  id: string
+  x: number
+  y: number
+  r: number
 }
 
 const SIDE: Record<LabelDir, [number, number]> = {
@@ -32,22 +36,6 @@ const SIDE: Record<LabelDir, [number, number]> = {
   sw: [-1, 1],
 }
 
-/** The sides going round, so a blocked label tries the sides next to its own before the far ones. */
-const RING: LabelDir[] = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']
-
-function sidesFrom(dir: LabelDir): LabelDir[] {
-  const at = RING.indexOf(dir)
-  const out: LabelDir[] = [dir]
-  for (let k = 1; k <= 4; k++) {
-    out.push(RING[(at + k) % 8])
-    if (k < 4) out.push(RING[(at - k + 8) % 8])
-  }
-  return out
-}
-
-/** Size of the area around each point that labels stay off, so no place hides under another's label. */
-const DOT = 10
-
 /**
  * Offset that puts a label right beside its point, `gap` pixels clear of it.
  * On a diagonal the rounded end of the pill sits straight above or below the point.
@@ -58,6 +46,20 @@ export function beside(dir: LabelDir, w: number, h: number, gap: number): Offset
   if (sx === 0) return [0, sy * (h / 2 + gap)]
   return [sx * (w / 2 - h / 2), sy * (h / 2 + gap)]
 }
+
+/**
+ * A place label hangs off its dot: the dot sits `inset` pixels in from one
+ * end of the pill. Right of the dot first, mirrored to the left when that
+ * side is taken.
+ */
+export const hang = (w: number, inset: number): Offset[] => [
+  [w / 2 - inset, 0],
+  [-(w / 2 - inset), 0],
+]
+
+/** Above first, then round the point, for a label that must stay but should not hide its dot. */
+export const around = (w: number, h: number, gap: number): Offset[] =>
+  (['n', 'ne', 'nw', 'e', 'w', 's', 'se', 'sw'] as const).map((d) => beside(d, w, h, gap))
 
 interface Rect {
   l: number
@@ -77,43 +79,38 @@ const overlap = (a: Rect, b: Rect) =>
   Math.max(0, Math.min(a.r, b.r) - Math.max(a.l, b.l)) * Math.max(0, Math.min(a.b, b.b) - Math.max(a.t, b.t))
 
 /**
- * Labels sit on their own point when there is room. When two places are a
- * few hundred metres apart and the map is zoomed out, the later one moves
- * beside its point instead, its preferred side first, so nothing stacks and
- * no leader line is needed. Pins are placed in the order given, so pass fixed
- * chips first, then the selected pin.
+ * Every place is a dot, and its label only shows where there is room. Labels
+ * are handled in the order given, so pass them by priority: a label that
+ * would cover an earlier one, or another place's dot, is dropped (null) and
+ * that place stays a bare dot until you zoom in. Nothing moves away from its
+ * point, so no leader lines are needed.
  */
-export function placePins(pins: PinBox[], pad = 2): Map<string, Offset> {
-  const out = new Map<string, Offset>()
-  const dots = pins.map((p) => rect(p.x, p.y, DOT, DOT))
+export function placeLabels(labels: Label[], dots: Dot[], pad = 2): Map<string, Offset | null> {
+  const out = new Map<string, Offset | null>()
   const placed: Rect[] = []
-  pins.forEach((p, i) => {
-    if (p.w === 0 || p.h === 0) {
-      out.set(p.id, [0, 0])
-      return
-    }
-    const gap = p.gap ?? 3
-    const sides = sidesFrom(p.dir).map((d) => beside(d, p.w, p.h, gap))
-    const options: Offset[] = p.fixed ? [p.fixed] : p.onPoint === false ? sides : [[0, 0], ...sides]
-    let best = options[0]
-    let bestBox = rect(p.x + best[0], p.y + best[1], p.w + pad * 2, p.h + pad * 2)
+  const dotBoxes = dots.map((d) => ({ id: d.id, box: rect(d.x, d.y, d.r * 2, d.r * 2) }))
+  for (const l of labels) {
+    let best: Offset | null = null
+    let bestBox: Rect | null = null
     let bestScore = Infinity
-    for (const o of options) {
-      const box = rect(p.x + o[0], p.y + o[1], p.w + pad * 2, p.h + pad * 2)
+    for (const s of l.spots) {
+      const box = rect(l.x + s[0], l.y + s[1], l.w + pad * 2, l.h + pad * 2)
       let score = 0
       for (const q of placed) score += overlap(box, q)
-      dots.forEach((d, j) => {
-        if (j !== i) score += overlap(box, d)
-      })
+      for (const d of dotBoxes) if (d.id !== l.id) score += overlap(box, d.box)
       if (score < bestScore) {
-        best = o
+        best = s
         bestBox = box
         bestScore = score
       }
       if (score === 0) break
     }
+    if (!best || !bestBox || (bestScore > 0 && !l.keep)) {
+      out.set(l.id, null)
+      continue
+    }
     placed.push(bestBox)
-    out.set(p.id, best)
-  })
+    out.set(l.id, best)
+  }
   return out
 }

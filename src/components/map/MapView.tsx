@@ -10,9 +10,9 @@ import type { Snapshot } from '../../engine/occupancy'
 import { signalMapReady } from '../../lib/splash'
 import { useApp } from '../../store/app'
 import type { Route } from '../../store/ui'
-import { placePins, type Offset, type PinBox } from './declutter'
+import { around, hang, placeLabels, type Dot, type Label, type Offset } from './declutter'
 import { fitPoints, setMap, sheetPad } from './mapApi'
-import { GatePin, OriginPin, VenuePin } from './Pins'
+import { GatePin, LABEL_INSET, OriginPin, VenuePin } from './Pins'
 import { loadStyle } from './style'
 
 interface Props {
@@ -31,6 +31,9 @@ interface Props {
 
 const ROUTE_COLOR = '#2f5bd3'
 
+/** From this zoom the place labels carry the short name too. */
+const NAMED_ZOOM = 14.5
+
 // MapLibre 6 finds its worker relative to its own module URL, which a bundler
 // cannot see. Hand it a bundled worker explicitly so dev and prod both work.
 setWorkerUrl(workerUrl)
@@ -43,9 +46,11 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
   const markers = useRef(new Map<string, { marker: Marker; el: HTMLElement }>())
   // Marker elements live outside React. Mirror them in state so portals render from state, not a ref.
   const [els, setEls] = useState<ReadonlyMap<string, HTMLElement>>(() => new Map())
-  // Where each venue label sits relative to its point, so crowded places do not stack.
-  const [offsets, setOffsets] = useState<ReadonlyMap<string, Offset>>(() => new Map())
+  // Where each label sits relative to its point. Null: no room, the place stays a bare dot.
+  const [offsets, setOffsets] = useState<ReadonlyMap<string, Offset | null>>(() => new Map())
+  const [named, setNamed] = useState(false)
 
+  const favorites = useApp((s) => s.favorites)
   const look = useApp((s) => s.mapPrefs.style)
   const threeD = useApp((s) => s.mapPrefs.threeD)
 
@@ -170,36 +175,35 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
   }, [snapshots, selected, origin, ready])
 
   // Lay the labels out after they render (their size depends on the text) and after every camera move.
+  // Priority: the selected place, then favourites, then the ranking the list uses. A label that has no
+  // room is dropped, never moved away from its dot.
   const layout = useEffectEvent(() => {
     const map = mapRef.current
     if (!map) return
+    setNamed(map.getZoom() >= NAMED_ZOOM)
     const size = (key: string) => {
       const label = markers.current.get(key)?.el.querySelector<HTMLElement>('[data-pin-label]')
       return { w: label?.offsetWidth ?? 0, h: label?.offsetHeight ?? 0 }
     }
-    // You are here and the gate chips never move, the selected label goes next and keeps off its point, then the rest.
     const here = map.project(origin)
-    const pins: PinBox[] = [{ id: 'origin', x: here.x, y: here.y, ...size('origin'), dir: 'n', fixed: [0, 0] }]
+    const dots: Dot[] = [{ id: 'origin', x: here.x, y: here.y, r: 9 }]
+    const labels: Label[] = []
     const sel = snapshots.find((s) => s.venue.id === selected)
     sel?.gates.forEach(({ gate }) => {
       const { x, y } = map.project(gate.coords)
-      pins.push({ id: `g:${gate.id}`, x, y, ...size(`g:${gate.id}`), dir: 'n', fixed: [0, 0] })
+      labels.push({ id: `g:${gate.id}`, x, y, ...size(`g:${gate.id}`), spots: [[0, 0]], keep: true })
     })
-    const order = [...snapshots].sort((a, b) => Number(b.venue.id === selected) - Number(a.venue.id === selected))
-    for (const s of order) {
+    const rank = (s: Snapshot) => (s.venue.id === selected ? 0 : favorites.includes(s.venue.id) ? 1 : 2)
+    const order = snapshots.map((s, i) => ({ s, i })).sort((a, b) => rank(a.s) - rank(b.s) || a.i - b.i)
+    for (const { s } of order) {
       const { x, y } = map.project(s.venue.coords)
+      dots.push({ id: s.venue.id, x, y, r: 6 })
       const picked = s.venue.id === selected
-      pins.push({
-        id: s.venue.id,
-        x,
-        y,
-        ...size(`v:${s.venue.id}`),
-        dir: picked ? 'n' : s.venue.labelDir,
-        onPoint: !picked,
-        gap: picked ? 8 : undefined,
-      })
+      if (!picked && facts?.get(s.venue.id)?.kind === 'none') continue
+      const { w, h } = size(`v:${s.venue.id}`)
+      labels.push({ id: s.venue.id, x, y, w, h, spots: picked ? around(w, h, 9) : hang(w, LABEL_INSET), keep: picked })
     }
-    const next = placePins(pins)
+    const next = placeLabels(labels, dots)
     setOffsets((prev) => (sameOffsets(prev, next) ? prev : next))
   })
   useEffect(() => {
@@ -211,7 +215,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     return () => {
       map.off('moveend', onMove)
     }
-  }, [snapshots, facts, selected, origin, els, ready])
+  }, [snapshots, facts, selected, origin, favorites, named, els, ready])
 
   const sel = snapshots.find((s) => s.venue.id === selected)
 
@@ -232,6 +236,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
                 snap={s}
                 fact={facts?.get(s.venue.id)}
                 offset={offsets.get(s.venue.id)}
+                named={named}
                 selected={s.venue.id === selected || s.venue.id === focused}
                 dimmed={!!selected && s.venue.id !== selected}
                 onClick={() => onSelect(s.venue.id)}
@@ -270,11 +275,14 @@ function boundsOf(points: LngLat[]): [LngLat, LngLat] {
   ]
 }
 
-function sameOffsets(a: ReadonlyMap<string, Offset>, b: ReadonlyMap<string, Offset>) {
+function sameOffsets(a: ReadonlyMap<string, Offset | null>, b: ReadonlyMap<string, Offset | null>) {
   if (a.size !== b.size) return false
-  for (const [k, [x, y]] of b) {
+  for (const [k, n] of b) {
     const o = a.get(k)
-    if (!o || Math.abs(o[0] - x) > 0.5 || Math.abs(o[1] - y) > 0.5) return false
+    if (o === undefined) return false
+    if (o === null || n === null) {
+      if (o !== n) return false
+    } else if (Math.abs(o[0] - n[0]) > 0.5 || Math.abs(o[1] - n[1]) > 0.5) return false
   }
   return true
 }
