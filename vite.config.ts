@@ -53,9 +53,9 @@ export default defineConfig({
         start_url: '/',
         display: 'standalone',
         orientation: 'portrait',
-        // Black splash, the same field as the logo, so the icon sits on it without an edge.
-        background_color: '#000000',
-        theme_color: '#111512',
+        // Ink splash, the same field as the icons, so the icon sits on it without an edge.
+        background_color: '#121216',
+        theme_color: '#121216',
         categories: ['navigation', 'travel', 'utilities'],
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },

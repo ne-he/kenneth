@@ -196,7 +196,7 @@ Logonya huruf K yang tersusun dari jalan dilihat dari atas, dengan satu mobil di
 jalan yang sedang kamu lewati, dua cabangnya pilihan tempat, dan mobilnya mengambil yang lega.
 File asli dan versi 1024px ada di [docs/brand](docs/brand).
 
-Saat app dibuka muncul layar hitam dengan logo. Selama app memuat, mobilnya diam di tempat parkirnya. Begitu
+Saat app dibuka muncul layar gelap warna ink dengan logo. Selama app memuat, mobilnya diam di tempat parkirnya. Begitu
 peta selesai digambar, mobil itu jalan ke persimpangan, belok kanan, lalu keluar lewat cabang atas sementara layar
 pembuka memudar. Mobil sengaja menunggu peta karena pembuatan peta sempat menahan browser, jadi kalau jalan lebih
 awal gerakannya bisa patah. Paling lambat 3,2 detik setelah halaman dibuka mobil tetap jalan. Pengguna yang
