@@ -49,8 +49,9 @@ function ServiceToggles() {
   const mode = useUi((s) => s.mode)
   const toggleService = useUi((s) => s.toggleService)
   const locked = useVehicle().kind === 'motor'
+  // Three up where each card gets at least 104px, otherwise the cards stack so a hint is never clipped.
   return (
-    <div className="mt-2.5 grid grid-cols-3 gap-2" role="group" aria-label={t.modes.services}>
+    <div className="mt-2.5 grid grid-cols-[repeat(auto-fit,minmax(104px,1fr))] gap-2" role="group" aria-label={t.modes.services}>
       {SERVICES.map((m) => {
         const on = m === mode
         return (
@@ -73,7 +74,7 @@ function ServiceToggles() {
             {on && <Check size={14} weight="bold" className="absolute top-2.5 right-2.5 text-brand-700 dark:text-brand-300" />}
             <span className="mt-2 block text-[13px] leading-tight font-semibold tracking-tight">{t.modes[m].label}</span>
             {/* Hints sit on the same line across the three cards even when a name wraps. */}
-            <span className={clsx('mt-auto line-clamp-2 pt-1 text-[11.5px] leading-snug', on ? 'opacity-75' : 'text-ink-3')}>
+            <span className={clsx('mt-auto pt-1 text-[11.5px] leading-snug', on ? 'opacity-75' : 'text-ink-3')}>
               {locked ? t.modes.carOnly : t.modes[m].hint}
             </span>
           </button>
