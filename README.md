@@ -210,6 +210,7 @@ loop 6 detik versi kecil yang dipakai di layar sambutan onboarding. Versi loop u
 Guide desain carousel Instagram (warna, tipografi, jalan yang menyambung antar slide, dan aturan slide video)
 ada di [docs/social/GUIDE.md](docs/social/GUIDE.md), lengkap dengan dua contoh carousel dan generatornya.
 
+Status app terakhir, patokan untuk siapa pun yang melanjutkan: [docs/STATUS.md](docs/STATUS.md).
 Cara kerja simulasinya dijelaskan di [docs/MODEL.md](docs/MODEL.md). Panduan buat anggota tim ada di
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
