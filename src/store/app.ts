@@ -7,6 +7,8 @@ import { nextSaturdayAt } from '../lib/time'
 
 export type Lang = 'id' | 'en'
 export type Theme = 'system' | 'light' | 'dark'
+/** The color that marks the brand and the one booking button. Status colors never follow it. */
+export type Accent = 'cornflower' | 'purple' | 'pink' | 'red' | 'orange' | 'green' | 'graphite'
 export type NavApp = 'kenneth' | 'gmaps' | 'waze'
 export type MapStyle = 'calm' | 'detail'
 
@@ -127,6 +129,7 @@ interface AppState {
   favorites: VenueId[]
   lang: Lang
   theme: Theme
+  accent: Accent
   plan: Plan
   prefs: Prefs
   mapPrefs: MapPrefs
@@ -148,6 +151,7 @@ interface AppState {
   toggleFavorite: (id: VenueId) => void
   setLang: (l: Lang) => void
   setTheme: (t: Theme) => void
+  setAccent: (a: Accent) => void
   setPlan: (p: Plan) => void
   setPref: <K extends keyof Prefs>(k: K, v: Prefs[K]) => void
   setMapPref: <K extends keyof MapPrefs>(k: K, v: MapPrefs[K]) => void
@@ -184,6 +188,7 @@ const DEFAULTS = {
   favorites: [] as VenueId[],
   lang: 'id' as Lang,
   theme: 'system' as Theme,
+  accent: 'cornflower' as Accent,
   plan: 'free' as Plan,
   prefs: {
     gageWarning: true,
@@ -261,6 +266,7 @@ export const useApp = create<AppState>()(
         set((s) => ({ favorites: s.favorites.includes(id) ? s.favorites.filter((f) => f !== id) : [...s.favorites, id] })),
       setLang: (lang) => set({ lang }),
       setTheme: (theme) => set({ theme }),
+      setAccent: (accent) => set({ accent }),
       setPlan: (plan) => set({ plan }),
       setPref: (k, v) => set((s) => ({ prefs: { ...s.prefs, [k]: v } })),
       setMapPref: (k, v) => set((s) => ({ mapPrefs: { ...s.mapPrefs, [k]: v } })),

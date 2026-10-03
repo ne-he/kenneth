@@ -14,6 +14,7 @@ import {
   MapTrifold,
   Motorcycle,
   NavigationArrow,
+  Palette,
   Plus,
   PresentationChart,
   ShieldCheck,
@@ -30,6 +31,7 @@ import { useNavigate } from 'react-router'
 import { plateParity } from '../../engine/gage'
 import { impactOf, sumImpact } from '../../engine/impact'
 import { useT } from '../../i18n'
+import { ACCENT_ORDER, ACCENTS } from '../../lib/accent'
 import { haptic } from '../../lib/haptics'
 import { REPO_URL } from '../../lib/links'
 import { NAV_APP_NAME } from '../../lib/navApps'
@@ -182,6 +184,9 @@ export function Account() {
               { value: 'dark', label: t.profile.themeDark },
             ]}
           />
+        </SegRow>
+        <SegRow icon={<Palette size={17} weight="fill" />} title={t.profile.accent}>
+          <AccentPicker />
         </SegRow>
         <Row icon={<LockKey size={17} weight="fill" />} title={t.profile.privacy} right={<Chevron />} onClick={() => open({ kind: 'privacy' })} />
       </Group>
@@ -367,6 +372,43 @@ function SegRow({ icon, title, children }: { icon: ReactNode; title: string; chi
         <span className="text-[14.5px] font-medium">{title}</span>
       </div>
       {children}
+    </div>
+  )
+}
+
+/** The accent swatches, like the accent colour row in macOS settings, with the name of the one in use under them. */
+function AccentPicker() {
+  const t = useT()
+  const accent = useApp((s) => s.accent)
+  const setAccent = useApp((s) => s.setAccent)
+  return (
+    <div>
+      <div role="radiogroup" aria-label={t.profile.accent} className="flex flex-wrap gap-2.5">
+        {ACCENT_ORDER.map((a) => {
+          const on = a === accent
+          return (
+            <button
+              key={a}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              aria-label={t.profile.accents[a]}
+              onClick={() => {
+                haptic('tap')
+                setAccent(a)
+              }}
+              style={{ backgroundColor: ACCENTS[a][600] }}
+              className={clsx(
+                'grid size-8 place-items-center rounded-full ring-offset-2 ring-offset-surface transition-shadow',
+                on ? 'ring-2 ring-ink' : 'hover:ring-2 hover:ring-line-strong',
+              )}
+            >
+              {on && <Check size={14} weight="bold" className="text-white" />}
+            </button>
+          )
+        })}
+      </div>
+      <p className="mt-2 text-[12.5px] text-ink-3">{t.profile.accents[accent]}</p>
     </div>
   )
 }

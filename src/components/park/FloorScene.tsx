@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import type { ParkedSpot } from '../../store/app'
+import { ACCENTS } from '../../lib/accent'
+import { useApp, type ParkedSpot } from '../../store/app'
 
 /*
   A basement floor drawn from the saved spot, not from a floor plan we do not
@@ -100,6 +101,8 @@ function rng(seed: number) {
 
 export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: Props) {
   const host = useRef<HTMLDivElement>(null)
+  // Your car, the lobby and the walk wear the accent the user picked.
+  const accent = ACCENTS[useApp((s) => s.accent)]
 
   useEffect(() => {
     const el = host.current
@@ -188,11 +191,11 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     const lobby = new THREE.Group()
     const lobbyBox = new THREE.Mesh(
       new THREE.BoxGeometry(3.2, 2.8, 1.6),
-      new THREE.MeshStandardMaterial({ color: 0x2f5bd3, roughness: 0.4, emissive: 0x2f5bd3, emissiveIntensity: 0.25 }),
+      new THREE.MeshStandardMaterial({ color: accent[600], roughness: 0.4, emissive: accent[600], emissiveIntensity: 0.25 }),
     )
     lobbyBox.position.y = 1.4
     lobby.add(lobbyBox)
-    const lobbyLabel = labelSprite(spot.lobby.toUpperCase(), '#ffffff', '#2f5bd3', 0.9)
+    const lobbyLabel = labelSprite(spot.lobby.toUpperCase(), '#ffffff', accent[600], 0.9)
     lobbyLabel.position.y = 3.6
     lobby.add(lobbyLabel)
     const lobbyPos = new THREE.Vector3(0, 0, z0 - 3)
@@ -212,7 +215,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     ring.rotation.x = -Math.PI / 2
     ring.position.set(target.x, 0.03, target.z)
     scene.add(ring)
-    const tag = labelSprite(`${spot.level} · ${spot.section}-${spot.pillar}`, '#101014', '#a3baf5', 1.1)
+    const tag = labelSprite(`${spot.level} · ${spot.section}-${spot.pillar}`, '#101014', accent[300], 1.1)
     tag.position.set(target.x, 2.6, target.z)
     scene.add(tag)
 
@@ -231,7 +234,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     // Catmull-Rom with low tension: corners get a slight walking curve, and
     // getPointAt never returns null at the ends (CurvePath can, at u = 1).
     const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.08)
-    const pathMat = new THREE.MeshBasicMaterial({ color: dark ? 0xa3baf5 : 0x2f5bd3, transparent: true, opacity: 0.95 })
+    const pathMat = new THREE.MeshBasicMaterial({ color: dark ? accent[300] : accent[600], transparent: true, opacity: 0.95 })
     const path = new THREE.Mesh(new THREE.TubeGeometry(curve, 220, 0.2, 8, false), pathMat)
     path.geometry.setDrawRange(0, 0)
     scene.add(path)
@@ -325,7 +328,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [spot, sections, occupancy, dark, onWalk])
+  }, [spot, sections, occupancy, dark, onWalk, accent])
 
   return <div ref={host} className="h-full w-full touch-none" />
 }
