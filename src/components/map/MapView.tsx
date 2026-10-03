@@ -9,7 +9,8 @@ import type { PinFact } from '../../engine/modes'
 import type { Snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { signalMapReady } from '../../lib/splash'
-import { useApp } from '../../store/app'
+import { ACCENTS, type Shade } from '../../lib/accent'
+import { useApp, type Accent } from '../../store/app'
 import type { Route } from '../../store/ui'
 import { around, hang, placeLabels, type Dot, type Label, type Offset } from './declutter'
 import { fitPoints, setMap, sheetPad } from './mapApi'
@@ -31,14 +32,20 @@ interface Props {
 }
 
 /**
- * The route is the one cornflower line on the map. A casing in the map's own
- * ground colour lifts it off the roads (white on porcelain, onyx at night),
- * and a faint glow keeps it readable over 3D blocks.
+ * The route is the one accent line on the map, cornflower unless the user
+ * picked another accent. A casing in the map's own ground colour lifts it off
+ * the roads (white on porcelain, onyx at night), and a faint glow keeps it
+ * readable over 3D blocks. From and to are shades of the accent scale.
  */
 const ROUTE = {
-  light: { from: '#7c9bec', to: '#2f5bd3', casing: '#ffffff', glow: 0.14 },
-  dark: { from: '#a3baf5', to: '#5279e3', casing: '#0d0d10', glow: 0.22 },
-} as const
+  light: { from: 400, to: 600, casing: '#ffffff', glow: 0.14 },
+  dark: { from: 300, to: 500, casing: '#0d0d10', glow: 0.22 },
+} as const satisfies Record<'light' | 'dark', { from: Shade; to: Shade; casing: string; glow: number }>
+
+const routeColors = (theme: 'light' | 'dark', accent: Accent) => {
+  const r = ROUTE[theme]
+  return { ...r, from: ACCENTS[accent][r.from], to: ACCENTS[accent][r.to] }
+}
 
 /** From this zoom the place labels carry the short name too. */
 const NAMED_ZOOM = 14.5
@@ -63,12 +70,13 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
   const favorites = useApp((s) => s.favorites)
   const look = useApp((s) => s.mapPrefs.style)
   const threeD = useApp((s) => s.mapPrefs.threeD)
+  const accent = useApp((s) => s.accent)
 
   // Create the map once. Theme and camera changes after that have their own effects,
   // so the first theme and bounds are read through an effect event, not dependencies.
   const initial = useEffectEvent(() => ({ theme, bounds: initialBounds, look, threeD }))
   // Overlays are added again after every style swap, in the colours of the theme at that moment.
-  const overlays = useEffectEvent((map: MLMap) => addOverlays(map, theme))
+  const overlays = useEffectEvent((map: MLMap) => addOverlays(map, routeColors(theme, accent)))
   useEffect(() => {
     let cancelled = false
     let map: MLMap | null = null
@@ -129,6 +137,15 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     if (threeD && wasFlat) map.easeTo({ pitch: 50, bearing: -12, duration: 700 })
     if (!threeD) map.easeTo({ pitch: 0, bearing: 0, duration: 700 })
   }, [theme, look, threeD])
+
+  // A new accent recolours the route in place, no style swap needed.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map?.isStyleLoaded() || !map.getLayer('route-line')) return
+    const r = routeColors(theme, accent)
+    map.setPaintProperty('route-glow', 'line-color', r.to)
+    map.setPaintProperty('route-line', 'line-gradient', ['interpolate', ['linear'], ['line-progress'], 0, r.from, 1, r.to])
+  }, [theme, accent])
 
   // Route line with a short draw-on animation.
   useEffect(() => {
@@ -316,8 +333,7 @@ function sameOffsets(a: ReadonlyMap<string, Offset | null>, b: ReadonlyMap<strin
 
 const emptyLine = () => ({ type: 'FeatureCollection' as const, features: [] })
 
-function addOverlays(map: MLMap, theme: 'light' | 'dark') {
-  const r = ROUTE[theme]
+function addOverlays(map: MLMap, r: ReturnType<typeof routeColors>) {
   if (!map.getSource('route')) {
     map.addSource('route', { type: 'geojson', data: emptyLine(), lineMetrics: true })
   }
