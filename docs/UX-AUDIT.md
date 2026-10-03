@@ -14,7 +14,27 @@ tanpa tip dan tanpa harus membaca dulu. Prinsip yang dipakai:
 5. **Minta data saat dibutuhkan,** bukan di depan.
 6. **Pakai kata yang orang sudah tahu,** bukan istilah internal tim.
 
-Screenshot ada di [screens/audit](screens/audit).
+Screenshot ada di [screens/audit](screens/audit). Semuanya diambil dari desain **sebelum** PR #13.
+
+## Status setelah desain ulang
+
+Dicek ulang 3 Okt 2026 di `main` (`0e1f4b7`), setelah desain ulang Frederick (PR #13 sampai #21).
+
+| # | Temuan | Status | Catatan |
+|---|---|---|---|
+| 1 | Layanan berbayar tersembunyi di dropdown | Selesai | Tiga pilihan besar di lembar Beranda, plus chip layanan di kartu tempat. Dropdown dan tip-nya dihapus |
+| 2 | Angka tanpa label, artinya berubah per mode | Sebagian | Pin hanya berubah saat layanan dipilih, dan judul daftar menyebut arti angkanya. Angka menit di tiap baris daftar masih tanpa label, penjelasannya cuma ada di paling bawah daftar |
+| 3 | Singkatan di peta | Sebagian | Pin jadi titik status dan nama lengkap muncul di lokasi yang dipilih. Nama singkat (CP, PSJ) masih muncul saat peta diperbesar |
+| 4 | Onboarding panjang dan minta data di depan | Belum | Masih 4 langkah, pelat masih diminta di depan |
+| 5 | Kartu detail lokasi terlalu padat | Sebagian | Papan LED diganti angka sisa slot dan cincin okupansi, daftar jadi garis tipis. Jumlah bagiannya masih sama |
+| 6 | "Datang dalam 20:25" terbaca seperti jam | Belum | Hitung mundur di tiket masih menit:detik |
+| 7 | Istilah internal dan alat demo di layar utama | Sebagian | Tombol "Zona K" yang terpotong sudah hilang bersama dropdown. Chip "Simulasi" dan label "Data palang" masih ada, kata "booking" masih muncul di beberapa teks |
+| Baru | Ikon tab tanpa tulisan | Belum | Dock Tiket, Beranda, Akun hanya berupa ikon. Tab bar di app Apple selalu memakai label |
+
+Warna aksen yang bisa dipilih sendiri (masukan Delon) juga belum ada. Yang sudah ada: tema baru dengan aksen
+cornflower, dan pilihan tema ikut sistem, terang, gelap.
+
+Bagian di bawah ini adalah audit asli tanggal 2 Okt, dibiarkan apa adanya sebagai catatan.
 
 ## Temuan besar
 

@@ -1,19 +1,20 @@
 # KENNETH: status terakhir (patokan untuk update berikutnya)
 
-Ditulis 2 Okt 2026, setelah versi ini dipresentasikan di kelas. File ini menjelaskan isi app **persis seperti
-yang ada di `main` sekarang**, supaya siapa pun (orang atau AI agent) yang melanjutkan tahu titik awalnya.
-Kalau ada yang bertabrakan dengan ingatan atau catatan lama, yang benar adalah kode di `main` dan file ini.
+Ditulis 2 Okt 2026 setelah presentasi di kelas, diperbarui 3 Okt 2026 setelah desain ulang (PR #13 sampai #21).
+File ini menjelaskan isi app **persis seperti yang ada di `main` sekarang**, supaya siapa pun (orang atau AI agent)
+yang melanjutkan tahu titik awalnya. Kalau ada yang bertabrakan dengan ingatan atau catatan lama, yang benar adalah
+kode di `main` dan file ini.
 
 ## 0. Ringkasan cepat
 
 | Hal | Nilai |
 |---|---|
-| Versi | `0.4.0` (package.json), tag `v0.4.0` plus perbaikan sesudahnya |
-| Commit patokan | `3c87868` di `main` (2 Okt 2026), merge PR #12 "Review tab Aktivitas dan tiket" |
-| Live | https://kenneth-park.web.app dan https://kenneth-9339d.web.app (dua situs, satu deploy) |
+| Versi | `0.4.0` (package.json), tag `v0.4.0` plus perbaikan dan desain ulang sesudahnya |
+| Commit patokan | `0e1f4b7` di `main` (3 Okt 2026), merge PR #21 "fix(splash): calm the loading screen to a still ink mark" |
+| Live | https://kenneth-park.web.app dan https://kenneth-9339d.web.app (dua situs, satu deploy). **Masih desain lama**, desain ulang di `main` belum di-deploy |
 | Repo | https://github.com/ne-he/kenneth (publik) |
-| Test | 109 test di 14 file, semua lolos (`npm test`) |
-| PR yang masih terbuka | Tidak ada. PR #12 "Review tab Aktivitas dan tiket" sudah di-merge 2 Okt 2026 (`3c87868`) |
+| Test | 129 test di 15 file, semua lolos (`npm test`) |
+| PR yang masih terbuka | Tidak ada |
 | Versi lama | branch `v0.1`, `v0.2`, `v0.3` (v0.3 = versi jalur prioritas sebelum diganti Zona KENNETH) |
 | Status data | Semua angka okupansi, antrian, tarif, petak, runner adalah **simulasi**. Belum ada pengelola gedung yang terhubung |
 
@@ -27,76 +28,91 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
    makin baik, tapi app tetap jujur bahwa semuanya simulasi.
 2. **Zona KENNETH menggantikan jalur prioritas.** Seperti zona parkir khusus Lexus di beberapa mall, tapi mereknya
    KENNETH. Jalur prioritas dibuang karena banyak gedung cuma punya satu lajur masuk dan mobil biasa jadi menunggu.
+   Mall tetap memakai Zona KENNETH (keputusan 2 Okt 2026).
 3. **Valet dijalankan armada runner KENNETH sendiri**, bukan valet gedung. Bayar di app. Tanpa Face ID, cukup
    kode pesanan dan pelat. Runner adalah **karyawan KENNETH**, bukan mitra lepas (keputusan 2 Okt 2026).
-4. **Booking bayar per pakai.** Premium hanya menjual hal yang tidak pernah habis stoknya (pesan lebih awal,
-   diskon, notifikasi).
+4. **Pesanan bayar per pakai.** Premium hanya menjual hal yang tidak pernah habis stoknya (pesan lebih awal,
+   diskon, notifikasi). Batal tetap gratis sampai jam datang (keputusan 2 Okt 2026).
 5. **Kampus dan gedung kantor boleh menjual layanan, dengan aturan yang sama** (keputusan 2 Okt 2026, menggantikan
    "kampus tidak menjual apa pun"). Kode masih memakai aturan lama: kampus cuma informasi dan belum ada lokasi
    kantor. Motor tetap tidak bisa memesan layanan apa pun.
 6. **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
 7. **Data pribadi tinggal di HP.** Tidak ada database server. Login Google hanya untuk nama, email, foto.
-8. **App tidak pernah pindah tab sendiri.** Setelah aksi, cukup toast plus titik di tab Aktivitas.
-9. **Satu layar untuk semua layanan.** Layanan baru = mode baru di layar Parkir, bukan layar baru.
+8. **App tidak pernah pindah tab sendiri.** Setelah aksi, cukup toast plus titik di tab Tiket.
+9. **Peta adalah panggungnya, layanan dipilih di lembar Beranda** (direvisi 2 Okt 2026 di PR #13, menggantikan
+   dropdown "Mau ngapain?"). Tiga layanan berbayar tampil sebagai pilihan besar yang bisa dinyalakan dan dilepas.
+   Kalau tidak ada yang dipilih, app menampilkan cek parkir biasa. Tetap tidak ada layar baru untuk layanan baru.
+   Alasan lengkapnya di [PRODUCT.md](PRODUCT.md), bagian Navigasi.
+10. **Warna** (PR #13): netral onyx dan porselen, aksen cornflower (`#2f5bd3`). Hijau, kuning, dan merah hanya untuk
+    status lega, ramai, penuh. Tombol utama berwarna tinta, kecuali tombol pesan yang memakai cornflower.
 
 ## 2. Nama yang dipakai (wajib konsisten di layar dan di kode)
 
 | Di layar | Di kode | Arti |
 |---|---|---|
-| Parkir | `park` | Cek penuh atau lega, rute ke gerbang paling lancar. Gratis |
+| Cek parkir (tidak ada layanan dipilih) | `park` | Cek penuh atau lega, rute ke gerbang paling lancar. Gratis |
 | Zona KENNETH | `zone` | Petak pasti di zona khusus dekat lobi, dipesan per jam datang |
 | Valet runner | `valet` | Runner KENNETH menerima mobil di lobi dan memarkirnya di Zona KENNETH |
 | Charger EV | `ev` | Charger mobil listrik yang dikunci atas nama pengguna |
 | Area (A, B, C) | `section` | Bagian lantai parkir (huruf di pilar). **Bukan** Zona KENNETH |
+| Tab Tiket, Beranda, Akun | `activity`, `park`, `account` | Nama tab di layar berubah di PR #13, nama di kode tetap |
 
 - Tombol layanan berbayar selalu diawali "Pesan" (Pesan petak, Pesan runner, Pesan charger).
-- Booking disebut "pesanan" di teks, kode booking disebut "kode pesanan" (di PR #12).
+- Booking disebut "pesanan" di teks, kode booking disebut "kode pesanan".
 - Sisa nama lama yang sengaja dipertahankan: data booking Zona tersimpan di key `passes` (tipe `ZonePass`) dan
   gerbang berkamera pelat ditandai `zoneLane`. Jangan diganti, data di HP pengguna bergantung pada itu.
 
 ## 3. Isi app, layar per layar
 
-### 3.1 Tiga tab (bawah layar)
+### 3.1 Tiga tab (dock kaca mengambang di bawah)
+
+Tab tampil sebagai ikon tanpa tulisan, dengan titik kecil di bawah tab yang aktif.
+
 | Tab | Isi |
 |---|---|
-| **Aktivitas** (kiri) | Sekarang: lokasi parkir tersimpan, runner yang jalan, petak yang sedang ditahan, charger yang mengisi. Nanti: pesanan belum mulai dan pengingat. Riwayat: selesai, dibatalkan, hangus, masing-masing dengan tombol "Lagi". Kartu ringkasan bulan ini (kali parkir, menit dihemat) |
-| **Parkir** (logo K, tengah, menonjol) | Peta MapLibre, search, chip jam simulasi, dropdown "Mau ngapain?" (4 mode plus pilih kendaraan), daftar lokasi di dock sheet, kartu tempat. Tap K lagi = balik ke tampilan awal |
-| **Akun** (kanan) | Login Google atau tamu, garasi kendaraan (mobil/motor, pelat, EV), paket Gratis/Premium, dampak bulan ini, opsi peta, notifikasi dan preferensi, bahasa, tema, privasi, "Untuk tim dan demo" (jam simulasi, /booth, /mitra), reset |
+| **Tiket** (kiri) | Yang sedang berjalan: lokasi parkir tersimpan, runner yang jalan, petak yang sedang ditahan, charger yang mengisi. Kalau kosong, ada tombol "Cari parkir". Nanti: pesanan belum mulai dan pengingat. Riwayat: selesai, dibatalkan, hangus, masing-masing dengan tombol "Lagi". Ringkasan bulan ini (kali parkir, menit dihemat) |
+| **Beranda** (tengah) | Peta MapLibre. Di atas peta: chip jam simulasi, tombol lokasiku, dan avatar yang membuka Akun. Lembar bawah "Mau parkir di mana?": kolom cari, tiga pilihan layanan, dan baris kendaraan. Lembar ditarik ke atas memperlihatkan daftar lokasi dengan filter Semua, Favorit, Kampus, Mall |
+| **Akun** (kanan) | Login Google atau tamu, garasi kendaraan (mobil/motor, pelat, EV), paket Gratis/Premium, dampak bulan ini, peta dan navigasi, notifikasi dan preferensi, bahasa, tema (ikut sistem, terang, gelap), privasi, "Untuk tim dan demo" (jam simulasi, /booth, /mitra), reset |
 
-### 3.2 Mode di tab Parkir
-Layout sama, yang berubah hanya angka di pin, angka di kanan tiap baris daftar, dan satu tombol utama di kartu.
+### 3.2 Layanan di Beranda
 
-| Mode | Pin dan daftar menunjukkan | Kartu tempat | Tombol utama |
-|---|---|---|---|
-| Parkir | persen terisi, menit sampai dapat petak | gerbang paling lancar vs gerbang utama, saran alternatif, saran "Males muter?" kalau okupansi 80% ke atas | Rute |
-| Zona KENNETH | harga petak, "habis" kalau penuh | lokasi zona (lantai, lobi, gerbang), petak kosong x/total, harga, ±1 mnt ke lift | Pesan petak |
-| Valet runner | menit mobil balik | lobi runner, runner datang (mnt), mobil balik (mnt), tarif | Pesan runner |
-| Charger EV | charger kosong x/total | daya kW, jumlah unit, peringatan kalau kendaraan aktif bukan EV | Pesan charger |
+Layout sama. Yang berubah saat layanan dipilih hanya angka di pin, angka di daftar, dan tombol utama di kartu tempat.
 
-Pengguna baru diberi penunjuk satu kali ke menu layanan. Mode berlayanan tidak muncul kalau kendaraan aktif motor.
+| Layanan dipilih | Pin dan daftar menunjukkan | Tombol utama di kartu tempat |
+|---|---|---|
+| Tidak ada (cek parkir) | titik status dengan persen terisi, menit sampai dapat petak | Rute ke gerbang paling lancar |
+| Zona KENNETH | harga petak (pin cornflower), "habis" kalau penuh | Pesan petak, dengan harga di tombol |
+| Valet runner | menit mobil balik | Pesan runner |
+| Charger EV | charger kosong x/total | Pesan charger |
+
+- Kartu tempat punya deretan chip layanan sendiri. Layanan yang tidak dijual di lokasi itu redup dan tidak bisa
+  dinyalakan. Rute ke gerbang turun jadi baris tipis di bawah tombol pesan.
+- Pin berupa titik status. Angka muncul kalau ada ruang, nama singkat lokasi muncul saat peta diperbesar, nama
+  lengkap muncul di lokasi yang dipilih.
+- Kendaraan aktif motor: tiga pilihan layanan abu-abu dengan keterangan "Khusus mobil".
 
 ### 3.3 Sheet (panel yang naik dari bawah)
-- **Detail lokasi**: papan LED "SISA SLOT", grafik perkiraan hari ini (bisa digeser jam), gerbang masuk dan antriannya,
-  biaya parkir (stepper jam), layanan yang bisa dipesan, slot difabel dan ibu hamil, alternatif yang masih lega
-  (jalan kaki atau berkendara), rute dari parkir ke tenant, lapor kondisi (Penuh, Antri panjang, Masih lega),
-  ganjil-genap (hanya kalau ada koridor), favorit, bagikan.
+- **Detail lokasi**: angka sisa slot dan cincin okupansi, grafik perkiraan hari ini (bisa digeser jam), gerbang masuk
+  dan antriannya, biaya parkir (stepper jam), layanan yang bisa dipesan, slot difabel dan ibu hamil, alternatif yang
+  masih lega (jalan kaki atau berkendara), rute dari parkir ke tenant, lapor kondisi (Penuh, Antri panjang, Masih
+  lega), ganjil-genap (hanya kalau ada koridor), favorit, bagikan.
 - **Pesan** (BookHub): tab per layanan. Setelah pesan, hasil tetap di layar dengan tombol buka tiket dan "Salah pesan? Batalkan".
   - Zona: pilih hari (hari ini, Premium sampai H-7), pilih jam datang per 30 menit, harga dan sisa petak tiap slot,
     metode bayar simulasi (QRIS, e-wallet, kartu), penjelasan "Kok bisa ada zona khusus?".
   - Valet: pilih lobi, jam datang per 15 menit, estimasi runner datang dan mobil balik, pelat, metode bayar.
-  - EV: jam mulai, durasi, unit charger.
-- **Tiket petak** (gaya boarding pass, selalu gelap): nomor petak besar (misal K-05), lantai dan lobi, gerbang masuk,
-  QR cadangan, jam datang, hitung mundur "datang dalam" atau "ditahan lagi", harga, Batalkan.
+  - EV: jam mulai, durasi, unit charger (dibuka di unit yang kosong).
+- **Tiket petak** (gaya boarding pass): nomor petak besar (misal K-05), lantai dan lobi, gerbang masuk, QR cadangan,
+  jam datang, hitung mundur "datang dalam" atau "ditahan lagi" (format menit:detik), harga, Batalkan.
 - **Tiket runner**: nama dan badge runner (misal Bayu, R-841), kode pesanan plus pelat, lalu satu langkah besar per
   fase: Kunci udah diserahin, Siapkan mobil (hitung mundur dan notifikasi "Mobilmu siap di Lobi A"), Mobil udah diambil.
   Ada tombol "Percepat" di mode demo.
 - **Simpan lokasi parkir**: lantai, area, pilar (default 12), lobi terdekat, foto, catatan. **Cari kendaraan**: ringkasan
   plus denah basement 3D (three.js) dengan mobil di pilarnya, tombol bagikan, "Udah keluar parkir".
-- Lainnya: Search (cari lokasi, layanan, atau tenant), Jam simulasi, Opsi peta (Tenang/Detail, gedung 3D, tombol
-  Rute buka KENNETH, Google Maps, atau Waze), Paket (Gratis, Pesan saat perlu, Premium), Dampak (rumus terbuka),
-  Privasi (unduh data, hapus semua), Kendaraan.
-- **Navigasi di dalam app**: rute jalan dari OSRM ke gerbang paling lancar, banner antrian saat tiba, "Udah sampai"
-  membuka simpan lokasi.
+- Lainnya: Search (cari lokasi, layanan, atau tenant), Jam simulasi, Paket (Gratis, Pesan saat perlu, Premium),
+  Dampak (rumus terbuka), Privasi (unduh data, hapus semua), Kendaraan. Opsi peta (Tenang/Detail, gedung 3D, tombol
+  Rute buka KENNETH, Google Maps, atau Waze) ada langsung di Akun, bukan sheet terpisah.
+- **Navigasi di dalam app**: rute jalan dari OSRM ke gerbang paling lancar (atau gerbang zona kalau Zona KENNETH
+  dipilih), banner antrian saat tiba, "Udah sampai" membuka simpan lokasi.
 
 ### 3.4 Halaman lain
 | Rute | Isi |
@@ -105,6 +121,7 @@ Pengguna baru diberi penunjuk satu kali ke menu layanan. Mode berlayanan tidak m
 | `/booth` | Mode booth BiFest: form validasi 5 pertanyaan + pilih 2 fitur + feedback grid, tally jawaban, ekspor CSV dan JSON |
 
 Di laptop, app tampil di bingkai HP dengan QR di pojok. Splash: layar tinta dengan ikon K kecil, memudar setelah peta siap.
+Onboarding pertama kali: 4 langkah (pembuka, yang bisa dibantu, lokasi favorit, kendaraan), bisa dilewati.
 
 ## 4. Angka dan aturan yang tertanam di mesin (`src/engine`)
 
@@ -145,7 +162,9 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 
 - **Stack**: React 19, TypeScript, Vite, Tailwind CSS 4, Motion, MapLibre GL + OpenFreeMap, OSRM (rute), three.js
   (denah 3D), Zustand (state di localStorage), Firebase Authentication (Google, dimuat saat tombol ditekan),
-  vite-plugin-pwa. Font Plus Jakarta Sans dan Doto.
+  vite-plugin-pwa. Font SF Pro di perangkat Apple, Inter di luar itu.
+- **Brand**: ikon PWA, favicon, OG image, splash, dan manifest dibuat ulang di palet baru. Generatornya
+  `docs/brand/make_assets.py`.
 - **Hosting**: Firebase Hosting paket Spark, project `kenneth-9339d`, dua target (`main` dan `park`) di `.firebaserc`.
   Header keamanan dan CSP Report-Only di `firebase.json`. Bukan Vercel.
 - **State**: `src/store/app.ts` versi persist **3** (v1 satu mobil, v2 garasi, v3 `zone` lantai jadi `section`).
@@ -157,11 +176,14 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
   src/data       venues.ts (20 lokasi), types.ts
   src/engine     occupancy, recommend, pricing, zone, pass, valet, services, modes, activity, mitra, gage, impact
   src/store      app (persist), ui (tab, mode, sheet), clock (jam simulasi), booth
-  src/components explore (tab Parkir), activity, account, sheets (+ sheets/book), map, nav, park (3D), onboarding, shell, ui
+  src/components explore (tab Beranda, termasuk HomeSheet), activity (tab Tiket), account, sheets (+ sheets/book),
+                 map (+ declutter label pin), nav, park (3D), onboarding, shell, ui
   src/lib        auth, routing (OSRM), navApps, geo, time (WIB), share, notify, haptics, splash, theme, status
   src/pages      Mitra.tsx, Booth.tsx
   ```
 - **Jalankan**: `npm install`, `npm run dev`, `npm test`, `npm run lint` (oxlint), `npm run build`.
+- **Buka di HP tanpa deploy**: `npm run build`, lalu `npx vite preview --host`, dan buka alamat Network yang muncul
+  dari HP yang satu Wi-Fi. Wi-Fi kampus bisa memblokir koneksi antar perangkat, pakai hotspot HP kalau begitu.
 - **Rilis**: `npm run deploy` (dua situs sekaligus) atau `npm run deploy:preview` (link 7 hari). Yang deploy harus
   ditambahkan sebagai anggota project di Firebase console dan `npx firebase-tools login` sekali.
 - **Login Google** lewat `kenneth-9339d.firebaseapp.com` (lihat `src/lib/auth.ts`). Butuh `.env.local` dari
@@ -181,12 +203,14 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 
 ## 8. Yang belum selesai atau belum ada
 
+- **Desain ulang (PR #13 sampai #21) belum di-deploy.** Situs live masih menampilkan desain lama dengan dropdown.
 - Semua angka simulasi. Tidak ada palang, gedung, runner, atau pembayaran sungguhan. Pembayaran hanya animasi.
 - Notifikasi "ada yang batal" (Premium) baru tertulis di halaman paket.
 - Laporan kondisi pengguna dan jawaban booth hanya tersimpan di perangkat itu.
 - Data tidak sinkron antar perangkat walau sudah login (disengaja).
 - Ganjil-genap belum menghitung hari libur nasional.
 - Kampus dan kantor belum bisa memesan layanan di app, walau keputusannya sudah berubah (bagian 1 no. 5).
+- Sisa temuan audit UI yang belum dikerjakan: lihat [UX-AUDIT.md](UX-AUDIT.md), bagian "Status setelah desain ulang".
 
 ## 9. Masukan presentasi dan rencana update
 
@@ -203,8 +227,8 @@ Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AU
 | Runner itu mitra lepas? Keamanannya gimana? | Diskusi tim | Runner karyawan KENNETH (bagian 1 no. 3) | Selesai |
 | Tambah pilihan mall | Ellyn | Setuju, tambah mall baru dengan data demo | Belum dikerjakan |
 | Ganti nama | Ellyn | Tidak diganti | Selesai |
-| UI bikin pusing, butuh waktu untuk paham | Ellyn | Setuju. Rombak dengan acuan app Apple, urutan kerja di [UX-AUDIT.md](UX-AUDIT.md) | Audit selesai, perbaikan belum |
-| Desain oke, tapi kombinasi warnanya kurang | Delon | Tema terang, gelap, dan ikut sistem sudah ada. Tambah pilihan warna aksen di Akun | Belum dikerjakan |
+| UI bikin pusing, butuh waktu untuk paham | Ellyn | Desain ulang oleh Frederick (PR #13): layanan jadi pilihan besar di Beranda, dropdown dihapus, kartu dan pin lebih ringkas. Sisa temuan audit tercatat di [UX-AUDIT.md](UX-AUDIT.md) | Sebagian selesai, belum di-deploy |
+| Desain oke, tapi kombinasi warnanya kurang | Delon | Tema baru onyx dan porselen dengan aksen cornflower (PR #13). Pilihan warna aksen sendiri di Akun belum ada | Sebagian selesai, belum di-deploy |
 
 ## 10. Riwayat versi singkat
 
@@ -216,3 +240,4 @@ Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AU
 | v0.4 | 24 Sep 2026 | Zona KENNETH menggantikan jalur prioritas, valet runner menggantikan valet gedung |
 | v0.4 + review | 25 sampai 28 Sep 2026 | PR #1 sampai #11: nama layanan konsisten (`zone`, `section`), cari lewat layanan dan tenant, penunjuk menu layanan, dashboard mitra lebih jujur, booth lebih aman, CSP Report-Only, perbaikan login, 106 test |
 | v0.4 + review | 2 Okt 2026 | PR #12: tab Aktivitas dan tiket runner lebih rapi, slot ikut jam buka gedung, 109 test |
+| v0.4 + desain ulang | 2 sampai 3 Okt 2026 | PR #13 sampai #21: tema onyx dan cornflower, Beranda ala Uber dengan tiga pilihan layanan, dropdown dihapus, tab Tiket/Beranda/Akun di dock mengambang, layout HP sempit, test pesan zona dan valet, PWA lebih ringan, splash tenang, 129 test. Belum di-deploy |
