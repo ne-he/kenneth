@@ -43,44 +43,51 @@ export function HomeHeader() {
   )
 }
 
-/** Three equal cards. The one that is on gets the cornflower tint; a motorbike sees them all greyed with the reason. */
+/**
+ * Three equal toggles, one row high: icon and name only, so the map keeps the
+ * screen. The one that is on gets the cornflower tint and a check. The hints
+ * stay for screen readers; a motorbike sees the row greyed with one reason under it.
+ */
 function ServiceToggles() {
   const t = useT()
   const mode = useUi((s) => s.mode)
   const toggleService = useUi((s) => s.toggleService)
   const locked = useVehicle().kind === 'motor'
-  // Three up where each card gets at least 104px, otherwise the cards stack so a hint is never clipped.
+  // Three up where each toggle gets at least 104px, otherwise they stack so a name is never clipped.
   return (
-    <div className="mt-2.5 grid grid-cols-[repeat(auto-fit,minmax(104px,1fr))] gap-2" role="group" aria-label={t.modes.services}>
-      {SERVICES.map((m) => {
-        const on = m === mode
-        return (
-          <button
-            key={m}
-            type="button"
-            role="switch"
-            aria-checked={on}
-            disabled={locked}
-            onClick={() => {
-              haptic('tap')
-              toggleService(m)
-            }}
-            className={clsx(
-              'relative flex flex-col items-start rounded-[18px] p-2.5 text-left transition-colors disabled:opacity-45',
-              on ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-100' : 'bg-surface-2 text-ink hover:bg-surface-3',
-            )}
-          >
-            <span className={on ? 'text-brand-700 dark:text-brand-300' : 'text-ink'}>{MODE_ICON[m]({ size: 18, weight: 'fill' })}</span>
-            {on && <Check size={14} weight="bold" className="absolute top-2.5 right-2.5 text-brand-700 dark:text-brand-300" />}
-            <span className="mt-2 block text-[13px] leading-tight font-semibold tracking-tight">{t.modes[m].label}</span>
-            {/* Hints sit on the same line across the three cards even when a name wraps. */}
-            <span className={clsx('mt-auto pt-1 text-[11.5px] leading-snug', on ? 'opacity-75' : 'text-ink-3')}>
-              {locked ? t.modes.carOnly : t.modes[m].hint}
-            </span>
-          </button>
-        )
-      })}
-    </div>
+    <>
+      <div className="mt-2.5 grid grid-cols-[repeat(auto-fit,minmax(104px,1fr))] gap-2" role="group" aria-label={t.modes.services}>
+        {SERVICES.map((m) => {
+          const on = m === mode
+          return (
+            <button
+              key={m}
+              type="button"
+              role="switch"
+              aria-checked={on}
+              disabled={locked}
+              onClick={() => {
+                haptic('tap')
+                toggleService(m)
+              }}
+              className={clsx(
+                'flex h-[52px] items-center gap-2 rounded-[16px] pr-2 pl-2.5 text-left transition-colors disabled:opacity-45',
+                on ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-100' : 'bg-surface-2 text-ink hover:bg-surface-3',
+              )}
+            >
+              <span className={clsx('shrink-0', on ? 'text-brand-700 dark:text-brand-300' : 'text-ink')}>
+                {on ? <Check size={18} weight="bold" /> : MODE_ICON[m]({ size: 18, weight: 'fill' })}
+              </span>
+              <span className="min-w-0 text-[12.5px] leading-tight font-semibold tracking-tight">
+                {t.modes[m].label}
+                <span className="sr-only">, {t.modes[m].hint}</span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+      {locked && <p className="mt-1.5 px-1 text-[12px] text-ink-3">{t.modes.carOnly}</p>}
+    </>
   )
 }
 
