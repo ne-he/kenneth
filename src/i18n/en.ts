@@ -43,7 +43,7 @@ const en: Dict = {
     ev: { label: 'EV charger', short: 'EV', hint: 'Charger for your EV' },
     carOnly: 'Cars only',
     vehicle: 'Vehicle',
-    addVehicle: 'Add',
+    noPlate: 'No plate',
     listTitle: { park: 'Near you', zone: 'With a KENNETH Zone', valet: 'With runner valet', ev: 'With EV chargers' },
     // Says what the number on the right of each row means in this mode.
     count: {
