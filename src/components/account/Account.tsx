@@ -1,6 +1,5 @@
 import {
   Buildings,
-  CarProfile,
   CaretRight,
   Check,
   CircleHalf,
@@ -12,7 +11,6 @@ import {
   Lightning,
   LockKey,
   MapTrifold,
-  Motorcycle,
   NavigationArrow,
   Palette,
   Plus,
@@ -43,6 +41,7 @@ import { Segmented, Toggle } from '../ui/Controls'
 import { Plate } from '../ui/Display'
 import { Label, List } from '../ui/Kit'
 import { LogoMark } from '../ui/Logo'
+import { VehicleIcon } from '../ui/VehicleIcon'
 import { useSignIn } from './useSignIn'
 
 /**
@@ -298,7 +297,7 @@ function Garage() {
               className="flex min-w-0 flex-1 items-center gap-3 text-left"
             >
               <span className={clsx('grid w-5 shrink-0 place-items-center', on ? 'text-ink' : 'text-ink-3')}>
-                {v.kind === 'motor' ? <Motorcycle size={18} weight="fill" /> : <CarProfile size={18} weight="fill" />}
+                <VehicleIcon vehicle={v} size={20} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[14.5px] font-medium">{v.model || t.profile.kinds[v.kind]}</span>

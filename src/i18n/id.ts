@@ -42,6 +42,8 @@ const id = {
     carOnly: 'Khusus mobil',
     vehicle: 'Kendaraan',
     noPlate: 'Tanpa pelat',
+    vehicleChip: (name: string) => `Kendaraan: ${name}. Ganti kendaraan`,
+    pickVehicle: 'Pakai kendaraan apa?',
     listTitle: { park: 'Sekitar kamu', zone: 'Ada Zona KENNETH', valet: 'Ada valet runner', ev: 'Ada charger EV' },
     // Says what the number on the right of each row means in this mode.
     count: {
@@ -413,6 +415,8 @@ const id = {
     edit: 'Ubah',
     nowUsing: (name: string) => `Sekarang pakai ${name}`,
     kinds: { mobil: 'Mobil', motor: 'Motor' },
+    body: 'Bentuk mobil',
+    bodies: { hatch: 'Hatchback', sedan: 'Sedan', mpv: 'MPV', suv: 'SUV' },
     plate: 'Pelat nomor',
     model: 'Model',
     parity: (p: string) => `pelat ${p}`,

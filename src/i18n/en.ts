@@ -44,6 +44,8 @@ const en: Dict = {
     carOnly: 'Cars only',
     vehicle: 'Vehicle',
     noPlate: 'No plate',
+    vehicleChip: (name: string) => `Vehicle: ${name}. Change vehicle`,
+    pickVehicle: 'Which vehicle?',
     listTitle: { park: 'Near you', zone: 'With a KENNETH Zone', valet: 'With runner valet', ev: 'With EV chargers' },
     // Says what the number on the right of each row means in this mode.
     count: {
@@ -413,6 +415,8 @@ const en: Dict = {
     edit: 'Edit',
     nowUsing: (name: string) => `Now using ${name}`,
     kinds: { mobil: 'Car', motor: 'Motorbike' },
+    body: 'Body type',
+    bodies: { hatch: 'Hatchback', sedan: 'Sedan', mpv: 'MPV', suv: 'SUV' },
     plate: 'Number plate',
     model: 'Model',
     parity: (p: string) => `${p} plate`,
