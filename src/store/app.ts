@@ -7,8 +7,12 @@ import { nextSaturdayAt } from '../lib/time'
 
 export type Lang = 'id' | 'en'
 export type Theme = 'system' | 'light' | 'dark'
-/** The color that marks the brand and the one booking button. Status colors never follow it. */
-export type Accent = 'cornflower' | 'purple' | 'pink' | 'red' | 'orange' | 'green' | 'graphite'
+/**
+ * The color that marks the brand and the one booking button. Status colors
+ * never follow it, and no accent sits near them: green, amber and red are
+ * reserved for lega, ramai and penuh.
+ */
+export type Accent = 'cornflower' | 'purple' | 'pink' | 'graphite'
 export type NavApp = 'kenneth' | 'gmaps' | 'waze'
 export type MapStyle = 'calm' | 'detail'
 
