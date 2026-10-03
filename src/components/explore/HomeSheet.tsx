@@ -1,13 +1,11 @@
-import { CarProfile, Check, MagnifyingGlass, MapPin, Motorcycle, Plus } from '@phosphor-icons/react'
+import { CarProfile, MagnifyingGlass, MapPin, Motorcycle, Plus } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { SERVICES, type ParkMode } from '../../engine/modes'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { useApp, useVehicle } from '../../store/app'
 import { useUi, type VenueFilter } from '../../store/ui'
-import { Plate } from '../ui/Display'
 import { LiveStrip } from './LiveStrip'
-import { MODE_ICON } from './modeIcons'
 
 const FILTERS: VenueFilter[] = ['all', 'fav', 'kampus', 'mall']
 
@@ -44,19 +42,20 @@ export function HomeHeader() {
 }
 
 /**
- * Three equal toggles, one row high: icon and name only, so the map keeps the
- * screen. The one that is on gets the cornflower tint and a check. The hints
- * stay for screen readers; a motorbike sees the row greyed with one reason under it.
+ * Three toggles on one line, names only: three full names and their icons do
+ * not fit a phone width, and the name is what people read. They share the row
+ * equally while there is room and scroll on a very narrow phone, never wrap.
+ * The one that is on gets the accent tint. The hints stay for screen readers;
+ * a motorbike sees the row greyed with one reason under it.
  */
 function ServiceToggles() {
   const t = useT()
   const mode = useUi((s) => s.mode)
   const toggleService = useUi((s) => s.toggleService)
   const locked = useVehicle().kind === 'motor'
-  // Three up where each toggle gets at least 104px, otherwise they stack so a name is never clipped.
   return (
     <>
-      <div className="mt-2.5 grid grid-cols-[repeat(auto-fit,minmax(104px,1fr))] gap-2" role="group" aria-label={t.modes.services}>
+      <div className="no-scrollbar -mx-5 mt-2.5 flex gap-2 overflow-x-auto px-5" role="group" aria-label={t.modes.services}>
         {SERVICES.map((m) => {
           const on = m === mode
           return (
@@ -71,17 +70,12 @@ function ServiceToggles() {
                 toggleService(m)
               }}
               className={clsx(
-                'flex h-[52px] items-center gap-2 rounded-[16px] pr-2 pl-2.5 text-left transition-colors disabled:opacity-45',
+                'h-11 min-w-max flex-1 basis-0 rounded-full px-2.5 text-[13px] font-semibold tracking-tight whitespace-nowrap transition-colors disabled:opacity-45',
                 on ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-100' : 'bg-surface-2 text-ink hover:bg-surface-3',
               )}
             >
-              <span className={clsx('shrink-0', on ? 'text-brand-700 dark:text-brand-300' : 'text-ink')}>
-                {on ? <Check size={18} weight="bold" /> : MODE_ICON[m]({ size: 18, weight: 'fill' })}
-              </span>
-              <span className="min-w-0 text-[12.5px] leading-tight font-semibold tracking-tight">
-                {t.modes[m].label}
-                <span className="sr-only">, {t.modes[m].hint}</span>
-              </span>
+              {t.modes[m].label}
+              <span className="sr-only">, {t.modes[m].hint}</span>
             </button>
           )
         })}
@@ -112,8 +106,9 @@ function VehicleRow() {
     }
   }
 
+  // The plate is plain text here, not the plate graphic of the tickets: this row is a switch, not a document.
   return (
-    <div className="no-scrollbar -mx-5 mt-2.5 flex gap-1.5 overflow-x-auto px-5" role="group" aria-label={t.modes.vehicle}>
+    <div className="no-scrollbar -mx-5 mt-2 flex gap-1.5 overflow-x-auto px-5" role="group" aria-label={t.modes.vehicle}>
       {vehicles.map((v) => {
         const on = v.id === active.id
         return (
@@ -123,24 +118,25 @@ function VehicleRow() {
             aria-pressed={on}
             onClick={() => drive(v.id)}
             className={clsx(
-              'flex h-9 shrink-0 items-center gap-1.5 rounded-full pr-1.5 pl-2.5 transition-colors',
+              'flex h-9 shrink-0 items-center gap-1.5 rounded-full pr-3 pl-2.5 font-mono text-[12.5px] font-semibold tracking-wider transition-colors',
               on ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2 hover:text-ink',
             )}
           >
             {v.kind === 'motor' ? <Motorcycle size={15} weight="fill" /> : <CarProfile size={15} weight="fill" />}
-            <Plate plate={v.plate} small />
+            {v.plate || t.modes.noPlate}
           </button>
         )
       })}
       <button
         type="button"
+        aria-label={t.profile.addVehicle}
         onClick={() => {
           haptic('tap')
           open({ kind: 'vehicle', id: 'new' })
         }}
-        className="flex h-9 shrink-0 items-center gap-1 rounded-full border border-dashed border-line-strong px-3 text-[12.5px] font-semibold text-ink-2 hover:text-ink"
+        className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 transition-colors hover:bg-surface-3 hover:text-ink"
       >
-        <Plus size={13} weight="bold" /> {t.modes.addVehicle}
+        <Plus size={14} weight="bold" />
       </button>
     </div>
   )

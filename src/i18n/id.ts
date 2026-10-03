@@ -41,7 +41,7 @@ const id = {
     ev: { label: 'Charger EV', short: 'EV', hint: 'Charger mobil listrik' },
     carOnly: 'Khusus mobil',
     vehicle: 'Kendaraan',
-    addVehicle: 'Tambah',
+    noPlate: 'Tanpa pelat',
     listTitle: { park: 'Sekitar kamu', zone: 'Ada Zona KENNETH', valet: 'Ada valet runner', ev: 'Ada charger EV' },
     // Says what the number on the right of each row means in this mode.
     count: {
