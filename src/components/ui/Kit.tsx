@@ -44,7 +44,7 @@ export function ActionButton({
         className={clsx(
           'grid size-[52px] place-items-center rounded-full transition-colors',
           tone === 'brand'
-            ? 'bg-brand-600 text-white shadow-[0_8px_18px_-8px_rgb(5_150_105/0.7)]'
+            ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200'
             : active
               ? 'bg-ink text-canvas'
               : 'bg-surface-2 text-ink group-hover:bg-surface-3',
@@ -67,7 +67,10 @@ export function Label({ children, aside, className }: { children: ReactNode; asi
   )
 }
 
-/** A row that says the short version on the right and opens up for the long one. */
+/**
+ * A row that says the short version under its title and opens up for the long
+ * one. A small grey icon, no tile: the words carry the row.
+ */
 export function Disclosure({
   icon,
   title,
@@ -91,17 +94,17 @@ export function Disclosure({
           haptic('tap')
           setOpen(!open)
         }}
-        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-2/60"
+        className="flex w-full items-center gap-3 px-1 py-4 text-left transition-opacity hover:opacity-80"
       >
-        <span className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-surface-2 text-ink-2">{icon}</span>
+        <span className="grid size-5 shrink-0 place-items-center text-ink-3">{icon}</span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[14px] font-semibold">{title}</span>
+          <span className="block text-[14.5px] font-medium">{title}</span>
           {summary && (
-            <span className={clsx('mt-0.5 block truncate text-[12.5px]', tone ? STATUS[tone].text : 'text-ink-3')}>{summary}</span>
+            <span className={clsx('mt-0.5 block truncate text-[13px]', tone ? STATUS[tone].text : 'text-ink-3')}>{summary}</span>
           )}
         </span>
         <motion.span animate={{ rotate: open ? 180 : 0 }} className="text-ink-3">
-          <CaretDown size={15} weight="bold" />
+          <CaretDown size={13} weight="bold" />
         </motion.span>
       </button>
       <AnimatePresence initial={false}>
@@ -113,7 +116,7 @@ export function Disclosure({
             transition={{ type: 'spring', stiffness: 420, damping: 40 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4">{children}</div>
+            <div className="pr-1 pb-4 pl-9">{children}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -121,16 +124,27 @@ export function Disclosure({
   )
 }
 
-/** Grouped rows on one card, separated by hairlines. */
-export function List({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={clsx('divide-y divide-line overflow-hidden rounded-[20px] border border-line bg-surface', className)}>{children}</div>
+/** Grouped rows separated by hairlines. On a card by default; `plain` drops the card and keeps only the lines. */
+export function List({ children, className, plain }: { children: ReactNode; className?: string; plain?: boolean }) {
+  return (
+    <div
+      className={clsx(
+        'divide-y divide-line',
+        plain ? 'border-y border-line' : 'overflow-hidden rounded-[20px] border border-line bg-surface',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 /** Occupancy as a small soft pill: dot, percent, word. The only coloured thing in a row. */
 export function StatusPill({ status, pct, label }: { status: OccupancyStatus; pct?: number; label?: string }) {
   return (
-    <span className={clsx('inline-flex h-[22px] items-center gap-1.5 rounded-full px-2 text-[11.5px] font-bold tabular', STATUS[status].soft)}>
-      <span className={clsx('size-1.5 rounded-full', STATUS[status].dot, status === 'penuh' && 'animate-pulse')} />
+    // Color lives in the dot only; the number stays ink so a long list reads calm.
+    <span className={clsx('inline-flex items-center gap-1.5 text-[12.5px] font-semibold tabular', status === 'penuh' ? STATUS.penuh.text : 'text-ink-2')}>
+      <span className={clsx('size-2 rounded-full', STATUS[status].dot)} />
       {pct !== undefined && `${pct}%`}
       {label && <span className="font-semibold">{label}</span>}
     </span>

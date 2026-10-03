@@ -43,8 +43,8 @@ export function ClockSheet() {
   return (
     <div className="pb-4">
       <SheetHeader eyebrow={t.profile.demo} title={t.clockSheet.title} onClose={close} closeLabel={t.common.close} />
-      <p className="mb-4 text-[13px] leading-relaxed text-ink-2">{t.clockSheet.body}</p>
-      <div className="space-y-2">
+      <p className="mb-5 text-[13px] leading-relaxed text-ink-2">{t.clockSheet.body}</p>
+      <div className="divide-y divide-line overflow-hidden rounded-[20px] border border-line">
         <Option
           icon={<Broadcast size={18} weight="fill" />}
           label={t.clockSheet.live}
@@ -69,17 +69,13 @@ function Option({ icon, label, active, onClick }: { icon: React.ReactNode; label
   return (
     <button
       type="button"
+      aria-pressed={active}
       onClick={onClick}
-      className={clsx(
-        'flex w-full items-center gap-3 rounded-[18px] border p-3.5 text-left transition-colors',
-        active ? 'border-brand-500/40 bg-brand-50 dark:bg-brand-400/10' : 'border-line bg-surface hover:bg-surface-2',
-      )}
+      className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-surface-2/60"
     >
-      <span className={clsx('grid size-9 place-items-center rounded-full', active ? 'bg-brand-600 text-white' : 'bg-surface-2 text-ink-2')}>
-        {icon}
-      </span>
-      <span className="flex-1 text-[14px] font-semibold">{label}</span>
-      {active && <Check size={18} weight="bold" className="text-brand-600" />}
+      <span className={clsx('grid w-5 shrink-0 place-items-center', active ? 'text-ink' : 'text-ink-3')}>{icon}</span>
+      <span className={clsx('flex-1 text-[14px]', active ? 'font-semibold' : 'font-medium')}>{label}</span>
+      {active && <Check size={17} weight="bold" className="text-ink" />}
     </button>
   )
 }

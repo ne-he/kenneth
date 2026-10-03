@@ -24,11 +24,15 @@ export function Toggle({
       }}
       className={clsx(
         'relative h-[30px] w-[50px] shrink-0 rounded-full transition-colors duration-300',
-        checked ? 'bg-brand-500' : 'bg-surface-3',
+        checked ? 'bg-ink' : 'bg-surface-3',
       )}
     >
+      {/* On is ink, not a hue: the switch is a setting, not a status. The knob flips to stay visible in both themes. */}
       <motion.span
-        className="absolute top-[3px] left-[3px] size-6 rounded-full bg-white shadow-[0_2px_6px_rgb(0_0_0/0.18)]"
+        className={clsx(
+          'absolute top-[3px] left-[3px] size-6 rounded-full shadow-[0_1px_2px_rgb(0_0_0/0.16)] transition-colors duration-300',
+          checked ? 'bg-canvas' : 'bg-white',
+        )}
         animate={{ x: checked ? 20 : 0 }}
         transition={{ type: 'spring', stiffness: 700, damping: 34 }}
       />
@@ -49,7 +53,7 @@ export function Segmented<T extends string>({
 }) {
   const id = useId()
   return (
-    <div className={clsx('sunken flex rounded-full p-1', className)} role="radiogroup">
+    <div className={clsx('flex rounded-full bg-surface-2 p-1', className)} role="radiogroup">
       {options.map((o) => {
         const active = o.value === value
         return (
@@ -70,7 +74,7 @@ export function Segmented<T extends string>({
             {active && (
               <motion.span
                 layoutId={`seg-${id}`}
-                className="absolute inset-0 rounded-full bg-surface shadow-[0_2px_6px_rgb(0_0_0/0.08),0_0.5px_1.5px_rgb(0_0_0/0.05)]"
+                className="absolute inset-0 rounded-full bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.06)] dark:bg-surface-3"
                 transition={{ type: 'spring', stiffness: 520, damping: 38 }}
               />
             )}
@@ -98,9 +102,9 @@ export function Stepper({
   label: string
 }) {
   const btn =
-    'grid size-9 place-items-center rounded-full bg-surface text-ink shadow-[0_1px_3px_rgb(0_0_0/0.08)] disabled:opacity-35'
+    'grid size-9 place-items-center rounded-full bg-surface text-ink shadow-[0_1px_2px_rgb(0_0_0/0.06)] disabled:opacity-35 dark:bg-surface-3'
   return (
-    <div className="sunken flex items-center gap-2 rounded-full p-1" aria-label={label}>
+    <div className="flex items-center gap-2 rounded-full bg-surface-2 p-1" aria-label={label}>
       <button
         type="button"
         className={btn}

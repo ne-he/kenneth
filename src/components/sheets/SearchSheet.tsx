@@ -42,7 +42,7 @@ export function SearchSheet() {
 
   return (
     <div className="pt-1 pb-4">
-      <label className="flex h-12 items-center gap-2.5 rounded-2xl border border-transparent bg-surface-2 px-3.5 focus-within:border-brand-500">
+      <label className="flex h-12 items-center gap-2.5 rounded-full border border-transparent bg-surface-2 px-4 focus-within:border-brand-500">
         <MagnifyingGlass size={18} className="text-ink-3" />
         <input
           autoFocus
@@ -73,7 +73,7 @@ export function SearchSheet() {
             >
               <VenueGlyph category={s.venue.category} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[15px] font-semibold">{s.venue.name}</span>
+                <span className="block truncate text-[15px] font-medium">{s.venue.name}</span>
                 <span className="text-[12px] text-ink-3">
                   {t.venue.category[s.venue.category]} · {s.venue.district}, {s.venue.area}
                 </span>

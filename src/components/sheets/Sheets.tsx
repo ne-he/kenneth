@@ -6,7 +6,6 @@ import { BookHub } from './book/BookHub'
 import { ClockSheet } from './ClockSheet'
 import { FindCarSheet } from './FindCarSheet'
 import { ImpactSheet, PremiumSheet, PrivacySheet, VehicleSheet } from './InfoSheets'
-import { MapOptionsSheet } from './MapOptionsSheet'
 import { PassSheet } from './PassSheet'
 import { SaveSpotSheet } from './SaveSpotSheet'
 import { SearchSheet } from './SearchSheet'
@@ -56,9 +55,6 @@ export function Sheets() {
       break
     case 'vehicle':
       body = <VehicleSheet key={sheet.id ?? 'active'} id={sheet.id} />
-      break
-    case 'map-options':
-      body = <MapOptionsSheet />
       break
   }
 

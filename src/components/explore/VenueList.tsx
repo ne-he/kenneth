@@ -14,12 +14,13 @@ import { formatMin } from '../../lib/status'
 import { clock } from '../../lib/time'
 import { uid, useApp } from '../../store/app'
 import { useUi, type VenueFilter } from '../../store/ui'
-import { StatusPill, VenueGlyph } from '../ui/Kit'
+import { StatusPill } from '../ui/Kit'
 import { TimeScrubber } from './TimeScrubber'
 
 /**
- * One row per place, read left to right like a price list: what it is, where,
- * how long until you are parked. The only colour is the status pill.
+ * One row per place, read left to right like a price list: the name and one
+ * quiet line on the left, minutes to a bay and the status dot on the right.
+ * The only colour is the dot.
  */
 export function VenueList({
   ranked,
@@ -64,7 +65,7 @@ export function VenueList({
       <AnimatePresence initial={false}>
         {fullOne && relief && <ReliefRow key={fullOne.venue.id} id={fullOne.venue.id} name={fullOne.venue.name} at={relief} />}
       </AnimatePresence>
-      <ol className="divide-y divide-line px-2">
+      <ol className="divide-y divide-line px-5">
         {ranked.map((r, i) => {
           const fav = favorites.includes(r.venue.id)
           const top = i === 0 && r.status !== 'penuh'
@@ -82,20 +83,17 @@ export function VenueList({
                   haptic('tap')
                   select(r.venue.id)
                 }}
-                className="flex w-full items-center gap-3 rounded-[16px] px-3 py-3 text-left transition-colors hover:bg-surface-2/70 active:bg-surface-2"
+                className="flex w-full items-center gap-4 py-4 text-left transition-opacity hover:opacity-80 active:opacity-60"
               >
-                <VenueGlyph category={r.venue.category} />
                 <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-1.5">
-                    <span className="truncate text-[15px] font-semibold tracking-tight">{r.venue.name}</span>
-                    {fav && <Star size={12} weight="fill" className="shrink-0 text-ramai" />}
-                    {top && (
-                      <span className="shrink-0 text-[11px] font-bold text-brand-700 dark:text-brand-300">{t.explore.fastest}</span>
-                    )}
+                  <span className="flex items-baseline gap-2">
+                    <span className="truncate text-[15.5px] font-semibold tracking-tight">{r.venue.name}</span>
+                    {fav && <Star size={11} weight="fill" className="shrink-0 self-center text-ink-3" />}
+                    {top && <span className="shrink-0 text-[12px] font-medium text-brand-600 dark:text-brand-300">{t.explore.fastest}</span>}
                   </span>
-                  <span className="mt-0.5 flex items-center gap-1.5 truncate text-[12.5px] text-ink-3">
+                  <span className="mt-1 flex items-center gap-1.5 truncate text-[13px] text-ink-3">
                     <span className="tabular">{r.travel.km < 0.15 ? t.explore.here : formatKm(r.travel.km)}</span>
-                    <span>·</span>
+                    <span aria-hidden="true">·</span>
                     <span className="truncate tabular">
                       {r.queueMin >= 2 ? `${t.explore.queue} ${formatMin(r.queueMin)} ${t.unit.min}` : t.explore.noQueue}
                     </span>
@@ -106,7 +104,7 @@ export function VenueList({
                     )}
                   </span>
                 </span>
-                <span className="flex shrink-0 flex-col items-end gap-1">
+                <span className="flex shrink-0 flex-col items-end gap-1.5">
                   <ModeValue fact={facts.get(r.venue.id)} minutes={r.timeToPark} />
                   <StatusPill status={r.status} pct={r.pct} />
                 </span>
@@ -115,10 +113,10 @@ export function VenueList({
           )
         })}
       </ol>
-      <div className="mt-4 border-t border-line px-5 pt-4">
+      <div className="mx-5 mt-2 border-t border-line pt-5">
         <TimeScrubber venues={ranked.map((r) => r.venue)} now={now} title={t.explore.forecastToday} />
       </div>
-      {mode === 'park' && <p className="px-6 pt-4 text-center text-[11.5px] leading-relaxed text-ink-3">{t.explore.toParkHint}</p>}
+      {mode === 'park' && <p className="px-6 pt-5 text-center text-[11.5px] leading-relaxed text-ink-3">{t.explore.toParkHint}</p>}
     </div>
   )
 }
@@ -126,20 +124,20 @@ export function VenueList({
 /** The number on the right of a row: minutes to a bay when parking, otherwise what the mode is about. */
 function ModeValue({ fact, minutes }: { fact?: PinFact; minutes: number }) {
   const t = useT()
-  const num = 'flex items-center gap-1 text-[15px] leading-none font-bold tracking-tight tabular'
-  const unit = 'text-[11px] font-semibold text-ink-3'
+  const num = 'flex items-center gap-1 text-[16px] leading-none font-semibold tracking-tight tabular'
+  const unit = 'text-[11.5px] font-medium text-ink-3'
   switch (fact?.kind) {
     case 'price':
       return (
         <span className={num}>
-          <Crown size={13} weight="fill" className="text-brand-600" />
+          <Crown size={12} weight="fill" className="text-brand-600 dark:text-brand-300" />
           {fact.left > 0 ? formatRupiah(fact.price, true) : <span className="text-[13px] text-penuh-ink dark:text-led-penuh">{t.modes.soldOut}</span>}
         </span>
       )
     case 'wait':
       return (
         <span className={num}>
-          <Key size={13} weight="fill" className="text-ink-2" />
+          <Key size={12} weight="fill" className="text-ink-3" />
           {fact.min}
           <span className={unit}>{t.unit.min}</span>
         </span>
@@ -147,13 +145,13 @@ function ModeValue({ fact, minutes }: { fact?: PinFact; minutes: number }) {
     case 'chargers':
       return (
         <span className={num}>
-          <ChargingStation size={13} weight="fill" className="text-ev" />
+          <ChargingStation size={12} weight="fill" className="text-ev" />
           {t.modes.free(fact.free, fact.total)}
         </span>
       )
     default:
       return (
-        <span className="text-[15px] leading-none font-bold tracking-tight tabular">
+        <span className="text-[16px] leading-none font-semibold tracking-tight tabular">
           {Math.round(minutes)}
           <span className={`ml-0.5 ${unit}`}>{t.unit.min}</span>
         </span>
@@ -172,11 +170,12 @@ function ReliefRow({ id, name, at }: { id: VenueId; name: string; at: number }) 
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      className="overflow-hidden px-4"
+      className="overflow-hidden px-5"
     >
-      <div className="mb-2 flex items-center gap-3 rounded-[16px] bg-surface-2 p-2.5 pl-3.5">
-        <BellSimple size={17} weight="fill" className="shrink-0 text-ink-2" />
-        <span className="flex-1 text-[12.5px] leading-snug text-ink-2">{t.explore.relief(name, clock(at))}</span>
+      {/* A plain row above the list, not a card: the ink button is the only filled thing in it. */}
+      <div className="flex items-center gap-3 border-b border-line pt-1 pb-3.5">
+        <BellSimple size={16} className="shrink-0 text-ink-3" />
+        <span className="flex-1 text-[13px] leading-snug text-ink-2">{t.explore.relief(name, clock(at))}</span>
         <button
           type="button"
           disabled={set}
@@ -187,7 +186,7 @@ function ReliefRow({ id, name, at }: { id: VenueId; name: string; at: number }) 
             askNotificationPermission()
           }}
           className={clsx(
-            'h-8 shrink-0 rounded-full px-3 text-[12px] font-bold',
+            'h-8 shrink-0 rounded-full px-3.5 text-[12.5px] font-semibold',
             set ? 'text-ink-3' : 'bg-ink text-canvas',
           )}
         >

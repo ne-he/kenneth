@@ -1,38 +1,9 @@
 /// <reference types="vitest/config" />
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { existsSync, readFileSync } from 'node:fs'
-import { defineConfig, type Plugin } from 'vite'
+import { readFileSync } from 'node:fs'
+import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-
-/*
-  Brand loading video for the splash. Drop public/brand/loading.mp4 (plus
-  optional loading.webm and loading-poster.jpg, the first frame) in and the
-  next build uses it. No file, no <video> tag and no wasted request: the
-  static logo splash stays. The poster shows at once, main.tsx decides when
-  the clip plays.
-*/
-function splashVideo(): Plugin {
-  const has = (ext: string, prefix = 'loading.') => existsSync(new URL(`./public/brand/${prefix}${ext}`, import.meta.url))
-  return {
-    name: 'kenneth-splash-video',
-    transformIndexHtml(html) {
-      const sources = [
-        has('webm') && '<source src="/brand/loading.webm" type="video/webm" />',
-        has('mp4') && '<source src="/brand/loading.mp4" type="video/mp4" />',
-      ].filter(Boolean)
-      if (sources.length === 0) return html
-      const poster = has('poster.jpg', 'loading-') ? ' poster="/brand/loading-poster.jpg"' : ''
-      const video = `<video id="splash-video" muted playsinline preload="auto"${poster}>${sources.join('')}</video>
-        <script>
-          if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            document.getElementById('splash').classList.add('has-video')
-          }
-        </script>`
-      return html.replace('<!--splash-video-->', video)
-    },
-  }
-}
 
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
 
@@ -41,7 +12,6 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    splashVideo(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon-32.png', 'favicon-48.png', 'apple-touch-icon.png', 'og.png'],
@@ -53,9 +23,9 @@ export default defineConfig({
         start_url: '/',
         display: 'standalone',
         orientation: 'portrait',
-        // Black splash, the same field as the logo, so the icon sits on it without an edge.
-        background_color: '#000000',
-        theme_color: '#111512',
+        // Ink splash, the same field as the icons, so the icon sits on it without an edge.
+        background_color: '#121216',
+        theme_color: '#121216',
         categories: ['navigation', 'travel', 'utilities'],
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
@@ -65,6 +35,11 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Kept out of the install, fetched on first use instead:
+        // - Inter ships seven unicode-range subsets; the app renders Latin only. The others load if a glyph needs them.
+        // - three (the 3D floor) and firebase (sign-in) are lazy chunks most sessions never reach. The shell, map,
+        //   list and booking stay fully precached; only those two features need a connection the first time.
+        globIgnores: ['**/inter-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2', '**/three-*.js', '**/firebase-*.js'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: '/index.html',
         // Firebase serves the Google sign-in handler under /__/auth. It must reach the network, not the app shell.

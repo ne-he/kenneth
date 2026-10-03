@@ -47,7 +47,7 @@ function Chips({ items, value, onChange, label }: { items: string[]; value: stri
             onChange(it)
           }}
           className={clsx(
-            'h-10 min-w-12 rounded-[12px] px-3 text-[14px] font-bold transition-colors',
+            'h-10 min-w-12 rounded-full px-4 text-[14px] font-semibold transition-colors',
             it === value ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2',
           )}
         >
@@ -125,7 +125,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
           }}
         />
         {photo ? (
-          <div className="relative overflow-hidden rounded-[18px]">
+          <div className="relative overflow-hidden rounded-[20px]">
             <img src={photo} alt="" className="h-40 w-full object-cover" />
             <div className="absolute right-2 bottom-2 flex gap-1.5">
               <Button size="sm" variant="secondary" onClick={() => file.current?.click()}>
@@ -140,7 +140,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
           <button
             type="button"
             onClick={() => file.current?.click()}
-            className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-[18px] border-2 border-dashed border-line-strong text-[13px] font-semibold text-ink-2"
+            className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-[20px] border border-dashed border-line-strong text-[13px] font-medium text-ink-2 transition-colors hover:bg-surface-2/60"
           >
             <Camera size={24} />
             {t.park.photoAdd}
@@ -168,8 +168,8 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="mb-4">
-      <div className="mb-2 px-1 text-[13px] font-semibold text-ink-3">{label}</div>
+    <div className="mb-5">
+      <div className="mb-2 px-1 text-[13px] font-medium text-ink-3">{label}</div>
       {children}
     </div>
   )

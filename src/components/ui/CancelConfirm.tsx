@@ -41,7 +41,7 @@ export function CancelConfirm({
               setAsk(true)
             }}
             className={clsx(
-              'flex h-10 w-full items-center justify-center gap-1.5 rounded-[14px] text-[13px] font-semibold transition-colors',
+              'flex h-10 w-full items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors',
               dark ? 'bg-white/8 text-white/80 hover:bg-white/12' : 'text-penuh-ink hover:bg-penuh-soft dark:text-led-penuh dark:hover:bg-penuh/15',
             )}
           >
@@ -56,16 +56,16 @@ export function CancelConfirm({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.16 }}
-            className={clsx('rounded-[16px] p-3', dark ? 'bg-white/8' : 'bg-penuh-soft dark:bg-penuh/12')}
+            className={clsx('rounded-[20px] p-3.5', dark ? 'bg-white/8' : 'bg-penuh-soft dark:bg-penuh/12')}
           >
-            <p className={clsx('text-[13.5px] font-bold', dark ? 'text-white' : 'text-ink')}>{t.activity.cancelAsk}</p>
+            <p className={clsx('text-[13.5px] font-semibold', dark ? 'text-white' : 'text-ink')}>{t.activity.cancelAsk}</p>
             <p className={clsx('mt-0.5 text-[12px] leading-snug', dark ? 'text-white/60' : 'text-ink-2')}>{policy}</p>
-            <div className="mt-2.5 grid grid-cols-2 gap-2">
+            <div className="mt-3 grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setAsk(false)}
                 className={clsx(
-                  'h-10 rounded-[12px] text-[13px] font-semibold',
+                  'h-10 rounded-full text-[13px] font-semibold',
                   dark ? 'bg-white/10 text-white' : 'bg-surface text-ink',
                 )}
               >
@@ -77,7 +77,7 @@ export function CancelConfirm({
                   haptic('success')
                   onConfirm()
                 }}
-                className="h-10 rounded-[12px] bg-penuh text-[13px] font-bold text-white"
+                className="h-10 rounded-full bg-penuh text-[13px] font-semibold text-white"
               >
                 {t.activity.cancelYes}
               </button>

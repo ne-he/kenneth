@@ -2,12 +2,14 @@ import clsx from 'clsx'
 import { motion, type HTMLMotionProps } from 'motion/react'
 import { haptic } from '../../lib/haptics'
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'dark' | 'danger'
+type Variant = 'primary' | 'accent' | 'secondary' | 'ghost' | 'dark' | 'danger'
 type Size = 'sm' | 'md' | 'lg'
 
 const VARIANTS: Record<Variant, string> = {
-  primary:
-    'bg-brand-600 text-white shadow-[0_1px_0_rgb(255_255_255/0.25)_inset,0_6px_16px_-6px_rgb(5_150_105/0.6)] hover:bg-brand-700',
+  // The one main action on a screen is ink, never a hue: color stays for status and the accent.
+  primary: 'bg-ink text-canvas hover:opacity-90',
+  // Brand moments (Zona KENNETH, Premium): a soft cornflower tint, not a loud fill.
+  accent: 'bg-brand-100 text-brand-800 hover:bg-brand-200 dark:bg-brand-500/15 dark:text-brand-200 dark:hover:bg-brand-500/25',
   secondary: 'bg-surface-2 text-ink hover:bg-surface-3',
   ghost: 'bg-transparent text-ink-2 hover:text-ink hover:bg-surface-2',
   dark: 'bg-ink text-canvas hover:opacity-90',
@@ -16,8 +18,8 @@ const VARIANTS: Record<Variant, string> = {
 
 const SIZES: Record<Size, string> = {
   sm: 'h-8 px-3 text-[12.5px] gap-1.5 rounded-full',
-  md: 'h-11 px-4 text-[13.5px] gap-2 rounded-2xl',
-  lg: 'h-13 px-5 text-[15px] gap-2 rounded-2xl',
+  md: 'h-11 px-5 text-[13.5px] gap-2 rounded-full',
+  lg: 'h-13 px-6 text-[15px] gap-2 rounded-full',
 }
 
 interface Props extends HTMLMotionProps<'button'> {

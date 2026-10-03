@@ -22,9 +22,9 @@ export function Toast() {
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: -30, opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 500, damping: 34 }}
-            className="flex max-w-full items-center gap-2 rounded-full bg-[#111512]/92 py-2 pr-4 pl-2.5 text-[12.5px] font-semibold text-white shadow-[0_10px_30px_-8px_rgb(0_0_0/0.45)] backdrop-blur-xl"
+            className="flex max-w-full items-center gap-2 rounded-full bg-ink/92 py-2 pr-4 pl-2.5 text-[12.5px] font-semibold text-canvas shadow-[0_10px_30px_-8px_rgb(0_0_0/0.45)] backdrop-blur-xl"
           >
-            <CheckCircle size={18} weight="fill" className="shrink-0 text-brand-400" />
+            <CheckCircle size={18} weight="fill" className="shrink-0 text-brand-400 dark:text-brand-600" />
             <span className="truncate">{toast.text}</span>
           </motion.div>
         )}

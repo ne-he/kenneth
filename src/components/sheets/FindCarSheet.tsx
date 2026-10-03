@@ -63,12 +63,13 @@ export function FindCarSheet() {
         </span>
       </div>
 
-      <div className="mt-3 flex items-center gap-3 rounded-[18px] border border-line bg-surface p-3.5">
-        <span className="grid size-10 place-items-center rounded-full bg-brand-600 text-white">
+      {/* The walking path in the 3D floor is cornflower, so its legend takes the same tint. */}
+      <div className="mt-3 flex items-center gap-3 rounded-[20px] border border-line bg-surface px-4 py-3.5">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
           <PersonSimpleWalk size={20} weight="fill" />
         </span>
         <span className="flex-1">
-          <span className="block text-[15px] font-bold">{t.park.walkToCar(walkMin)}</span>
+          <span className="block text-[15px] font-semibold">{t.park.walkToCar(walkMin)}</span>
           <span className="text-[12px] text-ink-3">
             {spot.lobby}
             {spot.note ? ` · ${spot.note}` : ''}
@@ -76,14 +77,14 @@ export function FindCarSheet() {
         </span>
       </div>
 
-      {spot.photo && <img src={spot.photo} alt="" className="mt-3 h-40 w-full rounded-[18px] object-cover" />}
+      {spot.photo && <img src={spot.photo} alt="" className="mt-3 h-40 w-full rounded-[20px] object-cover" />}
 
-      <div className="mt-3 grid grid-cols-2 gap-2">
+      <div className="mt-3 grid grid-cols-[1fr_1.45fr] gap-2">
         <Button onClick={() => shareSpot(text, () => notify(t.activity.shared))}>
           <ShareNetwork size={17} weight="bold" /> {t.activity.share}
         </Button>
         <Button
-          variant="dark"
+          variant="primary"
           onClick={() => {
             haptic('success')
             leave()

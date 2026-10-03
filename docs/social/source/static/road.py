@@ -2,9 +2,10 @@
 
 The five slides sit side by side as a 5400 x 1350 panorama. The road is a
 single polyline in that space with rounded, street-like corners, drawn the way
-the KENNETH app draws a navigation route: soft green glow, white casing, and a
-green core whose colour follows route progress. Faint side streets make it read
-as a map rather than a decorative line.
+the KENNETH app drew a navigation route before its cornflower palette (see
+GUIDE.md, "Palet app"): soft green glow, white casing, and a green core whose
+colour follows route progress. Faint side streets make it read as a map rather
+than a decorative line.
 
 Each carousel defines its own `Road(route, streets, waypoints)`. The static
 slides (PIL) and any motion slide (Hyperframes) both read that same object, so
@@ -21,8 +22,8 @@ SS = 2  # supersample for clean edges
 RADIUS = 40
 PAD = 90  # how far past the slide edge a motion path runs, so the car can leave the frame
 
-ROUTE_START = (52, 211, 153)   # #34d399, app route-line start
-ROUTE_END = (5, 150, 105)      # #059669, app ROUTE_COLOR
+ROUTE_START = (52, 211, 153)   # #34d399, route-line start of the earlier green app palette
+ROUTE_END = (5, 150, 105)      # #059669, ROUTE_COLOR of the earlier green app palette
 CASING = (247, 251, 247)
 
 # Sizes at 1080 px. The app uses 16 / 9 / 5.5 on a phone map; scaled for a post.

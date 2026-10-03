@@ -11,6 +11,8 @@ MOTION = ROOT.parent / 'motion'
 W, H = 1080, 1350
 FONT = ROOT / 'fonts' / 'PlusJakartaSans.ttf'
 
+# Carousel palette (forest / emerald). Intentionally separate from the app palette
+# (ink #121216, porcelain #f6f6f3, cornflower #2f5bd3); see GUIDE.md, "Palet app".
 INK = '#0F2620'
 MUTED = '#577168'
 MUTED2 = '#4A6359'  # light-bg secondary text that passes WCAG AA at 20-24 px

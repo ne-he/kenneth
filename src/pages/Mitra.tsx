@@ -157,7 +157,7 @@ export default function Mitra() {
 
       <main className="mx-auto max-w-[1180px] px-5 pt-8 pb-16">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-[38px] leading-tight font-extrabold tracking-tight">{venue.name}</h1>
+          <h1 className="text-[38px] leading-tight font-semibold tracking-tight">{venue.name}</h1>
           <p className="mt-2 max-w-[720px] text-[15px] leading-relaxed text-ink-2">{c.sub}</p>
         </motion.div>
 
@@ -273,7 +273,7 @@ export default function Mitra() {
 
         <footer className="mt-6 space-y-2 text-[12.5px] leading-relaxed text-ink-3">
           <p className="flex gap-2">
-            <LockKey size={15} weight="fill" className="mt-[2px] shrink-0 text-brand-600" /> {c.privacy}
+            <LockKey size={15} weight="fill" className="mt-[2px] shrink-0" /> {c.privacy}
           </p>
           <p className="flex gap-2">
             <Info size={15} weight="fill" className="mt-[2px] shrink-0" /> {c.assume(AVG_STAY_H)}
@@ -293,7 +293,7 @@ function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label:
         </span>
         {label}
       </div>
-      <div className="mt-3 text-[34px] leading-none font-extrabold tracking-tight">
+      <div className="mt-3 text-[34px] leading-none font-semibold tracking-tight">
         {value === null ? '-' : <CountUp value={value} grouped />}
         {unit && value !== null && <span className="text-[18px]">{unit}</span>}
       </div>
@@ -305,7 +305,7 @@ function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label:
 function Card({ title, sub, children }: { title: string; sub: string; children: ReactNode }) {
   return (
     <div className="min-w-0 rounded-[24px] border border-line bg-surface p-5">
-      <h2 className="text-[15px] font-extrabold">{title}</h2>
+      <h2 className="text-[15px] font-semibold">{title}</h2>
       {sub && <p className="mt-0.5 mb-4 text-[12px] text-ink-3">{sub}</p>}
       {!sub && <div className="mb-3" />}
       {children}
@@ -315,13 +315,17 @@ function Card({ title, sub, children }: { title: string; sub: string; children: 
 
 function Product({ name, price, desc, fit, fitLabel }: { name: string; price: string; desc: string; fit: boolean; fitLabel: string }) {
   return (
-    <div className={clsx('rounded-[16px] border p-3', fit ? 'border-brand-500/40 bg-brand-50/60 dark:bg-brand-400/[0.07]' : 'border-line')}>
+    <div className={clsx('rounded-[16px] border p-3', fit ? 'border-brand-200 bg-brand-50/60 dark:border-brand-400/20 dark:bg-brand-500/[0.07]' : 'border-line')}>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[13.5px] font-bold">{name}</span>
-        <span className="text-[12px] font-bold text-ink-2 tabular">{price}</span>
+        <span className="text-[13.5px] font-semibold">{name}</span>
+        <span className="text-[12px] font-semibold text-ink-2 tabular">{price}</span>
       </div>
       <p className="mt-1 text-[12px] leading-snug text-ink-3">{desc}</p>
-      {fit && <span className="mt-2 inline-block rounded-full bg-brand-600 px-2 py-0.5 text-[10.5px] font-bold text-white">{fitLabel}</span>}
+      {fit && (
+        <span className="mt-2 inline-block rounded-full bg-brand-100 px-2 py-0.5 text-[10.5px] font-semibold text-brand-800 dark:bg-brand-500/15 dark:text-brand-200">
+          {fitLabel}
+        </span>
+      )}
     </div>
   )
 }

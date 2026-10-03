@@ -6,7 +6,9 @@ import type { MapStyle } from '../../store/app'
 
   Two looks, picked in Opsi peta:
   - calm: Positron and Dark, recoloured so the map sits inside the app
-    palette and the status colours are the loudest thing on screen.
+    palette and the status colours are the loudest thing on screen. Road
+    number shields and one-way arrows are left out, they only add noise
+    around the pins.
   - detail: Liberty and Fiord as published, with shop, transit and park
     labels, for people who want the map to look like a map.
 
@@ -27,28 +29,30 @@ const STYLE_URL: Record<MapStyle, Record<Mode, string>> = {
   },
 }
 
+// Porcelain and onyx, the same neutrals as the app surfaces. Green and blue are only a hint, so parks and water
+// still read as such without competing with the status dots.
 const PALETTE: Record<Mode, Record<string, string>> = {
   light: {
-    background: '#f1f0eb',
-    park: '#e2eadf',
-    landcover_wood: '#e2eadf',
-    landuse_park: '#e2eadf',
-    water: '#c6d5d6',
-    landuse_residential: '#ecebe5',
-    highway_minor: '#e3e2dc',
-    building3d: '#e6e4dd',
-    building3dTop: '#f7f6f2',
+    background: '#efefeb',
+    park: '#e4e8e0',
+    landcover_wood: '#e4e8e0',
+    landuse_park: '#e4e8e0',
+    water: '#d3dade',
+    landuse_residential: '#ebebe7',
+    highway_minor: '#e2e2dd',
+    building3d: '#e4e4df',
+    building3dTop: '#f6f6f3',
   },
   dark: {
-    background: '#0a0d0c',
-    park: '#0f1813',
-    landcover_wood: '#0f1813',
-    landuse_park: '#0f1813',
-    water: '#0c1515',
-    landuse_residential: '#0d1110',
-    highway_minor: '#161b19',
-    building3d: '#18201c',
-    building3dTop: '#222b26',
+    background: '#0d0d10',
+    park: '#111412',
+    landcover_wood: '#111412',
+    landuse_park: '#111412',
+    water: '#0e1116',
+    landuse_residential: '#101013',
+    highway_minor: '#19191e',
+    building3d: '#1b1b21',
+    building3dTop: '#27272e',
   },
 }
 
@@ -76,9 +80,12 @@ export async function loadStyle(mode: Mode, look: MapStyle = 'calm', threeD = tr
   return threeD ? extrude(style, look === 'calm' ? [PALETTE[mode].building3d, PALETTE[mode].building3dTop] : DETAIL_BUILDINGS[mode]) : flatten(style)
 }
 
+/** Road number shields ("1", "2") and one-way arrows: clutter next to the pins in the calm look. */
+const isRoadNoise = (id: string) => id.includes('shield') || id.startsWith('road_oneway')
+
 function tint(style: StyleSpecification, mode: Mode): StyleSpecification {
   const p = PALETTE[mode]
-  const layers = style.layers.map((layer) => {
+  const layers = style.layers.filter((layer) => !isRoadNoise(layer.id)).map((layer) => {
     const color = p[layer.id]
     if (layer.type === 'background' && p.background) {
       return { ...layer, paint: { ...layer.paint, 'background-color': p.background } }
@@ -130,6 +137,3 @@ function flatten(style: StyleSpecification): StyleSpecification {
     })
   return { ...style, layers }
 }
-
-/** Id of the first label layer, so app overlays can slot in underneath it. */
-export const firstSymbolId = (style: StyleSpecification) => style.layers.find((l) => l.type === 'symbol')?.id
