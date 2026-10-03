@@ -165,8 +165,8 @@ export function Explore() {
       </Suspense>
       {!route && <TopBar now={now} />}
       <NavBanner route={route} now={now} />
-      {/* The sheet lives above the tab bar, the map runs underneath both. */}
-      <div className="pointer-events-none absolute inset-x-0 top-0" style={{ bottom: route ? 0 : 'var(--nav-h)' }}>
+      {/* The sheet runs down to the screen edge under the floating dock, so no map shows between the two. */}
+      <div className="pointer-events-none absolute inset-0">
         <DockSheet
           snap={route ? 'peek' : snap}
           onSnap={setSnap}
@@ -174,6 +174,7 @@ export function Explore() {
           onPeek={route || current ? undefined : setHomePeek}
           contentKey={route ? 'route' : (selected ?? `list-${filter}-${mode}`)}
           header={header}
+          inset={route ? undefined : 'var(--nav-h)'}
         >
           {body}
         </DockSheet>

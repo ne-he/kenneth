@@ -15,6 +15,11 @@ interface Props {
   onPeek?: (px: number) => void
   /** Changing this scrolls the body back to the top. */
   contentKey?: string
+  /**
+   * A CSS length the sheet keeps running under, for a bar floating over its
+   * bottom edge (the dock). The resting heights are measured above it.
+   */
+  inset?: string
 }
 
 const SPRING = { type: 'spring', stiffness: 380, damping: 40, mass: 0.9 } as const
@@ -24,13 +29,17 @@ const SPRING = { type: 'spring', stiffness: 380, damping: 40, mass: 0.9 } as con
  * three resting heights, the header is the drag handle, the body scrolls.
  * Height (not transform) is animated so the body can scroll at every height.
  */
-export function DockSheet({ snap, onSnap, header, children, footer, peek, onPeek, contentKey }: Props) {
+export function DockSheet({ snap, onSnap, header, children, footer, peek, onPeek, contentKey, inset }: Props) {
   const wrap = useRef<HTMLDivElement>(null)
   const head = useRef<HTMLDivElement>(null)
   const foot = useRef<HTMLDivElement>(null)
+  const under = useRef<HTMLDivElement>(null)
   const [H, setH] = useState(720)
   const [measured, setMeasured] = useState(172)
-  const peekH = peek ?? measured
+  const [underH, setUnderH] = useState(0)
+  const below = inset ? underH : 0
+  const base = peek ?? measured
+  const peekH = base + below
   const h = useMotionValue(peekH)
   const start = useRef(0)
   const body = useRef<HTMLDivElement>(null)
@@ -61,13 +70,28 @@ export function DockSheet({ snap, onSnap, header, children, footer, peek, onPeek
     return () => ro.disconnect()
   }, [peek])
 
+  // The part under the floating bar, in pixels, so it can be added to every resting height.
+  useLayoutEffect(() => {
+    const el = under.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setUnderH(el.offsetHeight))
+    ro.observe(el)
+    setUnderH(el.offsetHeight)
+    return () => ro.disconnect()
+  }, [inset])
+
   useEffect(() => {
     onPeek?.(peekH)
   }, [onPeek, peekH])
 
+  // Peek and half are measured above the floating bar, so they look the same with or without one.
   const heights: Record<Snap, number> = useMemo(
-    () => ({ peek: peekH, half: Math.round(Math.max(peekH + 120, H * 0.5)), full: H - 64 }),
-    [peekH, H],
+    () => ({
+      peek: peekH,
+      half: Math.round(Math.max(base + 120, (H - below) * 0.5)) + below,
+      full: H - 64,
+    }),
+    [peekH, base, below, H],
   )
 
   useEffect(() => {
@@ -113,6 +137,7 @@ export function DockSheet({ snap, onSnap, header, children, footer, peek, onPeek
           {footer}
         </div>
       )}
+      {inset && <div ref={under} aria-hidden="true" className="shrink-0" style={{ height: inset }} />}
     </motion.div>
   )
 }
