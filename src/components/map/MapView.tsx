@@ -9,7 +9,7 @@ import type { PinFact } from '../../engine/modes'
 import type { Snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { signalMapReady } from '../../lib/splash'
-import { ACCENTS, type Shade } from '../../lib/accent'
+import { scaleOf, type Shade } from '../../lib/accent'
 import { useApp, type Accent } from '../../store/app'
 import type { Route } from '../../store/ui'
 import { around, hang, placeLabels, type Dot, type Label, type Offset } from './declutter'
@@ -44,7 +44,8 @@ const ROUTE = {
 
 const routeColors = (theme: 'light' | 'dark', accent: Accent) => {
   const r = ROUTE[theme]
-  return { ...r, from: ACCENTS[accent][r.from], to: ACCENTS[accent][r.to] }
+  const scale = scaleOf(accent)
+  return { ...r, from: scale[r.from], to: scale[r.to] }
 }
 
 /** From this zoom the place labels carry the short name too. */

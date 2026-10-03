@@ -6,8 +6,8 @@ export type Shade = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
   The accent the user picks in Akun, in the order macOS lists its own. Each one
   is a full brand scale, so every bg-brand-* and text-brand-* in the app follows
   it. Shade 600 carries white text on buttons, so it keeps at least 4.5:1.
-  Red, orange and green sit near the status colors (lega, ramai, penuh); status
-  is always paired with a text label, so the meaning never rests on color alone.
+  Green, amber and red are not offered: they are the status colors (lega,
+  ramai, penuh) and an accent in the same hue would read as a status.
 */
 export const ACCENTS: Record<Accent, Record<Shade, string>> = {
   cornflower: {
@@ -46,42 +46,6 @@ export const ACCENTS: Record<Accent, Record<Shade, string>> = {
     800: '#831843',
     900: '#6b1239',
   },
-  red: {
-    50: '#fef2f2',
-    100: '#fee2e2',
-    200: '#fecaca',
-    300: '#fca5a5',
-    400: '#f87171',
-    500: '#ef4444',
-    600: '#dc2626',
-    700: '#b91c1c',
-    800: '#991b1b',
-    900: '#7f1d1d',
-  },
-  orange: {
-    50: '#fff7ed',
-    100: '#ffedd5',
-    200: '#fed7aa',
-    300: '#fdba74',
-    400: '#fb923c',
-    500: '#ea580c',
-    600: '#c2410c',
-    700: '#9a3412',
-    800: '#7c2d12',
-    900: '#67260f',
-  },
-  green: {
-    50: '#f0fdf4',
-    100: '#dcfce7',
-    200: '#bbf7d0',
-    300: '#86efac',
-    400: '#4ade80',
-    500: '#16a34a',
-    600: '#15803d',
-    700: '#166534',
-    800: '#14532d',
-    900: '#0f3d22',
-  },
   graphite: {
     50: '#f5f5f6',
     100: '#ebebed',
@@ -96,13 +60,16 @@ export const ACCENTS: Record<Accent, Record<Shade, string>> = {
   },
 }
 
-export const ACCENT_ORDER: Accent[] = ['cornflower', 'purple', 'pink', 'red', 'orange', 'green', 'graphite']
+export const ACCENT_ORDER: Accent[] = ['cornflower', 'purple', 'pink', 'graphite']
+
+/** The scale of an accent, cornflower for a value saved by an older build that no longer exists. */
+export const scaleOf = (accent: Accent) => ACCENTS[accent] ?? ACCENTS.cornflower
 
 const SHADES: Shade[] = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900]
 
 /** Writes the accent's scale over the brand variables on <html>, so the CSS follows without a reload. */
 export function applyAccent(accent: Accent, root: HTMLElement = document.documentElement) {
-  const scale = ACCENTS[accent]
+  const scale = scaleOf(accent)
   for (const s of SHADES) root.style.setProperty(`--color-brand-${s}`, scale[s])
   // EV is a service, so it wears the accent like the rest.
   root.style.setProperty('--color-ev', scale[600])

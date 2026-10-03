@@ -31,8 +31,8 @@ Dicek ulang 3 Okt 2026 di `main` (`0e1f4b7`), setelah desain ulang Frederick (PR
 | 7 | Istilah internal dan alat demo di layar utama | Sebagian | Tombol "Zona K" yang terpotong sudah hilang bersama dropdown. Chip "Simulasi" dan label "Data palang" masih ada, kata "booking" masih muncul di beberapa teks |
 | Baru | Ikon tab tanpa tulisan | Belum | Dock Tiket, Beranda, Akun hanya berupa ikon. Tab bar di app Apple selalu memakai label |
 
-Warna aksen yang bisa dipilih sendiri (masukan Delon) juga belum ada. Yang sudah ada: tema baru dengan aksen
-cornflower, dan pilihan tema ikut sistem, terang, gelap.
+Warna aksen yang bisa dipilih sendiri (masukan Delon) ada sejak PR #24 dan #26: Biru (cornflower), Ungu, Pink,
+Grafit di Akun, di bawah pilihan tema. Merah, oranye, dan hijau tidak ditawarkan karena itu warna status.
 
 Bagian di bawah ini adalah audit asli tanggal 2 Okt, dibiarkan apa adanya sebagai catatan.
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { ACCENTS } from '../../lib/accent'
+import { scaleOf } from '../../lib/accent'
 import { useApp, type ParkedSpot } from '../../store/app'
 
 /*
@@ -102,7 +102,7 @@ function rng(seed: number) {
 export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: Props) {
   const host = useRef<HTMLDivElement>(null)
   // Your car, the lobby and the walk wear the accent the user picked.
-  const accent = ACCENTS[useApp((s) => s.accent)]
+  const accent = scaleOf(useApp((s) => s.accent))
 
   useEffect(() => {
     const el = host.current

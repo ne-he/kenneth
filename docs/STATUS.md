@@ -44,7 +44,9 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
    Kalau tidak ada yang dipilih, app menampilkan cek parkir biasa. Tetap tidak ada layar baru untuk layanan baru.
    Alasan lengkapnya di [PRODUCT.md](PRODUCT.md), bagian Navigasi.
 10. **Warna** (PR #13): netral onyx dan porselen, aksen cornflower (`#2f5bd3`). Hijau, kuning, dan merah hanya untuk
-    status lega, ramai, penuh. Tombol utama berwarna tinta, kecuali tombol pesan yang memakai cornflower.
+    status lega, ramai, penuh. Tombol utama berwarna tinta, kecuali tombol pesan yang memakai aksen.
+    Aksen bisa diganti di Akun (PR #24, #26): Biru (cornflower, bawaan), Ungu, Pink, Grafit. Merah, oranye, dan
+    hijau sengaja tidak ditawarkan supaya aksen tidak terbaca sebagai status.
 
 ## 2. Nama yang dipakai (wajib konsisten di layar dan di kode)
 
@@ -228,7 +230,7 @@ Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AU
 | Tambah pilihan mall | Ellyn | Setuju, tambah mall baru dengan data demo | Belum dikerjakan |
 | Ganti nama | Ellyn | Tidak diganti | Selesai |
 | UI bikin pusing, butuh waktu untuk paham | Ellyn | Desain ulang oleh Frederick (PR #13): layanan jadi pilihan besar di Beranda, dropdown dihapus, kartu dan pin lebih ringkas. Sisa temuan audit tercatat di [UX-AUDIT.md](UX-AUDIT.md) | Sebagian selesai, belum di-deploy |
-| Desain oke, tapi kombinasi warnanya kurang | Delon | Tema baru onyx dan porselen dengan aksen cornflower (PR #13). Pilihan warna aksen sendiri di Akun belum ada | Sebagian selesai, belum di-deploy |
+| Desain oke, tapi kombinasi warnanya kurang | Delon | Tema baru onyx dan porselen dengan aksen cornflower (PR #13). Warna aksen bisa dipilih di Akun: Biru, Ungu, Pink, Grafit (PR #24, #26) | Selesai, belum di-deploy |
 
 ## 10. Riwayat versi singkat
 
@@ -241,3 +243,4 @@ Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AU
 | v0.4 + review | 25 sampai 28 Sep 2026 | PR #1 sampai #11: nama layanan konsisten (`zone`, `section`), cari lewat layanan dan tenant, penunjuk menu layanan, dashboard mitra lebih jujur, booth lebih aman, CSP Report-Only, perbaikan login, 106 test |
 | v0.4 + review | 2 Okt 2026 | PR #12: tab Aktivitas dan tiket runner lebih rapi, slot ikut jam buka gedung, 109 test |
 | v0.4 + desain ulang | 2 sampai 3 Okt 2026 | PR #13 sampai #21: tema onyx dan cornflower, Beranda ala Uber dengan tiga pilihan layanan, dropdown dihapus, tab Tiket/Beranda/Akun di dock mengambang, layout HP sempit, test pesan zona dan valet, PWA lebih ringan, splash tenang, 129 test. Belum di-deploy |
+| v0.4 + masukan tim | 3 Okt 2026 | PR #22 sampai #26: lembar beranda turun ke bawah dock, pilihan layanan satu baris, warna aksen di Akun (empat pilihan, tanpa warna status), catatan kelas dan audit UI. Belum di-deploy |
