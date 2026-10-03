@@ -16,12 +16,17 @@ export type Accent = 'cornflower' | 'purple' | 'pink' | 'graphite'
 export type NavApp = 'kenneth' | 'gmaps' | 'waze'
 export type MapStyle = 'calm' | 'detail'
 
+/** The shapes people tell their cars apart by, drawn as the car's icon. */
+export type CarBody = 'hatch' | 'sedan' | 'mpv' | 'suv'
+
 export interface Vehicle {
   id: string
   kind: VehicleKind
   model: string
   plate: string
   isEV: boolean
+  /** Picked by the user. Unset, the shape is guessed from the model (lib/carBody). */
+  body?: CarBody
 }
 
 export interface ParkedSpot {

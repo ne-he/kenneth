@@ -1,4 +1,4 @@
-import { CarProfile, Check, DownloadSimple, Leaf, LockKey, LockSimple, Motorcycle, Sparkle, Trash } from '@phosphor-icons/react'
+import { CarProfile, Check, DownloadSimple, Leaf, LockKey, LockSimple, Motorcycle, Plus, Sparkle, Trash } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
@@ -8,9 +8,10 @@ import { CO2_KG_PER_L, FUEL_L_PER_MIN, impactOf, sumImpact } from '../../engine/
 import { forecastDay, quietestHour } from '../../engine/occupancy'
 import { PREMIUM_MONTHLY, formatRupiah } from '../../engine/pricing'
 import { useLang, useT } from '../../i18n'
+import { BODIES, bodyOf, shortModel } from '../../lib/carBody'
 import { haptic } from '../../lib/haptics'
 import { dayName, hourLabel, wib } from '../../lib/time'
-import { activeVehicleOf, uid, useApp, type Vehicle, type Visit } from '../../store/app'
+import { activeVehicleOf, uid, useApp, type CarBody, type Vehicle, type Visit } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { Button } from '../ui/Button'
@@ -18,6 +19,7 @@ import { Segmented, Toggle } from '../ui/Controls'
 import { CountUp, Plate } from '../ui/Display'
 import { Label } from '../ui/Kit'
 import { SheetHeader } from '../ui/Sheet'
+import { BodyIcon, VehicleIcon } from '../ui/VehicleIcon'
 
 /** Monthly impact, how it is counted, and the Premium habit insight. */
 export function ImpactSheet() {
@@ -261,6 +263,74 @@ export function PrivacySheet() {
   )
 }
 
+/**
+ * Which vehicle this trip is in, opened from the chip on Beranda. A motorbike
+ * only parks, so picking one drops any service and says why.
+ */
+export function VehiclePickerSheet() {
+  const t = useT()
+  const vehicles = useApp((s) => s.vehicles)
+  const active = useApp(activeVehicleOf)
+  const { setActiveVehicle } = useApp.getState()
+  const { close, open, notify, setMode } = useUi.getState()
+
+  const pick = (v: Vehicle) => {
+    haptic('tap')
+    setActiveVehicle(v.id)
+    if (v.kind === 'motor' && useUi.getState().mode !== 'park') {
+      setMode('park')
+      notify(t.modes.motorSwitched)
+    }
+    close()
+  }
+
+  return (
+    <div className="pb-5">
+      <SheetHeader title={t.modes.pickVehicle} onClose={close} closeLabel={t.common.close} />
+      <ul className="divide-y divide-line">
+        {vehicles.map((v) => {
+          const on = v.id === active.id
+          return (
+            <li key={v.id} className="flex items-center gap-2">
+              <button type="button" aria-pressed={on} onClick={() => pick(v)} className="flex min-w-0 flex-1 items-center gap-3 py-3 text-left">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-surface-2 text-ink">
+                  <VehicleIcon vehicle={v} size={30} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[15px] font-semibold">{shortModel(v.model) || t.profile.kinds[v.kind]}</span>
+                  <span className="mt-0.5 block truncate text-[12.5px] text-ink-3">
+                    <span className="font-mono tracking-wider">{v.plate || t.modes.noPlate}</span>
+                    {v.kind === 'mobil' && ` · ${t.profile.bodies[bodyOf(v)]}`}
+                    {v.kind === 'mobil' && v.isEV && ' · EV'}
+                  </span>
+                </span>
+                {on && <Check size={18} weight="bold" className="shrink-0 text-ink" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => open({ kind: 'vehicle', id: v.id })}
+                className="shrink-0 rounded-full px-2.5 py-1 text-[12.5px] font-semibold text-ink-3 hover:bg-surface-2 hover:text-ink"
+              >
+                {t.profile.edit}
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+      <button
+        type="button"
+        onClick={() => open({ kind: 'vehicle', id: 'new' })}
+        className="mt-1 flex w-full items-center gap-3 border-t border-line pt-3 text-left text-[15px] font-semibold"
+      >
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-dashed border-line-strong text-ink-2">
+          <Plus size={18} weight="bold" />
+        </span>
+        {t.profile.addVehicle}
+      </button>
+    </div>
+  )
+}
+
 const input =
   'h-12 w-full rounded-2xl border border-transparent bg-surface-2 px-4 text-[15px] outline-none placeholder:text-ink-3 focus:border-brand-500'
 
@@ -286,17 +356,24 @@ export function VehicleSheet({ id }: { id?: string }) {
   const [plate, setPlate] = useState(base.plate)
   const [model, setModel] = useState(base.model)
   const [isEV, setIsEV] = useState(base.isEV)
+  // Unpicked, the shape follows the model as it is typed.
+  const [body, setBody] = useState<CarBody | undefined>(base.body)
+  const shape = bodyOf({ model, body })
   const parity = plateParity(plate)
+  const car = kind === 'mobil'
+  const caption = [
+    t.profile.kinds[kind],
+    car && t.profile.bodies[shape],
+    car && isEV ? 'EV' : car && parity ? t.profile.parity(parity) : '',
+  ].filter(Boolean)
 
   return (
     <div className="pb-5">
       <SheetHeader title={creating ? t.profile.addVehicle : t.profile.editVehicle} onClose={close} closeLabel={t.common.close} />
-      <div className="mb-4 grid place-items-center rounded-[22px] bg-surface-2 py-6">
+      <div className="mb-4 grid place-items-center rounded-[22px] bg-surface-2 pt-4 pb-6">
+        <VehicleIcon vehicle={{ kind, model, body }} size={64} className="mb-3 text-ink-2" />
         <Plate plate={plate.toUpperCase()} className="scale-150" />
-        <span className="mt-6 text-[12px] font-semibold text-ink-2">
-          {kind === 'motor' ? t.profile.kinds.motor : t.profile.kinds.mobil}
-          {isEV && kind === 'mobil' ? ' · EV' : parity && kind === 'mobil' ? ` · ${t.profile.parity(parity)}` : ''}
-        </span>
+        <span className="mt-6 text-[12px] font-semibold text-ink-2">{caption.join(' · ')}</span>
       </div>
       <Segmented
         value={kind}
@@ -325,7 +402,36 @@ export function VehicleSheet({ id }: { id?: string }) {
           placeholder={kind === 'motor' ? t.onboarding.modelPhMotor : t.onboarding.modelPh}
         />
       </label>
-      {kind === 'mobil' && (
+      {car && (
+        <div className="mb-3">
+          <span className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-3">{t.profile.body}</span>
+          <div role="radiogroup" aria-label={t.profile.body} className="grid grid-cols-4 gap-2">
+            {BODIES.map((b) => {
+              const on = b === shape
+              return (
+                <button
+                  key={b}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => {
+                    haptic('tap')
+                    setBody(b)
+                  }}
+                  className={clsx(
+                    'flex flex-col items-center gap-0.5 rounded-2xl pt-1.5 pb-2.5 text-[12px] font-semibold transition-colors',
+                    on ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2 hover:text-ink',
+                  )}
+                >
+                  <BodyIcon body={b} size={34} />
+                  {t.profile.bodies[b]}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+      {car && (
         <div className="mb-3 flex items-center justify-between rounded-2xl bg-surface-2 px-4 py-3">
           <span className="text-[14px] font-semibold">{t.onboarding.isEv}</span>
           <Toggle checked={isEV} onChange={setIsEV} label={t.onboarding.isEv} />
@@ -342,7 +448,7 @@ export function VehicleSheet({ id }: { id?: string }) {
         onClick={() => {
           haptic('success')
           setName(n.trim())
-          saveVehicle({ id: base.id, kind, plate: plate.trim(), model: model.trim(), isEV: kind === 'mobil' && isEV })
+          saveVehicle({ id: base.id, kind, plate: plate.trim(), model: model.trim(), isEV: car && isEV, body: car ? body : undefined })
           close()
         }}
       >

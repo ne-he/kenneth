@@ -27,6 +27,7 @@ export type SheetKey =
   | { kind: 'premium' }
   | { kind: 'privacy' }
   | { kind: 'vehicle'; id?: string }
+  | { kind: 'vehicles' }
 
 export interface Route {
   venueId: VenueId

@@ -73,7 +73,7 @@ Tab tampil sebagai ikon tanpa tulisan, dengan titik kecil di bawah tab yang akti
 | Tab | Isi |
 |---|---|
 | **Tiket** (kiri) | Yang sedang berjalan: lokasi parkir tersimpan, runner yang jalan, petak yang sedang ditahan, charger yang mengisi. Kalau kosong, ada tombol "Cari parkir". Nanti: pesanan belum mulai dan pengingat. Riwayat: selesai, dibatalkan, hangus, masing-masing dengan tombol "Lagi". Ringkasan bulan ini (kali parkir, menit dihemat) |
-| **Beranda** (tengah) | Peta MapLibre. Di atas peta: chip jam simulasi, tombol lokasiku, dan avatar yang membuka Akun. Lembar bawah "Mau parkir di mana?": kolom cari, tiga pilihan layanan, dan baris kendaraan. Lembar ditarik ke atas memperlihatkan daftar lokasi dengan filter Semua, Favorit, Kampus, Mall |
+| **Beranda** (tengah) | Peta MapLibre. Di atas peta: chip jam simulasi, tombol lokasiku, dan avatar yang membuka Akun. Lembar bawah "Mau parkir di mana?" dengan chip kendaraan di sebelah judul (ikon bentuk mobil dan nama model, ketuk untuk ganti kendaraan), kolom cari, dan tiga pilihan layanan satu baris. Lembar ditarik ke atas memperlihatkan daftar lokasi dengan filter Semua, Favorit, Kampus, Mall |
 | **Akun** (kanan) | Login Google atau tamu, garasi kendaraan (mobil/motor, pelat, EV), paket Gratis/Premium, dampak bulan ini, peta dan navigasi, notifikasi dan preferensi, bahasa, tema (ikut sistem, terang, gelap), privasi, "Untuk tim dan demo" (jam simulasi, /booth, /mitra), reset |
 
 ### 3.2 Layanan di Beranda

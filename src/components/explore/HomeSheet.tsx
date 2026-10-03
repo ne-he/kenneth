@@ -1,10 +1,12 @@
-import { CarProfile, MagnifyingGlass, MapPin, Motorcycle, Plus } from '@phosphor-icons/react'
+import { CaretDown, MagnifyingGlass, MapPin, Plus } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { SERVICES, type ParkMode } from '../../engine/modes'
 import { useT } from '../../i18n'
+import { shortModel } from '../../lib/carBody'
 import { haptic } from '../../lib/haptics'
 import { useApp, useVehicle } from '../../store/app'
 import { useUi, type VenueFilter } from '../../store/ui'
+import { VehicleIcon } from '../ui/VehicleIcon'
 import { LiveStrip } from './LiveStrip'
 
 const FILTERS: VenueFilter[] = ['all', 'fav', 'kampus', 'mall']
@@ -12,8 +14,8 @@ const FILTERS: VenueFilter[] = ['all', 'fav', 'kampus', 'mall']
 /**
  * The home sheet at rest, Uber style: the map is the stage and the hierarchy
  * lives down here. Plain parking is what the map shows when nothing is picked,
- * the three paid services are toggles, and the vehicle row decides which
- * numbers the pins use. Pulling the sheet up reveals the ranked list.
+ * the three paid services are toggles, and the vehicle beside the question
+ * decides which numbers the pins use. Pulling the sheet up reveals the ranked list.
  */
 export function HomeHeader() {
   const t = useT()
@@ -22,7 +24,10 @@ export function HomeHeader() {
     <div className="pb-3">
       <LiveStrip />
       <div className="px-5">
-        <h1 className="text-[19px] leading-tight font-semibold tracking-tight">{t.explore.search}</h1>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="min-w-0 text-[19px] leading-tight font-semibold tracking-tight">{t.explore.search}</h1>
+          <VehicleChip />
+        </div>
         <button
           type="button"
           onClick={() => {
@@ -35,7 +40,6 @@ export function HomeHeader() {
           <span className="truncate">{t.explore.searchField}</span>
         </button>
         <ServiceToggles />
-        <VehicleRow />
       </div>
     </div>
   )
@@ -85,60 +89,32 @@ function ServiceToggles() {
   )
 }
 
-/** Which of your vehicles is driving. A motorbike only parks, so picking one drops any service. */
-function VehicleRow() {
+/**
+ * The vehicle this search is for, beside the question the way Uber shows the
+ * rider by the destination. People know their car by its model and shape, so
+ * the chip shows those; the plates wait in the picker. Its own shape keeps it
+ * apart from the service toggles below.
+ */
+function VehicleChip() {
   const t = useT()
-  const vehicles = useApp((s) => s.vehicles)
-  const setActiveVehicle = useApp((s) => s.setActiveVehicle)
+  const none = useApp((s) => s.vehicles.length === 0)
   const active = useVehicle()
-  const mode = useUi((s) => s.mode)
-  const setMode = useUi((s) => s.setMode)
-  const notify = useUi((s) => s.notify)
   const open = useUi((s) => s.open)
-
-  const drive = (id: string) => {
-    haptic('tap')
-    const v = vehicles.find((x) => x.id === id)
-    setActiveVehicle(id)
-    if (v?.kind === 'motor' && mode !== 'park') {
-      setMode('park')
-      notify(t.modes.motorSwitched)
-    }
-  }
-
-  // The plate is plain text here, not the plate graphic of the tickets: this row is a switch, not a document.
+  const name = none ? t.modes.vehicle : shortModel(active.model) || active.plate || t.profile.kinds[active.kind]
   return (
-    <div className="no-scrollbar -mx-5 mt-2 flex gap-1.5 overflow-x-auto px-5" role="group" aria-label={t.modes.vehicle}>
-      {vehicles.map((v) => {
-        const on = v.id === active.id
-        return (
-          <button
-            key={v.id}
-            type="button"
-            aria-pressed={on}
-            onClick={() => drive(v.id)}
-            className={clsx(
-              'flex h-9 shrink-0 items-center gap-1.5 rounded-full pr-3 pl-2.5 font-mono text-[12.5px] font-semibold tracking-wider transition-colors',
-              on ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2 hover:text-ink',
-            )}
-          >
-            {v.kind === 'motor' ? <Motorcycle size={15} weight="fill" /> : <CarProfile size={15} weight="fill" />}
-            {v.plate || t.modes.noPlate}
-          </button>
-        )
-      })}
-      <button
-        type="button"
-        aria-label={t.profile.addVehicle}
-        onClick={() => {
-          haptic('tap')
-          open({ kind: 'vehicle', id: 'new' })
-        }}
-        className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 transition-colors hover:bg-surface-3 hover:text-ink"
-      >
-        <Plus size={14} weight="bold" />
-      </button>
-    </div>
+    <button
+      type="button"
+      aria-label={t.modes.vehicleChip(name)}
+      onClick={() => {
+        haptic('tap')
+        open(none ? { kind: 'vehicle', id: 'new' } : { kind: 'vehicles' })
+      }}
+      className="flex h-9 max-w-[10.5rem] shrink-0 items-center gap-1.5 rounded-full border border-line pr-2.5 pl-3 text-[13.5px] font-semibold text-ink transition-colors hover:bg-surface-2"
+    >
+      {none ? <Plus size={15} weight="bold" className="shrink-0" /> : <VehicleIcon vehicle={active} size={22} className="shrink-0" />}
+      <span className="truncate">{name}</span>
+      <CaretDown size={11} weight="bold" className="shrink-0 text-ink-3" />
+    </button>
   )
 }
 
