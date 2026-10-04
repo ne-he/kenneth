@@ -128,7 +128,7 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
           <div className="relative overflow-hidden rounded-[20px]">
             <img src={photo} alt="" className="h-40 w-full object-cover" />
             <div className="absolute right-2 bottom-2 flex gap-1.5">
-              <Button size="sm" variant="secondary" onClick={() => file.current?.click()}>
+              <Button size="sm" variant="ghost" onClick={() => file.current?.click()}>
                 {t.park.photoChange}
               </Button>
               <Button size="sm" variant="danger" aria-label="Hapus" onClick={() => setPhoto(undefined)}>

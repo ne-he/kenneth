@@ -255,14 +255,14 @@ export default function Booth() {
             )}
             <div className="mt-5 grid grid-cols-2 gap-2">
               <Button
-                variant="secondary"
+                variant="ghost"
                 disabled={!responses.length}
                 onClick={() => download(`kenneth-booth-${new Date().toISOString().slice(0, 10)}.csv`, toCsv(responses), 'text/csv')}
               >
                 <DownloadSimple size={16} weight="bold" /> {c.csv}
               </Button>
               <Button
-                variant="secondary"
+                variant="ghost"
                 disabled={!responses.length}
                 onClick={() =>
                   download(`kenneth-booth-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(responses, null, 2), 'application/json')

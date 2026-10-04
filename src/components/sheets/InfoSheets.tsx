@@ -170,7 +170,7 @@ export function PremiumSheet() {
           <Button
             block
             size="lg"
-            variant="secondary"
+            variant="ghost"
             onClick={() => {
               setPlan('free')
               close()
@@ -241,7 +241,7 @@ export function PrivacySheet() {
         <Toggle checked={shareAnonymous} onChange={(v) => setPref('shareAnonymous', v)} label={t.privacy.share} />
       </div>
       <div className="mt-5 grid grid-cols-2 gap-2">
-        <Button variant="secondary" onClick={exportData}>
+        <Button variant="ghost" onClick={exportData}>
           <DownloadSimple size={16} weight="bold" /> {t.privacy.exportShort}
         </Button>
         <Button

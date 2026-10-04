@@ -123,7 +123,7 @@ export function ValetSheet({ id }: { id: string }) {
         </>
       )}
       {phase === 'fetching' && demo && (
-        <Button variant="secondary" block onClick={() => act.rush(ticket)}>
+        <Button variant="ghost" block onClick={() => act.rush(ticket)}>
           <FastForward size={16} weight="fill" /> {t.valet.rush}
         </Button>
       )}
@@ -144,7 +144,7 @@ export function ValetSheet({ id }: { id: string }) {
         <>
           <p className="mb-3 text-center text-[13px] text-ink-2">{t.valet.lapsedHint}</p>
           {/* Already in Riwayat as lapsed. Cancelling here would relabel it and promise a refund. */}
-          <Button variant="secondary" block onClick={close}>
+          <Button variant="ghost" block onClick={close}>
             {t.common.close}
           </Button>
         </>

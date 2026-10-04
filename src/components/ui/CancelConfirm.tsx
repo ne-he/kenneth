@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useState } from 'react'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
+import { buttonClass, buttonShape } from './buttonStyles'
 
 /**
  * Cancel, always visible and always the same: one quiet red button, then a
@@ -41,8 +42,8 @@ export function CancelConfirm({
               setAsk(true)
             }}
             className={clsx(
-              'flex h-10 w-full items-center justify-center gap-1.5 rounded-full text-[13px] font-semibold transition-colors',
-              dark ? 'bg-white/8 text-white/80 hover:bg-white/12' : 'text-penuh-ink hover:bg-penuh-soft dark:text-led-penuh dark:hover:bg-penuh/15',
+              'w-full',
+              dark ? clsx(buttonShape('md'), 'bg-white/8 text-white/80 hover:bg-white/12') : buttonClass('danger', 'md'),
             )}
           >
             <X size={14} weight="bold" /> {label ?? t.activity.cancel}
@@ -64,10 +65,7 @@ export function CancelConfirm({
               <button
                 type="button"
                 onClick={() => setAsk(false)}
-                className={clsx(
-                  'h-10 rounded-full text-[13px] font-semibold',
-                  dark ? 'bg-white/10 text-white' : 'bg-surface text-ink',
-                )}
+                className={dark ? clsx(buttonShape('md'), 'bg-white/10 text-white') : buttonClass('ghost', 'md')}
               >
                 {t.activity.cancelNo}
               </button>
@@ -77,7 +75,7 @@ export function CancelConfirm({
                   haptic('success')
                   onConfirm()
                 }}
-                className="h-10 rounded-full bg-penuh text-[13px] font-semibold text-white"
+                className={buttonClass('destructive', 'md')}
               >
                 {t.activity.cancelYes}
               </button>

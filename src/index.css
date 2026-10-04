@@ -126,6 +126,34 @@
   }
 }
 
+@layer components {
+  /*
+    Buttons follow the Daily Log button recipe; only the buttons were adopted
+    from that design system. The primary is a gradient fill in the accent, so
+    it follows the accent picked in Akun; the tile is the quiet surface of a
+    neutral button. Variants and sizes live in components/ui/buttonStyles.ts.
+  */
+  .btn-primary {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-brand-600) 86%, white) 0%, var(--color-brand-600) 100%);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.18);
+  }
+  @media (hover: hover) {
+    .btn-primary:hover {
+      filter: brightness(1.06);
+    }
+  }
+  .btn-primary:active {
+    filter: brightness(0.96);
+  }
+
+  .btn-tile {
+    background: linear-gradient(180deg, var(--surface) 0%, color-mix(in srgb, var(--surface-2) 60%, var(--surface)) 100%);
+  }
+  [data-theme='dark'] .btn-tile {
+    background: linear-gradient(180deg, var(--surface-3) 0%, var(--surface) 100%);
+  }
+}
+
 @layer utilities {
   .tabular {
     font-variant-numeric: tabular-nums;

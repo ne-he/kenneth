@@ -11,6 +11,7 @@ import { clock } from '../../lib/time'
 import { useVehicle } from '../../store/app'
 import type { Route } from '../../store/ui'
 import { useUi } from '../../store/ui'
+import { buttonClass } from '../ui/buttonStyles'
 import { useNavigation } from './useNavigation'
 
 /** Turn banner up top while driving. Tells you which gate, not which street. */
@@ -106,7 +107,7 @@ export function DriveHud({ route, now }: { route: Route; now: number }) {
         <button
           type="button"
           onClick={nav.stop}
-          className="h-11 rounded-2xl bg-surface-2 text-[13.5px] font-bold hover:bg-surface-3"
+          className={buttonClass('ghost', 'md')}
         >
           {t.nav.end}
         </button>
@@ -117,7 +118,7 @@ export function DriveHud({ route, now }: { route: Route; now: number }) {
             setRoute(null)
             open({ kind: 'save-spot', id })
           }}
-          className="flex h-11 items-center justify-center gap-2 rounded-2xl bg-ink text-[13.5px] font-bold text-canvas"
+          className={buttonClass('primary', 'md')}
         >
           <CarProfile size={17} weight="fill" />
           {t.nav.arrive}

@@ -160,7 +160,7 @@ function ServiceCard({ mode, snap, ts }: { mode: Service; snap: Ranked; ts: numb
       <Line>{line}</Line>
       <Facts dot={dot}>{facts}</Facts>
       {note && <Note>{note}</Note>}
-      <Btn tone="brand" onClick={() => open({ kind: 'book', id: venue.id, service: mode })}>
+      <Btn onClick={() => open({ kind: 'book', id: venue.id, service: mode })}>
         {cta}
       </Btn>
       <Rows>
@@ -214,7 +214,7 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
     <>
       <Line dot={!split && snap.bestGateQueueMin < 3 ? 'lega' : undefined}>{line}</Line>
       <div className="flex gap-2">
-        <Btn tone="ink" onClick={() => nav.start(venue.id)}>
+        <Btn onClick={() => nav.start(venue.id)}>
           <NavigationArrow size={17} weight="fill" /> {t.card.routeTo(snap.bestGate.name)}
         </Btn>
         <button
@@ -331,10 +331,10 @@ function Facts({ dot, children }: { dot?: OccupancyStatus; children: ReactNode }
 }
 
 /**
- * The main action is an ink pill. Booking a service is the one brand-filled
- * button in the app, so the paid step reads differently from the free one.
+ * The card's one main action, routing or booking, in the primary button
+ * recipe. Kept taller than the shared sizes because it is the card's anchor.
  */
-function Btn({ tone, onClick, children }: { tone: 'ink' | 'brand'; onClick: () => void; children: ReactNode }) {
+function Btn({ onClick, children }: { onClick: () => void; children: ReactNode }) {
   return (
     <motion.button
       type="button"
@@ -343,11 +343,7 @@ function Btn({ tone, onClick, children }: { tone: 'ink' | 'brand'; onClick: () =
         haptic('tap')
         onClick()
       }}
-      className={clsx(
-        'flex h-12 w-full min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-5 text-[14.5px] font-semibold tracking-tight transition-colors',
-        tone === 'ink' && 'bg-ink text-canvas hover:opacity-90',
-        tone === 'brand' && 'bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400',
-      )}
+      className="btn-primary flex h-12 w-full min-w-0 flex-1 items-center justify-center gap-2 rounded-[12px] px-5 text-[14.5px] font-medium tracking-[-0.01em] text-white transition-[filter] duration-150"
     >
       <span className="flex min-w-0 items-center gap-2 truncate">{children}</span>
     </motion.button>
