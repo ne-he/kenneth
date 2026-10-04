@@ -108,7 +108,7 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
         <Ticket size={14} weight="fill" /> {t.book.savedToTickets}
       </p>
       <div className="mt-7 grid w-full grid-cols-[1fr_1.45fr] gap-2">
-        <Button variant="secondary" onClick={close}>
+        <Button variant="ghost" onClick={close}>
           {t.common.done}
         </Button>
         {booked.service === 'ev' ? (

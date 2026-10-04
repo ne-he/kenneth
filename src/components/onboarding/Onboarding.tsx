@@ -115,7 +115,7 @@ export function Onboarding() {
         </Button>
         {step === 0 && available && !account && (
           <Button
-            variant="secondary"
+            variant="ghost"
             size="lg"
             block
             className="mt-2"

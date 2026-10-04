@@ -38,6 +38,7 @@ import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
 import { Disclosure, Label, List, StatusPill } from '../ui/Kit'
+import { buttonClass } from '../ui/buttonStyles'
 import { PlaceCard } from './PlaceCard'
 import { SlotsLeft } from './SlotsLeft'
 import { TimeScrubber } from './TimeScrubber'
@@ -382,7 +383,7 @@ function GageRow({ venue, ts }: { venue: Venue; ts: number }) {
         <button
           type="button"
           onClick={() => open({ kind: 'vehicle' })}
-          className="mt-3 h-9 rounded-full bg-ink px-4 text-[12.5px] font-semibold text-canvas"
+          className={clsx(buttonClass('primary', 'sm'), 'mt-3')}
         >
           {t.venue.gageFill}
         </button>
@@ -423,7 +424,7 @@ function ReportRow({ venue, now }: { venue: Venue; now: number }) {
     addReport({ venueId: venue.id, kind, at: now })
     notify(t.venue.reportThanks)
   }
-  const chip = 'h-9 flex-1 rounded-full border border-line-strong text-[12.5px] font-medium transition-colors hover:bg-surface-2 active:scale-[0.97]'
+  const chip = 'btn-tile h-9 flex-1 rounded-[8px] border border-line text-[12.5px] font-medium tracking-[-0.01em] text-ink-2 transition-colors duration-150 hover:border-line-strong hover:text-ink active:scale-[0.98]'
   return (
     <Disclosure
       icon={<Megaphone size={17} />}

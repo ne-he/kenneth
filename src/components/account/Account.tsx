@@ -42,6 +42,7 @@ import { Plate } from '../ui/Display'
 import { Label, List } from '../ui/Kit'
 import { LogoMark } from '../ui/Logo'
 import { VehicleIcon } from '../ui/VehicleIcon'
+import { buttonClass } from '../ui/buttonStyles'
 import { useSignIn } from './useSignIn'
 
 /**
@@ -260,7 +261,7 @@ function Identity() {
               haptic('tap')
               void signIn()
             }}
-            className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-[14px] font-semibold text-canvas transition-opacity hover:opacity-90 disabled:opacity-60"
+            className={clsx(buttonClass('primary', 'md'), 'mt-4 w-full')}
           >
             <GoogleLogo size={17} weight="bold" /> {busy ? t.profile.signingIn : t.profile.signIn}
           </button>

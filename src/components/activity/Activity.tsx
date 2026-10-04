@@ -337,7 +337,7 @@ function PassCard({ id, now }: { id: string; now: number }) {
     >
       {/* The QR only matters at the barrier, so the big button waits until the bay is held. */}
       {phase === 'open' && (
-        <Button variant="accent" block className="mt-4" onClick={() => open({ kind: 'pass', id: pass.id })}>
+        <Button variant="secondary" block className="mt-4" onClick={() => open({ kind: 'pass', id: pass.id })}>
           <Ticket size={17} weight="fill" /> {t.activity.showQr}
         </Button>
       )}

@@ -15,6 +15,7 @@ import { clock } from '../../lib/time'
 import { uid, useApp } from '../../store/app'
 import { useUi, type VenueFilter } from '../../store/ui'
 import { StatusPill } from '../ui/Kit'
+import { buttonClass } from '../ui/buttonStyles'
 import { TimeScrubber } from './TimeScrubber'
 
 /**
@@ -186,8 +187,8 @@ function ReliefRow({ id, name, at }: { id: VenueId; name: string; at: number }) 
             askNotificationPermission()
           }}
           className={clsx(
-            'h-8 shrink-0 rounded-full px-3.5 text-[12.5px] font-semibold',
-            set ? 'text-ink-3' : 'bg-ink text-canvas',
+            'shrink-0',
+            set ? 'h-8 px-3 text-[12.5px] font-medium text-ink-3' : buttonClass('primary', 'sm'),
           )}
         >
           {set ? t.explore.remindSet : t.explore.remind}
