@@ -239,7 +239,7 @@ function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; chi
       }}
       className={clsx(
         'flex h-10 items-center gap-1.5 rounded-full px-4 text-[13.5px] font-semibold transition-colors',
-        on ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2 hover:text-ink',
+        on ? 'btn-primary text-white' : 'bg-surface-2 text-ink-2 hover:text-ink',
       )}
     >
       {on && <Check size={14} weight="bold" />}
@@ -316,7 +316,7 @@ function VehicleStep(p: {
         <span
           className={clsx(
             'grid size-6 shrink-0 place-items-center rounded-md border-2',
-            p.sample ? 'border-ink bg-ink text-canvas' : 'border-line-strong',
+            p.sample ? 'border-transparent btn-primary text-white' : 'border-line-strong',
           )}
         >
           {p.sample && <Check size={14} weight="bold" />}

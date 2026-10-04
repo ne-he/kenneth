@@ -122,7 +122,7 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
               }}
               className={clsx(
                 'relative flex w-[60px] shrink-0 flex-col items-center rounded-[16px] py-2 transition-colors',
-                active ? 'bg-ink text-canvas' : 'bg-surface-2',
+                active ? 'btn-primary text-white' : 'bg-surface-2',
                 d.locked && 'text-ink-3',
               )}
             >
@@ -164,13 +164,13 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
               }}
               className={clsx(
                 'flex w-[84px] shrink-0 flex-col items-start rounded-[16px] p-2.5 text-left transition-colors',
-                active ? 'bg-ink text-canvas' : 'bg-surface-2',
+                active ? 'btn-primary text-white' : 'bg-surface-2',
                 disabled && 'opacity-40',
               )}
             >
               <span className="text-[14px] font-semibold tabular">{clock(s.start)}</span>
               <span className="mt-0.5 text-[12px] font-medium tabular">{formatRupiah(s.price, true)}</span>
-              <span className={clsx('mt-1 text-[10.5px] font-medium', active ? 'text-canvas/60' : 'text-ink-3')}>
+              <span className={clsx('mt-1 text-[10.5px] font-medium', active ? 'text-white/75' : 'text-ink-3')}>
                 {disabled ? t.book.soldOut : t.book.seats(s.left)}
               </span>
             </button>
@@ -229,7 +229,7 @@ export function PayMethods({ value, onChange }: { value: Method; onChange: (m: M
           onClick={() => onChange(key)}
           className={clsx(
             'flex h-16 flex-col items-center justify-center gap-1 rounded-[16px] border text-[12px] font-medium transition-colors',
-            value === key ? 'border-ink bg-surface text-ink' : 'border-transparent bg-surface-2 text-ink-2',
+            value === key ? 'border-transparent btn-primary text-white' : 'border-transparent bg-surface-2 text-ink-2',
           )}
         >
           {icon}

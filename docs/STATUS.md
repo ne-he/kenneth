@@ -46,8 +46,10 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
 10. **Warna** (PR #13): netral onyx dan porselen, aksen cornflower (`#2f5bd3`). Hijau, kuning, dan merah hanya untuk
     status lega, ramai, penuh. Tombol mengikuti resep tombol design system Daily Log (hanya tombolnya yang
     diadopsi, 4 Okt): tombol utama berwarna aksen dengan gradasi halus, tombol sekunder bernuansa aksen,
-    tombol netral berupa tile dengan garis tipis, tombol bahaya hanya teks merah. Resepnya ada di
-    `src/components/ui/buttonStyles.ts` dan kelas `.btn-primary` / `.btn-tile` di `src/index.css`.
+    tombol netral berupa tile dengan garis tipis, tombol bahaya hanya teks merah. Semua tombol berbentuk pil.
+    Pilihan yang aktif (segmented, saklar, tile hari/jam/charger/bentuk mobil, filter, metode bayar) juga
+    memakai isian aksen yang sama. Resepnya ada di `src/components/ui/buttonStyles.ts` dan kelas
+    `.btn-primary` / `.btn-tile` di `src/index.css`.
     Aksen bisa diganti di Akun (PR #24, #26): Biru (cornflower, bawaan), Ungu, Pink, Grafit. Merah, oranye, dan
     hijau sengaja tidak ditawarkan supaya aksen tidak terbaca sebagai status.
 

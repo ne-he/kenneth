@@ -48,7 +48,7 @@ function Chips({ items, value, onChange, label }: { items: string[]; value: stri
           }}
           className={clsx(
             'h-10 min-w-12 rounded-full px-4 text-[14px] font-semibold transition-colors',
-            it === value ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2',
+            it === value ? 'btn-primary text-white' : 'bg-surface-2 text-ink-2',
           )}
         >
           {it}

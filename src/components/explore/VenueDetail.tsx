@@ -424,7 +424,7 @@ function ReportRow({ venue, now }: { venue: Venue; now: number }) {
     addReport({ venueId: venue.id, kind, at: now })
     notify(t.venue.reportThanks)
   }
-  const chip = 'btn-tile h-9 flex-1 rounded-[8px] border border-line text-[12.5px] font-medium tracking-[-0.01em] text-ink-2 transition-colors duration-150 hover:border-line-strong hover:text-ink active:scale-[0.98]'
+  const chip = 'btn-tile h-9 flex-1 rounded-full border border-line text-[12.5px] font-medium tracking-[-0.01em] text-ink-2 transition-colors duration-150 hover:border-line-strong hover:text-ink active:scale-[0.98]'
   return (
     <Disclosure
       icon={<Megaphone size={17} />}

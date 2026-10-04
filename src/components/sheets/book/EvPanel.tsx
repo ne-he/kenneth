@@ -64,7 +64,7 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
             onClick={() => setPicked(s)}
             className={clsx(
               'h-10 shrink-0 rounded-full px-4 text-[14px] font-semibold tabular transition-colors',
-              s === start ? 'bg-ink text-canvas' : 'bg-surface-2',
+              s === start ? 'btn-primary text-white' : 'bg-surface-2',
             )}
           >
             {clock(s)}
@@ -97,7 +97,7 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
               onClick={() => setUnit(u)}
               className={clsx(
                 'flex h-14 flex-col items-center justify-center rounded-[16px] text-[13px] font-semibold transition-colors',
-                u === unit && !busy ? 'bg-ink text-canvas' : 'bg-surface-2',
+                u === unit && !busy ? 'btn-primary text-white' : 'bg-surface-2',
                 busy && 'opacity-35 line-through',
               )}
             >

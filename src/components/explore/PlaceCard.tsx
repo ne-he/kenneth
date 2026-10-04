@@ -227,7 +227,7 @@ function ParkCard({ snap, ts, previewing }: { snap: Ranked; ts: number; previewi
           }}
           className={clsx(
             'grid size-12 shrink-0 place-items-center rounded-full border transition-colors',
-            more ? 'border-transparent bg-ink text-canvas' : 'border-line-strong text-ink hover:bg-surface-2',
+            more ? 'border-transparent btn-primary text-white' : 'border-line-strong text-ink hover:bg-surface-2',
           )}
         >
           <DotsThree size={22} weight="bold" />
@@ -343,7 +343,7 @@ function Btn({ onClick, children }: { onClick: () => void; children: ReactNode }
         haptic('tap')
         onClick()
       }}
-      className="btn-primary flex h-12 w-full min-w-0 flex-1 items-center justify-center gap-2 rounded-[12px] px-5 text-[14.5px] font-medium tracking-[-0.01em] text-white transition-[filter] duration-150"
+      className="btn-primary flex h-12 w-full min-w-0 flex-1 items-center justify-center gap-2 rounded-full px-5 text-[14.5px] font-medium tracking-[-0.01em] text-white transition-[filter] duration-150"
     >
       <span className="flex min-w-0 items-center gap-2 truncate">{children}</span>
     </motion.button>

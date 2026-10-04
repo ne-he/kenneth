@@ -84,7 +84,7 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
                 }}
                 className={clsx(
                   'h-10 rounded-full px-4 text-[13.5px] font-semibold transition-colors',
-                  l === lobby ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2',
+                  l === lobby ? 'btn-primary text-white' : 'bg-surface-2 text-ink-2',
                 )}
               >
                 {l}
@@ -106,7 +106,7 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
             }}
             className={clsx(
               'h-10 shrink-0 rounded-full px-4 text-[14px] font-semibold tabular transition-colors',
-              s === arriveAt ? 'bg-ink text-canvas' : 'bg-surface-2',
+              s === arriveAt ? 'btn-primary text-white' : 'bg-surface-2',
             )}
           >
             {clock(s)}

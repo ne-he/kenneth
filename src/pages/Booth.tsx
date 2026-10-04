@@ -194,7 +194,7 @@ export default function Booth() {
                     }
                     className={clsx(
                       'h-11 rounded-full border px-4 text-[14px] font-semibold transition-colors',
-                      on ? 'border-ink bg-ink text-canvas' : 'border-line bg-surface hover:bg-surface-2',
+                      on ? 'border-transparent btn-primary text-white' : 'border-line bg-surface hover:bg-surface-2',
                     )}
                   >
                     {lang === 'id' ? idLabel : enLabel}
@@ -323,7 +323,7 @@ function Choices<T extends string>({ value, onChange, options }: { value: T | ''
           }}
           className={clsx(
             'h-12 min-w-24 rounded-2xl border px-5 text-[15px] font-semibold transition-colors',
-            value === k ? 'border-ink bg-ink text-canvas' : 'border-line bg-surface hover:bg-surface-2',
+            value === k ? 'border-transparent btn-primary text-white' : 'border-line bg-surface hover:bg-surface-2',
           )}
         >
           {label}

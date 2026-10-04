@@ -420,7 +420,7 @@ export function VehicleSheet({ id }: { id?: string }) {
                   }}
                   className={clsx(
                     'flex flex-col items-center gap-0.5 rounded-2xl pt-1.5 pb-2.5 text-[12px] font-semibold transition-colors',
-                    on ? 'bg-ink text-canvas' : 'bg-surface-2 text-ink-2 hover:text-ink',
+                    on ? 'btn-primary text-white' : 'bg-surface-2 text-ink-2 hover:text-ink',
                   )}
                 >
                   <BodyIcon body={b} size={34} />
