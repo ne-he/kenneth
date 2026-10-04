@@ -46,7 +46,7 @@ export function ActionButton({
           tone === 'brand'
             ? 'bg-brand-100 text-brand-800 dark:bg-brand-500/15 dark:text-brand-200'
             : active
-              ? 'bg-ink text-canvas'
+              ? 'btn-primary text-white'
               : 'bg-surface-2 text-ink group-hover:bg-surface-3',
         )}
       >

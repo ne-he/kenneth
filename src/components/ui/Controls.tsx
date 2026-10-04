@@ -22,17 +22,15 @@ export function Toggle({
         haptic('tap')
         onChange(!checked)
       }}
-      className={clsx(
-        'relative h-[30px] w-[50px] shrink-0 rounded-full transition-colors duration-300',
-        checked ? 'bg-ink' : 'bg-surface-3',
-      )}
+      className="relative h-[30px] w-[50px] shrink-0 overflow-hidden rounded-full bg-surface-3"
     >
-      {/* On is ink, not a hue: the switch is a setting, not a status. The knob flips to stay visible in both themes. */}
+      {/* On wears the accent like any selection. The fill fades in, so the switch still eases between states. */}
+      <span
+        aria-hidden="true"
+        className={clsx('btn-primary absolute inset-0 rounded-full transition-opacity duration-300', checked ? 'opacity-100' : 'opacity-0')}
+      />
       <motion.span
-        className={clsx(
-          'absolute top-[3px] left-[3px] size-6 rounded-full shadow-[0_1px_2px_rgb(0_0_0/0.16)] transition-colors duration-300',
-          checked ? 'bg-canvas' : 'bg-white',
-        )}
+        className="absolute top-[3px] left-[3px] size-6 rounded-full bg-white shadow-[0_1px_2px_rgb(0_0_0/0.16)]"
         animate={{ x: checked ? 20 : 0 }}
         transition={{ type: 'spring', stiffness: 700, damping: 34 }}
       />

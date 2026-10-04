@@ -10,8 +10,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg'
   (.btn-primary in index.css), an accent-tinted secondary, a quiet bordered
   tile for neutral actions, and a text-only danger. A solid red is kept for
   the last step of a destructive confirm. Heights stay touch-sized for a
-  phone, and the corner radius grows with the height so every size keeps
-  the same shape.
+  phone, and buttons stay pills like the rest of KENNETH.
 */
 const BASE =
   'inline-flex select-none items-center justify-center font-medium tracking-[-0.01em] transition-[filter,background-color,border-color,color] duration-150 disabled:pointer-events-none disabled:opacity-40'
@@ -25,9 +24,9 @@ const VARIANTS: Record<ButtonVariant, string> = {
 }
 
 const SIZES: Record<ButtonSize, string> = {
-  sm: 'h-8 gap-1.5 rounded-[8px] px-3 text-[12.5px]',
-  md: 'h-11 gap-2 rounded-[10px] px-5 text-[13.5px]',
-  lg: 'h-13 gap-2 rounded-[12px] px-6 text-[15px]',
+  sm: 'h-8 gap-1.5 rounded-full px-3 text-[12.5px]',
+  md: 'h-11 gap-2 rounded-full px-5 text-[13.5px]',
+  lg: 'h-13 gap-2 rounded-full px-6 text-[15px]',
 }
 
 /** Size, shape, type and states without a color, for a button that sits on its own dark card. */

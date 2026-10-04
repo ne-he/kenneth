@@ -140,7 +140,7 @@ export function ListHeader({ mode, count }: { mode: ParkMode; count: number }) {
           </span>
         </div>
       </div>
-      {/* The selected filter is the one ink pill in the row, the rest are plain words. */}
+      {/* The selected filter is the one accent pill in the row, the rest are plain words. */}
       <div className="no-scrollbar flex gap-0.5 overflow-x-auto px-5" role="radiogroup" aria-label={t.modes.listTitle[mode]}>
         {FILTERS.map((f) => (
           <button
@@ -154,7 +154,7 @@ export function ListHeader({ mode, count }: { mode: ParkMode; count: number }) {
             }}
             className={clsx(
               'h-8 shrink-0 rounded-full px-3.5 text-[13.5px] font-medium transition-colors',
-              filter === f ? 'bg-ink text-canvas' : 'text-ink-3 hover:text-ink',
+              filter === f ? 'btn-primary text-white' : 'text-ink-3 hover:text-ink',
             )}
           >
             {t.explore.filters[f]}
