@@ -40,6 +40,11 @@ export function Toggle({
   )
 }
 
+/**
+ * A choice of a few options, as a pill. The chosen one wears the primary
+ * button fill (buttonStyles.ts): the accent marks what is selected, the same
+ * way it marks the main action.
+ */
 export function Segmented<T extends string>({
   value,
   onChange,
@@ -67,14 +72,14 @@ export function Segmented<T extends string>({
               onChange(o.value)
             }}
             className={clsx(
-              'relative flex h-8 min-w-0 flex-1 items-center justify-center rounded-full px-2 text-[12.5px] font-semibold whitespace-nowrap transition-colors',
-              active ? 'text-ink' : 'text-ink-3 hover:text-ink-2',
+              'relative flex h-8 min-w-0 flex-1 items-center justify-center rounded-full px-2 text-[12.5px] font-medium tracking-[-0.01em] whitespace-nowrap transition-colors duration-150',
+              active ? 'text-white' : 'text-ink-3 hover:text-ink-2',
             )}
           >
             {active && (
               <motion.span
                 layoutId={`seg-${id}`}
-                className="absolute inset-0 rounded-full bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.06)] dark:bg-surface-3"
+                className="btn-primary absolute inset-0 rounded-full"
                 transition={{ type: 'spring', stiffness: 520, damping: 38 }}
               />
             )}
