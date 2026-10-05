@@ -1,4 +1,4 @@
-import { animate, motion, useMotionValue, type PanInfo } from 'motion/react'
+import { animate, motion, useMotionValue, useTransform, type PanInfo } from 'motion/react'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 
 export type Snap = 'peek' | 'half' | 'full'
@@ -17,7 +17,8 @@ interface Props {
   contentKey?: string
   /**
    * A CSS length the sheet keeps running under, for a bar floating over its
-   * bottom edge (the dock). The resting heights are measured above it.
+   * bottom edge (the dock). The body scrolls on under the bar, and the
+   * resting heights are measured above it.
    */
   inset?: string
 }
@@ -41,6 +42,9 @@ export function DockSheet({ snap, onSnap, header, children, footer, peek, onPeek
   const base = peek ?? measured
   const peekH = base + below
   const h = useMotionValue(peekH)
+  // Collapsed, the sheet shows only what sits above the bar; the rows under the bar fade in as it is pulled up.
+  const cover = useTransform(h, [peekH, peekH + 56], [1, 0])
+  const coverTaps = useTransform(cover, (v) => (v > 0.5 ? 'auto' : 'none'))
   const start = useRef(0)
   const body = useRef<HTMLDivElement>(null)
 
@@ -131,13 +135,24 @@ export function DockSheet({ snap, onSnap, header, children, footer, peek, onPeek
       </motion.div>
       <div ref={body} className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
         {children}
+        {/* The rows run on under the floating bar; this is room to scroll the last one out from under it. */}
+        {inset && !footer && <div aria-hidden="true" style={{ height: inset }} />}
       </div>
       {footer && (
-        <div ref={foot} className="shrink-0 px-3.5 pt-1.5 pb-safe">
+        <div ref={foot} className="shrink-0 px-3.5 pt-1.5 pb-safe" style={inset ? { marginBottom: inset } : undefined}>
           {footer}
         </div>
       )}
-      {inset && <div ref={under} aria-hidden="true" className="shrink-0" style={{ height: inset }} />}
+      {/* The strip under the bar, measured for the resting heights. It takes no room, so the body runs to the bottom edge. */}
+      {inset && (
+        <motion.div
+          ref={under}
+          aria-hidden="true"
+          // Above the list's sticky headers (z-10).
+          className="absolute inset-x-0 bottom-0 z-20 bg-surface"
+          style={{ height: inset, opacity: cover, pointerEvents: coverTaps }}
+        />
+      )}
     </motion.div>
   )
 }
