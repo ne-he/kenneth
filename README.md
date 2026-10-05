@@ -52,8 +52,9 @@ Tiap booking yang masih bisa dibatalkan punya tombol "Batalkan" yang kelihatan, 
 langsung setelah memesan. Batalnya dua langkah dengan aturannya ditulis. Yang dibatalkan tetap tercatat di Riwayat.
 Kalau ada yang lagi jalan (misalnya runner sedang membawa mobil balik), satu baris muncul di atas lembar Beranda.
 
-Pertama kali dibuka ada onboarding empat langkah (bisa dilewati): sambutan, yang bisa dibantu, tempat favorit,
-kendaraan. Setelah itu langsung ke peta.
+Pertama kali dibuka cuma ada satu layar sambutan, lalu langsung ke peta. Tidak ada data yang diminta di depan: pelat
+ditanya saat pertama kali memesan petak atau runner, kendaraan bisa diatur dari chip di lembar Beranda, dan favorit
+lewat bintang di kartu lokasi.
 
 Halaman lain:
 

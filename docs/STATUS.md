@@ -139,7 +139,8 @@ Layout sama. Yang berubah saat layanan dipilih hanya angka di pin, angka di daft
 | `/booth` | Mode booth BiFest: form validasi 5 pertanyaan + pilih 2 fitur + feedback grid, tally jawaban, ekspor CSV dan JSON |
 
 Di laptop, app tampil di bingkai HP dengan QR di pojok. Splash: layar tinta dengan ikon K kecil, memudar setelah peta siap.
-Onboarding pertama kali: 4 langkah (pembuka, yang bisa dibantu, lokasi favorit, kendaraan), bisa dilewati.
+Onboarding pertama kali: satu layar sambutan (Mulai, atau masuk dengan Google kalau tersedia), lalu peta. Pelat ditanya
+saat pertama memesan Zona KENNETH atau valet runner dan disimpan ke kendaraan; riwayat contoh berlabel "Contoh".
 
 ## 4. Angka dan aturan yang tertanam di mesin (`src/engine`)
 
