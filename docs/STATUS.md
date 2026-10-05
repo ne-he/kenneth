@@ -36,7 +36,7 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
 5. **Kampus dan gedung kantor boleh menjual layanan, dengan aturan yang sama** (keputusan 2 Okt 2026, menggantikan
    "kampus tidak menjual apa pun"). Kode masih memakai aturan lama: kampus cuma informasi dan belum ada lokasi
    kantor. Motor tetap tidak bisa memesan layanan apa pun.
-6. **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
+6. **Jujur soal sumber data.** Tiap lokasi berlabel "Data langsung" (dari palang parkir) atau "Estimasi".
 7. **Data pribadi tinggal di HP.** Tidak ada database server. Login Google hanya untuk nama, email, foto.
 8. **App tidak pernah pindah tab sendiri.** Setelah aksi, cukup toast plus titik di tab Tiket.
 9. **Peta adalah panggungnya, layanan dipilih di lembar Beranda** (direvisi 2 Okt 2026 di PR #13, menggantikan

@@ -133,7 +133,7 @@ Sebelas risiko ini dari daftar risiko tim. Kolom terakhir menunjukkan di mana ja
 | 2 | Slot sedikit, peminat banyak | Bayar per pakai, zona dibatasi 12 sampai 40 petak per gedung | Sisa petak di tiap jam datang, label "Habis" |
 | 3 | Mall ramai tidak mau kerja sama | Produk berbeda untuk mall ramai, pengalihan ke properti satu grup dulu | Dashboard mitra, bagian "Ke mana mereka pergi" |
 | 4 | Pengelola belum tentu mau bayar | Prototipe tidak bergantung pada mereka. Data simulasi sah untuk tahap ini | Label "Estimasi" dan keterangan simulasi |
-| 5 | Data salah, pengguna kabur | Jujur soal sumber, uji toleransi meleset di booth | Label "Data palang" atau "Estimasi" di tiap lokasi, pertanyaan 3 di `/booth` |
+| 5 | Data salah, pengguna kabur | Jujur soal sumber, uji toleransi meleset di booth | Label "Data langsung" atau "Estimasi" di tiap lokasi, pertanyaan 3 di `/booth` |
 | 6 | Ayam dan telur | Mulai dari area sempit, laporan pengguna | Tombol "Kondisi di lokasi beda?" |
 | 7 | Google bisa bikin ini | Akuisisi jalan keluar yang sah. Yang harus dibangun komunitas dan hubungan dengan pengelola | Tidak ada di app |
 | 8 | Hanya terasa di akhir pekan | Visi jangka panjang: kantor, rumah sakit, kampus | Tidak ada di app. Pilot sengaja mall dulu |

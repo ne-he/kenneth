@@ -5,8 +5,8 @@ import { VENUE_BY_ID } from '../../data/venues'
 import { passPhase } from '../../engine/pass'
 import { formatRupiah } from '../../engine/pricing'
 import { ZONE_HOLD_MIN, bayOf, zoneOf } from '../../engine/zone'
-import { useDayLabel, useT } from '../../i18n'
-import { clock, dayDiff, stopwatch } from '../../lib/time'
+import { useDayLabel, useLang, useT } from '../../i18n'
+import { clock, dayDiff, minutesLeft } from '../../lib/time'
 import { useApp, useVehicle } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
@@ -22,6 +22,7 @@ import { Plate } from '../ui/Display'
  */
 export function PassSheet({ passId }: { passId: string }) {
   const t = useT()
+  const lang = useLang()
   const dayLabel = useDayLabel()
   const now = useNow(1000)
   const pass = useApp((s) => s.passes.find((p) => p.id === passId))
@@ -90,7 +91,7 @@ export function PassSheet({ passId }: { passId: string }) {
               ? '--:--'
               : dayDiff(now, pass.windowStart) > 0
                 ? dayLabel(pass.windowStart, now)
-                : stopwatch(countdown)
+                : minutesLeft(countdown, lang)
           }
           accent={phase === 'open'}
         />

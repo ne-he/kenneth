@@ -26,7 +26,7 @@ import { ZONE_HOLD_MIN, bayOf, zoneOf } from '../../engine/zone'
 import { useDayLabel, useLang, useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { shareSpot } from '../../lib/share'
-import { clock, dayDiff, dayName, shortDate, stopwatch } from '../../lib/time'
+import { clock, dayDiff, dayName, minutesLeft, shortDate, stopwatch } from '../../lib/time'
 import { useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
@@ -307,6 +307,7 @@ function ValetCard({ id, now }: { id: string; now: number }) {
 
 function PassCard({ id, now }: { id: string; now: number }) {
   const t = useT()
+  const lang = useLang()
   const dayLabel = useDayLabel()
   const pass = useApp((s) => s.passes.find((p) => p.id === id))!
   const open = useUi((s) => s.open)
@@ -319,8 +320,8 @@ function PassCard({ id, now }: { id: string; now: number }) {
     dayDiff(now, pass.windowStart) > 0
       ? dayLabel(pass.windowStart, now)
       : phase === 'upcoming'
-        ? t.activity.startsIn(stopwatch(pass.windowStart - now))
-        : t.activity.endsIn(stopwatch(end - now))
+        ? t.activity.startsIn(minutesLeft(pass.windowStart - now, lang))
+        : t.activity.endsIn(minutesLeft(end - now, lang))
   return (
     <Card
       icon={<Crown size={14} weight="fill" />}
