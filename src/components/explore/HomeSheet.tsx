@@ -131,14 +131,15 @@ export function ListHeader({ mode, count }: { mode: ParkMode; count: number }) {
   return (
     <div className="sticky top-0 z-10 bg-surface pb-2">
       <div className="px-5 pb-2.5">
-        <h2 className="truncate text-[15px] leading-tight font-semibold tracking-tight">{t.modes.listTitle[mode]}</h2>
-        <div className="mt-0.5 flex items-center justify-between gap-3 text-[13px] text-ink-3">
-          <p className="min-w-0 truncate">{t.modes.count[mode](count)}</p>
-          <span className="flex shrink-0 items-center gap-1 whitespace-nowrap">
-            <MapPin size={12} weight="fill" />
+        {/* Where distances start sits by the title, so the line under it can say what the numbers mean in full. */}
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="min-w-0 truncate text-[15px] leading-tight font-semibold tracking-tight">{t.modes.listTitle[mode]}</h2>
+          <span className="flex shrink-0 items-center gap-1 text-[13px] whitespace-nowrap text-ink-3">
+            <MapPin size={12} weight="fill" className="self-center" />
             {originLabel === 'gps' ? t.explore.fromGps : t.explore.fromBinus}
           </span>
         </div>
+        <p className="mt-0.5 truncate text-[13px] text-ink-3">{t.modes.count[mode](count)}</p>
       </div>
       {/* The selected filter is the one accent pill in the row, the rest are plain words. */}
       <div className="no-scrollbar flex gap-0.5 overflow-x-auto px-5" role="radiogroup" aria-label={t.modes.listTitle[mode]}>
