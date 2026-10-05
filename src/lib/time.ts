@@ -94,3 +94,16 @@ export function stopwatch(ms: number): string {
   const s = total % 60
   return h > 0 ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`
 }
+
+/**
+ * 20 mnt or 1 jam 5 mnt for a countdown shown next to a clock time, where
+ * 20:25 would read as 20.25. Rounded to the minute, and 1 mnt until it ends.
+ */
+export function minutesLeft(ms: number, lang: 'id' | 'en'): string {
+  const total = ms > 0 ? Math.max(1, Math.round(ms / 60_000)) : 0
+  const h = Math.floor(total / 60)
+  const m = total % 60
+  const [hr, mn] = lang === 'id' ? ['jam', 'mnt'] : ['hr', 'min']
+  if (h === 0) return `${m} ${mn}`
+  return m === 0 ? `${h} ${hr}` : `${h} ${hr} ${m} ${mn}`
+}

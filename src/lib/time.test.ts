@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { atWib, clock, dayDiff, shortDate, stopwatch, wib } from './time'
+import { atWib, clock, dayDiff, minutesLeft, shortDate, stopwatch, wib } from './time'
 
 // Saturday 19 September 2026, 14.07 WIB
 const SAT = Date.UTC(2026, 8, 19, 7, 7)
@@ -28,5 +28,15 @@ describe('time in WIB', () => {
     expect(stopwatch(65_000)).toBe('01:05')
     expect(stopwatch(3_725_000)).toBe('1:02:05')
     expect(stopwatch(-5)).toBe('00:00')
+  })
+
+  it('writes countdowns in minutes so they never read like a clock time', () => {
+    expect(minutesLeft(20 * 60_000 + 25_000, 'id')).toBe('20 mnt')
+    expect(minutesLeft(20 * 60_000 + 35_000, 'id')).toBe('21 mnt')
+    expect(minutesLeft(20_000, 'id')).toBe('1 mnt')
+    expect(minutesLeft(0, 'id')).toBe('0 mnt')
+    expect(minutesLeft(-60_000, 'en')).toBe('0 min')
+    expect(minutesLeft(65 * 60_000, 'id')).toBe('1 jam 5 mnt')
+    expect(minutesLeft(120 * 60_000, 'en')).toBe('2 hr')
   })
 })
