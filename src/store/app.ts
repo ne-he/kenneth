@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import type { VehicleKind, VenueId } from '../data/types'
 import type { Plan } from '../engine/pricing'
 import type { ValetTicket } from '../engine/valet'
+import type { CarPaint } from '../lib/carPaint'
 import { nextSaturdayAt } from '../lib/time'
 
 export type Lang = 'id' | 'en'
@@ -27,6 +28,10 @@ export interface Vehicle {
   isEV: boolean
   /** Picked by the user. Unset, the shape is guessed from the model (lib/carBody). */
   body?: CarBody
+  /** The catalog model picked from the list (data/carModels). Unset, it is matched from the typed name. */
+  modelId?: string
+  /** The paint the car's icon is drawn in. Unset is silver. */
+  paint?: CarPaint
 }
 
 export interface ParkedSpot {
