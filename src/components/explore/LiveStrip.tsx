@@ -6,9 +6,9 @@ import { VENUE_BY_ID } from '../../data/venues'
 import { headline, splitActivity } from '../../engine/activity'
 import { valetPhase } from '../../engine/valet'
 import { bayOf } from '../../engine/zone'
-import { useT } from '../../i18n'
+import { useLang, useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
-import { clock, stopwatch } from '../../lib/time'
+import { clock, minutesLeft } from '../../lib/time'
 import { useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
@@ -20,6 +20,7 @@ import { useUi } from '../../store/ui'
  */
 export function LiveStrip() {
   const t = useT()
+  const lang = useLang()
   const now = useNow(1000)
   const parked = useApp((s) => s.parked)
   const passes = useApp((s) => s.passes)
@@ -38,34 +39,35 @@ export function LiveStrip() {
   let hot = false
   let go = () => open({ kind: 'find-car' })
 
+  // What is happening comes first and the place's full name last, so a long name is what the line cuts.
   if (item.kind === 'parked' && parked) {
     const v = VENUE_BY_ID[parked.venueId]
-    text = t.activity.parkedLive(`${v.short} · ${parked.level} ${parked.section}-${parked.pillar}`)
+    text = t.activity.parkedLive(`${parked.level} ${parked.section}-${parked.pillar} · ${v.name}`)
   } else if (item.kind === 'valet') {
     const ticket = valets.find((v) => v.id === item.id)!
     const phase = valetPhase(ticket, now)
     icon = <Key size={16} weight="fill" />
     hot = phase === 'ready'
-    text = `${VENUE_BY_ID[ticket.venueId].short} · ${
+    text = `${
       phase === 'fetching'
-        ? t.valet.readyIn(stopwatch(Math.max(0, (ticket.readyAt ?? now) - now)))
+        ? t.valet.readyIn(minutesLeft((ticket.readyAt ?? now) - now, lang))
         : phase === 'ready'
           ? t.valet.readyNow(ticket.lobby)
           : t.valet.phases[phase]
-    }`
+    } · ${VENUE_BY_ID[ticket.venueId].name}`
     go = () => open({ kind: 'valet', id: ticket.id })
   } else if (item.kind === 'pass') {
     const pass = passes.find((p) => p.id === item.id)!
     const venue = VENUE_BY_ID[pass.venueId]
     icon = <Crown size={16} weight="fill" />
     hot = now >= pass.windowStart
-    text = `${venue.short} · ${t.activity.passLive(bayOf(pass, venue), clock(pass.windowStart))}`
+    text = `${t.activity.passLive(bayOf(pass, venue), clock(pass.windowStart))} · ${venue.name}`
     go = () => open({ kind: 'pass', id: pass.id })
   } else if (item.kind === 'ev') {
     const b = evBookings.find((x) => x.id === item.id)!
     const pct = Math.min(100, Math.max(0, Math.round(((now - b.start) / (b.durationMin * 60_000)) * 100)))
     icon = <ChargingStation size={16} weight="fill" />
-    text = `${VENUE_BY_ID[b.venueId].short} · ${now >= b.start ? t.activity.evLive(pct) : `${t.activity.kind.ev} ${clock(b.start)}`}`
+    text = `${now >= b.start ? t.activity.evLive(pct) : `${t.activity.kind.ev} ${clock(b.start)}`} · ${VENUE_BY_ID[b.venueId].name}`
     go = () => setTab('activity')
   }
 

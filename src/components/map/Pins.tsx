@@ -24,7 +24,8 @@ export const LABEL_INSET = 11
  * full, zone bay price, valet wait, free chargers. So does the dot: the
  * status colour when parking, cornflower when Zona KENNETH is on, ink for
  * valet and chargers, red when the bays or chargers are gone. `named` adds
- * the short name when zoomed in. The selected place, or the card in view on
+ * the full name when zoomed in, never an abbreviation like PSJ that only the
+ * team knows; a label with no room drops as usual. The selected place, or the card in view on
  * the home row, gets one ink pill above its dot, "Central Park · 94%". A
  * place that does not offer the service on is a faint grey dot with no label.
  */
@@ -111,7 +112,7 @@ export function VenuePin({
           ) : (
             <>
               <span>{value}</span>
-              {named && <span className="font-medium text-ink-2">{snap.venue.short}</span>}
+              {named && <span className="font-medium text-ink-2">{snap.venue.name}</span>}
             </>
           )}
         </motion.div>
