@@ -96,7 +96,7 @@ const en: Dict = {
     routeClear: 'clear',
   },
   source: {
-    palang: 'Barrier data',
+    palang: 'Live data',
     estimasi: 'Estimate',
     palangNote: 'Counted from vehicles in minus vehicles out at the parking barrier.',
     estimasiNote: 'The operator is not connected yet. This is an estimate from user reports and crowd patterns, so it can be off.',
