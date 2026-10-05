@@ -10,6 +10,7 @@ import { activeVehicleOf, simNowOf, useApp } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { Button } from '../ui/Button'
 import { Stepper } from '../ui/Controls'
+import { Select } from '../ui/Select'
 import { SheetHeader } from '../ui/Sheet'
 
 /** Shrink a camera photo so it fits comfortably in localStorage (about 60 to 90 KB). */
@@ -100,15 +101,13 @@ export function SaveSpotSheet({ venueId }: { venueId: VenueId }) {
           <Stepper value={pillar} onChange={setPillar} min={1} max={40} label={t.park.pillar} format={(v) => `${section}-${v}`} />
         </Field>
         <Field label={t.park.lobby}>
-          <select
+          <Select
             value={lobby}
-            onChange={(e) => setLobby(e.target.value)}
-            className="h-11 w-full rounded-full bg-surface-2 px-3.5 text-[14px] font-semibold"
-          >
-            {venue.lobbies.map((l) => (
-              <option key={l}>{l}</option>
-            ))}
-          </select>
+            onChange={setLobby}
+            label={t.park.lobby}
+            align="end"
+            options={venue.lobbies.map((l) => ({ value: l, label: l }))}
+          />
         </Field>
       </div>
 
