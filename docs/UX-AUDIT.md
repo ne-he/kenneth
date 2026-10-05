@@ -24,7 +24,7 @@ Dicek ulang 3 Okt 2026 di `main` (`0e1f4b7`), setelah desain ulang Frederick (PR
 |---|---|---|---|
 | 1 | Layanan berbayar tersembunyi di dropdown | Selesai | Tiga pilihan besar di lembar Beranda, plus chip layanan di kartu tempat. Dropdown dan tip-nya dihapus |
 | 2 | Angka tanpa label, artinya berubah per mode | Sebagian | Pin hanya berubah saat layanan dipilih, dan judul daftar menyebut arti angkanya. Angka menit di tiap baris daftar masih tanpa label, penjelasannya cuma ada di paling bawah daftar |
-| 3 | Singkatan di peta | Sebagian | Pin jadi titik status dan nama lengkap muncul di lokasi yang dipilih. Nama singkat (CP, PSJ) masih muncul saat peta diperbesar |
+| 3 | Singkatan di peta | Selesai | Pin jadi titik status, dan saat peta diperbesar labelnya memakai nama lengkap ("61% Taman Anggrek", bukan "MTA"). Label yang tidak muat tetap disembunyikan. Strip "sedang berjalan" di atas lembar juga memakai nama lengkap, ditaruh paling belakang |
 | 4 | Onboarding panjang dan minta data di depan | Belum | Masih 4 langkah, pelat masih diminta di depan |
 | 5 | Kartu detail lokasi terlalu padat | Sebagian | Papan LED diganti angka sisa slot dan cincin okupansi, daftar jadi garis tipis. Jumlah bagiannya masih sama |
 | 6 | "Datang dalam 20:25" terbaca seperti jam | Selesai | Hitung mundur di tiket dan tab Tiket jadi menit ("20 mnt", "1 jam 5 mnt"). Stopwatch parkir dan valet tetap menit:detik karena tidak bersebelahan dengan jam |
