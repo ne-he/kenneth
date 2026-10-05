@@ -9,10 +9,10 @@ import { useUi, type Tab } from '../../store/ui'
 /**
  * A floating dock: three icon tabs in one glass pill with Beranda (the map)
  * in the middle, so the map runs underneath it edge to edge. Labels are for
- * screen readers only; the active tab is marked by a filled icon and a small
- * cornflower dot. Tapping Beranda again while home brings the map back to the
- * overview. Nothing in the app switches tabs on its own: new bookings put a
- * dot on Aktivitas and the user decides when to look.
+ * screen readers only; the active tab sits on the accent pill of the primary
+ * button, which slides from tab to tab. Tapping Beranda again while home
+ * brings the map back to the overview. Nothing in the app switches tabs on its
+ * own: new bookings put a dot on Aktivitas and the user decides when to look.
  */
 export function BottomNav() {
   const t = useT()
@@ -66,10 +66,18 @@ function Item({
       transition={{ type: 'spring', stiffness: 600, damping: 30 }}
       onClick={onClick}
       className={clsx(
-        'relative flex flex-col items-center justify-center gap-1 rounded-full transition-colors',
-        active ? 'text-ink' : 'text-ink-3 hover:text-ink-2',
+        'relative flex items-center justify-center rounded-full transition-colors duration-150',
+        active ? 'text-white' : 'text-ink-3 hover:text-ink-2',
       )}
     >
+      {active && (
+        <motion.span
+          layoutId="dock-active"
+          aria-hidden="true"
+          className="btn-primary absolute inset-y-[9px] left-1/2 w-[72px] -translate-x-1/2 rounded-full"
+          transition={{ type: 'spring', stiffness: 520, damping: 38 }}
+        />
+      )}
       <span className="relative">
         {children}
         {badge && (
@@ -80,7 +88,6 @@ function Item({
           />
         )}
       </span>
-      <span className={clsx('size-1 rounded-full transition-colors', active ? 'bg-brand-600 dark:bg-brand-400' : 'bg-transparent')} />
     </motion.button>
   )
 }

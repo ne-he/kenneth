@@ -3,8 +3,18 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useEffect } from 'react'
 import { useUi } from '../../store/ui'
 
+/** Top of the screen below the notch (or the showcase frame's island), the same inset the top bar uses. */
+const SAFE_TOP = 'max(12px, var(--safe-top, env(safe-area-inset-top)))'
+
+/**
+ * A short confirmation in the same glass as the top bar's chips, so it
+ * follows the theme. It drops in just below the top bar, or below the turn
+ * banner while navigating, never under the notch.
+ */
 export function Toast() {
   const toast = useUi((s) => s.toast)
+  // While driving the top bar gives way to the taller turn banner.
+  const driving = useUi((s) => !!s.route && s.tab === 'park')
 
   useEffect(() => {
     if (!toast) return
@@ -13,18 +23,22 @@ export function Toast() {
   }, [toast])
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-3 z-[70] flex justify-center px-4" aria-live="polite">
+    <div
+      className="pointer-events-none absolute inset-x-0 z-[70] flex justify-center px-4"
+      style={{ top: `calc(${SAFE_TOP} + ${driving ? 92 : 52}px)` }}
+      aria-live="polite"
+    >
       <AnimatePresence>
         {toast && (
           <motion.div
             key={toast.id}
-            initial={{ y: -40, opacity: 0, scale: 0.9 }}
+            initial={{ y: -16, opacity: 0, scale: 0.96 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: -30, opacity: 0, scale: 0.95 }}
+            exit={{ y: -10, opacity: 0, scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 500, damping: 34 }}
-            className="flex max-w-full items-center gap-2 rounded-full bg-ink/92 py-2 pr-4 pl-2.5 text-[12.5px] font-semibold text-canvas shadow-[0_10px_30px_-8px_rgb(0_0_0/0.45)] backdrop-blur-xl"
+            className="glass shadow-float flex max-w-full items-center gap-2 rounded-full py-2 pr-4 pl-2.5 text-[13px] font-semibold text-ink"
           >
-            <CheckCircle size={18} weight="fill" className="shrink-0 text-brand-400 dark:text-brand-600" />
+            <CheckCircle size={18} weight="fill" className="shrink-0 text-brand-600 dark:text-brand-400" />
             <span className="truncate">{toast.text}</span>
           </motion.div>
         )}
