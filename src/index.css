@@ -180,7 +180,32 @@
       0 18px 36px -12px hsl(var(--shadow-color) / 0.16);
   }
 
-
+  /*
+    The dock floats over the sheets and pages, not only the map. The rows
+    under it show through as soft shapes (a lighter frost than the map
+    chips'), and its edge shows where white meets white: a hairline ring, a
+    shadow that reaches above the top edge as well as below, and in dark mode
+    a shade lighter than the sheet under it.
+  */
+  .glass-dock {
+    background: rgb(255 255 255 / 0.6);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+    backdrop-filter: blur(10px) saturate(180%);
+    border: 1px solid var(--glass-line);
+    box-shadow:
+      0 0 0 1px rgb(18 18 22 / 0.07),
+      0 -2px 28px -2px hsl(var(--shadow-color) / 0.16),
+      0 18px 36px -10px hsl(var(--shadow-color) / 0.36),
+      inset 0 1px 0 rgb(255 255 255 / 0.7);
+  }
+  [data-theme='dark'] .glass-dock {
+    background: rgb(38 38 46 / 0.72);
+    box-shadow:
+      0 0 0 1px rgb(0 0 0 / 0.6),
+      0 -2px 28px -2px rgb(0 0 0 / 0.5),
+      0 18px 36px -10px rgb(0 0 0 / 0.6),
+      inset 0 1px 0 rgb(255 255 255 / 0.06);
+  }
 
   /* The desktop showcase frame overrides these to clear its fake notch and home bar. */
   .pb-safe {
