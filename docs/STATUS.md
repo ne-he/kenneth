@@ -192,7 +192,7 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
   `/mitra` dan `/booth` punya `COPY` sendiri di filenya.
 - **Struktur**:
   ```
-  src/data       venues.ts (20 lokasi), types.ts
+  src/data       venues.ts (39 lokasi: kampus, mall, kantor), types.ts
   src/engine     occupancy, recommend, pricing, zone, pass, valet, services, modes, activity, mitra, gage, impact
   src/store      app (persist), ui (tab, mode, sheet), clock (jam simulasi), booth
   src/components explore (tab Beranda, termasuk HomeSheet), activity (tab Tiket), account, sheets (+ sheets/book),

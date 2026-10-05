@@ -88,8 +88,8 @@ function PatternCard({ history, now }: { history: Visit[]; now: number }) {
   const counts = new Map<VenueId, number>()
   history.forEach((v) => counts.set(v.venueId, (counts.get(v.venueId) ?? 0) + 1))
   const venue = VENUE_BY_ID[[...counts.entries()].sort((a, b) => b[1] - a[1])[0][0]]
-  // Malls are a weekend habit, campuses a weekday one.
-  const want = venue.category === 'kampus' ? 2 : 6
+  // Malls are a weekend habit, campuses and offices a weekday one.
+  const want = venue.category === 'mall' ? 6 : 2
   const day = history.find((v) => v.venueId === venue.id && wib(v.at).day === want)?.at ?? now
   const [openH, closeH] = venue.hours
   const series = forecastDay(venue, day)

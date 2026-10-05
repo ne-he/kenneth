@@ -7,9 +7,10 @@ kenapa sebuah layar dibuat seperti itu.
 ## Untuk siapa
 
 Pengunjung mall di Jakarta yang bawa mobil di akhir pekan, dan mahasiswa BINUS yang bawa mobil atau motor
-di hari kerja. Cakupannya sengaja sempit: 20 lokasi yang dipadatkan di sekitar tiap kampus BINUS, yaitu enam
-kampus dan empat belas mall di dekatnya (daftarnya di [README](../README.md#lokasi)). Versi awal cuma enam mall
-di Jakarta Barat ditambah Grand Indonesia.
+di hari kerja. Cakupannya sengaja sempit: 39 lokasi yang dipadatkan di sekitar tiap kampus BINUS, yaitu 11 kampus
+(enam di antaranya BINUS), 22 mall, dan 6 gedung kantor di blok yang sama (daftarnya di [README](../README.md#lokasi)).
+Versi awal cuma enam mall di Jakarta Barat ditambah Grand Indonesia; 5 Okt 2026 ditambah kampus lain, mall, dan
+kantor di sekitar kampus BINUS yang sudah ada, bukan blok baru.
 
 Kenapa sempit? Data parkir baru berguna kalau cakupannya rapat. Empat sampai enam mall yang saling
 berdekatan lebih cepat terasa manfaatnya daripada lima puluh mall yang berjauhan.

@@ -50,14 +50,23 @@ describe('venue data', () => {
     }
   })
 
-  it('covers every BINUS campus in Greater Jakarta, each with a mall nearby', () => {
-    const campuses = VENUES.filter((v) => v.category === 'kampus')
-    expect(campuses.map((v) => v.id).sort()).toEqual(
+  it('covers every BINUS campus in Greater Jakarta, and every campus has a mall nearby', () => {
+    const binus = VENUES.filter((v) => v.group === 'binus')
+    expect(binus.map((v) => v.id).sort()).toEqual(
       ['binus-alsut', 'binus-anggrek', 'binus-bekasi', 'binus-kijang', 'binus-senayan', 'binus-syahdan'].sort(),
     )
+    const campuses = VENUES.filter((v) => v.category === 'kampus')
     for (const c of campuses) {
       const mall = VENUES.filter((v) => v.category === 'mall').some((m) => haversineKm(c.coords, m.coords) < 2.5)
       expect(mall, `${c.id} has a mall within 2.5 km`).toBe(true)
+    }
+  })
+
+  // Density over reach: a new place joins a block that is already covered, it never stands alone.
+  it('keeps every place inside a covered block', () => {
+    for (const v of VENUES) {
+      const near = VENUES.some((o) => o.id !== v.id && haversineKm(v.coords, o.coords) < 3)
+      expect(near, `${v.id} has another place within 3 km`).toBe(true)
     }
   })
 

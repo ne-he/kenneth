@@ -22,9 +22,28 @@ export type VenueId =
   | 'binus-senayan'
   | 'binus-alsut'
   | 'binus-bekasi'
+  | 'untar'
+  | 'trisakti'
+  | 'esa-unggul'
+  | 'ukrida'
+  | 'roxy-square'
+  | 'season-city'
+  | 'apl-tower'
+  | 'kompas-gramedia'
+  | 'senayan-park'
+  | 'pacific-place'
+  | 'plaza-indonesia'
+  | 'prosperity-tower'
+  | 'sampoerna-square'
+  | 'menara-astra'
+  | 'ubm-alsut'
+  | 'prominence'
+  | 'ikea-alsut'
+  | 'grand-metro'
+  | 'metro-mall'
 
-/** Malls fill up on weekend afternoons, campuses on weekday mornings. */
-export type Category = 'mall' | 'kampus'
+/** Malls fill up on weekend afternoons, campuses on weekday mornings, offices over weekday working hours. */
+export type Category = 'mall' | 'kampus' | 'kantor'
 
 export type VehicleKind = 'mobil' | 'motor'
 
@@ -65,7 +84,7 @@ export interface Tariff {
   verified: boolean
 }
 
-export type Area = 'Jakarta Barat' | 'Jakarta Pusat' | 'Tangerang' | 'Tangerang Selatan' | 'Bekasi'
+export type Area = 'Jakarta Barat' | 'Jakarta Pusat' | 'Jakarta Selatan' | 'Tangerang' | 'Tangerang Selatan' | 'Bekasi'
 
 /** Motorbike bays have their own count, fill level and tariff. */
 export interface MotorBays {

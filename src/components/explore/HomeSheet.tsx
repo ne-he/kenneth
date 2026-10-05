@@ -9,7 +9,7 @@ import { useUi, type VenueFilter } from '../../store/ui'
 import { VehicleIcon } from '../ui/VehicleIcon'
 import { LiveStrip } from './LiveStrip'
 
-const FILTERS: VenueFilter[] = ['all', 'fav', 'kampus', 'mall']
+const FILTERS: VenueFilter[] = ['all', 'fav', 'mall', 'kampus', 'kantor']
 
 /**
  * The home sheet at rest, Uber style: the map is the stage and the hierarchy

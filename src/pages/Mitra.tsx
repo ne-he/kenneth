@@ -139,7 +139,7 @@ export default function Mitra() {
   const heat = useMemo(() => weekHeat(venue, now), [venue, now])
   const prio = useMemo(() => zoneDay(venue, dayTs), [venue, dayTs])
   const busyVenue = peak.occ >= FULL_LINE
-  // Campuses sell nothing (docs/PRODUCT.md), so only the dashboard plan fits them.
+  // Only malls sell Zona KENNETH bays (docs/PRODUCT.md), so campuses and offices get the dashboard plan alone.
   const isMall = venue.category === 'mall'
   const nowHour = dayKey === 'today' ? wib(now).hourF : undefined
 
