@@ -68,15 +68,18 @@ Ganti lewat chip jam di kiri atas peta. **Selasa 10.00** memperlihatkan kampus y
 
 ## Lokasi
 
-20 lokasi, sengaja dipadatkan di sekitar tiap kampus BINUS (keputusan tim: kepadatan cakupan lebih penting dari luas):
+39 lokasi, sengaja dipadatkan di sekitar tiap kampus BINUS (keputusan tim: kepadatan cakupan lebih penting dari luas).
+Tempat yang ditambah 5 Okt 2026 masuk ke blok yang sama: kampus lain, mall, dan gedung kantor di sekitarnya. Kantor
+penuh di jam kerja hari biasa dan sepi di akhir pekan; seperti kampus, kantor tidak menjual Zona KENNETH atau valet,
+cuma charger EV di gedung yang punya.
 
-| Area | Kampus | Mall |
-|---|---|---|
-| Kemanggisan, Tanjung Duren | BINUS Anggrek, Syahdan, Kijang | Central Park, Neo Soho, Taman Anggrek, Mal Ciputra, Plaza Slipi Jaya |
-| Puri | | Lippo Mall Puri, Puri Indah Mall |
-| Senayan, Thamrin | BINUS Senayan | Senayan City, Plaza Senayan, fX Sudirman, Grand Indonesia |
-| Alam Sutera | BINUS Alam Sutera | Mall @ Alam Sutera, Living World |
-| Bekasi | BINUS Bekasi | Summarecon Mall Bekasi |
+| Area | Kampus | Mall | Kantor |
+|---|---|---|---|
+| Kemanggisan, Tanjung Duren, Grogol, Palmerah | BINUS Anggrek, Syahdan, Kijang, Universitas Tarumanagara, Universitas Trisakti, UKRIDA Tanjung Duren, Universitas Esa Unggul | Central Park, Neo Soho, Taman Anggrek, Mal Ciputra, Plaza Slipi Jaya, Roxy Square, Season City | APL Tower, Kompas Gramedia Palmerah |
+| Puri | | Lippo Mall Puri, Puri Indah Mall | |
+| Senayan, Sudirman, Thamrin | BINUS Senayan | Senayan City, Plaza Senayan, fX Sudirman, Senayan Park, Pacific Place, Grand Indonesia, Plaza Indonesia | Prosperity Tower, Sampoerna Strategic Square, Menara Astra |
+| Alam Sutera | BINUS Alam Sutera, Universitas Bunda Mulia | Mall @ Alam Sutera, Living World, IKEA Alam Sutera | The Prominence |
+| Bekasi | BINUS Bekasi | Summarecon Mall Bekasi, Grand Metropolitan, Metropolitan Mall | |
 
 Kampus punya kurva sendiri (penuh dari kelas pagi di hari kerja, sepi hari Minggu) dan jam buka 06.00 sampai 21.00.
 Kalau satu kampus penuh, alternatifnya kampus lain atau tempat yang bisa dijalan kaki, bukan mall di seberang kota.
