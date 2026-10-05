@@ -1,6 +1,6 @@
-import { CarProfile, Check, DownloadSimple, Leaf, LockKey, LockSimple, Motorcycle, Plus, Sparkle, Trash } from '@phosphor-icons/react'
+import { CarProfile, Check, DownloadSimple, Leaf, LockKey, LockSimple, Motorcycle, Plus, Sparkle, Trash, X } from '@phosphor-icons/react'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
 import type { VehicleKind, VenueId } from '../../data/types'
 import { plateParity } from '../../engine/gage'
@@ -8,7 +8,9 @@ import { CO2_KG_PER_L, FUEL_L_PER_MIN, impactOf, sumImpact } from '../../engine/
 import { forecastDay, quietestHour } from '../../engine/occupancy'
 import { PREMIUM_MONTHLY, formatRupiah } from '../../engine/pricing'
 import { useLang, useT } from '../../i18n'
-import { BODIES, bodyOf, shortModel } from '../../lib/carBody'
+import { BODIES, bodyOf, displayModel } from '../../lib/carBody'
+import { matchModel, modelById, searchModels, shortName, type CarModel } from '../../lib/carCatalog'
+import { DEFAULT_PAINT, PAINT_ORDER, PAINTS, type CarPaint } from '../../lib/carPaint'
 import { haptic } from '../../lib/haptics'
 import { dayName, hourLabel, wib } from '../../lib/time'
 import { activeVehicleOf, uid, useApp, type CarBody, type Vehicle, type Visit } from '../../store/app'
@@ -19,7 +21,7 @@ import { Segmented, Toggle } from '../ui/Controls'
 import { CountUp, Plate } from '../ui/Display'
 import { Label } from '../ui/Kit'
 import { SheetHeader } from '../ui/Sheet'
-import { BodyIcon, VehicleIcon } from '../ui/VehicleIcon'
+import { BodyIcon, CarSprite, VehicleIcon } from '../ui/VehicleIcon'
 
 /** Monthly impact, how it is counted, and the Premium habit insight. */
 export function ImpactSheet() {
@@ -293,11 +295,11 @@ export function VehiclePickerSheet() {
           return (
             <li key={v.id} className="flex items-center gap-2">
               <button type="button" aria-pressed={on} onClick={() => pick(v)} className="flex min-w-0 flex-1 items-center gap-3 py-3 text-left">
-                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-surface-2 text-ink">
-                  <VehicleIcon vehicle={v} size={30} />
+                <span className="grid h-12 w-16 shrink-0 place-items-center rounded-2xl bg-surface-2 text-ink">
+                  <VehicleIcon vehicle={v} size={36} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[15px] font-semibold">{shortModel(v.model) || t.profile.kinds[v.kind]}</span>
+                  <span className="block truncate text-[15px] font-semibold">{displayModel(v) || t.profile.kinds[v.kind]}</span>
                   <span className="mt-0.5 block truncate text-[12.5px] text-ink-3">
                     <span className="font-mono tracking-wider">{v.plate || t.modes.noPlate}</span>
                     {v.kind === 'mobil' && ` · ${t.profile.bodies[bodyOf(v)]}`}
@@ -322,7 +324,7 @@ export function VehiclePickerSheet() {
         onClick={() => open({ kind: 'vehicle', id: 'new' })}
         className="mt-1 flex w-full items-center gap-3 border-t border-line pt-3 text-left text-[15px] font-semibold"
       >
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl border border-dashed border-line-strong text-ink-2">
+        <span className="grid h-12 w-16 shrink-0 place-items-center rounded-2xl border border-dashed border-line-strong text-ink-2">
           <Plus size={18} weight="bold" />
         </span>
         {t.profile.addVehicle}
@@ -333,6 +335,136 @@ export function VehiclePickerSheet() {
 
 const input =
   'h-12 w-full rounded-2xl border border-transparent bg-surface-2 px-4 text-[15px] outline-none placeholder:text-ink-3 focus:border-brand-500'
+
+/**
+ * The model, typed or picked. For a car, focusing it lists the best sellers
+ * and typing searches every model with an icon, each drawn in the chosen
+ * paint. A name that is not in the list is kept as typed; the car then gets
+ * the template icon.
+ */
+function ModelField({
+  kind,
+  model,
+  picked,
+  paint,
+  onType,
+  onPick,
+}: {
+  kind: VehicleKind
+  model: string
+  picked: CarModel | undefined
+  paint: CarPaint
+  onType: (text: string) => void
+  onPick: (m: CarModel) => void
+}) {
+  const t = useT()
+  const field = useRef<HTMLInputElement>(null)
+  const [open, setOpen] = useState(false)
+  const car = kind === 'mobil'
+  const results = car && open ? searchModels(model, 6) : []
+  // Tapping a result must not blur the field first, or the list closes under the finger.
+  const keepFocus = (e: { preventDefault: () => void }) => e.preventDefault()
+  return (
+    <div className="mb-3">
+      <label htmlFor="vehicle-model" className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-3">
+        {t.profile.model}
+      </label>
+      <div className="relative">
+        <input
+          id="vehicle-model"
+          ref={field}
+          className={clsx(input, model && 'pr-11')}
+          value={model}
+          autoComplete="off"
+          onChange={(e) => onType(e.target.value)}
+          onFocus={() => setOpen(true)}
+          onBlur={() => window.setTimeout(() => setOpen(false), 120)}
+          placeholder={car ? t.profile.modelSearch : t.onboarding.modelPhMotor}
+        />
+        {model && (
+          <button
+            type="button"
+            aria-label={t.profile.modelClear}
+            onMouseDown={keepFocus}
+            onClick={() => {
+              onType('')
+              field.current?.focus()
+            }}
+            className="absolute top-1/2 right-2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-ink-3 hover:text-ink"
+          >
+            <X size={14} weight="bold" />
+          </button>
+        )}
+      </div>
+      {results.length > 0 && (
+        <div role="listbox" aria-label={t.profile.model} className="mt-2 overflow-hidden rounded-2xl border border-line bg-surface">
+          {!model.trim() && <p className="px-3 pt-2.5 pb-1 text-[11.5px] font-semibold text-ink-3">{t.profile.modelPopular}</p>}
+          {results.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              role="option"
+              aria-selected={picked?.id === m.id}
+              onMouseDown={keepFocus}
+              onClick={() => {
+                haptic('tap')
+                onPick(m)
+                field.current?.blur()
+              }}
+              className="flex w-full items-center gap-3 px-3 py-1.5 text-left transition-colors hover:bg-surface-2"
+            >
+              <CarSprite id={m.id} paint={paint} height={32} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[14px] font-semibold">{shortName(m)}</span>
+                <span className="block truncate text-[12px] text-ink-3">{m.brand}</span>
+              </span>
+              {picked?.id === m.id && <Check size={16} weight="bold" className="shrink-0 text-brand-600 dark:text-brand-400" />}
+            </button>
+          ))}
+        </div>
+      )}
+      {car && !open && model.trim() && !picked && <p className="mt-1.5 px-1 text-[12px] leading-snug text-ink-3">{t.profile.modelNotListed}</p>}
+    </div>
+  )
+}
+
+/** The car's paint, drawn on its icon everywhere: the list, the form and the map while driving. */
+function PaintPicker({ value, onChange }: { value: CarPaint; onChange: (p: CarPaint) => void }) {
+  const t = useT()
+  return (
+    <div className="mb-3">
+      <span className="mb-1.5 flex items-baseline justify-between px-1 text-[13px] font-semibold text-ink-3">
+        {t.profile.paint}
+        <span className="font-medium text-ink-2">{t.profile.paints[value]}</span>
+      </span>
+      <div role="radiogroup" aria-label={t.profile.paint} className="flex flex-wrap gap-2.5 px-1">
+        {PAINT_ORDER.map((p) => {
+          const on = p === value
+          return (
+            <button
+              key={p}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              aria-label={t.profile.paints[p]}
+              onClick={() => {
+                haptic('tap')
+                onChange(p)
+              }}
+              style={{ backgroundColor: PAINTS[p] }}
+              className={clsx(
+                'grid size-8 place-items-center rounded-full border border-black/10 ring-offset-2 ring-offset-surface transition-shadow dark:border-white/15',
+                on ? 'ring-2 ring-brand-600 dark:ring-brand-400' : 'hover:ring-2 hover:ring-line-strong',
+              )}
+            >
+              {on && <Check size={14} weight="bold" className={p === 'putih' || p === 'silver' ? 'text-ink' : 'text-white'} />}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 /**
  * Add or edit one vehicle. `id` undefined edits the one in use, 'new' starts
@@ -358,9 +490,13 @@ export function VehicleSheet({ id }: { id?: string }) {
   const [isEV, setIsEV] = useState(base.isEV)
   // Unpicked, the shape follows the model as it is typed.
   const [body, setBody] = useState<CarBody | undefined>(base.body)
-  const shape = bodyOf({ model, body })
-  const parity = plateParity(plate)
+  const [modelId, setModelId] = useState(base.modelId)
+  const [paint, setPaint] = useState<CarPaint>(base.paint ?? DEFAULT_PAINT)
   const car = kind === 'mobil'
+  // The catalog model: picked from the list, else what the typed name means.
+  const picked = car ? (modelById(modelId) ?? matchModel(model)) : undefined
+  const shape = picked?.body ?? bodyOf({ model, body })
+  const parity = plateParity(plate)
   const caption = [
     t.profile.kinds[kind],
     car && t.profile.bodies[shape],
@@ -371,7 +507,7 @@ export function VehicleSheet({ id }: { id?: string }) {
     <div className="pb-5">
       <SheetHeader title={creating ? t.profile.addVehicle : t.profile.editVehicle} onClose={close} closeLabel={t.common.close} />
       <div className="mb-4 grid place-items-center rounded-[22px] bg-surface-2 pt-4 pb-6">
-        <VehicleIcon vehicle={{ kind, model, body }} size={64} className="mb-3 text-ink-2" />
+        <VehicleIcon vehicle={{ kind, model, body, modelId: picked?.id, paint }} size={96} className="mb-3 text-ink-2" />
         <Plate plate={plate.toUpperCase()} className="scale-150" />
         <span className="mt-6 text-[12px] font-semibold text-ink-2">{caption.join(' · ')}</span>
       </div>
@@ -393,16 +529,23 @@ export function VehicleSheet({ id }: { id?: string }) {
           placeholder={t.onboarding.platePh}
         />
       </label>
-      <label className="mb-3 block">
-        <span className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-3">{t.profile.model}</span>
-        <input
-          className={input}
-          value={model}
-          onChange={(e) => setModel(e.target.value)}
-          placeholder={kind === 'motor' ? t.onboarding.modelPhMotor : t.onboarding.modelPh}
-        />
-      </label>
-      {car && (
+      <ModelField
+        kind={kind}
+        model={model}
+        picked={picked}
+        paint={paint}
+        onType={(text) => {
+          setModel(text)
+          setModelId(undefined)
+        }}
+        onPick={(m) => {
+          setModel(m.name)
+          setModelId(m.id)
+          setBody(undefined)
+        }}
+      />
+      {car && <PaintPicker value={paint} onChange={setPaint} />}
+      {car && !picked && (
         <div className="mb-3">
           <span className="mb-1.5 block px-1 text-[13px] font-semibold text-ink-3">{t.profile.body}</span>
           <div role="radiogroup" aria-label={t.profile.body} className="grid grid-cols-4 gap-2">
@@ -448,7 +591,16 @@ export function VehicleSheet({ id }: { id?: string }) {
         onClick={() => {
           haptic('success')
           setName(n.trim())
-          saveVehicle({ id: base.id, kind, plate: plate.trim(), model: model.trim(), isEV: car && isEV, body: car ? body : undefined })
+          saveVehicle({
+            id: base.id,
+            kind,
+            plate: plate.trim(),
+            model: model.trim(),
+            isEV: car && isEV,
+            body: car && !picked ? body : undefined,
+            modelId: picked?.id,
+            paint: car ? paint : undefined,
+          })
           close()
         }}
       >

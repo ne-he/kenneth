@@ -297,8 +297,8 @@ function Garage() {
               }}
               className="flex min-w-0 flex-1 items-center gap-3 text-left"
             >
-              <span className={clsx('grid w-5 shrink-0 place-items-center', on ? 'text-ink' : 'text-ink-3')}>
-                <VehicleIcon vehicle={v} size={20} />
+              <span className={clsx('grid w-[48px] shrink-0 place-items-center', on ? 'text-ink' : 'text-ink-3')}>
+                <VehicleIcon vehicle={v} size={30} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[14.5px] font-medium">{v.model || t.profile.kinds[v.kind]}</span>

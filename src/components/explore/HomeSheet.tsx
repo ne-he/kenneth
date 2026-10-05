@@ -2,7 +2,7 @@ import { CaretDown, MagnifyingGlass, MapPin, Plus } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { SERVICES, type ParkMode } from '../../engine/modes'
 import { useT } from '../../i18n'
-import { shortModel } from '../../lib/carBody'
+import { displayModel } from '../../lib/carBody'
 import { haptic } from '../../lib/haptics'
 import { useApp, useVehicle } from '../../store/app'
 import { useUi, type VenueFilter } from '../../store/ui'
@@ -100,7 +100,7 @@ function VehicleChip() {
   const none = useApp((s) => s.vehicles.length === 0)
   const active = useVehicle()
   const open = useUi((s) => s.open)
-  const name = none ? t.modes.vehicle : shortModel(active.model) || active.plate || t.profile.kinds[active.kind]
+  const name = none ? t.modes.vehicle : displayModel(active) || active.plate || t.profile.kinds[active.kind]
   return (
     <button
       type="button"
@@ -111,7 +111,7 @@ function VehicleChip() {
       }}
       className="flex h-9 max-w-[10.5rem] shrink-0 items-center gap-1.5 rounded-full border border-line pr-2.5 pl-3 text-[13.5px] font-semibold text-ink transition-colors hover:bg-surface-2"
     >
-      {none ? <Plus size={15} weight="bold" className="shrink-0" /> : <VehicleIcon vehicle={active} size={22} className="shrink-0" />}
+      {none ? <Plus size={15} weight="bold" className="shrink-0" /> : <VehicleIcon vehicle={active} size={28} className="-my-1 shrink-0" />}
       <span className="truncate">{name}</span>
       <CaretDown size={11} weight="bold" className="shrink-0 text-ink-3" />
     </button>
