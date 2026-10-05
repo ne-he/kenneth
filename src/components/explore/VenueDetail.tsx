@@ -7,6 +7,7 @@ import {
   DoorOpen,
   Info,
   Key,
+  ListBullets,
   Megaphone,
   NavigationArrow,
   PersonSimpleWalk,
@@ -170,16 +171,24 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
   // In park mode the card above already suggests the first one, so the list starts after it.
   const alts = snap.status !== 'lega' ? alternativesFor(venue, pool, ts).slice(mode === 'park' ? 1 : 0) : []
   const services = servicesFor(venue, vehicle.kind)
+  // Odd-even only matters on a corridor route. A plate that is blocked today is a warning, so it stays in view.
+  const gage = vehicle.kind === 'mobil' && venue.gageCorridor ? checkGage(venue, vehicle.plate, vehicle.isEV, ts) : null
+  const blocked = gage?.kind === 'blocked'
+  const unit = vehicle.kind === 'motor' ? t.unit.motorSlots : t.unit.slots
 
   return (
     <div className="px-4 pb-10">
       <PlaceCard snap={snap} ts={ts} previewing={previewing} />
 
-      {/* Below the fold: shows when the sheet is pulled up. */}
+      {/*
+        Below the card: how the day goes here, places to try instead, then the
+        rest behind one row (UX audit #5), and the report, which people use on
+        the spot.
+      */}
       <div className="mt-6 space-y-8">
-        <div className="border-t border-line pt-5">
-          <SlotsLeft snap={snap} kind={vehicle.kind} source={<SourceChip venue={venue} />} />
-        </div>
+        <section className="border-t border-line px-1 pt-5">
+          <TimeScrubber venues={[venue]} now={now} title={t.venue.forecast} />
+        </section>
 
         {alts.length > 0 && (
           <section>
@@ -202,38 +211,44 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
                       <span className="line-clamp-2">{a.walk ? t.venue.walk(a.walk.minutes, a.walk.via) : t.venue.drive(formatKm(a.km))}</span>
                     </span>
                   </span>
-                  <StatusPill status={a.snap.status} pct={a.snap.pct} />
+                  <StatusPill status={a.snap.status} pct={a.snap.pct} label={t.status[a.snap.status]} />
                 </button>
               ))}
             </List>
           </section>
         )}
 
-        <section className="px-1">
-          <TimeScrubber venues={[venue]} now={now} title={t.venue.forecast} />
-        </section>
-
         <List plain>
-          <GatesRow snap={snap} />
-          <CostRow venue={venue} />
-          {/* Which services this place sells is the chip row at the top of the card, so no row repeats it. */}
-          <SpecialRow venue={venue} snap={snap} ts={ts} />
-          {/* Odd-even plates only matter on a corridor route; elsewhere the row would only say it does not apply. */}
-          {vehicle.kind === 'mobil' && venue.gageCorridor && <GageRow venue={venue} ts={ts} />}
-          {venue.tenants.length > 0 && <TenantsRow venue={venue} />}
+          {blocked && <GageRow venue={venue} ts={ts} />}
+          <Disclosure
+            icon={<ListBullets size={17} />}
+            title={t.venue.details}
+            summary={t.venue.detailsSummary(snap.free.toLocaleString('id-ID'), unit, formatRupiah(venue.tariff.firstHour, true))}
+          >
+            <div className="pt-1">
+              <SlotsLeft snap={snap} kind={vehicle.kind} source={<SourceChip venue={venue} />} />
+            </div>
+            <List plain className="mt-4">
+              <GatesRow snap={snap} />
+              <CostRow venue={venue} />
+              {/* Which services this place sells is the chip row at the top of the card, so no row repeats it. */}
+              <SpecialRow venue={venue} snap={snap} ts={ts} />
+              {gage && !blocked && <GageRow venue={venue} ts={ts} />}
+              {venue.tenants.length > 0 && <TenantsRow venue={venue} />}
+            </List>
+            <p className="mt-4 flex gap-2 text-[11.5px] leading-snug text-ink-3">
+              <Info size={14} className="mt-[1px] shrink-0" />
+              <span>
+                {venue.source === 'palang' ? t.source.palangNote : t.source.estimasiNote} {t.source.prototype}
+              </span>
+            </p>
+          </Disclosure>
           <ReportRow venue={venue} now={now} />
         </List>
 
         {services.length === 0 && (
           <p className="px-2 text-center text-[12.5px] leading-snug text-ink-3">{vehicle.kind === 'motor' ? t.venue.motorNoBook : t.venue.noBook}</p>
         )}
-
-        <p className="flex gap-2 px-1 text-[11.5px] leading-snug text-ink-3">
-          <Info size={14} className="mt-[1px] shrink-0" />
-          <span>
-            {venue.source === 'palang' ? t.source.palangNote : t.source.estimasiNote} {t.source.prototype}
-          </span>
-        </p>
       </div>
     </div>
   )

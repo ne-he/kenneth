@@ -99,10 +99,13 @@ Layout sama. Yang berubah saat layanan dipilih hanya angka di pin, angka di daft
 - Kendaraan aktif motor: tiga pilihan layanan abu-abu dengan keterangan "Khusus mobil".
 
 ### 3.3 Sheet (panel yang naik dari bawah)
-- **Detail lokasi**: angka sisa slot dan cincin okupansi, grafik perkiraan hari ini (bisa digeser jam), gerbang masuk
-  dan antriannya, biaya parkir (stepper jam), layanan yang bisa dipesan, slot difabel dan ibu hamil, alternatif yang
-  masih lega (jalan kaki atau berkendara), rute dari parkir ke tenant, lapor kondisi (Penuh, Antri panjang, Masih
-  lega), ganjil-genap (hanya kalau ada koridor), favorit, bagikan.
+- **Kartu lokasi**: di atas, status, gerbang yang disarankan, tombol Rute atau Pesan, dan saran (Zona KENNETH, tempat
+  lain yang lega). Di bawahnya grafik perkiraan hari ini (garis dengan titik per jam, bisa digeser jam), daftar
+  "Masih lega di dekat sini" kalau tempatnya tidak lega, lalu satu baris **Detail lokasi** yang bisa dibuka: sisa slot
+  dan cincin okupansi, gerbang masuk dan antriannya, biaya parkir (stepper jam), slot difabel dan ibu hamil,
+  ganjil-genap (hanya kalau ada koridor), rute dari parkir ke tenant, dan catatan sumber data. Lapor kondisi (Penuh,
+  Antri panjang, Masih lega) tetap terlihat. Ganjil-genap pindah ke luar Detail lokasi kalau pelatmu dilarang hari
+  itu. Favorit dan bagikan ada di kepala kartu dan menu "..."
 - **Pesan** (BookHub): tab per layanan. Setelah pesan, hasil tetap di layar dengan tombol buka tiket dan "Salah pesan? Batalkan".
   - Zona: pilih hari (hari ini, Premium sampai H-7), pilih jam datang per 30 menit, harga dan sisa petak tiap slot,
     metode bayar simulasi (QRIS, e-wallet, kartu), penjelasan "Kok bisa ada zona khusus?".

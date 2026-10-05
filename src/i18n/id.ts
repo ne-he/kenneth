@@ -143,6 +143,8 @@ const id = {
     noBook: 'Di sini belum ada yang bisa dipesan. Angka keramaian tetap jalan.',
     motorNoBook: 'Zona KENNETH, valet runner, dan charger baru ada untuk mobil.',
     forecast: 'Perkiraan hari ini',
+    details: 'Detail lokasi',
+    detailsSummary: (free: string, unit: string, first: string) => `${free} ${unit} kosong · ${first} jam pertama`,
     gates: 'Gerbang masuk',
     gatesSummary: (gate: string, min: string) => `${gate} paling lancar, ${min} mnt`,
     gatesRange: (n: number, min: string, max: string) => (min === max ? `${n} gerbang, antre ${min} mnt` : `${n} gerbang, antre ${min}-${max} mnt`),

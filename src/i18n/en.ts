@@ -143,6 +143,8 @@ const en: Dict = {
     noBook: 'Nothing to book here yet. The occupancy numbers still work.',
     motorNoBook: 'The KENNETH Zone, runner valet and chargers are for cars only for now.',
     forecast: 'Forecast today',
+    details: 'Place details',
+    detailsSummary: (free: string, unit: string, first: string) => `${free} ${unit} free · ${first} first hour`,
     gates: 'Entry gates',
     gatesSummary: (gate: string, min: string) => `${gate} is quickest, ${min} min`,
     gatesRange: (n: number, min: string, max: string) =>
