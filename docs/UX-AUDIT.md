@@ -23,7 +23,7 @@ Dicek ulang 3 Okt 2026 di `main` (`0e1f4b7`), setelah desain ulang Frederick (PR
 | # | Temuan | Status | Catatan |
 |---|---|---|---|
 | 1 | Layanan berbayar tersembunyi di dropdown | Selesai | Tiga pilihan besar di lembar Beranda, plus chip layanan di kartu tempat. Dropdown dan tip-nya dihapus |
-| 2 | Angka tanpa label, artinya berubah per mode | Sebagian | Pin hanya berubah saat layanan dipilih, dan judul daftar menyebut arti angkanya. Angka menit di tiap baris daftar masih tanpa label, penjelasannya cuma ada di paling bawah daftar |
+| 2 | Angka tanpa label, artinya berubah per mode | Selesai | Pin hanya berubah saat layanan dipilih. Judul daftar yang menempel saat digulir menyebut arti angka kanan di tiap mode ("20 lokasi · menit sampai parkir", "· harga petak"), dan persen di tiap baris daftar dan hasil cari diberi kata status ("61% Lega") |
 | 3 | Singkatan di peta | Selesai | Pin jadi titik status, dan saat peta diperbesar labelnya memakai nama lengkap ("61% Taman Anggrek", bukan "MTA"). Label yang tidak muat tetap disembunyikan. Strip "sedang berjalan" di atas lembar juga memakai nama lengkap, ditaruh paling belakang |
 | 4 | Onboarding panjang dan minta data di depan | Belum | Masih 4 langkah, pelat masih diminta di depan |
 | 5 | Kartu detail lokasi terlalu padat | Sebagian | Papan LED diganti angka sisa slot dan cincin okupansi, daftar jadi garis tipis. Jumlah bagiannya masih sama |
