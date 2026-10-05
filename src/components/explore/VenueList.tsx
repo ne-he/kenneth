@@ -107,7 +107,8 @@ export function VenueList({
                 </span>
                 <span className="flex shrink-0 flex-col items-end gap-1.5">
                   <ModeValue fact={facts.get(r.venue.id)} minutes={r.timeToPark} />
-                  <StatusPill status={r.status} pct={r.pct} />
+                  {/* The word says what the percent is, the same pill as the place card's header. */}
+                  <StatusPill status={r.status} pct={r.pct} label={t.status[r.status]} />
                 </span>
               </button>
             </motion.li>

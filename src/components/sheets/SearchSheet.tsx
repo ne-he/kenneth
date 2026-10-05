@@ -78,7 +78,7 @@ export function SearchSheet() {
                   {t.venue.category[s.venue.category]} · {s.venue.district}, {s.venue.area}
                 </span>
               </span>
-              <StatusPill status={s.status} pct={s.pct} />
+              <StatusPill status={s.status} pct={s.pct} label={t.status[s.status]} />
             </button>
           </li>
         ))}

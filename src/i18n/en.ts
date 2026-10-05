@@ -49,7 +49,7 @@ const en: Dict = {
     listTitle: { park: 'Near you', zone: 'With a KENNETH Zone', valet: 'With runner valet', ev: 'With EV chargers' },
     // Says what the number on the right of each row means in this mode.
     count: {
-      park: (n: number) => `${n} places, fastest first`,
+      park: (n: number) => `${n} places · minutes to park`,
       zone: (n: number) => `${n} places · bay price`,
       valet: (n: number) => `${n} places · minutes to car back`,
       ev: (n: number) => `${n} places · free chargers`,
