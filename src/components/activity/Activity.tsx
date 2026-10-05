@@ -257,6 +257,7 @@ function ParkedCard({ now }: { now: number }) {
 
 function ValetCard({ id, now }: { id: string; now: number }) {
   const t = useT()
+  const lang = useLang()
   const dayLabel = useDayLabel()
   const ticket = useApp((s) => s.valets.find((v) => v.id === id)) as ValetTicket
   const open = useUi((s) => s.open)
@@ -267,7 +268,7 @@ function ValetCard({ id, now }: { id: string; now: number }) {
     phase === 'booked'
       ? t.valet.bookedMeta(ticket.lobby, `${dayLabel(ticket.arriveAt, now)}, ${clock(ticket.arriveAt)}`)
       : phase === 'fetching'
-        ? t.valet.readyIn(stopwatch(Math.max(0, (ticket.readyAt ?? now) - now)))
+        ? t.valet.readyIn(minutesLeft((ticket.readyAt ?? now) - now, lang))
         : phase === 'ready'
           ? t.valet.readyNow(ticket.lobby)
           : `${t.valet.phases[phase]} · ${ticket.lobby}`
