@@ -178,7 +178,7 @@ export function Group({ title, children }: { title?: ReactNode; children: ReactN
   return (
     <section className="mb-5">
       {title && (
-        <h3 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-3">{title}</h3>
+        <h3 className="mb-2 px-1 text-[13px] font-semibold text-ink-3">{title}</h3>
       )}
       <div className="divide-y divide-line overflow-hidden rounded-[22px] border border-line bg-surface">
         {children}

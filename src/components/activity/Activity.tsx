@@ -236,7 +236,7 @@ function ParkedCard({ now }: { now: number }) {
       meta={`${spot.level} · ${spot.section}-${spot.pillar} · ${spot.lobby}`}
       right={
         <span className="shrink-0 text-right">
-          <span className="block font-mono text-[16px] font-semibold text-ink tabular">{stopwatch(elapsed)}</span>
+          <span className="block text-[16px] font-semibold text-ink tabular">{stopwatch(elapsed)}</span>
           <span className="text-[12px] text-ink-3 tabular">{formatRupiah(cost, true)}</span>
         </span>
       }
