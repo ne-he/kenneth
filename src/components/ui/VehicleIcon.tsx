@@ -1,5 +1,8 @@
 import { Motorcycle } from '@phosphor-icons/react'
+import clsx from 'clsx'
 import { bodyOf } from '../../lib/carBody'
+import { spriteIdOf, spriteUrl, type CarView } from '../../lib/carCatalog'
+import { DEFAULT_PAINT, usePaintedSprite, type CarPaint } from '../../lib/carPaint'
 import type { CarBody, Vehicle } from '../../store/app'
 
 /*
@@ -57,16 +60,62 @@ export function BodyIcon({ body, size = 18, className }: { body: CarBody; size?:
   )
 }
 
-/** One vehicle's icon: the motorbike, or the shape of the car. */
+/**
+ * A car's isometric render, in its paint. `height` sets the size; the frame is
+ * 3:2 and the car stands on its bottom edge. The front view faces down-left,
+ * the rear view up-right, and mirroring turns either one around.
+ */
+export function CarSprite({
+  id,
+  paint,
+  view = 'front',
+  mirror = false,
+  height,
+  className,
+}: {
+  id: string
+  paint: CarPaint
+  view?: CarView
+  mirror?: boolean
+  height: number
+  className?: string
+}) {
+  const src = usePaintedSprite(spriteUrl(id, view), paint)
+  const width = Math.round(height * 1.5)
+  return (
+    <span aria-hidden="true" className={clsx('relative inline-block shrink-0', className)} style={{ width, height }}>
+      {src && (
+        <img
+          src={src}
+          alt=""
+          width={width}
+          height={height}
+          draggable={false}
+          className="absolute inset-0 size-full select-none"
+          style={mirror ? { transform: 'scaleX(-1)' } : undefined}
+        />
+      )}
+    </span>
+  )
+}
+
+/**
+ * One vehicle's icon. Where there is room (28 px and up) a car is its own 3D
+ * model in its paint, or the template car when the model is not in the list;
+ * smaller, or before any render exists, it is the flat shape. A motorbike is
+ * Phosphor's motorbike.
+ */
 export function VehicleIcon({
   vehicle,
   size = 18,
   className,
 }: {
-  vehicle: Pick<Vehicle, 'kind' | 'model' | 'body'>
+  vehicle: Pick<Vehicle, 'kind' | 'model' | 'body' | 'modelId' | 'paint'>
   size?: number
   className?: string
 }) {
   if (vehicle.kind === 'motor') return <Motorcycle size={size} weight="fill" className={className} />
+  const sprite = size >= 28 ? spriteIdOf(vehicle) : undefined
+  if (sprite) return <CarSprite id={sprite} paint={vehicle.paint ?? DEFAULT_PAINT} height={size} className={className} />
   return <BodyIcon body={bodyOf(vehicle)} size={size} className={className} />
 }

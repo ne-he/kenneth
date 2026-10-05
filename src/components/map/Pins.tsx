@@ -5,7 +5,11 @@ import type { PinFact } from '../../engine/modes'
 import type { Snapshot } from '../../engine/occupancy'
 import { formatRupiah } from '../../engine/pricing'
 import { useT } from '../../i18n'
+import { spriteIdOf, type CarView } from '../../lib/carCatalog'
+import { DEFAULT_PAINT } from '../../lib/carPaint'
 import { STATUS, formatMin } from '../../lib/status'
+import { useVehicle } from '../../store/app'
+import { CarSprite } from '../ui/VehicleIcon'
 import type { Offset } from './declutter'
 import { factDot } from './pinColor'
 
@@ -178,6 +182,23 @@ export function OriginPin() {
     <div data-pin-label="" className="relative grid size-7 place-items-center">
       <span className="absolute inset-0 rounded-full bg-signal/12" />
       <span className="size-4 rounded-full border-[3px] border-surface bg-signal shadow-[0_1px_4px_rgb(0_0_0/0.3)]" />
+    </div>
+  )
+}
+
+/**
+ * Your car while KENNETH navigates, the way Google Maps draws its car: the
+ * car's own model and paint, turned toward where the road goes, on a soft
+ * shadow. A motorbike, or a car with no icon yet, keeps the usual dot.
+ */
+export function CarPuck({ pose }: { pose: { view: CarView; mirror: boolean } }) {
+  const vehicle = useVehicle()
+  const sprite = spriteIdOf(vehicle)
+  if (!sprite) return <OriginPin />
+  return (
+    <div className="pointer-events-none relative" style={{ width: 60, height: 40 }}>
+      <span className="absolute bottom-[2px] left-1/2 h-2 w-11 -translate-x-1/2 rounded-[50%] bg-black/30 blur-[3px]" />
+      <CarSprite id={sprite} paint={vehicle.paint ?? DEFAULT_PAINT} view={pose.view} mirror={pose.mirror} height={40} className="relative" />
     </div>
   )
 }

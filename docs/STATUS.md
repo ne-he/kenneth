@@ -78,7 +78,7 @@ Tab tampil sebagai ikon tanpa tulisan, dengan titik kecil di bawah tab yang akti
 | Tab | Isi |
 |---|---|
 | **Tiket** (kiri) | Yang sedang berjalan: lokasi parkir tersimpan, runner yang jalan, petak yang sedang ditahan, charger yang mengisi. Kalau kosong, ada tombol "Cari parkir". Nanti: pesanan belum mulai dan pengingat. Riwayat: selesai, dibatalkan, hangus, masing-masing dengan tombol "Lagi". Ringkasan bulan ini (kali parkir, menit dihemat) |
-| **Beranda** (tengah) | Peta MapLibre. Di atas peta: chip jam simulasi, tombol lokasiku, dan avatar yang membuka Akun. Lembar bawah "Mau parkir di mana?" dengan chip kendaraan di sebelah judul (ikon bentuk mobil dan nama model, ketuk untuk ganti kendaraan), kolom cari, dan tiga pilihan layanan satu baris. Lembar ditarik ke atas memperlihatkan daftar lokasi dengan filter Semua, Favorit, Kampus, Mall |
+| **Beranda** (tengah) | Peta MapLibre. Di atas peta: chip jam simulasi, tombol lokasiku, dan avatar yang membuka Akun. Lembar bawah "Mau parkir di mana?" dengan chip kendaraan di sebelah judul (ikon 3D mobilnya sesuai model dan warna, ketuk untuk ganti kendaraan), kolom cari, dan tiga pilihan layanan satu baris. Lembar ditarik ke atas memperlihatkan daftar lokasi dengan filter Semua, Favorit, Kampus, Mall |
 | **Akun** (kanan) | Login Google atau tamu, garasi kendaraan (mobil/motor, pelat, EV), paket Gratis/Premium, dampak bulan ini, peta dan navigasi, notifikasi dan preferensi, bahasa, tema (ikut sistem, terang, gelap), privasi, "Untuk tim dan demo" (jam simulasi, /booth, /mitra), reset |
 
 ### 3.2 Layanan di Beranda
@@ -119,7 +119,15 @@ Layout sama. Yang berubah saat layanan dipilih hanya angka di pin, angka di daft
   Dampak (rumus terbuka), Privasi (unduh data, hapus semua), Kendaraan. Opsi peta (Tenang/Detail, gedung 3D, tombol
   Rute buka KENNETH, Google Maps, atau Waze) ada langsung di Akun, bukan sheet terpisah.
 - **Navigasi di dalam app**: rute jalan dari OSRM ke gerbang paling lancar (atau gerbang zona kalau Zona KENNETH
-  dipilih), banner antrian saat tiba, "Udah sampai" membuka simpan lokasi.
+  dipilih), banner antrian saat tiba, "Udah sampai" membuka simpan lokasi. Selama navigasi, titik lokasi diganti
+  mobil pengguna sendiri (model dan warnanya) yang berjalan di rute dan menghadap arah jalan, seperti ikon mobil
+  Google Maps.
+- **Ikon kendaraan**: 115 model mobil populer di Indonesia punya ikon isometrik 3D (`public/vehicles`, depan dan
+  belakang, dicerminkan jadi empat arah). Form kendaraan punya pencarian model (yang paling laris tampil duluan) dan
+  pilihan warna (Putih, Silver, Abu-abu, Hitam, Merah, Biru, Cokelat); warna dilukis di HP dari bodi hijau kunci,
+  jadi satu gambar cukup untuk semua warna. Model yang belum ada di daftar memakai mobil template. Ikon dibuat ulang
+  dengan `python docs/brand/make_vehicle_icons.py <folder render>`, yang juga menulis `src/data/carModels.ts`.
+  Motor masih memakai ikon datar.
 
 ### 3.4 Halaman lain
 | Rute | Isi |

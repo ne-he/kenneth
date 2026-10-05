@@ -1,4 +1,5 @@
 import type { CarBody, Vehicle } from '../store/app'
+import { modelById, modelOf, shortName } from './carCatalog'
 
 export const BODIES: CarBody[] = ['hatch', 'sedan', 'mpv', 'suv']
 
@@ -41,13 +42,20 @@ export function guessBody(model: string): CarBody | undefined {
   return ENTRIES.find(([key]) => (key.length > 3 ? joined.includes(key) : whole.has(key)))?.[1]
 }
 
-/** The shape to draw: the one picked, else the guess from the model, else a sedan. */
-export const bodyOf = (v: Pick<Vehicle, 'model' | 'body'>): CarBody => v.body ?? guessBody(v.model) ?? 'sedan'
+/** The shape to draw: the one picked, else the catalog model's, else the guess from the name, else a sedan. */
+export const bodyOf = (v: Pick<Vehicle, 'model' | 'body' | 'modelId'>): CarBody =>
+  v.body ?? modelOf(v)?.body ?? guessBody(v.model) ?? 'sedan'
 
 const BRANDS = new Set([
   'toyota', 'honda', 'daihatsu', 'suzuki', 'mitsubishi', 'nissan', 'datsun', 'hyundai', 'kia', 'wuling', 'byd', 'mazda', 'chery',
   'lexus', 'volkswagen', 'vw', 'ford', 'isuzu', 'subaru', 'tesla', 'yamaha', 'kawasaki', 'vespa',
 ])
+
+/** A vehicle's model in a list: the catalog name when picked from the list, else what was typed, without the brand. */
+export function displayModel(v: Pick<Vehicle, 'model' | 'modelId'>): string {
+  const picked = modelById(v.modelId)
+  return picked ? shortName(picked) : shortModel(v.model)
+}
 
 /** The model as people say it: "Toyota Avanza Veloz" is "Avanza Veloz". "Mazda 2" keeps its brand. */
 export function shortModel(model: string) {

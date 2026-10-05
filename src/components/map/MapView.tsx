@@ -10,11 +10,12 @@ import type { Snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { signalMapReady } from '../../lib/splash'
 import { scaleOf, type Shade } from '../../lib/accent'
-import { useApp, type Accent } from '../../store/app'
+import { carPose, pointAlong } from '../../lib/routeProgress'
+import { simNowOf, useApp, type Accent } from '../../store/app'
 import type { Route } from '../../store/ui'
 import { around, hang, placeLabels, type Dot, type Label, type Offset } from './declutter'
 import { fitPoints, setMap, sheetPad } from './mapApi'
-import { GatePin, LABEL_INSET, OriginPin, VenuePin } from './Pins'
+import { CarPuck, GatePin, LABEL_INSET, OriginPin, VenuePin } from './Pins'
 import { loadStyle } from './style'
 
 interface Props {
@@ -67,6 +68,8 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
   // Where each label sits relative to its point. Null: no room, the place stays a bare dot.
   const [offsets, setOffsets] = useState<ReadonlyMap<string, Offset | null>>(() => new Map())
   const [named, setNamed] = useState(false)
+  // Your car while navigating: its marker element and which way it faces.
+  const [car, setCar] = useState<{ el: HTMLElement; pose: ReturnType<typeof carPose> } | null>(null)
 
   const favorites = useApp((s) => s.favorites)
   const look = useApp((s) => s.mapPrefs.style)
@@ -184,7 +187,8 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     const sel = snapshots.find((s) => s.venue.id === selected)
     sel?.gates.forEach(({ gate }) => wanted.set(`g:${gate.id}`, { at: gate.coords, anchor: 'center', z: 1 }))
     // You are here sits on top: labels keep clear of it, so it only ever covers the dot of a place you are at.
-    wanted.set('origin', { at: origin, anchor: 'center', z: 4 })
+    // While navigating, your car takes its place.
+    if (!route) wanted.set('origin', { at: origin, anchor: 'center', z: 4 })
 
     markers.current.forEach(({ marker }, key) => {
       if (!wanted.has(key)) {
@@ -205,7 +209,39 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
       markers.current.set(key, { marker, el })
     })
     setEls(() => new Map([...markers.current].map(([key, m]) => [key, m.el])))
-  }, [snapshots, selected, focused, origin, ready])
+  }, [snapshots, selected, focused, origin, route, ready])
+
+  // While KENNETH navigates, your car drives the route like Google Maps' car: the share of the drive time
+  // gone on the app clock is the share of the road behind you, and it faces the way the road goes on screen.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !route) return
+    const el = document.createElement('div')
+    el.style.zIndex = '5'
+    const marker = new Marker({ element: el, anchor: 'center' }).setLngLat(route.coords[0]).addTo(map)
+    const total = route.minutes * 60_000
+    let facing = ''
+    const place = () => {
+      const share = total > 0 ? (simNowOf(useApp.getState().clock) - route.startedAt) / total : 0
+      const { at, bearing } = pointAlong(route.coords, share)
+      marker.setLngLat(at)
+      const pose = carPose(bearing - map.getBearing())
+      const key = `${pose.view}:${pose.mirror}`
+      if (key !== facing) {
+        facing = key
+        setCar({ el, pose })
+      }
+    }
+    place()
+    const timer = window.setInterval(place, 1000)
+    map.on('rotate', place)
+    return () => {
+      window.clearInterval(timer)
+      map.off('rotate', place)
+      marker.remove()
+      setCar(null)
+    }
+  }, [route, ready])
 
   // Lay the labels out once they are in the DOM (their size depends on the text) and after every camera
   // move. Priority: the selected place, the focused card, favourites, then the ranking the list uses. A
@@ -307,6 +343,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
         const el = els.get('origin')
         return el ? createPortal(<OriginPin />, el, 'origin') : null
       })()}
+      {car && createPortal(<CarPuck pose={car.pose} />, car.el, 'car')}
     </div>
   )
 }
