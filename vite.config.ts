@@ -46,6 +46,15 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/__\//],
         runtimeCaching: [
           {
+            // Vehicle icons: only the ones in use are fetched, then kept, so your own car shows offline.
+            urlPattern: ({ url }) => url.pathname.startsWith('/vehicles/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'vehicle-icons',
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 24 * 3600 },
+            },
+          },
+          {
             // Map styles, tiles, fonts and sprites: fast from cache, refreshed in the background.
             urlPattern: ({ url }) => url.origin === 'https://tiles.openfreemap.org',
             handler: 'StaleWhileRevalidate',
