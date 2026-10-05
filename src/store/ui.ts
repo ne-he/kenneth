@@ -13,7 +13,7 @@ export type Tab = 'activity' | 'park' | 'account'
 
 export type { ParkMode }
 
-export type VenueFilter = 'all' | 'fav' | 'mall' | 'kampus'
+export type VenueFilter = 'all' | 'fav' | 'mall' | 'kampus' | 'kantor'
 
 export type SheetKey =
   | { kind: 'book'; id: VenueId; service?: Service }

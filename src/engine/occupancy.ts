@@ -33,6 +33,17 @@ const CAMPUS_SATURDAY = [
 ]
 const CAMPUS_SUNDAY = CAMPUS_SATURDAY.map((v) => Math.max(0.03, v * 0.25))
 
+// Offices fill with commuters from seven, stay full through working hours and empty out by night and at weekends.
+const OFFICE_WEEKDAY = [
+  0.04, 0.04, 0.04, 0.04, 0.04, 0.05, 0.14, 0.45, 0.8, 0.93, 0.96, 0.95, 0.9, 0.92, 0.95, 0.92, 0.84,
+  0.66, 0.42, 0.26, 0.16, 0.1, 0.06, 0.05,
+]
+const OFFICE_SATURDAY = [
+  0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.05, 0.1, 0.18, 0.24, 0.27, 0.27, 0.25, 0.24, 0.22, 0.19, 0.15,
+  0.11, 0.08, 0.06, 0.05, 0.04, 0.04, 0.04,
+]
+const OFFICE_SUNDAY = OFFICE_SATURDAY.map((v) => Math.max(0.03, v * 0.5))
+
 const FLOOR = 0.04
 
 /** Mall hours, the default when a screen shows several venues at once. */
@@ -48,6 +59,11 @@ function curveFor(venue: Venue, day: number) {
     if (day === 0) return CAMPUS_SUNDAY
     if (day === 6) return CAMPUS_SATURDAY
     return CAMPUS_WEEKDAY
+  }
+  if (venue.category === 'kantor') {
+    if (day === 0) return OFFICE_SUNDAY
+    if (day === 6) return OFFICE_SATURDAY
+    return OFFICE_WEEKDAY
   }
   if (day === 0 || day === 6) return WEEKEND
   if (day === 5) return FRIDAY

@@ -1,4 +1,4 @@
-import { CaretDown, GraduationCap, Storefront } from '@phosphor-icons/react'
+import { BuildingOffice, CaretDown, GraduationCap, Storefront } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
@@ -153,7 +153,7 @@ export function StatusPill({ status, pct, label }: { status: OccupancyStatus; pc
 
 /** Neutral tile that says what kind of place this is before you read the name. */
 export function VenueGlyph({ category, size = 40 }: { category: Category; size?: number }) {
-  const Icon = category === 'kampus' ? GraduationCap : Storefront
+  const Icon = category === 'kampus' ? GraduationCap : category === 'kantor' ? BuildingOffice : Storefront
   return (
     <span
       className="grid shrink-0 place-items-center rounded-[14px] bg-surface-2 text-ink-2"
