@@ -9,14 +9,14 @@ import { formatRupiah } from '../../../engine/pricing'
 import { dropQueueMin, retrievalMin, valetSlots } from '../../../engine/valet'
 import { useDayLabel, useT } from '../../../i18n'
 import { haptic } from '../../../lib/haptics'
+import { isPlate } from '../../../lib/plate'
 import { clock } from '../../../lib/time'
 import { uid, useApp, useVehicle } from '../../../store/app'
 import { useNow } from '../../../store/clock'
-import { useUi } from '../../../store/ui'
 import { Button } from '../../ui/Button'
-import { Plate } from '../../ui/Display'
 import { Label, List } from '../../ui/Kit'
 import type { Booked } from './BookHub'
+import { PlateField } from './PlateField'
 import { PayMethods, type PayMethod } from './ZonePanel'
 
 /**
@@ -31,7 +31,9 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
   const now = useNow(30_000)
   const vehicle = useVehicle()
   const addValet = useApp((s) => s.addValet)
-  const open = useUi((s) => s.open)
+  const saveVehicle = useApp((s) => s.saveVehicle)
+  const [plate, setPlate] = useState('')
+  const plateOk = !!vehicle.plate || isPlate(plate)
   const [lobby, setLobby] = useState(valet.lobbies[0])
   const [method, setMethod] = useState<PayMethod>('qris')
   const [paying, setPaying] = useState(false)
@@ -47,6 +49,8 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
   const occ = occupancyAt(venue, arriveAt)
 
   const book = () => {
+    if (!plateOk) return
+    if (!vehicle.plate) saveVehicle({ ...vehicle, id: vehicle.id === 'none' ? uid() : vehicle.id, plate: plate.trim() })
     setPaying(true)
     haptic('tap')
     window.setTimeout(() => {
@@ -119,22 +123,14 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
         <Fact icon={<HandCoins size={18} weight="fill" />} title={formatRupiah(valet.price)} hint={t.valet.payAtDesk} />
         <Fact icon={<Clock size={18} weight="fill" />} title={t.valet.dropQueue(dropQueueMin(occ))} hint={t.valet.dropQueueHint(clock(arriveAt))} />
         <Fact icon={<Timer size={18} weight="fill" />} title={t.valet.retrieval(retrievalMin(occ))} hint={t.valet.retrievalHint} />
-        <div className="flex items-center gap-3 px-4 py-3">
-          <Plate plate={vehicle.plate} small />
-          <span className="min-w-0 flex-1 text-[12px] leading-snug text-ink-3">{vehicle.plate ? t.valet.plateNote : t.valet.plateMissing}</span>
-          {!vehicle.plate && (
-            <button type="button" onClick={() => open({ kind: 'vehicle' })} className="text-[12.5px] font-semibold text-ink underline underline-offset-2">
-              {t.common.fill}
-            </button>
-          )}
-        </div>
+        <PlateField saved={vehicle.plate} value={plate} onChange={setPlate} hint={vehicle.plate ? t.valet.plateNote : t.valet.plateMissing} />
       </List>
 
       <Label>{t.book.payWith}</Label>
       <PayMethods value={method} onChange={setMethod} />
 
       <div className="sticky bottom-0 z-10 -mx-5 mt-5 bg-surface px-5 pt-2 after:absolute after:inset-x-0 after:top-full after:h-6 after:bg-surface">
-        <Button variant="primary" size="lg" block disabled={paying} onClick={book}>
+        <Button variant="primary" size="lg" block disabled={paying || !plateOk} onClick={book}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.span
               key={String(paying)}

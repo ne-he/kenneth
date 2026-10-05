@@ -9,14 +9,16 @@ import { FREE_BOOKING_AHEAD_H, PREMIUM_BOOKING_AHEAD_D, formatRupiah, zonePrice 
 import { SLOT_MIN, ZONE_HOLD_MIN, bayFor, baysLeft, zoneOf } from '../../../engine/zone'
 import { useDayLabel, useLang, useT } from '../../../i18n'
 import { haptic } from '../../../lib/haptics'
+import { isPlate } from '../../../lib/plate'
 import { STATUS } from '../../../lib/status'
 import { atWib, clock, dayName, wib } from '../../../lib/time'
-import { uid, useApp } from '../../../store/app'
+import { uid, useApp, useVehicle } from '../../../store/app'
 import { useNow } from '../../../store/clock'
 import { useUi } from '../../../store/ui'
 import { Button } from '../../ui/Button'
-import { Label } from '../../ui/Kit'
+import { Label, List } from '../../ui/Kit'
 import type { Booked } from './BookHub'
+import { PlateField } from './PlateField'
 
 type Method = 'qris' | 'ewallet' | 'card'
 const Q = SLOT_MIN * 60_000
@@ -31,6 +33,10 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
   const now = useNow(30_000)
   const plan = useApp((s) => s.plan)
   const addPass = useApp((s) => s.addPass)
+  const saveVehicle = useApp((s) => s.saveVehicle)
+  const vehicle = useVehicle()
+  const [plate, setPlate] = useState('')
+  const plateOk = !!vehicle.plate || isPlate(plate)
   const open = useUi((s) => s.open)
   const [method, setMethod] = useState<Method>('qris')
   const [paying, setPaying] = useState(false)
@@ -68,7 +74,9 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
   const pick = slots.find((s) => s.start === picked && s.left > 0) ?? slots[firstOpen]
 
   const pay = () => {
-    if (!pick) return
+    if (!pick || !plateOk) return
+    // The first booking is where the plate is asked; it stays on the car for the next one.
+    if (!vehicle.plate) saveVehicle({ ...vehicle, id: vehicle.id === 'none' ? uid() : vehicle.id, plate: plate.trim() })
     setPaying(true)
     haptic('tap')
     window.setTimeout(() => {
@@ -186,6 +194,10 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
         {plan === 'premium' ? t.book.premiumOff(PREMIUM_BOOKING_AHEAD_D) : t.book.ahead(FREE_BOOKING_AHEAD_H, PREMIUM_BOOKING_AHEAD_D)}
       </p>
 
+      <List className="mt-6">
+        <PlateField saved={vehicle.plate} value={plate} onChange={setPlate} hint={vehicle.plate ? t.book.plateNote : t.book.plateAsk} />
+      </List>
+
       <Label className="mt-6">{t.book.payWith}</Label>
       <PayMethods value={method} onChange={setMethod} />
 
@@ -198,7 +210,7 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
       </details>
 
       <div className="sticky bottom-0 z-10 -mx-5 mt-5 bg-surface px-5 pt-2 after:absolute after:inset-x-0 after:top-full after:h-6 after:bg-surface">
-        <Button variant="primary" size="lg" block disabled={!pick || paying} onClick={pay}>
+        <Button variant="primary" size="lg" block disabled={!pick || paying || !plateOk} onClick={pay}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.span key={String(paying)} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>
               {paying ? t.book.paying : `${t.book.pay} ${pick ? formatRupiah(pick.price) : ''}`}
