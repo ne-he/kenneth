@@ -30,6 +30,8 @@ Dicek ulang 3 Okt 2026 di `main` (`0e1f4b7`), setelah desain ulang Frederick (PR
 | 6 | "Datang dalam 20:25" terbaca seperti jam | Selesai | Hitung mundur di tiket dan tab Tiket jadi menit ("20 mnt", "1 jam 5 mnt"). Stopwatch parkir dan valet tetap menit:detik karena tidak bersebelahan dengan jam |
 | 7 | Istilah internal dan alat demo di layar utama | Sebagian | Tombol "Zona K" yang terpotong sudah hilang bersama dropdown. "Data palang" jadi "Data langsung", dan "booking" di teks app diganti "pesan" atau "pesanan" (dasbor Mitra tetap). Chip "Simulasi" masih ada |
 | Baru | Ikon tab tanpa tulisan | Belum | Dock Tiket, Beranda, Akun hanya berupa ikon. Tab bar di app Apple selalu memakai label |
+| Kecil | Tombol Rute jadi ikon tanpa tulisan di mode Zona | Selesai | Di semua mode rute berupa baris bertulisan ("Rute ke Gerbang 3, antre 3 mnt") |
+| Kecil | Riwayat contoh tanpa label | Selesai | Kunjungan contoh dari onboarding ditandai: tiap barisnya di Riwayat diawali "Contoh" |
 
 Warna aksen yang bisa dipilih sendiri (masukan Delon) ada sejak PR #24 dan #26: Biru (cornflower), Ungu, Pink,
 Grafit di Akun, di bawah pilihan tema. Merah, oranye, dan hijau tidak ditawarkan karena itu warna status.

@@ -236,6 +236,7 @@ const id = {
     kind: { park: 'Parkir', valet: 'Valet runner', zone: 'Zona KENNETH', ev: 'Charger EV' },
     parkedFor: (h: string) => `parkir ${h}`,
     summary: (n: number) => `Bulan ini ${n} kali parkir`,
+    sample: 'Contoh',
     summarySaved: (m: number) => `hemat ${m} mnt antre`,
     cancel: 'Batalkan',
     cancelAsk: 'Yakin batalkan pesanan ini?',

@@ -95,6 +95,8 @@ export interface Visit {
   /** Handed to a KENNETH runner instead of parking yourself. */
   via?: 'valet'
   kind?: VehicleKind
+  /** Made up at onboarding so a fresh install has history to show. Tiket labels it Contoh. */
+  sample?: boolean
 }
 
 export interface CommunityReport {
@@ -242,6 +244,7 @@ function sampleHistory(now: number): Visit[] {
     durationH,
     minutesSaved,
     divertedFrom,
+    sample: true,
   }))
 }
 

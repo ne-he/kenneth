@@ -237,6 +237,7 @@ const en: Dict = {
     kind: { park: 'Parking', valet: 'Runner valet', zone: 'KENNETH Zone', ev: 'EV charger' },
     parkedFor: (h: string) => `parked ${h}`,
     summary: (n: number) => `${n} parking trips this month`,
+    sample: 'Sample',
     summarySaved: (m: number) => `${m} min of queue saved`,
     cancel: 'Cancel',
     cancelAsk: 'Cancel this booking?',
