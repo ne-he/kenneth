@@ -1,4 +1,4 @@
-import { ArrowLeft, Buildings, Car, Info, LockKey, ShieldCheck, TrendDown, UsersThree } from '@phosphor-icons/react'
+import { ArrowLeft, Buildings, Car, CaretRight, Info, LockKey, ShieldCheck, TrendDown, UsersThree } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
 import { useMemo, useState, type ReactNode } from 'react'
@@ -6,6 +6,7 @@ import { Link } from 'react-router'
 import { Columns, HBars, Heatmap, OccupancyLine, PairedBars } from '../components/charts/Charts'
 import { SERIES } from '../components/charts/series'
 import { Segmented } from '../components/ui/Controls'
+import { Select } from '../components/ui/Select'
 import { CountUp } from '../components/ui/Display'
 import { Wordmark } from '../components/ui/Logo'
 import type { VenueId } from '../data/types'
@@ -20,6 +21,7 @@ import { useNow } from '../store/clock'
 const COPY = {
   id: {
     title: 'Dashboard mitra',
+    place: 'Lokasi',
     sub: 'Yang pengelola lihat kalau berlangganan. Sekarang mall cuma tahu berapa mobil yang masuk. Mereka nggak tahu berapa yang batal datang, larinya ke mana, dan jam berapa itu terjadi.',
     sim: 'Data simulasi · agregat dan anonim',
     back: 'Kembali ke app',
@@ -63,6 +65,7 @@ const COPY = {
   },
   en: {
     title: 'Partner dashboard',
+    place: 'Location',
     sub: 'What a building manager sees on a subscription. Today a mall only knows how many cars came in. Not how many gave up, where they went, or at what hour.',
     sim: 'Simulated data · aggregated and anonymous',
     back: 'Back to the app',
@@ -163,20 +166,15 @@ export default function Mitra() {
 
         {/* Filters: one row, above everything they scope. */}
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <label className="flex h-10 items-center gap-2 rounded-full border border-line bg-surface pr-2 pl-3.5">
-            <Buildings size={16} className="text-ink-3" />
-            <select
-              value={venueId}
-              onChange={(e) => setVenueId(e.target.value as VenueId)}
-              className="h-full bg-transparent pr-1 text-[13.5px] font-semibold outline-none"
-            >
-              {VENUES.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Select
+            outline
+            icon={<Buildings size={16} />}
+            value={venueId}
+            onChange={setVenueId}
+            label={c.place}
+            options={VENUES.map((v) => ({ value: v.id, label: v.name }))}
+            className="w-[250px]"
+          />
           <Segmented
             className="w-[300px]"
             value={dayKey}
@@ -332,8 +330,12 @@ function Product({ name, price, desc, fit, fitLabel }: { name: string; price: st
 
 function TableView({ head, rows, label }: { head: string[]; rows: string[][]; label: string }) {
   return (
-    <details className="mt-3 text-[12px]">
-      <summary className="cursor-pointer font-semibold text-ink-3 hover:text-ink-2">{label}</summary>
+    <details className="group mt-3 text-[12px]">
+      {/* The browser's own triangle is hidden; the caret turns when the table opens, like the app's rows. */}
+      <summary className="flex cursor-pointer list-none items-center gap-1 font-semibold text-ink-3 hover:text-ink-2 [&::-webkit-details-marker]:hidden">
+        <CaretRight size={11} weight="bold" className="transition-transform duration-200 group-open:rotate-90" />
+        {label}
+      </summary>
       <table className="mt-2 w-full text-left tabular">
         <thead>
           <tr className="text-ink-3">
