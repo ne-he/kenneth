@@ -56,7 +56,7 @@ export function ValetSheet({ id }: { id: string }) {
       {(phase === 'booked' || phase === 'parked') && (
         <div className="mb-3 rounded-[20px] border border-line px-4 py-5 text-center">
           <div className="text-[11.5px] font-medium text-ink-3">{t.valet.codeLabel}</div>
-          <div className="mt-1.5 font-mono text-[30px] leading-none font-semibold tracking-[0.12em]">{ticket.token}</div>
+          <div className="tabular mt-1.5 text-[30px] leading-none font-semibold tracking-[0.06em]">{ticket.token}</div>
           <Plate plate={plate} className="mt-3.5 scale-125" />
           <p className="mt-4 text-[12.5px] text-ink-2">{phase === 'booked' ? t.valet.showTicket : t.valet.keepCode}</p>
         </div>
@@ -65,7 +65,7 @@ export function ValetSheet({ id }: { id: string }) {
       {phase === 'fetching' && (
         <div className="mb-3 flex flex-col items-center rounded-[20px] border border-line py-6">
           <Timer size={24} className="text-ink-3" />
-          <div className="mt-2 font-mono text-[34px] leading-none font-semibold text-ink tabular">{stopwatch(fetchLeft)}</div>
+          <div className="mt-2 text-[34px] leading-none font-semibold text-ink tabular">{stopwatch(fetchLeft)}</div>
           <div className="mt-1.5 text-[12.5px] text-ink-3">{t.valet.readyAt(clock(ticket.readyAt ?? now))}</div>
           <div className="mt-4 h-1 w-2/3 overflow-hidden rounded-full bg-surface-2">
             <motion.div className="h-full rounded-full bg-ink" animate={{ width: `${Math.min(100, (1 - fetchLeft / fetchTotal) * 100)}%` }} />

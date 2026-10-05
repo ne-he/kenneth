@@ -62,7 +62,7 @@ export function Sheets() {
   }
 
   return (
-    <Sheet open={!!current} onClose={close} label={sheet?.kind ?? ''} tone={sheet?.kind === 'pass' ? 'dark' : 'default'}>
+    <Sheet open={!!current} onClose={close} label={sheet?.kind ?? ''}>
       {body ?? <span className="sr-only">{t.common.close}</span>}
     </Sheet>
   )

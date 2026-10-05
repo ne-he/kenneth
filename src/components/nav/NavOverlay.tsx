@@ -47,18 +47,18 @@ function BannerBody({ route, now, t }: { route: Route; now: number; t: ReturnTyp
       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
       className="pt-safe absolute inset-x-0 top-0 z-40 px-3.5"
     >
-      <div className="flex items-center gap-3 rounded-[24px] bg-ink p-3 pr-4 text-canvas shadow-[0_12px_30px_-14px_rgb(0_0_0/0.5)]">
-        <span className="grid size-12 shrink-0 place-items-center rounded-[16px] bg-brand-600 text-white">
+      <div className="shadow-float flex items-center gap-3 rounded-[24px] border border-line bg-surface p-3 pr-4 text-ink">
+        <span className="btn-primary grid size-12 shrink-0 place-items-center rounded-[16px] text-white">
           <ArrowBendUpRight size={26} weight="bold" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[11px] font-bold tracking-[0.14em] text-canvas/50 uppercase">
+          <span className="block truncate text-[12.5px] font-medium text-ink-3">
             {booked ? `${venue.name} · ${t.modes.zone.label}` : venue.name}
           </span>
-          <span className="block truncate text-[17px] leading-tight font-bold">
-            {t.nav.toward(gate.name)} <span className="font-medium text-canvas/60">· {gate.hint}</span>
+          <span className="block truncate text-[17px] leading-tight font-semibold tracking-tight">
+            {t.nav.toward(gate.name)} <span className="font-medium text-ink-3">· {gate.hint}</span>
           </span>
-          <span className="mt-0.5 block text-[12px] font-medium text-canvas/70">
+          <span className="mt-0.5 block text-[12px] font-medium text-ink-2">
             {t.nav.thenQueue(`${formatMin(q)} ${t.unit.min}`)}
           </span>
         </span>
