@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Venue } from '../data/types'
 import { BINUS_ANGGREK, VENUE_BY_ID, VENUES } from '../data/venues'
 import { atWib, nextSaturdayAt } from '../lib/time'
-import { checkGage, dateParity, plateParity } from './gage'
+import { checkGage, dateParity, isNationalHoliday, plateParity } from './gage'
 import { CO2_KG_PER_L, impactOf, sumImpact } from './impact'
 import { ZONE_MAX, ZONE_MIN, formatRupiah, parkingCost, zoneBasePrice, zonePrice } from './pricing'
 import { alternativesFor, rankVenues } from './recommend'
@@ -105,6 +105,17 @@ describe('ganjil-genap', () => {
     const monday0800 = atWib(SAT + 2 * 86_400_000, 8, 0)
     const wrong = dateParity(monday0800) === 'genap' ? 'B 1843 KEN' : 'B 1842 KEN'
     expect(checkGage(gi, wrong, false, monday0800).kind).toBe('blocked')
+  })
+
+  it('does not apply on a national holiday, but does on cuti bersama', () => {
+    // Monday 17 Aug 2026, Independence Day, 08.00 WIB.
+    const independence = atWib(Date.UTC(2026, 7, 17, 3), 8, 0)
+    expect(isNationalHoliday(independence)).toBe(true)
+    expect(checkGage(gi, 'B 1843 KEN', false, independence)).toEqual({ kind: 'not-applicable', reason: 'holiday' })
+    // Monday 23 Mar 2026 is cuti bersama after Idulfitri: a working day for the rule.
+    const leave = atWib(Date.UTC(2026, 2, 23, 3), 8, 0)
+    expect(isNationalHoliday(leave)).toBe(false)
+    expect(checkGage(gi, 'B 1843 KEN', false, leave).kind).not.toBe('not-applicable')
   })
 
   it('ignores venues outside the corridors', () => {

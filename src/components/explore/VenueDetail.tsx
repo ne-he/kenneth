@@ -370,7 +370,14 @@ function GageRow({ venue, ts }: { venue: Venue; ts: number }) {
   let bad = false
   switch (verdict.kind) {
     case 'not-applicable':
-      text = verdict.reason === 'weekend' ? t.venue.gageWeekend : verdict.reason === 'hours' ? t.venue.gageHours : t.venue.gageNA
+      text =
+        verdict.reason === 'weekend'
+          ? t.venue.gageWeekend
+          : verdict.reason === 'holiday'
+            ? t.venue.gageHoliday
+            : verdict.reason === 'hours'
+              ? t.venue.gageHours
+              : t.venue.gageNA
       break
     case 'exempt':
       text = t.venue.gageExempt
