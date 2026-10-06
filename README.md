@@ -70,8 +70,8 @@ Ganti lewat chip jam di kiri atas peta. **Selasa 10.00** memperlihatkan kampus y
 
 39 lokasi, sengaja dipadatkan di sekitar tiap kampus BINUS (keputusan tim: kepadatan cakupan lebih penting dari luas).
 Tempat yang ditambah 5 Okt 2026 masuk ke blok yang sama: kampus lain, mall, dan gedung kantor di sekitarnya. Kantor
-penuh di jam kerja hari biasa dan sepi di akhir pekan; seperti kampus, kantor tidak menjual Zona KENNETH atau valet,
-cuma charger EV di gedung yang punya.
+penuh di jam kerja hari biasa dan sepi di akhir pekan. Kampus dan kantor menjual layanan dengan aturan yang sama
+dengan mall (keputusan 2 Okt 2026): Zona KENNETH di setiap tempat, valet runner dan charger EV di tempat yang punya.
 
 | Area | Kampus | Mall | Kantor |
 |---|---|---|---|
