@@ -168,7 +168,8 @@ Supaya tidak ada yang mengira ini sudah jalan sungguhan:
 - Pembayaran hanya simulasi. Tidak ada uang yang ditarik.
 - Notifikasi duluan kalau ada yang batal (Premium): jam yang habis di Zona KENNETH bisa diketuk lalu "Kabari aku". Karena
   tidak ada pengguna lain, demo mengembalikan satu petak satu sampai dua menit kemudian.
-- Laporan kondisi dari pengguna tersimpan di HP, belum dikirim ke server mana pun.
+- Laporan kondisi dibagi ke semua pengguna di park-kenneth.web.app, tanpa identitas pengirim (tempat, pilihan, jam
+  server). Satu HP bisa melapor satu tempat sekali tiap 10 menit. Build tim masih menyimpannya di HP saja.
 - Login Google sudah ada, tapi data belum disinkronkan antar perangkat. Pindah HP berarti riwayat dan tiket
   mulai dari awal. Ini disengaja selama prototipe, supaya data pribadi tidak tersimpan di server.
 - Zona KENNETH dan armada runner masih ide. Belum ada gedung yang menyisihkan petak dan belum ada runner. Nama runner di app contoh.
