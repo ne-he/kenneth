@@ -85,9 +85,10 @@ runner sendiri berseragam hijau:
 - Tekan "Siapkan mobil" sebelum turun ke lobi. Karena mobil ada di zona dekat lobi, baliknya 4 sampai 10 menit.
 - Face ID dari mockup awal tetap tidak dipakai. Kode dan pelat sudah cukup, dan data biometrik tidak perlu dikumpulkan.
 
-**Kampus tidak menjual apa pun.** Di kampus BINUS app hanya menunjukkan seberapa penuh gedung parkir dan
-ke mana kalau penuh (kampus lain atau tempat yang bisa dijalan kaki). Motor dan mobil dihitung terpisah,
-karena di kampus porsi motor jauh lebih besar.
+**Kampus dan kantor menjual layanan dengan aturan yang sama** (keputusan 2 Okt 2026, menggantikan "kampus tidak
+menjual apa pun"). Tiap tempat punya Zona KENNETH; valet runner dan charger EV ada di tempat yang menyediakannya.
+Mahasiswa bisa memesan petak untuk jam ujian, pekerja kantor petak dekat lobi untuk jam masuk. Motor tetap tidak
+bisa memesan layanan apa pun, dan motor serta mobil dihitung terpisah, karena di kampus porsi motor jauh lebih besar.
 
 **Sengaja tidak dibuat:**
 

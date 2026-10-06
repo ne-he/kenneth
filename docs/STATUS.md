@@ -34,8 +34,8 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
 4. **Pesanan bayar per pakai.** Premium hanya menjual hal yang tidak pernah habis stoknya (pesan lebih awal,
    diskon, notifikasi). Batal tetap gratis sampai jam datang (keputusan 2 Okt 2026).
 5. **Kampus dan gedung kantor boleh menjual layanan, dengan aturan yang sama** (keputusan 2 Okt 2026, menggantikan
-   "kampus tidak menjual apa pun"). Kode masih memakai aturan lama: kampus cuma informasi dan belum ada lokasi
-   kantor. Motor tetap tidak bisa memesan layanan apa pun.
+   "kampus tidak menjual apa pun"). Sudah di kode: tiap tempat punya Zona KENNETH, valet dan charger di tempat
+   yang menyediakannya. Motor tetap tidak bisa memesan layanan apa pun.
 6. **Jujur soal sumber data.** Tiap lokasi berlabel "Data langsung" (dari palang parkir) atau "Estimasi".
 7. **Data pribadi tinggal di HP.** Tidak ada database server. Login Google hanya untuk nama, email, foto.
 8. **App tidak pernah pindah tab sendiri.** Setelah aksi, cukup toast plus titik di tab Tiket.
@@ -164,17 +164,12 @@ saat pertama memesan Zona KENNETH atau valet runner dan disimpan ke kendaraan; r
 
 Penjelasan lengkap rumus: [docs/MODEL.md](MODEL.md). Alasan produk dan harga: [docs/PRODUCT.md](PRODUCT.md).
 
-## 5. Lokasi (20)
+## 5. Lokasi (39)
 
-| Area | Kampus | Mall |
-|---|---|---|
-| Kemanggisan, Tanjung Duren | BINUS Anggrek, Syahdan, Kijang | Central Park, Neo Soho, Taman Anggrek, Mal Ciputra, Plaza Slipi Jaya |
-| Puri | | Lippo Mall Puri, Puri Indah Mall |
-| Senayan, Thamrin | BINUS Senayan | Senayan City, Plaza Senayan, fX Sudirman, Grand Indonesia |
-| Alam Sutera | BINUS Alam Sutera | Mall @ Alam Sutera, Living World |
-| Bekasi | BINUS Bekasi | Summarecon Mall Bekasi |
+11 kampus (enam BINUS), 22 mall, 6 gedung kantor, semuanya di blok sekitar kampus BINUS. Daftar per area ada di
+[README](../README.md#lokasi).
 
-14 mall punya Zona KENNETH. 13 punya valet runner (Plaza Slipi Jaya tidak). Kampus tidak punya layanan berbayar.
+Semua 39 punya Zona KENNETH, 26 punya valet runner, 33 punya charger EV.
 Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenant, lantai) data demo.
 
 ## 6. Teknis
@@ -222,13 +217,13 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 
 ## 8. Yang belum selesai atau belum ada
 
-- **Desain ulang (PR #13 sampai #21) belum di-deploy.** Situs live masih menampilkan desain lama dengan dropdown.
+- **Situs tim belum di-deploy ulang.** kenneth-9339d.web.app dan kenneth-park.web.app masih desain lama; versi terbaru
+  live di https://park-kenneth.web.app (project terpisah, `npm run deploy:park`).
 - Semua angka simulasi. Tidak ada palang, gedung, runner, atau pembayaran sungguhan. Pembayaran hanya animasi.
 - Notifikasi "ada yang batal" (Premium) baru tertulis di halaman paket.
 - Laporan kondisi pengguna dan jawaban booth hanya tersimpan di perangkat itu.
 - Data tidak sinkron antar perangkat walau sudah login (disengaja).
 - Ganjil-genap belum menghitung hari libur nasional.
-- Kampus dan kantor belum bisa memesan layanan di app, walau keputusannya sudah berubah (bagian 1 no. 5).
 - Sisa temuan audit UI yang belum dikerjakan: lihat [UX-AUDIT.md](UX-AUDIT.md), bagian "Status setelah desain ulang".
 
 ## 9. Masukan presentasi dan rencana update
@@ -241,10 +236,10 @@ Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AU
 | Pesanan perlu penghalang, khawatir pengguna non-KENNETH mengambil petak KENNETH. Gimana memastikan yang parkir di zona itu pengguna KENNETH? | Kelas, Epen | Konsepnya sudah ada (gerbang zona membaca pelat, QR cadangan di tiket), tapi belum kelihatan saat demo. Tambahkan palang atau *parking lock* per petak di konsep, dan tunjukkan di tiket petak | Belum dikerjakan |
 | Ke Neo Soho, langsung ditunjukkan petaknya atau harus cari lagi? | Epen | Tiket sudah memberi nomor petak, lantai, dan gerbang. Tambah denah kecil letak petak di tiket, dan tunjukkan alur pesan sampai tiket saat demo | Belum dikerjakan |
 | Kalau pengguna batal, app dan gedung rugi | Epen | Untuk sekarang batal tetap gratis sampai jam datang, dana kembali penuh. Potongan biaya batal bisa dibahas lagi nanti | Selesai |
-| Kampus bisa pakai valet juga? | Epen | Ya. Kampus dan kantor boleh menjual layanan dengan aturan yang sama (bagian 1 no. 5) | Belum dikerjakan di kode |
+| Kampus bisa pakai valet juga? | Epen | Ya. Kampus dan kantor boleh menjual layanan dengan aturan yang sama (bagian 1 no. 5) | Selesai |
 | Buat apa mall menyisihkan petak, kalau margin KENNETH kecil? | Diskusi tim | Untuk sekarang mall tetap memakai Zona KENNETH | Selesai |
 | Runner itu mitra lepas? Keamanannya gimana? | Diskusi tim | Runner karyawan KENNETH (bagian 1 no. 3) | Selesai |
-| Tambah pilihan mall | Ellyn | Setuju, tambah mall baru dengan data demo | Belum dikerjakan |
+| Tambah pilihan mall | Ellyn | Setuju, tambah mall baru dengan data demo | Selesai: 39 lokasi termasuk kampus dan kantor (PR #44) |
 | Ganti nama | Ellyn | Tidak diganti | Selesai |
 | UI bikin pusing, butuh waktu untuk paham | Ellyn | Desain ulang oleh Frederick (PR #13): layanan jadi pilihan besar di Beranda, dropdown dihapus, kartu dan pin lebih ringkas. Sisa temuan audit tercatat di [UX-AUDIT.md](UX-AUDIT.md) | Sebagian selesai, belum di-deploy |
 | Desain oke, tapi kombinasi warnanya kurang | Delon | Tema baru onyx dan porselen dengan aksen cornflower (PR #13). Warna aksen bisa dipilih di Akun: Biru, Ungu, Pink, Grafit (PR #24, #26) | Selesai, belum di-deploy |

@@ -8,9 +8,9 @@ import { zoneOf } from './zone'
 export type Service = 'zone' | 'valet' | 'ev'
 
 /**
- * What this venue offers this vehicle. Motorbikes get none of the three:
- * no Zona KENNETH bays, no runner valet, no car chargers. Campuses sell nothing, they
- * only show how full they are.
+ * What this venue offers this vehicle: whatever the place has set up, a
+ * zone lane, a runner desk, chargers. Malls, campuses and offices follow the
+ * same rules (decision 2 Oct 2026). Motorbikes get none of the three.
  */
 export function servicesFor(venue: Venue, kind: VehicleKind): Service[] {
   if (kind !== 'mobil') return []

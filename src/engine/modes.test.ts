@@ -28,8 +28,9 @@ describe('modes on offer', () => {
     expect(modesFor('mobil')).toEqual(MODES)
   })
 
-  it('follows what each venue has: a campus only parks, a mall without runners or chargers has no valet or ev', () => {
-    expect(MODES.filter((m) => offers(anggrek, 'mobil', m))).toEqual(['park'])
+  it('follows what each venue has, campus or mall: no runner desk means no valet, no chargers means no ev', () => {
+    expect(MODES.filter((m) => offers(anggrek, 'mobil', m))).toEqual(MODES)
+    expect(MODES.filter((m) => offers(VENUE_BY_ID['binus-syahdan'], 'mobil', m))).toEqual(['park', 'zone'])
     expect(MODES.filter((m) => offers(slipi, 'mobil', m))).toEqual(['park', 'zone'])
     expect(MODES.filter((m) => offers(cp, 'mobil', m))).toEqual(MODES)
   })
@@ -39,7 +40,7 @@ describe('pin facts', () => {
   const snap = snapshot(cp, SAT)
 
   it('says nothing for a mode the venue does not offer', () => {
-    expect(pinFact(snapshot(anggrek, SAT), 'zone', 'mobil', 'free', SAT)).toEqual({ kind: 'none' })
+    expect(pinFact(snapshot(VENUE_BY_ID['binus-syahdan'], SAT), 'valet', 'mobil', 'free', SAT)).toEqual({ kind: 'none' })
     expect(pinFact(snapshot(forKind(cp, 'motor'), SAT), 'ev', 'motor', 'free', SAT)).toEqual({ kind: 'none' })
   })
 
