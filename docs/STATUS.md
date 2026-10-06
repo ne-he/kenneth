@@ -160,7 +160,7 @@ saat pertama memesan Zona KENNETH atau valet runner dan disimpan ke kendaraan; r
 | Batal | Zona sampai jam datang, runner sampai kunci diserahkan, EV sampai jam mulai. Semua dana kembali penuh, tetap tercatat di Riwayat | `activity.ts` |
 | Okupansi | kurva mingguan mall vs kampus, dikali `load` dan digeser `shiftMin` per lokasi, status lega/ramai/penuh di 70% dan 90% | `occupancy.ts` |
 | Dampak | 1 menit antri ≈ 13 ml bensin, 1 L ≈ 2,31 kg CO2, EV nol bensin | `impact.ts` |
-| Ganjil-genap | Senin sampai Jumat 06-10 dan 16-21 di koridor, EV bebas, hari libur belum dihitung | `gage.ts` |
+| Ganjil-genap | Senin sampai Jumat 06-10 dan 16-21 di koridor, EV bebas, tidak berlaku di hari libur nasional 2026 dan 2027 (SKB 3 Menteri; cuti bersama tetap berlaku) | `gage.ts` |
 
 Penjelasan lengkap rumus: [docs/MODEL.md](MODEL.md). Alasan produk dan harga: [docs/PRODUCT.md](PRODUCT.md).
 
@@ -223,7 +223,6 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 - Notifikasi "ada yang batal" (Premium) baru tertulis di halaman paket.
 - Laporan kondisi pengguna dan jawaban booth hanya tersimpan di perangkat itu.
 - Data tidak sinkron antar perangkat walau sudah login (disengaja).
-- Ganjil-genap belum menghitung hari libur nasional.
 - Sisa temuan audit UI yang belum dikerjakan: lihat [UX-AUDIT.md](UX-AUDIT.md), bagian "Status setelah desain ulang".
 
 ## 9. Masukan presentasi dan rencana update

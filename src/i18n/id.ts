@@ -178,6 +178,7 @@ const id = {
     gage: 'Ganjil-genap',
     gageNA: 'Tidak berlaku di rute ini',
     gageWeekend: 'Tidak berlaku akhir pekan',
+    gageHoliday: 'Tidak berlaku hari libur nasional',
     gageHours: 'Di luar jam berlaku',
     gageExempt: 'Mobil listrik bebas ganjil-genap',
     gageOk: (p: string) => `Pelatmu ${p}, aman`,

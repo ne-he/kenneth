@@ -179,6 +179,7 @@ const en: Dict = {
     gage: 'Odd-even plates',
     gageNA: 'Does not apply on this route',
     gageWeekend: 'Does not apply at weekends',
+    gageHoliday: 'Does not apply on public holidays',
     gageHours: 'Outside enforcement hours',
     gageExempt: 'Electric cars are exempt',
     gageOk: (p: string) => `Your plate is ${p}, you are fine`,

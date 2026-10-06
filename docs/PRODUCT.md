@@ -171,5 +171,4 @@ Supaya tidak ada yang mengira ini sudah jalan sungguhan:
 - Login Google sudah ada, tapi data belum disinkronkan antar perangkat. Pindah HP berarti riwayat dan tiket
   mulai dari awal. Ini disengaja selama prototipe, supaya data pribadi tidak tersimpan di server.
 - Zona KENNETH dan armada runner masih ide. Belum ada gedung yang menyisihkan petak dan belum ada runner. Nama runner di app contoh.
-- Ganjil-genap belum menghitung hari libur nasional.
 - Denah basement, lantai tenant, dan jumlah charger adalah data demo.
