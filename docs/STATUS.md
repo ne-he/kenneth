@@ -38,6 +38,8 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
    yang menyediakannya. Motor tetap tidak bisa memesan layanan apa pun.
 6. **Jujur soal sumber data.** Tiap lokasi berlabel "Data langsung" (dari palang parkir) atau "Estimasi".
 7. **Data pribadi tinggal di HP.** Tidak ada database server. Login Google hanya untuk nama, email, foto.
+   (Sejak 6 Okt 2026 build park-kenneth.web.app berbagi data anonim lewat Firestore: laporan kondisi berisi
+   tempat, pilihan, dan jam server saja. Data pribadi tetap di HP.)
 8. **App tidak pernah pindah tab sendiri.** Setelah aksi, cukup toast plus titik di tab Tiket.
 9. **Peta adalah panggungnya, layanan dipilih di lembar Beranda** (direvisi 2 Okt 2026 di PR #13, menggantikan
    dropdown "Mau ngapain?"). Tiga layanan berbayar tampil sebagai pilihan besar yang bisa dinyalakan dan dilepas.
@@ -222,7 +224,8 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
   live di https://park-kenneth.web.app (project terpisah, `npm run deploy:park`).
 - Semua angka simulasi. Tidak ada palang, gedung, runner, atau pembayaran sungguhan. Pembayaran hanya animasi.
 - Notifikasi "ada yang batal" (Premium) jalan dalam demo saja: tidak ada pengguna lain yang memesan, jadi petak kembali satu sampai dua menit setelah minta kabar (`engine/watch.ts`).
-- Laporan kondisi pengguna dan jawaban booth hanya tersimpan di perangkat itu.
+- Laporan kondisi dibagi antar HP hanya di park-kenneth.web.app (`VITE_SHARED=on`, Firestore project
+  `park-kenneth`, aturan di `firestore.rules`). Di build tim masih per perangkat. Jawaban booth masih per perangkat.
 - Data tidak sinkron antar perangkat walau sudah login (disengaja).
 - Sisa temuan audit UI yang belum dikerjakan: lihat [UX-AUDIT.md](UX-AUDIT.md), bagian "Status setelah desain ulang".
 

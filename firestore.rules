@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Shared data for builds with VITE_SHARED=on (park-kenneth.web.app), see src/lib/shared.ts.
+// Deploy with: npm run deploy:park-data. Anything not matched below can be neither read nor written.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // "Kondisi di lokasi beda?" Anyone may add a report and read recent ones; nobody may change or
+    // delete one. A report holds the place, what the driver saw and the server's clock, nothing about
+    // who sent it.
+    match /reports/{id} {
+      allow get: if true;
+      allow list: if request.query.limit <= 300;
+      allow create: if request.resource.data.keys().hasOnly(['venueId', 'kind', 'at'])
+        && request.resource.data.venueId is string
+        && request.resource.data.venueId.matches('[a-z0-9-]{2,40}')
+        && request.resource.data.kind in ['penuh', 'antri', 'lega']
+        && request.resource.data.at == request.time;
+    }
+  }
+}

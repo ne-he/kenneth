@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "deploy": "npm run build && npx -y firebase-tools deploy --only hosting",
     "deploy:preview": "npm run build && npx -y firebase-tools hosting:channel:deploy preview --only main --expires 7d",
-    "deploy:park": "tsc -b && vite build --mode park && npx -y firebase-tools deploy --only hosting:park --project park-kenneth"
+    "deploy:park": "tsc -b && vite build --mode park && npx -y firebase-tools deploy --only hosting:park --project park-kenneth",
+    "deploy:park-data": "npx -y firebase-tools deploy --only firestore --project park-kenneth"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

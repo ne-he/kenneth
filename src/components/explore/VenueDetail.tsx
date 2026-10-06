@@ -32,9 +32,11 @@ import { servicesFor } from '../../engine/services'
 import { useT } from '../../i18n'
 import { formatKm } from '../../lib/geo'
 import { haptic } from '../../lib/haptics'
+import { shareReport, sharedAvailable } from '../../lib/shared'
 import { STATUS, formatMin } from '../../lib/status'
 import { useApp, useVehicle, type CommunityReport } from '../../store/app'
-import { useViewTs } from '../../store/clock'
+import { useRealNow, useViewTs } from '../../store/clock'
+import { useSharedReports } from '../../store/shared'
 import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
@@ -435,34 +437,66 @@ function TenantsRow({ venue }: { venue: Venue }) {
   )
 }
 
+const HOUR = 3_600_000
+/** One report per place every 10 minutes from a phone, so one excited thumb cannot fill the count. */
+const REPORT_GAP = 10 * 60_000
+
 function ReportRow({ venue, now }: { venue: Venue; now: number }) {
   const t = useT()
   const reports = useApp((s) => s.reports)
   const addReport = useApp((s) => s.addReport)
   const notify = useUi((s) => s.notify)
-  const recent = reports.filter((r) => r.venueId === venue.id && now - r.at < 3_600_000).length
+  const everyone = useSharedReports()
+  const realNow = useRealNow()
+  // Everyone's reports when this build shares them (stamped with the real time), otherwise this phone's own.
+  const recent = everyone
+    ? everyone.filter((r) => r.venueId === venue.id && realNow - r.at < HOUR)
+    : reports.filter((r) => r.venueId === venue.id && now - r.at < HOUR)
+  const mine = reports.find((r) => r.venueId === venue.id && Math.abs(now - r.at) < REPORT_GAP)
   const send = (kind: CommunityReport['kind']) => {
+    if (mine) {
+      notify(t.venue.reportWait(Math.min(10, Math.max(1, Math.ceil((REPORT_GAP - Math.abs(now - mine.at)) / 60_000)))))
+      return
+    }
     haptic('success')
     addReport({ venueId: venue.id, kind, at: now })
+    if (sharedAvailable) shareReport(venue.id, kind).catch(() => undefined)
     notify(t.venue.reportThanks)
   }
-  const chip = 'btn-tile h-9 flex-1 rounded-full border border-line text-[12.5px] font-medium tracking-[-0.01em] text-ink-2 transition-colors duration-150 hover:border-line-strong hover:text-ink active:scale-[0.98]'
+  const chip = 'btn-tile flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full border text-[12.5px] font-medium tracking-[-0.01em] transition-colors duration-150 active:scale-[0.98]'
+  const kinds: [CommunityReport['kind'], string][] = [
+    ['penuh', t.venue.reportPenuh],
+    ['antri', t.venue.reportAntri],
+    ['lega', t.venue.reportLega],
+  ]
   return (
     <Disclosure
       icon={<Megaphone size={17} />}
       title={t.venue.report}
-      summary={recent > 0 ? t.venue.reportsRecent(recent) : t.venue.reportHint}
+      summary={recent.length > 0 ? t.venue.reportsRecent(recent.length) : t.venue.reportHint}
     >
       <div className="flex gap-2">
-        <button type="button" className={chip} onClick={() => send('penuh')}>
-          {t.venue.reportPenuh}
-        </button>
-        <button type="button" className={chip} onClick={() => send('antri')}>
-          {t.venue.reportAntri}
-        </button>
-        <button type="button" className={chip} onClick={() => send('lega')}>
-          {t.venue.reportLega}
-        </button>
+        {kinds.map(([kind, label]) => {
+          const n = recent.filter((r) => r.kind === kind).length
+          const picked = mine?.kind === kind
+          return (
+            <button
+              key={kind}
+              type="button"
+              aria-pressed={picked}
+              className={clsx(
+                chip,
+                picked
+                  ? 'border-brand-500 text-brand-700 dark:border-brand-400 dark:text-brand-200'
+                  : 'border-line text-ink-2 hover:border-line-strong hover:text-ink',
+              )}
+              onClick={() => send(kind)}
+            >
+              {label}
+              {n > 0 && <span className="tabular font-semibold text-ink-3">{n}</span>}
+            </button>
+          )
+        })}
       </div>
     </Disclosure>
   )

@@ -51,6 +51,12 @@ export function useNow(everyMs = 15_000): number {
   return simNowOf(clock, clock.mode === 'scenario' ? Math.max(real, clock.anchorReal) : real)
 }
 
+/** The real time, re-rendering every `everyMs`. For things that happen outside the demo, like other people's reports. */
+export function useRealNow(everyMs = 15_000): number {
+  const ticker = tickerFor(everyMs)
+  return useSyncExternalStore(ticker.subscribe, () => ticker.now)
+}
+
 /** Time the map and list should render: the scrubber preview, or now. */
 export function useViewTs(everyMs = 15_000): { ts: number; now: number; previewing: boolean } {
   const now = useNow(everyMs)

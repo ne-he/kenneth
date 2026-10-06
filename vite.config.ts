@@ -56,8 +56,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         // Kept out of the install, fetched on first use instead:
         // - Inter ships seven unicode-range subsets; the app renders Latin only. The others load if a glyph needs them.
-        // - three (the 3D floor) and firebase (sign-in) are lazy chunks most sessions never reach. The shell, map,
-        //   list and booking stay fully precached; only those two features need a connection the first time.
+        // - three (the 3D floor) and firebase (sign-in, shared reports) are lazy chunks most sessions never reach.
+        //   The shell, map, list and booking stay fully precached; only those features need a connection the first time.
         globIgnores: ['**/inter-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2', '**/three-*.js', '**/firebase-*.js'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: '/index.html',
@@ -97,6 +97,9 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('maplibre-gl')) return 'maplibre'
           if (id.includes('/three/')) return 'three'
+          // Sign-in and shared data load apart: a place sheet fetching reports does not pull in the auth SDK.
+          if (/node_modules[\\/](@firebase[\\/](firestore|webchannel-wrapper)|firebase[\\/]firestore)[\\/]/.test(id)) return 'firebase-firestore'
+          if (/node_modules[\\/](@firebase[\\/]auth|firebase[\\/]auth)[\\/]/.test(id)) return 'firebase-auth'
           if (/node_modules[\\/](firebase|@firebase)[\\/]/.test(id)) return 'firebase'
           if (/node_modules[\\/](react|react-dom|scheduler|react-router)[\\/]/.test(id)) return 'react'
           if (/node_modules[\\/](motion|framer-motion|motion-dom|motion-utils)[\\/]/.test(id)) return 'motion'

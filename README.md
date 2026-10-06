@@ -122,7 +122,8 @@ Tambahan di luar 11 fitur:
   (keputusan tim 2 Okt 2026).
 - **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
 - **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, booking, dan lokasi
-  parkir tetap di perangkat. Untuk menghitung rute, titik awal (lokasimu kalau kamu menekan tombol lokasi) dan
+  parkir tetap di perangkat. Di park-kenneth.web.app, laporan "Kondisi di lokasi beda?" dibagi ke semua pengguna
+  lewat Firestore, tanpa identitas pengirim: cuma tempat, pilihan, dan jam server. Untuk menghitung rute, titik awal (lokasimu kalau kamu menekan tombol lokasi) dan
   tujuan dikirim ke server demo OSRM, dan potongan peta diambil dari OpenFreeMap. Yang nantinya dijual ke pengelola
   hanya agregat per jam.
 
@@ -172,12 +173,15 @@ demo tanpa harus menunggu akses rilis ke `kenneth-9339d`. Yang punya akses ke pr
 
 ```bash
 npm run deploy:park      # build lalu publish ke https://park-kenneth.web.app
+npm run deploy:park-data # aturan Firestore (firestore.rules) untuk data bersama di park-kenneth
 ```
 
 Build ini (`vite build --mode park`) mengganti alamat di tag pratinjau link (`og:url`, `og:image`) ke
 park-kenneth.web.app, lalu membaca `.env.park.local`: konfigurasi web app project `park-kenneth` (ambil dengan
 `npx firebase-tools apps:sdkconfig WEB --project park-kenneth`, format sama dengan `.env.example`). File itu tidak
-ikut di-commit. Tanpa file itu situs ini jalan dalam mode tamu.
+ikut di-commit. Tanpa file itu situs ini jalan dalam mode tamu. Dengan `VITE_SHARED=on` di file yang sama, laporan
+kondisi dibagi antar HP lewat Firestore project itu (database di Jakarta, `asia-southeast2`). Siapa boleh baca dan
+tulis apa ada di [firestore.rules](firestore.rules): laporan cuma bisa ditambah, tidak bisa diubah atau dihapus.
 
 Login Google perlu diaktifkan sekali oleh pemilik tiap project (`kenneth-9339d` dan `park-kenneth`): Firebase console,
 Authentication, Get started, Sign-in method, Google, Enable, pilih email dukungan, Save. Tidak perlu deploy ulang
@@ -190,7 +194,8 @@ baru cukup ditambahkan di Authentication, Settings, Authorized domains.
 React 19, TypeScript, Vite, Tailwind CSS 4, Motion untuk animasi, MapLibre GL dengan peta
 [OpenFreeMap](https://openfreemap.org) (data OpenStreetMap, gratis tanpa API key), rute dari server demo
 [OSRM](https://project-osrm.org), three.js untuk denah basement 3D, Zustand untuk state yang disimpan di perangkat,
-Firebase Authentication untuk login Google (dimuat hanya saat tombolnya ditekan), vite-plugin-pwa.
+Firebase Authentication untuk login Google (dimuat hanya saat tombolnya ditekan), Firestore untuk laporan bersama di
+park-kenneth.web.app (dimuat saat lembar tempat dibuka), vite-plugin-pwa.
 Font: Plus Jakarta Sans (dibuat untuk identitas kota Jakarta) dan Doto untuk angka ala papan LED parkir.
 
 ## Struktur

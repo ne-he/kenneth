@@ -176,6 +176,7 @@ const id = {
     reportLega: 'Masih lega',
     reportThanks: 'Makasih, laporanmu bantu pengguna lain',
     reportsRecent: (n: number) => `${n} laporan pengguna dalam 1 jam terakhir`,
+    reportWait: (min: number) => `Laporanmu di sini sudah masuk. Bisa lapor lagi ${min} menit lagi.`,
     gage: 'Ganjil-genap',
     gageNA: 'Tidak berlaku di rute ini',
     gageWeekend: 'Tidak berlaku akhir pekan',
