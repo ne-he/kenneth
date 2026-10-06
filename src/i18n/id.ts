@@ -269,6 +269,14 @@ const id = {
     qrHint: 'Palang baca pelatmu. QR ini cadangan kalau kamera palang gagal.',
     bayWhere: (level: string, lobby: string) => `${level}, dekat ${lobby}`,
     followSigns: (gate: string) => `Masuk lewat ${gate}, lalu ikuti tanda Zona KENNETH.`,
+    mapLabel: (level: string, gate: string, bay: string, lobby: string) =>
+      `Denah ${level}: masuk ${gate}, petak ${bay} di Zona KENNETH dekat ${lobby}`,
+    lift: 'Lift',
+    lockUp: (bay: string) => `Petak ${bay} terkunci sampai kamu datang`,
+    lockOpen: (bay: string) => `Kunci petak ${bay} turun begitu pelatmu terbaca`,
+    lockDone: (bay: string) => `Petak ${bay} sudah dilepas lagi`,
+    lockHow: (plate: string) =>
+      `Kamera di gerbang membaca ${plate}, lalu kunci di petakmu turun sendiri. Pengemudi lain tidak bisa parkir di situ.`,
     upcoming: 'Datang dalam',
     open: 'Ditahan lagi',
     expired: 'Lewat',

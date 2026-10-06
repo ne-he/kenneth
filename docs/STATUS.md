@@ -232,8 +232,8 @@ Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AU
 | Masukan | Dari | Keputusan | Status |
 |---|---|---|---|
 | Idenya oke | Kelas, Epen | Tidak ada perubahan | Selesai |
-| Pesanan perlu penghalang, khawatir pengguna non-KENNETH mengambil petak KENNETH. Gimana memastikan yang parkir di zona itu pengguna KENNETH? | Kelas, Epen | Konsepnya sudah ada (gerbang zona membaca pelat, QR cadangan di tiket), tapi belum kelihatan saat demo. Tambahkan palang atau *parking lock* per petak di konsep, dan tunjukkan di tiket petak | Belum dikerjakan |
-| Ke Neo Soho, langsung ditunjukkan petaknya atau harus cari lagi? | Epen | Tiket sudah memberi nomor petak, lantai, dan gerbang. Tambah denah kecil letak petak di tiket, dan tunjukkan alur pesan sampai tiket saat demo | Belum dikerjakan |
+| Pesanan perlu penghalang, khawatir pengguna non-KENNETH mengambil petak KENNETH. Gimana memastikan yang parkir di zona itu pengguna KENNETH? | Kelas, Epen | Konsepnya sudah ada (gerbang zona membaca pelat, QR cadangan di tiket), tapi belum kelihatan saat demo. Tambahkan palang atau *parking lock* per petak di konsep, dan tunjukkan di tiket petak | Selesai: tiket petak menampilkan kunci petak yang turun saat pelat terbaca di gerbang |
+| Ke Neo Soho, langsung ditunjukkan petaknya atau harus cari lagi? | Epen | Tiket sudah memberi nomor petak, lantai, dan gerbang. Tambah denah kecil letak petak di tiket, dan tunjukkan alur pesan sampai tiket saat demo | Selesai: denah lantai zona di tiket (gerbang, lorong, petakmu, lobi lift) |
 | Kalau pengguna batal, app dan gedung rugi | Epen | Untuk sekarang batal tetap gratis sampai jam datang, dana kembali penuh. Potongan biaya batal bisa dibahas lagi nanti | Selesai |
 | Kampus bisa pakai valet juga? | Epen | Ya. Kampus dan kantor boleh menjual layanan dengan aturan yang sama (bagian 1 no. 5) | Selesai |
 | Buat apa mall menyisihkan petak, kalau margin KENNETH kecil? | Diskusi tim | Untuk sekarang mall tetap memakai Zona KENNETH | Selesai |

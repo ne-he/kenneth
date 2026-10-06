@@ -13,6 +13,7 @@ import { useUi } from '../../store/ui'
 import { useCancel } from '../activity/useCancel'
 import { CancelConfirm } from '../ui/CancelConfirm'
 import { Plate } from '../ui/Display'
+import { BayMap } from './BayMap'
 
 /**
  * The Zona KENNETH ticket, styled like a boarding pass: the bay number big
@@ -73,6 +74,8 @@ export function PassSheet({ passId }: { passId: string }) {
           {t.activity.followSigns(gate.name)}
         </p>
       </div>
+
+      {zone && <BayMap bay={bay} bays={zone.bays} level={zone.level} gate={gate.name} lobby={zone.lobby} plate={plate} phase={phase} />}
 
       <div className="mx-auto w-full max-w-[260px] rounded-[24px] border border-line bg-white p-3.5 dark:border-transparent">
         {qr ? <img src={qr} alt={pass.token} className="aspect-square w-full" /> : <div className="aspect-square w-full" />}
