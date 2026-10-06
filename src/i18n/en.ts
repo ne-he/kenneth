@@ -270,6 +270,14 @@ const en: Dict = {
     qrHint: 'The barrier reads your plate. This QR is the backup if the camera misses.',
     bayWhere: (level: string, lobby: string) => `${level}, by ${lobby}`,
     followSigns: (gate: string) => `Enter at ${gate}, then follow the KENNETH Zone signs.`,
+    mapLabel: (level: string, gate: string, bay: string, lobby: string) =>
+      `Plan of ${level}: in through ${gate}, bay ${bay} in the KENNETH Zone by ${lobby}`,
+    lift: 'Lift',
+    lockUp: (bay: string) => `Bay ${bay} stays locked until you arrive`,
+    lockOpen: (bay: string) => `Bay ${bay} unlocks as soon as your plate is read`,
+    lockDone: (bay: string) => `Bay ${bay} has been released`,
+    lockHow: (plate: string) =>
+      `The camera at the gate reads ${plate}, then the lock on your bay lowers by itself. Nobody else can park there.`,
     upcoming: 'Arrive in',
     open: 'Held for',
     expired: 'Expired',
