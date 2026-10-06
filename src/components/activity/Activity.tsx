@@ -59,14 +59,15 @@ export function Activity() {
   const evBookings = useApp((s) => s.evBookings)
   const valets = useApp((s) => s.valets)
   const reminders = useApp((s) => s.reminders)
+  const watches = useApp((s) => s.watches)
   const history = useApp((s) => s.history)
   const clockMode = useApp((s) => s.clock.mode)
   const { setTab, open } = useUi.getState()
   const [all, setAll] = useState(false)
 
   const split = useMemo(
-    () => splitActivity({ parked, passes, valets, evBookings, reminders, history }, now),
-    [parked, passes, valets, evBookings, reminders, history, now],
+    () => splitActivity({ parked, passes, valets, evBookings, reminders, watches, history }, now),
+    [parked, passes, valets, evBookings, reminders, watches, history, now],
   )
   const { current, upcoming, past } = split
   const month = history.filter((v) => now - v.at < 31 * 86_400_000)
@@ -130,6 +131,7 @@ export function Activity() {
                 {u.kind === 'pass' && <PassCard id={u.id} now={now} />}
                 {u.kind === 'ev' && <EvCard id={u.id} now={now} />}
                 {u.kind === 'reminder' && <ReminderCard id={u.id} />}
+                {u.kind === 'watch' && <WatchCard id={u.id} />}
               </motion.div>
             ))}
           </div>
@@ -392,6 +394,32 @@ function ReminderCard({ id }: { id: string }) {
           notify(t.activity.reminderCancelled)
         }}
         aria-label={t.activity.reminderRemove(VENUE_BY_ID[r.venueId].name)}
+        className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-surface-2"
+      >
+        <X size={15} weight="bold" />
+      </button>
+    </div>
+  )
+}
+
+/** A Premium cancellation alert still waiting, with a way to drop it. */
+function WatchCard({ id }: { id: string }) {
+  const t = useT()
+  const w = useApp((s) => s.watches.find((x) => x.id === id))!
+  const remove = useApp((s) => s.removeWatch)
+  const notify = useUi((s) => s.notify)
+  const name = VENUE_BY_ID[w.venueId].name
+  return (
+    <div className="flex items-center gap-3 rounded-[20px] border border-line bg-surface py-2.5 pr-2.5 pl-4">
+      <BellSimple size={16} weight="fill" className="shrink-0 text-brand-600 dark:text-brand-300" />
+      <span className="flex-1 text-[13.5px] font-medium">{t.activity.watchAt(name, clock(w.slot))}</span>
+      <button
+        type="button"
+        onClick={() => {
+          remove(w.id)
+          notify(t.book.watchCancelled)
+        }}
+        aria-label={t.activity.watchRemove(name)}
         className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-surface-2"
       >
         <X size={15} weight="bold" />

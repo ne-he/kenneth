@@ -1,14 +1,16 @@
-import { Crown, CreditCard, DoorOpen, Lightning, LockSimple, QrCode, Question, Wallet } from '@phosphor-icons/react'
+import { BellSimple, Crown, CreditCard, DoorOpen, Lightning, LockSimple, QrCode, Question, Wallet } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { VENUE_BY_ID } from '../../../data/venues'
 import type { VenueId } from '../../../data/types'
 import { forecastDay, occupancyAt, statusOf } from '../../../engine/occupancy'
 import { FREE_BOOKING_AHEAD_H, PREMIUM_BOOKING_AHEAD_D, formatRupiah, zonePrice } from '../../../engine/pricing'
+import { freesAtFor } from '../../../engine/watch'
 import { SLOT_MIN, ZONE_HOLD_MIN, bayFor, baysLeft, zoneOf } from '../../../engine/zone'
 import { useDayLabel, useLang, useT } from '../../../i18n'
 import { haptic } from '../../../lib/haptics'
+import { askNotificationPermission } from '../../../lib/notify'
 import { isPlate } from '../../../lib/plate'
 import { STATUS } from '../../../lib/status'
 import { atWib, clock, dayName, wib } from '../../../lib/time'
@@ -42,6 +44,9 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
   const [paying, setPaying] = useState(false)
   const [day, setDay] = useState(0)
   const [picked, setPicked] = useState<number | null>(null)
+  // A sold-out time that was tapped: the panel under the times offers the cancellation alert.
+  const [asked, setAsked] = useState<number | null>(null)
+  const watches = useApp((s) => s.watches)
   const dayLabel = useDayLabel()
   const [openH, closeH] = venue.hours
 
@@ -65,10 +70,12 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
     const list = []
     for (let start = from; start <= to; start += Q) {
       const occ = occupancyAt(venue, start)
-      list.push({ start, occ, price: zonePrice(occ, plan), left: baysLeft(venue, start, occ) })
+      // A bay that came back after a cancellation alert stays bookable in its slot.
+      const back = watches.some((w) => w.venueId === venueId && w.slot === start && w.firedAt) ? 1 : 0
+      list.push({ start, occ, price: zonePrice(occ, plan), left: baysLeft(venue, start, occ) + back })
     }
     return list
-  }, [now, plan, venue, day, openH, closeH])
+  }, [now, plan, venue, venueId, day, openH, closeH, watches])
 
   const firstOpen = slots.findIndex((s) => s.left > 0)
   const pick = slots.find((s) => s.start === picked && s.left > 0) ?? slots[firstOpen]
@@ -165,10 +172,12 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
             <button
               key={s.start}
               type="button"
-              disabled={disabled}
+              aria-pressed={active}
               onClick={() => {
                 haptic('tap')
+                if (disabled) return setAsked(s.start)
                 setPicked(s.start)
+                setAsked(null)
               }}
               className={clsx(
                 'flex w-[84px] shrink-0 flex-col items-start rounded-[16px] p-2.5 text-left transition-colors',
@@ -185,6 +194,7 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
           )
         })}
       </div>
+      {asked !== null && slots.find((s) => s.start === asked)?.left === 0 && <WatchPanel venueId={venueId} slot={asked} now={now} />}
       {firstOpen < 0 && (
         <p className="mt-3 rounded-[14px] bg-surface-2 p-3 text-[12.5px] text-ink-2">{day === 0 ? t.book.notWorth : t.book.noneThatDay}</p>
       )}
@@ -219,6 +229,69 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
         </Button>
         <p className="mt-2 text-center text-[11px] text-ink-3">{t.book.demoPay}</p>
       </div>
+    </div>
+  )
+}
+
+/**
+ * A sold-out time, tapped. Premium can ask to hear first when someone
+ * cancels; free sees what Premium would do here, and where to get it.
+ */
+function WatchPanel({ venueId, slot, now }: { venueId: VenueId; slot: number; now: number }) {
+  const t = useT()
+  const plan = useApp((s) => s.plan)
+  const watch = useApp((s) => s.watches.find((w) => w.venueId === venueId && w.slot === slot && !w.firedAt))
+  const { addWatch, removeWatch } = useApp.getState()
+  const open = useUi((s) => s.open)
+  const notify = useUi((s) => s.notify)
+  const time = clock(slot)
+  const quiet = 'shrink-0 rounded-full px-3 py-1.5 text-[12.5px] font-semibold text-ink-2 hover:bg-surface-3 hover:text-ink'
+  let text: string
+  let action: ReactNode
+  if (plan !== 'premium') {
+    text = t.book.watchFree(time)
+    action = (
+      <button type="button" onClick={() => open({ kind: 'premium' })} className={quiet}>
+        {t.profile.upgrade}
+      </button>
+    )
+  } else if (watch) {
+    text = t.book.watchOn(time)
+    action = (
+      <button
+        type="button"
+        onClick={() => {
+          removeWatch(watch.id)
+          notify(t.book.watchCancelled)
+        }}
+        className={quiet}
+      >
+        {t.book.watchOff}
+      </button>
+    )
+  } else {
+    text = t.book.watchAsk(time)
+    action = (
+      <button
+        type="button"
+        onClick={() => {
+          const id = uid()
+          addWatch({ id, venueId, slot, freesAt: freesAtFor(id, now, slot) })
+          askNotificationPermission()
+          haptic('success')
+          notify(t.book.watchSet)
+        }}
+        className="btn-primary shrink-0 rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold text-white"
+      >
+        {t.book.watchCta}
+      </button>
+    )
+  }
+  return (
+    <div className="mt-3 flex items-center gap-3 rounded-[16px] bg-surface-2 py-2.5 pr-2.5 pl-3.5">
+      <BellSimple size={18} weight="fill" className="shrink-0 text-brand-600 dark:text-brand-300" />
+      <p className="min-w-0 flex-1 text-[12.5px] leading-snug text-ink-2">{text}</p>
+      {action}
     </div>
   )
 }

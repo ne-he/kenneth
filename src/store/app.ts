@@ -84,6 +84,18 @@ export interface Reminder {
   createdAt: number
 }
 
+/** A sold-out Zona KENNETH slot a Premium user asked to hear about if someone cancels. */
+export interface SlotWatch {
+  id: string
+  venueId: VenueId
+  /** Start of the arrival slot that was sold out. */
+  slot: number
+  /** When a bay in it comes back (engine/watch). */
+  freesAt: number
+  /** Set once the user has been told; that slot then has one bay to book. */
+  firedAt?: number
+}
+
 export interface Visit {
   id: string
   venueId: VenueId
@@ -155,6 +167,7 @@ interface AppState {
   evBookings: EvBooking[]
   valets: ValetTicket[]
   reminders: Reminder[]
+  watches: SlotWatch[]
   history: Visit[]
   reports: CommunityReport[]
   clock: ClockState
@@ -183,6 +196,9 @@ interface AppState {
   finishValet: (id: string, at: number) => void
   addReminder: (r: Reminder) => void
   removeReminder: (id: string) => void
+  addWatch: (w: SlotWatch) => void
+  removeWatch: (id: string) => void
+  fireWatch: (id: string, at: number) => void
   addVisit: (v: Visit) => void
   addReport: (r: CommunityReport) => void
   setClock: (mode: 'scenario' | 'live', simTs?: number) => void
@@ -220,6 +236,7 @@ const DEFAULTS = {
   evBookings: [],
   valets: [],
   reminders: [],
+  watches: [],
   history: [],
   reports: [],
 }
@@ -334,6 +351,9 @@ export const useApp = create<AppState>()(
       addReminder: (r) =>
         set((s) => ({ reminders: [r, ...s.reminders.filter((x) => x.venueId !== r.venueId)] })),
       removeReminder: (id) => set((s) => ({ reminders: s.reminders.filter((r) => r.id !== id) })),
+      addWatch: (w) => set((s) => ({ watches: [w, ...s.watches.filter((x) => !(x.venueId === w.venueId && x.slot === w.slot))] })),
+      removeWatch: (id) => set((s) => ({ watches: s.watches.filter((w) => w.id !== id) })),
+      fireWatch: (id, at) => set((s) => ({ watches: s.watches.map((w) => (w.id === id ? { ...w, firedAt: at } : w)) })),
       addVisit: (v) => set((s) => ({ history: [v, ...s.history] })),
       addReport: (r) => set((s) => ({ reports: [r, ...s.reports].slice(0, 50) })),
       setClock: (mode, simTs) =>
