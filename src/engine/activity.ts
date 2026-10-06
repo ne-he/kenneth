@@ -1,5 +1,5 @@
 import type { VenueId } from '../data/types'
-import type { EvBooking, ParkedSpot, ZonePass, Reminder, Visit } from '../store/app'
+import type { EvBooking, ParkedSpot, ZonePass, Reminder, SlotWatch, Visit } from '../store/app'
 import { passPhase } from './pass'
 import { valetPhase, VALET_HOLD_MIN, type ValetTicket } from './valet'
 
@@ -21,6 +21,7 @@ export type Upcoming =
   | { kind: 'pass'; id: string; at: number }
   | { kind: 'ev'; id: string; at: number }
   | { kind: 'reminder'; id: string; at: number }
+  | { kind: 'watch'; id: string; at: number }
 
 export type PastKind = 'park' | 'valet' | 'zone' | 'ev'
 export type Outcome = 'done' | 'cancelled' | 'lapsed'
@@ -40,6 +41,8 @@ export interface ActivityInput {
   valets: ValetTicket[]
   evBookings: EvBooking[]
   reminders: Reminder[]
+  /** Cancellation alerts still waiting. Optional so older callers need not pass them. */
+  watches?: SlotWatch[]
   history: Visit[]
 }
 
@@ -110,6 +113,7 @@ export function splitActivity(s: ActivityInput, now: number): Split {
 
   // A reminder that never fired (notifications off) is stale once its time has passed.
   for (const r of s.reminders) if (r.at > now) upcoming.push({ kind: 'reminder', id: r.id, at: r.at })
+  for (const w of s.watches ?? []) if (!w.firedAt && w.slot > now) upcoming.push({ kind: 'watch', id: w.id, at: w.slot })
 
   for (const v of s.history) {
     past.push({ key: `h:${v.id}`, service: v.via === 'valet' ? 'valet' : 'park', outcome: 'done', venueId: v.venueId, at: v.at, visit: v })
@@ -126,6 +130,6 @@ export function splitActivity(s: ActivityInput, now: number): Split {
 /** The one thing worth a line on the map screen, if any: the most urgent current item, or a pass starting within the hour. */
 export function headline(split: Split, now: number): Current | Upcoming | null {
   if (split.current.length > 0) return split.current[0]
-  const soon = split.upcoming.find((u) => u.kind !== 'reminder' && u.at - now <= 60 * 60_000)
+  const soon = split.upcoming.find((u) => u.kind !== 'reminder' && u.kind !== 'watch' && u.at - now <= 60 * 60_000)
   return soon ?? null
 }

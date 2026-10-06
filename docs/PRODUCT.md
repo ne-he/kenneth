@@ -166,7 +166,8 @@ Supaya tidak ada yang mengira ini sudah jalan sungguhan:
 
 - Angka okupansi, antrian, dan tarif semuanya simulasi. Belum ada palang yang terhubung.
 - Pembayaran hanya simulasi. Tidak ada uang yang ditarik.
-- Notifikasi duluan kalau ada yang batal (Premium) baru tertulis di halaman paket.
+- Notifikasi duluan kalau ada yang batal (Premium): jam yang habis di Zona KENNETH bisa diketuk lalu "Kabari aku". Karena
+  tidak ada pengguna lain, demo mengembalikan satu petak satu sampai dua menit kemudian.
 - Laporan kondisi dari pengguna tersimpan di HP, belum dikirim ke server mana pun.
 - Login Google sudah ada, tapi data belum disinkronkan antar perangkat. Pindah HP berarti riwayat dan tiket
   mulai dari awal. Ini disengaja selama prototipe, supaya data pribadi tidak tersimpan di server.

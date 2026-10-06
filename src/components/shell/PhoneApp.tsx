@@ -7,6 +7,7 @@ import { finishRedirect } from '../../lib/auth'
 import { haptic } from '../../lib/haptics'
 import { systemNotify } from '../../lib/notify'
 import { useApplyTheme } from '../../lib/theme'
+import { clock } from '../../lib/time'
 import { useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
@@ -38,6 +39,26 @@ function useReminderAlarm() {
       removeReminder(r.id)
     })
   }, [now, reminders, enabled, t])
+}
+
+/** Premium: tells the user once when a bay comes back in a sold-out slot they asked about. */
+function useWatchAlarm() {
+  const t = useT()
+  const now = useNow(5_000)
+  const watches = useApp((s) => s.watches)
+  useEffect(() => {
+    const due = watches.filter((w) => !w.firedAt && w.freesAt <= now && w.slot > now)
+    if (due.length === 0) return
+    const { fireWatch } = useApp.getState()
+    due.forEach((w) => {
+      const text = t.book.watchFired(VENUE_BY_ID[w.venueId].name, clock(w.slot))
+      useUi.getState().notify(text)
+      useUi.getState().markActivity()
+      haptic('success')
+      void systemNotify('KENNETH', text)
+      fireWatch(w.id, now)
+    })
+  }, [now, watches, t])
 }
 
 /** Tells the user once when a called valet car reaches the lobby. */
@@ -75,6 +96,7 @@ export function PhoneApp() {
   useApplyTheme()
   useReminderAlarm()
   useValetAlarm()
+  useWatchAlarm()
   useRedirectSignIn()
   const tab = useUi((s) => s.tab)
   const driving = useUi((s) => !!s.route)

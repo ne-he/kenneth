@@ -220,7 +220,7 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 - **Situs tim belum di-deploy ulang.** kenneth-9339d.web.app dan kenneth-park.web.app masih desain lama; versi terbaru
   live di https://park-kenneth.web.app (project terpisah, `npm run deploy:park`).
 - Semua angka simulasi. Tidak ada palang, gedung, runner, atau pembayaran sungguhan. Pembayaran hanya animasi.
-- Notifikasi "ada yang batal" (Premium) baru tertulis di halaman paket.
+- Notifikasi "ada yang batal" (Premium) jalan dalam demo saja: tidak ada pengguna lain yang memesan, jadi petak kembali satu sampai dua menit setelah minta kabar (`engine/watch.ts`).
 - Laporan kondisi pengguna dan jawaban booth hanya tersimpan di perangkat itu.
 - Data tidak sinkron antar perangkat walau sudah login (disengaja).
 - Sisa temuan audit UI yang belum dikerjakan: lihat [UX-AUDIT.md](UX-AUDIT.md), bagian "Status setelah desain ulang".
