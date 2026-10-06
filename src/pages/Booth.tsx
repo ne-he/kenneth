@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, DownloadSimple, Heart, Lightbulb, QrCode, Question, SignOut, Sparkle, Trash, UsersThree } from '@phosphor-icons/react'
+import { ArrowLeft, Check, DownloadSimple, Heart, Lightbulb, LinkSimple, QrCode, Question, SignOut, Sparkle, Trash, UsersThree } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 import QRCode from 'qrcode'
@@ -589,10 +589,13 @@ function Session({ c }: { c: (typeof COPY)[keyof typeof COPY] }) {
             {qr ? <img src={qr} alt="" className="aspect-square w-full" /> : <div className="aspect-square w-full" />}
           </div>
           <p className="mx-auto mt-3 max-w-[300px] text-center text-[12px] leading-snug text-ink-3">{c.sessionScan}</p>
+        </div>
+      )}
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        {showCode && (
           <Button
             variant="ghost"
-            block
-            className="mt-3"
+            className="sm:col-span-2"
             onClick={() => {
               navigator.clipboard?.writeText(link).then(() => {
                 setCopied(true)
@@ -600,11 +603,9 @@ function Session({ c }: { c: (typeof COPY)[keyof typeof COPY] }) {
               })
             }}
           >
-            {copied ? c.sessionCopied : c.sessionCopy}
+            <LinkSimple size={16} weight="bold" /> {copied ? c.sessionCopied : c.sessionCopy}
           </Button>
-        </div>
-      )}
-      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        )}
         <Button variant="ghost" onClick={() => setShowCode((v) => !v)}>
           <QrCode size={16} weight="bold" /> {showCode ? c.sessionHide : c.sessionShow}
         </Button>
