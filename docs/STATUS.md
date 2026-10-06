@@ -73,13 +73,13 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
 
 ### 3.1 Tiga tab (dock kaca mengambang di bawah)
 
-Tab tampil sebagai ikon tanpa tulisan, dengan titik kecil di bawah tab yang aktif.
+Tab tampil sebagai ikon tanpa tulisan; tab yang aktif duduk di pil aksen yang bergeser antar tab.
 
 | Tab | Isi |
 |---|---|
 | **Tiket** (kiri) | Yang sedang berjalan: lokasi parkir tersimpan, runner yang jalan, petak yang sedang ditahan, charger yang mengisi. Kalau kosong, ada tombol "Cari parkir". Nanti: pesanan belum mulai dan pengingat. Riwayat: selesai, dibatalkan, hangus, masing-masing dengan tombol "Lagi". Ringkasan bulan ini (kali parkir, menit dihemat) |
-| **Beranda** (tengah) | Peta MapLibre. Di atas peta: chip jam simulasi, tombol lokasiku, dan avatar yang membuka Akun. Lembar bawah "Mau parkir di mana?" dengan chip kendaraan di sebelah judul (ikon 3D mobilnya sesuai model dan warna, ketuk untuk ganti kendaraan), kolom cari, dan tiga pilihan layanan satu baris. Lembar ditarik ke atas memperlihatkan daftar lokasi dengan filter Semua, Favorit, Kampus, Mall |
-| **Akun** (kanan) | Login Google atau tamu, garasi kendaraan (mobil/motor, pelat, EV), paket Gratis/Premium, dampak bulan ini, peta dan navigasi, notifikasi dan preferensi, bahasa, tema (ikut sistem, terang, gelap), privasi, "Untuk tim dan demo" (jam simulasi, /booth, /mitra), reset |
+| **Beranda** (tengah) | Peta MapLibre. Di atas peta: label kecil "Demo" dengan jam simulasi (tidak muncul di mode waktu nyata; jamnya diganti di Akun), tombol lokasiku, dan avatar yang membuka Akun. Lembar bawah "Mau parkir di mana?" dengan chip kendaraan di sebelah judul (ikon 3D mobilnya sesuai model dan warna, ketuk untuk ganti kendaraan), kolom cari, dan tiga pilihan layanan satu baris. Lembar ditarik ke atas memperlihatkan daftar lokasi dengan filter Semua, Favorit, Mall, Kampus, Kantor |
+| **Akun** (kanan) | Kartu profil: nama (Google atau tamu), mobil yang dipakai dengan ikon 3D dan pelatnya, dan angka bulan ini (kali parkir, menit antre dan liter bensin yang dihemat, berlabel "contoh" kalau dari riwayat contoh). Lalu paket Gratis/Premium, tempat favorit dengan kondisinya sekarang (ketuk untuk buka di peta), garasi kendaraan (mobil/motor, pelat, EV), peta dan navigasi, notifikasi dan preferensi, bahasa, tema (ikut sistem, terang, gelap), privasi, "Untuk tim dan demo" (jam simulasi, /booth, /mitra), reset |
 
 ### 3.2 Layanan di Beranda
 
