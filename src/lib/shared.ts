@@ -25,7 +25,13 @@ const HOUR = 3_600_000
 let ready: Promise<{ fs: typeof import('firebase/firestore'); db: Firestore }> | null = null
 
 function firestore() {
-  ready ??= Promise.all([firebaseApp(), import('firebase/firestore')]).then(([app, fs]) => ({ fs, db: fs.getFirestore(app) }))
+  ready ??= Promise.all([firebaseApp(), import('firebase/firestore')])
+    .then(([app, fs]) => ({ fs, db: fs.getFirestore(app) }))
+    .catch((e: unknown) => {
+      // Offline before the script was ever fetched. Forget the failure so the next call tries again.
+      ready = null
+      throw e
+    })
   return ready
 }
 
