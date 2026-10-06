@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { toCsv, type BoothResponse } from './booth'
+import { answerId, combine, isSession, newSession, toCsv, type BoothResponse } from './booth'
 
 const base: BoothResponse = {
   id: 'a1',
@@ -42,5 +42,35 @@ describe('booth CSV export', () => {
     const row = toCsv([base]).split('\n')[1]
     expect(row).toContain('okupansi; gerbang')
     expect(row).toContain('2026-11-07T07:00:00.000Z')
+  })
+})
+
+describe('booth sessions', () => {
+  const mine = { ...base, id: 'm1', at: base.at + 60_000, contact: '@pengunjung' }
+  const theirs = { ...base, id: 't1', at: base.at + 120_000 }
+
+  it('shows this phone and the other phones together, newest first', () => {
+    expect(combine([mine], [theirs]).map((r) => r.id)).toEqual(['t1', 'm1'])
+  })
+
+  it('counts an answer once when the session sends it back, and keeps its contact', () => {
+    const echoed = { ...mine, contact: '' }
+    const all = combine([mine], [echoed, theirs])
+    expect(all).toHaveLength(2)
+    expect(all.find((r) => r.id === 'm1')?.contact).toBe('@pengunjung')
+  })
+
+  it('makes session keys that cannot be guessed and fit the rules', () => {
+    const a = newSession()
+    expect(isSession(a)).toBe(true)
+    expect(a).not.toBe(newSession())
+    expect(isSession('booth')).toBe(false)
+    expect(isSession('a/b' + a.slice(3))).toBe(false)
+  })
+
+  it('gives answers ids that do not collide between phones', () => {
+    const ids = new Set(Array.from({ length: 500 }, answerId))
+    expect(ids.size).toBe(500)
+    for (const id of ids) expect(id).toMatch(/^[A-Za-z0-9-]{1,40}$/)
   })
 })
