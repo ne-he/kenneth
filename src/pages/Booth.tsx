@@ -5,7 +5,7 @@ import QRCode from 'qrcode'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { Button } from '../components/ui/Button'
-import { Wordmark } from '../components/ui/Logo'
+import { LogoMark, Wordmark } from '../components/ui/Logo'
 import { useLang } from '../i18n'
 import { haptic } from '../lib/haptics'
 import { shareAnswer, sharedAvailable, watchSession } from '../lib/shared'
@@ -214,9 +214,15 @@ export default function Booth() {
           <Link to="/" className="grid size-9 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink" aria-label={c.back}>
             <ArrowLeft size={16} weight="bold" />
           </Link>
-          <Wordmark />
-          <span className="rounded-full bg-brand-100 px-2.5 py-1 text-[11px] font-semibold text-brand-800 dark:bg-brand-500/15 dark:text-brand-200">{c.title}</span>
-          <span className="ml-auto rounded-full bg-surface-2 px-3 py-1 text-[12px] font-bold tabular">
+          {/* The name needs room the two pills take on a narrow phone; the mark alone says KENNETH there. */}
+          <span className="hidden min-[420px]:block">
+            <Wordmark />
+          </span>
+          <span className="shrink-0 min-[420px]:hidden">
+            <LogoMark size={26} />
+          </span>
+          <span className="whitespace-nowrap rounded-full bg-brand-100 px-2.5 py-1 text-[11px] font-semibold text-brand-800 dark:bg-brand-500/15 dark:text-brand-200">{c.title}</span>
+          <span className="ml-auto whitespace-nowrap rounded-full bg-surface-2 px-3 py-1 text-[12px] font-bold tabular">
             {responses.length} {c.total}
           </span>
         </div>
