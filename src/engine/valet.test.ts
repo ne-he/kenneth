@@ -74,8 +74,10 @@ describe('what can be booked', () => {
     expect(servicesFor(VENUE_BY_ID['central-park'], 'mobil')).toEqual(['zone', 'valet', 'ev'])
   })
 
-  it('sells nothing at a campus and nothing to a motorbike', () => {
-    expect(servicesFor(VENUE_BY_ID['binus-anggrek'], 'mobil')).toEqual([])
+  it('sells at a campus on the same rules as a mall, and nothing to a motorbike', () => {
+    expect(servicesFor(VENUE_BY_ID['binus-anggrek'], 'mobil')).toEqual(['zone', 'valet', 'ev'])
+    expect(servicesFor(VENUE_BY_ID['binus-syahdan'], 'mobil')).toEqual(['zone'])
+    expect(servicesFor(VENUE_BY_ID['binus-anggrek'], 'motor')).toEqual([])
     expect(servicesFor(VENUE_BY_ID['central-park'], 'motor')).toEqual([])
   })
 

@@ -13,6 +13,7 @@ import type { VenueId } from '../data/types'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
 import { AVG_STAY_H, BUSY_LINE, FULL_LINE, STEERED, diversions, gateBalance, hourlyFlow, zoneDay, weekHeat } from '../engine/mitra'
 import { formatRupiah } from '../engine/pricing'
+import { zoneOf } from '../engine/zone'
 import { useLang } from '../i18n'
 import { useResolvedTheme } from '../lib/theme'
 import { atWib, dayName, nextSaturdayAt, wib } from '../lib/time'
@@ -59,7 +60,7 @@ const COPY = {
     assume: (h: number) =>
       `Asumsi model: rata-rata parkir ${h} jam, pengunjung mulai batal di atas 88% dan sampai 22% di 100%. Harga paket masih perkiraan, belum divalidasi ke pengelola mana pun.`,
     gross: 'nilai kotor',
-    noZone: 'Kampus tidak punya Zona KENNETH',
+    noZone: 'Belum ada Zona KENNETH di sini',
     table: 'Lihat sebagai tabel',
     hour: 'Jam',
   },
@@ -103,7 +104,7 @@ const COPY = {
     assume: (h: number) =>
       `Model assumptions: average stay ${h} hours, visitors start giving up above 88% and up to 22% at 100%. Plan prices are estimates, not validated with any manager yet.`,
     gross: 'gross value',
-    noZone: 'Campuses have no KENNETH Zone',
+    noZone: 'No KENNETH Zone here yet',
     table: 'View as table',
     hour: 'Hour',
   },
@@ -139,8 +140,8 @@ export default function Mitra() {
   const heat = useMemo(() => weekHeat(venue, now), [venue, now])
   const prio = useMemo(() => zoneDay(venue, dayTs), [venue, dayTs])
   const busyVenue = peak.occ >= FULL_LINE
-  // Only malls sell Zona KENNETH bays (docs/PRODUCT.md), so campuses and offices get the dashboard plan alone.
-  const isMall = venue.category === 'mall'
+  // Malls, campuses and offices sell Zona KENNETH on the same rules; a place without a zone gets the dashboard plan alone.
+  const hasZone = !!zoneOf(venue)
   const nowHour = dayKey === 'today' ? wib(now).hourF : undefined
 
   return (
@@ -200,8 +201,8 @@ export default function Mitra() {
           <Kpi
             icon={<ShieldCheck size={18} weight="fill" />}
             label={c.kpiZone}
-            value={isMall ? prio.tickets : null}
-            note={!isMall ? c.noZone : prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
+            value={hasZone ? prio.tickets : null}
+            note={!hasZone ? c.noZone : prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
           />
         </section>
 
@@ -252,8 +253,8 @@ export default function Mitra() {
           </Card>
           <Card title={c.products} sub="">
             <div className="space-y-2">
-              <Product name={c.p1} price={c.p1p} desc={c.p1d} fit={isMall && !busyVenue} fitLabel={c.fit} />
-              <Product name={c.p2} price={c.p2p} desc={c.p2d} fit={isMall && busyVenue} fitLabel={c.fit} />
+              <Product name={c.p1} price={c.p1p} desc={c.p1d} fit={hasZone && !busyVenue} fitLabel={c.fit} />
+              <Product name={c.p2} price={c.p2p} desc={c.p2d} fit={hasZone && busyVenue} fitLabel={c.fit} />
               <Product name={c.p3} price={c.p3p} desc={c.p3d} fit fitLabel={c.fit} />
             </div>
           </Card>

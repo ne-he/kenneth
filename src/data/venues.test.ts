@@ -31,8 +31,8 @@ describe('venue data', () => {
       expect(v.capacity, v.id).toBeGreaterThan(0)
       expect(v.load, v.id).toBeGreaterThan(0)
       expect(v.gates.length, v.id).toBeGreaterThan(0)
-      // Malls have a Zona KENNETH gate, campuses sell nothing.
-      expect(v.gates.some((g) => g.zoneLane), `${v.id} zone lane`).toBe(v.category === 'mall')
+      // Every place sells Zona KENNETH on the same rules, malls, campuses and offices alike (decision 2 Oct 2026).
+      expect(v.gates.some((g) => g.zoneLane), `${v.id} zone lane`).toBe(true)
       v.gates.forEach((g) => expect(g.pull, g.id).toBeGreaterThan(0))
       expect(new Set(v.gates.map((g) => g.id)).size, v.id).toBe(v.gates.length)
       expect(v.levels.length, v.id).toBeGreaterThan(0)
@@ -43,7 +43,6 @@ describe('venue data', () => {
       expect(v.motor.capacity, `${v.id} motorbike bays`).toBeGreaterThan(0)
       expect(v.motor.firstHour, `${v.id} motorbike tariff`).toBeLessThan(v.tariff.firstHour)
       if (v.valet) {
-        expect(v.category, `${v.id} valet`).toBe('mall')
         expect(v.valet.lobbies.length, `${v.id} valet lobbies`).toBeGreaterThan(0)
         v.valet.lobbies.forEach((l) => expect(v.lobbies, `${v.id} valet lobby`).toContain(l))
       }

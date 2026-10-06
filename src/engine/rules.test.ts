@@ -43,9 +43,10 @@ describe('pricing', () => {
 })
 
 describe('KENNETH Zone', () => {
-  it('exists at malls with a plate reader gate, never at a campus', () => {
+  it('sits behind the gate with the plate reader, at a mall, a campus or an office alike', () => {
     expect(zoneOf(cp)?.gate.id).toBe('cp-3')
-    expect(zoneOf(VENUE_BY_ID['binus-anggrek'])).toBeNull()
+    expect(zoneOf(VENUE_BY_ID['binus-anggrek'])?.gate.zoneLane).toBe(true)
+    expect(zoneOf(VENUE_BY_ID['menara-astra'])?.gate.zoneLane).toBe(true)
   })
 
   it('keeps the zone between 12 and 40 bays', () => {
