@@ -177,6 +177,7 @@ const en: Dict = {
     reportLega: 'Still open',
     reportThanks: 'Thanks, your report helps other drivers',
     reportsRecent: (n: number) => `${n} user reports in the last hour`,
+    reportWait: (min: number) => `Your report here is in. You can report again in ${min} min.`,
     gage: 'Odd-even plates',
     gageNA: 'Does not apply on this route',
     gageWeekend: 'Does not apply at weekends',
