@@ -166,6 +166,17 @@ npm run deploy           # build lalu publish ke https://kenneth-9339d.web.app d
 npm run deploy:preview   # link uji coba terpisah, hangus sendiri setelah 7 hari
 ```
 
+Ada juga situs terpisah, https://park-kenneth.web.app, di project Firebase `park-kenneth` (di luar project tim), buat
+demo tanpa harus menunggu akses rilis ke `kenneth-9339d`. Yang punya akses ke project itu cukup jalankan:
+
+```bash
+npm run deploy:park      # build lalu publish ke https://park-kenneth.web.app
+```
+
+Build ini (`vite build --mode park`) mengganti alamat di tag pratinjau link (`og:url`, `og:image`) ke
+park-kenneth.web.app. Login Google di sana baru jalan kalau domainnya ditambahkan ke Authorized domains project tim;
+tanpa itu, dan tanpa `.env.local`, app jalan dalam mode tamu.
+
 Login Google perlu diaktifkan sekali oleh pemilik project: Firebase console, Authentication, Get started,
 Sign-in method, Google, Enable, pilih email dukungan, Save. Tidak perlu deploy ulang setelahnya.
 Popup login selalu lewat `kenneth-9339d.firebaseapp.com` (diturunkan dari project ID di `src/lib/auth.ts`), karena

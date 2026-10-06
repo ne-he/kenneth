@@ -12,6 +12,13 @@
           "kenneth-park"
         ]
       }
+    },
+    "park-kenneth": {
+      "hosting": {
+        "park": [
+          "park-kenneth"
+        ]
+      }
     }
   },
   "etags": {}

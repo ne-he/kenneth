@@ -2,16 +2,35 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { readFileSync } from 'node:fs'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }
+
+/**
+ * Link previews name the site they are served from. index.html carries the team site's address; a build for
+ * another site swaps in its own, picked by build mode (vite build --mode park) or by SITE_URL.
+ */
+const TEAM_SITE = 'https://kenneth-9339d.web.app'
+const SITES: Record<string, string> = { park: 'https://park-kenneth.web.app' }
+
+function siteUrl(): Plugin {
+  let site: string | undefined
+  return {
+    name: 'kenneth-site-url',
+    configResolved(config) {
+      site = (process.env.SITE_URL ?? SITES[config.mode])?.replace(/\/$/, '')
+    },
+    transformIndexHtml: (html) => (site ? html.replaceAll(TEAM_SITE, site) : html),
+  }
+}
 
 export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(version) },
   plugins: [
     react(),
     tailwindcss(),
+    siteUrl(),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon-32.png', 'favicon-48.png', 'apple-touch-icon.png', 'og.png'],
