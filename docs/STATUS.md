@@ -39,7 +39,7 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
 6. **Jujur soal sumber data.** Tiap lokasi berlabel "Data langsung" (dari palang parkir) atau "Estimasi".
 7. **Data pribadi tinggal di HP.** Tidak ada database server. Login Google hanya untuk nama, email, foto.
    (Sejak 6 Okt 2026 build park-kenneth.web.app berbagi data anonim lewat Firestore: laporan kondisi berisi
-   tempat, pilihan, dan jam server saja. Data pribadi tetap di HP.)
+   tempat, pilihan, dan jam server saja, dan jawaban booth dalam sesi bersama tanpa kontak. Data pribadi tetap di HP.)
 8. **App tidak pernah pindah tab sendiri.** Setelah aksi, cukup toast plus titik di tab Tiket.
 9. **Peta adalah panggungnya, layanan dipilih di lembar Beranda** (direvisi 2 Okt 2026 di PR #13, menggantikan
    dropdown "Mau ngapain?"). Tiga layanan berbayar tampil sebagai pilihan besar yang bisa dinyalakan dan dilepas.
@@ -138,7 +138,7 @@ Layout sama. Yang berubah saat layanan dipilih hanya angka di pin, angka di daft
 | Rute | Isi |
 |---|---|
 | `/mitra` | Dashboard B2B untuk pengelola gedung: mobil masuk, puncak okupansi, perkiraan pengunjung batal datang (label estimasi model), booking Zona KENNETH dan nilai kotornya, okupansi per jam, ke mana yang batal pergi, beban gerbang di jam tersibuk, heatmap Senin sampai Minggu, produk yang cocok untuk lokasi itu |
-| `/booth` | Mode booth BiFest: form validasi 5 pertanyaan + pilih 2 fitur + feedback grid, tally jawaban, ekspor CSV dan JSON |
+| `/booth` | Mode booth BiFest: form validasi 5 pertanyaan + pilih 2 fitur + feedback grid, tally jawaban, ekspor CSV dan JSON. Di park-kenneth.web.app: "Gabungkan HP booth", satu sesi untuk beberapa HP lewat kode QR |
 
 Di laptop, app tampil di bingkai HP dengan QR di pojok. Splash: layar tinta dengan ikon K kecil, memudar setelah peta siap.
 Onboarding pertama kali: satu layar sambutan (Mulai, atau masuk dengan Google kalau tersedia), lalu peta. Pelat ditanya
@@ -225,7 +225,8 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 - Semua angka simulasi. Tidak ada palang, gedung, runner, atau pembayaran sungguhan. Pembayaran hanya animasi.
 - Notifikasi "ada yang batal" (Premium) jalan dalam demo saja: tidak ada pengguna lain yang memesan, jadi petak kembali satu sampai dua menit setelah minta kabar (`engine/watch.ts`).
 - Laporan kondisi dibagi antar HP hanya di park-kenneth.web.app (`VITE_SHARED=on`, Firestore project
-  `park-kenneth`, aturan di `firestore.rules`). Di build tim masih per perangkat. Jawaban booth masih per perangkat.
+  `park-kenneth`, aturan di `firestore.rules`). Di build tim masih per perangkat. Jawaban booth juga bisa digabung
+  antar HP lewat sesi bersama di park-kenneth.web.app; kontak pengunjung tetap di HP tempat diisi.
 - Data tidak sinkron antar perangkat walau sudah login (disengaja).
 - Sisa temuan audit UI yang belum dikerjakan: lihat [UX-AUDIT.md](UX-AUDIT.md), bagian "Status setelah desain ulang".
 

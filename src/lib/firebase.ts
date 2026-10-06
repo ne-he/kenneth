@@ -33,6 +33,12 @@ let app: Promise<FirebaseApp> | null = null
 
 /** The Firebase app, set up on first use. Nothing Firebase downloads before that. */
 export function firebaseApp(): Promise<FirebaseApp> {
-  app ??= import('firebase/app').then(({ getApps, initializeApp }) => getApps()[0] ?? initializeApp(firebaseConfig))
+  app ??= import('firebase/app')
+    .then(({ getApps, initializeApp }) => getApps()[0] ?? initializeApp(firebaseConfig))
+    .catch((e: unknown) => {
+      // Offline before the script was ever fetched. Forget the failure so the next call tries again.
+      app = null
+      throw e
+    })
   return app
 }

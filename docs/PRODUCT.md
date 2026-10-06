@@ -146,7 +146,9 @@ Sebelas risiko ini dari daftar risiko tim. Kolom terakhir menunjukkan di mana ja
 ## Yang diuji di BINUS Festival
 
 Halaman `/booth` dipakai di stan. Satu pengunjung mengisi satu kali, jawabannya tersimpan di perangkat
-dan bisa diunduh sebagai CSV atau JSON.
+dan bisa diunduh sebagai CSV atau JSON. Kalau stan pakai beberapa HP, satu HP memulai "sesi bersama" dan HP lain
+memindai kodenya: ringkasan dan unduhan di tiap HP lalu berisi jawaban semua HP. Kontak pengunjung tidak ikut
+dikirim, jadi tetap ada di HP tempat diisi.
 
 Pertanyaannya, dengan nomor yang sama seperti di layar:
 

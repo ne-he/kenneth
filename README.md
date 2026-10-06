@@ -61,7 +61,7 @@ Halaman lain:
 | Halaman | Isi |
 |---|---|
 | `/mitra` | Dashboard untuk pengelola gedung (produk B2B): pengunjung yang batal datang, larinya ke mana, beban tiap gerbang, pola seminggu |
-| `/booth` | Mode booth BINUS Festival: form validasi + feedback grid, hasilnya bisa diunduh CSV atau JSON |
+| `/booth` | Mode booth BINUS Festival: form validasi + feedback grid, hasilnya bisa diunduh CSV atau JSON. Di park-kenneth.web.app beberapa HP bisa digabung jadi satu sesi lewat kode QR |
 
 Keduanya ada di Akun, bagian "Untuk tim dan demo". Untuk demo, jam app diset ke **Sabtu 14.07** (mall puncak).
 Ganti lewat Akun, Waktu simulasi. **Selasa 10.00** memperlihatkan kampus yang penuh.
@@ -123,7 +123,8 @@ Tambahan di luar 11 fitur:
 - **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
 - **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, booking, dan lokasi
   parkir tetap di perangkat. Di park-kenneth.web.app, laporan "Kondisi di lokasi beda?" dibagi ke semua pengguna
-  lewat Firestore, tanpa identitas pengirim: cuma tempat, pilihan, dan jam server. Untuk menghitung rute, titik awal (lokasimu kalau kamu menekan tombol lokasi) dan
+  lewat Firestore, tanpa identitas pengirim: cuma tempat, pilihan, dan jam server. Jawaban booth yang digabung
+  lewat sesi bersama ikut tersimpan di sana tanpa kontak; kontak tetap di HP tempat diisi. Untuk menghitung rute, titik awal (lokasimu kalau kamu menekan tombol lokasi) dan
   tujuan dikirim ke server demo OSRM, dan potongan peta diambil dari OpenFreeMap. Yang nantinya dijual ke pengelola
   hanya agregat per jam.
 
@@ -180,8 +181,9 @@ Build ini (`vite build --mode park`) mengganti alamat di tag pratinjau link (`og
 park-kenneth.web.app, lalu membaca `.env.park.local`: konfigurasi web app project `park-kenneth` (ambil dengan
 `npx firebase-tools apps:sdkconfig WEB --project park-kenneth`, format sama dengan `.env.example`). File itu tidak
 ikut di-commit. Tanpa file itu situs ini jalan dalam mode tamu. Dengan `VITE_SHARED=on` di file yang sama, laporan
-kondisi dibagi antar HP lewat Firestore project itu (database di Jakarta, `asia-southeast2`). Siapa boleh baca dan
-tulis apa ada di [firestore.rules](firestore.rules): laporan cuma bisa ditambah, tidak bisa diubah atau dihapus.
+kondisi dan jawaban booth dibagi antar HP lewat Firestore project itu (database di Jakarta, `asia-southeast2`). Siapa
+boleh baca dan tulis apa ada di [firestore.rules](firestore.rules): laporan cuma bisa ditambah, tidak bisa diubah atau
+dihapus; jawaban booth cuma bisa dibaca HP yang memindai kode sesinya, dan tidak pernah membawa kontak.
 
 Login Google perlu diaktifkan sekali oleh pemilik tiap project (`kenneth-9339d` dan `park-kenneth`): Firebase console,
 Authentication, Get started, Sign-in method, Google, Enable, pilih email dukungan, Save. Tidak perlu deploy ulang

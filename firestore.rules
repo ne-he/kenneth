@@ -17,5 +17,41 @@ service cloud.firestore {
         && request.resource.data.kind in ['penuh', 'antri', 'lega']
         && request.resource.data.at == request.time;
     }
+
+    // Booth answers (/booth), pooled per booth session. The session key in the path is the only way
+    // in: no rule lists sessions, so only a phone that scanned the session's code can read or add.
+    // Answers carry no contact details; those stay on the phone they were typed on. An answer can be
+    // sent again after a dropped connection, but never changed or deleted from a phone.
+    match /booths/{session}/answers/{id} {
+      allow read: if isSession(session);
+      allow create: if isSession(session) && isAnswer(request.resource.data, id);
+      allow update: if isSession(session) && request.resource.data == resource.data;
+    }
+
+    function isSession(key) {
+      return key.matches('[A-Za-z0-9_-]{22}');
+    }
+
+    function isText(v) {
+      return v is string && v.size() <= 1000;
+    }
+
+    function isAnswer(d, id) {
+      return d.keys().hasOnly(['id', 'at', 'lastTime', 'lostMin', 'tolerance', 'features', 'payPriority', 'like', 'wish', 'question', 'idea'])
+        && d.id == id
+        && id.matches('[A-Za-z0-9-]{1,40}')
+        && d.at is int
+        && d.lastTime in ['minggu', 'bulan', 'lama', 'tidak']
+        && d.lostMin in ['<5', '5-15', '15-30', '>30', '']
+        && d.tolerance in ['ya', 'mungkin', 'tidak']
+        && d.features is list
+        && d.features.size() <= 2
+        && d.features.hasOnly(['okupansi', 'alternatif', 'gerbang', 'ingetin', 'biaya', 'mobil', 'difabel', 'prioritas', 'ev'])
+        && d.payPriority in ['ya', 'tergantung', 'tidak']
+        && isText(d.like)
+        && isText(d.wish)
+        && isText(d.question)
+        && isText(d.idea);
+    }
   }
 }
