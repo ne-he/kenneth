@@ -7,7 +7,6 @@ import {
   Crown,
   GithubLogo,
   GoogleLogo,
-  Leaf,
   Lightning,
   LockKey,
   MapTrifold,
@@ -17,6 +16,7 @@ import {
   PresentationChart,
   ShieldCheck,
   SignOut,
+  Star,
   Translate,
   UserFocus,
   Vibrate,
@@ -26,10 +26,13 @@ import clsx from 'clsx'
 import { motion } from 'motion/react'
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
+import { VENUE_BY_ID } from '../../data/venues'
 import { plateParity } from '../../engine/gage'
 import { impactOf, sumImpact } from '../../engine/impact'
+import { forKind, snapshot } from '../../engine/occupancy'
 import { useT } from '../../i18n'
 import { ACCENT_ORDER, ACCENTS } from '../../lib/accent'
+import { displayModel } from '../../lib/carBody'
 import { haptic } from '../../lib/haptics'
 import { REPO_URL } from '../../lib/links'
 import { NAV_APP_NAME } from '../../lib/navApps'
@@ -39,7 +42,7 @@ import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { Segmented, Toggle } from '../ui/Controls'
 import { Plate } from '../ui/Display'
-import { Label, List } from '../ui/Kit'
+import { Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
 import { LogoMark } from '../ui/Logo'
 import { VehicleIcon } from '../ui/VehicleIcon'
 import { buttonClass } from '../ui/buttonStyles'
@@ -73,7 +76,12 @@ export function Account() {
       <h1 className="pt-3 pb-5 text-[28px] leading-tight font-semibold tracking-tight">{t.profile.title}</h1>
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <Identity />
+        <Identity
+          trips={month.length}
+          sample={month.length > 0 && month.every((v) => v.sample)}
+          minutes={Math.round(impact.minutes)}
+          fuel={impact.fuelL.toLocaleString('id-ID', { maximumFractionDigits: 1 })}
+        />
       </motion.div>
 
       <Group>
@@ -93,18 +101,9 @@ export function Account() {
           }
           onClick={() => open({ kind: 'premium' })}
         />
-        <Row
-          icon={<Leaf size={17} weight="fill" />}
-          title={t.activity.impact}
-          hint={t.profile.impactLine(
-            Math.round(impact.minutes),
-            impact.fuelL.toLocaleString('id-ID', { maximumFractionDigits: 2 }),
-            impact.co2Kg.toLocaleString('id-ID', { maximumFractionDigits: 1 }),
-          )}
-          right={<Chevron />}
-          onClick={() => open({ kind: 'impact' })}
-        />
       </Group>
+
+      <Favorites now={now} />
 
       <Garage />
 
@@ -222,28 +221,75 @@ export function Account() {
   )
 }
 
-/** Who you are: Google account, or a guest whose data never leaves the phone. */
-function Identity() {
+/**
+ * Who you are at a glance: your name (a Google account, or a guest whose data
+ * never leaves the phone), the car the app plans for, and what KENNETH saved
+ * you this month. The car opens its editor, the numbers open how they are counted.
+ */
+function Identity({ trips, sample, minutes, fuel }: { trips: number; sample: boolean; minutes: number; fuel: string }) {
   const t = useT()
   const name = useApp((s) => s.name)
   const account = useApp((s) => s.account)
+  const car = useVehicle()
+  const open = useUi((s) => s.open)
   const { available, busy, signIn, signOut } = useSignIn()
   const shown = account?.name ?? name ?? ''
+  const parity = plateParity(car.plate)
   return (
-    <section className="mb-6 rounded-[20px] border border-line bg-surface p-4">
-      <div className="flex items-center gap-3.5">
+    <section className="mb-6 rounded-[24px] border border-line bg-surface p-4">
+      <div className="flex items-center gap-4">
         {account?.photo ? (
-          <img src={account.photo} alt="" referrerPolicy="no-referrer" className="size-14 shrink-0 rounded-full object-cover" />
+          <img src={account.photo} alt="" referrerPolicy="no-referrer" className="size-16 shrink-0 rounded-full object-cover" />
         ) : (
-          <span className="grid size-14 shrink-0 place-items-center rounded-full bg-ink text-[22px] font-semibold text-canvas">
+          <span className="grid size-16 shrink-0 place-items-center rounded-full bg-ink text-[26px] font-semibold text-canvas">
             {(shown || t.profile.guest).slice(0, 1).toUpperCase()}
           </span>
         )}
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[17px] font-semibold tracking-tight">{shown || t.profile.guest}</span>
-          <span className="mt-0.5 block truncate text-[12.5px] text-ink-3">{account ? account.email : t.profile.guestHint}</span>
+          <span className="block truncate text-[20px] leading-tight font-semibold tracking-tight">{shown || t.profile.guest}</span>
+          <span className="mt-1 block truncate text-[12.5px] text-ink-3">{account ? account.email : t.profile.guestHint}</span>
         </span>
       </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          haptic('tap')
+          open({ kind: 'vehicle', id: car.id === 'none' ? 'new' : car.id })
+        }}
+        className="mt-4 flex w-full items-center gap-3 rounded-[18px] bg-surface-2 py-2 pr-4 pl-2 text-left transition-colors hover:bg-surface-3"
+      >
+        <span className="grid w-[64px] shrink-0 place-items-center">
+          <VehicleIcon vehicle={car} size={40} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[14.5px] font-semibold">{displayModel(car) || t.profile.kinds[car.kind]}</span>
+          <span className="mt-1 flex items-center gap-2 text-[12px] text-ink-3">
+            <Plate plate={car.plate} small />
+            <span className="truncate">{car.isEV ? 'EV' : parity ? t.profile.parity(parity) : ''}</span>
+          </span>
+        </span>
+        <span className="shrink-0 text-[12.5px] font-semibold text-ink-3">{t.profile.edit}</span>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          haptic('tap')
+          open({ kind: 'impact' })
+        }}
+        className="mt-4 block w-full text-left"
+      >
+        <span className="flex items-center justify-between px-1 text-[12.5px] font-medium text-ink-3">
+          {sample ? t.profile.monthSample : t.profile.month}
+          <Chevron />
+        </span>
+        <span className="mt-1.5 grid grid-cols-3 divide-x divide-line rounded-[18px] border border-line">
+          <Stat value={String(trips)} label={t.profile.statTrips} />
+          <Stat value={String(minutes)} unit={t.unit.min} label={t.profile.statQueue} />
+          <Stat value={fuel} unit="L" label={t.profile.statFuel} />
+        </span>
+      </button>
       {account ? (
         <button
           type="button"
@@ -268,6 +314,62 @@ function Identity() {
         )
       )}
     </section>
+  )
+}
+
+function Stat({ value, unit, label }: { value: string; unit?: string; label: string }) {
+  return (
+    <span className="px-2 py-3 text-center">
+      <span className="block text-[20px] leading-none font-semibold tracking-tight tabular">
+        {value}
+        {unit && <span className="ml-0.5 text-[12px] font-medium text-ink-3">{unit}</span>}
+      </span>
+      <span className="mt-1.5 block text-[11.5px] leading-tight text-ink-3">{label}</span>
+    </span>
+  )
+}
+
+/** The places you starred, each with how full it is now. A tap opens it on the map. */
+function Favorites({ now }: { now: number }) {
+  const t = useT()
+  const favorites = useApp((s) => s.favorites)
+  const kind = useVehicle().kind
+  const rows = favorites.flatMap((id) => {
+    const v = VENUE_BY_ID[id]
+    return v ? [{ v, snap: snapshot(forKind(v, kind), now) }] : []
+  })
+  return (
+    <Group title={t.profile.favorites}>
+      {rows.length === 0 ? (
+        <p className="flex items-start gap-3 px-4 py-3.5 text-[13px] leading-snug text-ink-3">
+          <Star size={17} className="mt-px shrink-0" />
+          {t.profile.favoritesEmpty}
+        </p>
+      ) : (
+        rows.map(({ v, snap }) => (
+          <button
+            key={v.id}
+            type="button"
+            onClick={() => {
+              haptic('tap')
+              const ui = useUi.getState()
+              ui.setTab('park')
+              ui.select(v.id)
+            }}
+            className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-2/60"
+          >
+            <VenueGlyph category={v.category} size={36} />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[14.5px] font-medium">{v.name}</span>
+              <span className="mt-0.5 block truncate text-[12px] text-ink-3">
+                {t.venue.category[v.category]} · {v.district}
+              </span>
+            </span>
+            <StatusPill status={snap.status} pct={snap.pct} label={t.status[snap.status]} />
+          </button>
+        ))
+      )}
+    </Group>
   )
 }
 

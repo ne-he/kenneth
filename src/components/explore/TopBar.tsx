@@ -1,6 +1,6 @@
 import { Crosshair, User } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 import { useT, useLang } from '../../i18n'
 import { haptic } from '../../lib/haptics'
 import { clock, dayName } from '../../lib/time'
@@ -12,8 +12,10 @@ import { IconButton } from '../ui/Button'
 const AREA = { minLat: -6.45, maxLat: -6.05, minLng: 106.55, maxLng: 107.1 }
 
 /**
- * One quiet row over the map: the demo clock on the left, locate and the
- * account on the right. Search and the services live in the sheet below.
+ * One quiet row over the map: a small Demo label with the simulated time on
+ * the left (nothing at all in live mode), locate and the account on the
+ * right. The clock is a tool for the team and is changed in Akun, Untuk tim
+ * dan demo (UX audit #7). Search and the services live in the sheet below.
  */
 export function TopBar({ now }: { now: number }) {
   const t = useT()
@@ -27,14 +29,22 @@ export function TopBar({ now }: { now: number }) {
       className="pt-safe pointer-events-none absolute inset-x-0 top-0 z-20 px-3.5"
     >
       <div className="flex items-center justify-between gap-2">
-        <Chip onClick={() => useUi.getState().open({ kind: 'clock' })} label={t.profile.clock}>
-          {/* Yellow means ramai on this map, so the simulated clock gets a neutral dot. "Simulasi" always stays. */}
-          <span className={clockMode === 'live' ? 'size-1.5 animate-pulse rounded-full bg-brand-500' : 'size-1.5 rounded-full bg-ink-3'} />
-          <span className="font-semibold text-ink tabular">
-            {dayName(now, lang)} {clock(now)}
+        {clockMode === 'live' ? (
+          <span />
+        ) : (
+          // Yellow means ramai on this map, so the label gets a neutral dot.
+          <span
+            role="note"
+            aria-label={`${t.common.demo}, ${dayName(now, lang, false)} ${clock(now)}`}
+            className="glass flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[11.5px] font-medium text-ink-2 shadow-[0_1px_2px_rgb(0_0_0/0.05),0_4px_12px_-6px_rgb(0_0_0/0.16)]"
+          >
+            <span className="size-1.5 rounded-full bg-ink-3" />
+            <span className="font-semibold text-ink">{t.common.demo}</span>
+            <span className="text-ink-3 tabular">
+              {dayName(now, lang)} {clock(now)}
+            </span>
           </span>
-          <span className="text-ink-3">{clockMode === 'live' ? t.common.live : t.common.simulated}</span>
-        </Chip>
+        )}
         <div className="pointer-events-auto flex items-center gap-2">
           <LocateButton />
           <AvatarButton />
@@ -65,22 +75,6 @@ function AvatarButton() {
     >
       {photo ? <img src={photo} alt="" className="size-full object-cover" /> : initial || <User size={18} weight="bold" className="text-ink-2" />}
     </motion.button>
-  )
-}
-
-function Chip({ children, onClick, label }: { children: ReactNode; onClick: () => void; label: string }) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={() => {
-        haptic('tap')
-        onClick()
-      }}
-      className="glass pointer-events-auto flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[11.5px] font-medium text-ink-2 shadow-[0_1px_2px_rgb(0_0_0/0.05),0_4px_12px_-6px_rgb(0_0_0/0.16)]"
-    >
-      {children}
-    </button>
   )
 }
 
