@@ -64,7 +64,7 @@ Halaman lain:
 | `/booth` | Mode booth BINUS Festival: form validasi + feedback grid, hasilnya bisa diunduh CSV atau JSON |
 
 Keduanya ada di Akun, bagian "Untuk tim dan demo". Untuk demo, jam app diset ke **Sabtu 14.07** (mall puncak).
-Ganti lewat chip jam di kiri atas peta. **Selasa 10.00** memperlihatkan kampus yang penuh.
+Ganti lewat Akun, Waktu simulasi. **Selasa 10.00** memperlihatkan kampus yang penuh.
 
 ## Lokasi
 
@@ -118,7 +118,8 @@ Tambahan di luar 11 fitur:
   Ini ide, belum realistis untuk sekarang. Lihat [docs/PRODUCT.md](docs/PRODUCT.md).
 - **Booking bayar per pakai.** Premium cuma jual hal yang nggak pernah habis: booking lebih awal, diskon, notifikasi.
 - **Valet pakai armada runner KENNETH.** Mobil diparkir di Zona KENNETH, jadi baliknya cepat. Nol biometrik, cukup kode dan pelat.
-- **Kampus tidak menjual apa pun.** Di kampus app cuma menunjukkan seberapa penuh dan ke mana kalau penuh.
+- **Kampus dan kantor ikut menjual layanan.** Zona KENNETH, valet, dan charger dengan aturan yang sama dengan mall
+  (keputusan tim 2 Okt 2026).
 - **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
 - **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, booking, dan lokasi
   parkir tetap di perangkat. Untuk menghitung rute, titik awal (lokasimu kalau kamu menekan tombol lokasi) dan
@@ -174,14 +175,15 @@ npm run deploy:park      # build lalu publish ke https://park-kenneth.web.app
 ```
 
 Build ini (`vite build --mode park`) mengganti alamat di tag pratinjau link (`og:url`, `og:image`) ke
-park-kenneth.web.app. Login Google di sana baru jalan kalau domainnya ditambahkan ke Authorized domains project tim;
-tanpa itu, dan tanpa `.env.local`, app jalan dalam mode tamu.
+park-kenneth.web.app, lalu membaca `.env.park.local`: konfigurasi web app project `park-kenneth` (ambil dengan
+`npx firebase-tools apps:sdkconfig WEB --project park-kenneth`, format sama dengan `.env.example`). File itu tidak
+ikut di-commit. Tanpa file itu situs ini jalan dalam mode tamu.
 
-Login Google perlu diaktifkan sekali oleh pemilik project: Firebase console, Authentication, Get started,
-Sign-in method, Google, Enable, pilih email dukungan, Save. Tidak perlu deploy ulang setelahnya.
-Popup login selalu lewat `kenneth-9339d.firebaseapp.com` (diturunkan dari project ID di `src/lib/auth.ts`), karena
-cuma handler di domain itu yang terdaftar di OAuth client bawaan Google. Domain hosting baru cukup ditambahkan di
-Authentication, Settings, Authorized domains.
+Login Google perlu diaktifkan sekali oleh pemilik tiap project (`kenneth-9339d` dan `park-kenneth`): Firebase console,
+Authentication, Get started, Sign-in method, Google, Enable, pilih email dukungan, Save. Tidak perlu deploy ulang
+setelahnya. Popup login selalu lewat `<project>.firebaseapp.com` (diturunkan dari project ID di
+`src/lib/firebase.ts`), karena cuma handler di domain itu yang terdaftar di OAuth client bawaan Google. Domain hosting
+baru cukup ditambahkan di Authentication, Settings, Authorized domains.
 
 ## Stack
 

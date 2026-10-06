@@ -1,12 +1,10 @@
 import type { Account } from '../store/app'
+import { firebaseApp, firebaseReady } from './firebase'
 
 /*
   Google sign-in through Firebase Authentication (free on the Spark plan).
-
-  The web config below is a public identifier, not a secret: it ships in the
-  bundle of every Firebase web app. It still comes from env variables so a
-  fork builds without it, in which case the app simply stays in guest mode.
-  See .env.example.
+  Without a Firebase config in the build (src/lib/firebase.ts) the app
+  simply stays in guest mode.
 
   Only the Google profile (name, email, photo) comes back. Tickets, history
   and the parked car stay in this browser, the same as for a guest.
@@ -15,30 +13,12 @@ import type { Account } from '../store/app'
   user taps "Masuk dengan Google", never on first load.
 */
 
-const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID as string | undefined
-
-const config = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY as string | undefined,
-  /*
-    Always <project>.firebaseapp.com, never a hosting domain like kenneth-park.web.app.
-    The OAuth client Google creates for the project only lists
-    https://<project>.firebaseapp.com/__/auth/handler as a redirect URI, so any other
-    auth domain makes the popup answer "Error 400: redirect_uri_mismatch". Every
-    hosting site signs in through this one, as long as it is an authorized domain
-    in Firebase Authentication.
-  */
-  authDomain: projectId ? `${projectId}.firebaseapp.com` : undefined,
-  projectId,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID as string | undefined,
-}
-
-export const authAvailable = !!(config.apiKey && config.authDomain && config.projectId && config.appId)
+export const authAvailable = firebaseReady
 
 const REDIRECT_FLAG = 'kenneth-auth-redirect'
 
 async function sdk() {
-  const [{ initializeApp, getApps }, auth] = await Promise.all([import('firebase/app'), import('firebase/auth')])
-  const app = getApps()[0] ?? initializeApp(config)
+  const [app, auth] = await Promise.all([firebaseApp(), import('firebase/auth')])
   return { auth, instance: auth.getAuth(app) }
 }
 

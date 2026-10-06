@@ -200,8 +200,9 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
   dari HP yang satu Wi-Fi. Wi-Fi kampus bisa memblokir koneksi antar perangkat, pakai hotspot HP kalau begitu.
 - **Rilis**: `npm run deploy` (dua situs sekaligus) atau `npm run deploy:preview` (link 7 hari). Yang deploy harus
   ditambahkan sebagai anggota project di Firebase console dan `npx firebase-tools login` sekali.
-- **Login Google** lewat `kenneth-9339d.firebaseapp.com` (lihat `src/lib/auth.ts`). Butuh `.env.local` dari
-  `.env.example`. Tanpa itu app jalan sebagai tamu.
+- **Login Google** lewat `<project>.firebaseapp.com` (lihat `src/lib/firebase.ts`). Butuh `.env.local` dari
+  `.env.example` untuk `kenneth-9339d`, dan `.env.park.local` untuk build park-kenneth.web.app. Tanpa itu app
+  jalan sebagai tamu. Provider Google harus di-Enable sekali di Authentication tiap project.
 - **Jam demo**: default Sabtu 14.07 (mall puncak). Selasa 10.00 menunjukkan kampus penuh.
 
 ## 7. Aturan kerja di repo ini
