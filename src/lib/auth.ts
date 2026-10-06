@@ -9,7 +9,7 @@ import { firebaseApp, firebaseReady } from './firebase'
   Only the Google profile (name, email, photo) comes back. Tickets, history
   and the parked car stay in this browser, the same as for a guest.
 
-  The Firebase SDK is about 60 KB gzipped, so it is only downloaded when the
+  The sign-in SDK is about 45 KB gzipped, so it is only downloaded when the
   user taps "Masuk dengan Google", never on first load.
 */
 

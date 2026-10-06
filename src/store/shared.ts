@@ -37,6 +37,10 @@ function subscribe(onChange: () => void) {
 
 /** Everyone's reports of the last hour, or null to fall back to this phone's. */
 export function useSharedReports(): CommunityReport[] | null {
-  useEffect(start, [])
+  useEffect(() => {
+    // Firestore is a big script. Start after the sheet has slid up, so parsing it cannot stutter the slide.
+    const id = window.setTimeout(start, 700)
+    return () => window.clearTimeout(id)
+  }, [])
   return useSyncExternalStore(subscribe, () => reports)
 }

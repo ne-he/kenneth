@@ -11,7 +11,8 @@ import { firebaseApp, firebaseReady } from './firebase'
   the team build and forks keep every report on the phone, as before.
   Who may read and write what: firestore.rules.
 
-  Firestore downloads the first time a place sheet opens, never on first load.
+  Firestore (about 160 KB gzipped) downloads the first time a place sheet
+  opens, never on first load, and is not part of the offline install.
 */
 
 export const sharedAvailable = firebaseReady && import.meta.env.VITE_SHARED === 'on'
