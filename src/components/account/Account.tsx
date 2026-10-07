@@ -6,7 +6,6 @@ import {
   Clock,
   ClockCounterClockwise,
   Crown,
-  GithubLogo,
   GoogleLogo,
   Lightning,
   LockKey,
@@ -35,7 +34,6 @@ import { useT } from '../../i18n'
 import { ACCENT_ORDER, ACCENTS } from '../../lib/accent'
 import { displayModel } from '../../lib/carBody'
 import { haptic } from '../../lib/haptics'
-import { REPO_URL } from '../../lib/links'
 import { NAV_APP_NAME } from '../../lib/navApps'
 import { clock, dayName } from '../../lib/time'
 import { useApp, useVehicle, type NavApp } from '../../store/app'
@@ -223,14 +221,6 @@ export function Account() {
 
       <section className="mt-2 flex flex-col items-center pb-4 text-center">
         <LogoMark size={40} />
-        <a
-          href={REPO_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-4 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-2 hover:text-ink"
-        >
-          <GithubLogo size={15} weight="fill" /> ne-he/kenneth
-        </a>
         <Version />
       </section>
     </div>
