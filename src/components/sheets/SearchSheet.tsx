@@ -72,7 +72,7 @@ export function SearchSheet() {
               }}
               className="flex w-full items-center gap-3 py-3 text-left"
             >
-              <VenueGlyph category={s.venue.category} />
+              <VenueGlyph category={s.venue.category} id={s.venue.id} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[15px] font-medium">{s.venue.name}</span>
                 <span className="text-[12px] text-ink-3">

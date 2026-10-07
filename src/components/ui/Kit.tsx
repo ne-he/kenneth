@@ -2,7 +2,7 @@ import { BuildingOffice, CaretDown, GraduationCap, Storefront } from '@phosphor-
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'motion/react'
 import { useState, type ReactNode } from 'react'
-import type { Category, OccupancyStatus } from '../../data/types'
+import type { Category, OccupancyStatus, VenueId } from '../../data/types'
 import { haptic } from '../../lib/haptics'
 import { STATUS } from '../../lib/status'
 
@@ -152,7 +152,25 @@ export function StatusPill({ status, pct, label }: { status: OccupancyStatus; pc
 }
 
 /** Neutral tile that says what kind of place this is before you read the name. */
-export function VenueGlyph({ category, size = 40 }: { category: Category; size?: number }) {
+/**
+ * A place at a glance: its own building, drawn in 3D like the car icons (public/venues, made by
+ * docs/brand/make_venue_icons.py). Without an id it falls back to the category glyph.
+ */
+export function VenueGlyph({ category, id, size = 40 }: { category: Category; id?: VenueId; size?: number }) {
+  if (id) {
+    return (
+      <img
+        src={`/venues/${id}.webp`}
+        alt=""
+        aria-hidden="true"
+        width={size}
+        height={size}
+        decoding="async"
+        draggable={false}
+        className="shrink-0 select-none"
+      />
+    )
+  }
   const Icon = category === 'kampus' ? GraduationCap : category === 'kantor' ? BuildingOffice : Storefront
   return (
     <span
