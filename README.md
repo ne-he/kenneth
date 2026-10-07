@@ -218,18 +218,17 @@ docs/          dokumen produk, model simulasi, screenshot, logo dan maskot (docs
 
 Logonya huruf K yang tersusun dari jalan dilihat dari atas, dengan satu mobil di cabang bawah. Batangnya
 jalan yang sedang kamu lewati, dua cabangnya pilihan tempat, dan mobilnya mengambil yang lega.
-File asli dan versi 1024px ada di [docs/brand](docs/brand).
+Di app K-nya berdiri langsung di atas latar, tanpa kotak hitam, dan namanya ditulis sebagai satu kata, Kenneth,
+dengan K jalan itu sebagai huruf pertama dalam font app (bukan huruf kapital berjarak). File asli, master 1024px,
+dan K tanpa latar ada di [docs/brand](docs/brand). `docs/brand/make_mark.py` membuat ulang semuanya dari logo asli.
 
-Saat app dibuka muncul layar gelap warna ink dengan logo. Selama app memuat, mobilnya diam di tempat parkirnya. Begitu
-peta selesai digambar, mobil itu jalan ke persimpangan, belok kanan, lalu keluar lewat cabang atas sementara layar
-pembuka memudar. Mobil sengaja menunggu peta karena pembuatan peta sempat menahan browser, jadi kalau jalan lebih
-awal gerakannya bisa patah. Paling lambat 3,2 detik setelah halaman dibuka mobil tetap jalan. Pengguna yang
-mematikan animasi langsung masuk tanpa klip.
+Saat app dibuka muncul layar polos warna kanvas, terang atau gelap mengikuti sistem, dengan K di tengah. Layar itu
+bertahan sampai peta selesai digambar, paling lama 3,2 detik, lalu memudar.
 
-Gerakan mobil mengikuti klip hasil generate AI, tapi setiap piksel mobil dan jalan diambil dari logo asli, jadi
-bentuknya tidak pernah berubah. Klipnya ada di `public/brand/` (MP4, WebM, dan poster frame pertama), begitu juga
-loop 6 detik versi kecil yang dipakai di layar sambutan onboarding. Versi loop untuk booth dan media sosial (1:1, 9:16,
-16:9) ada di [docs/brand](docs/brand).
+Layar sambutan onboarding memutar loop 6 detik mobil yang melintasi K, di dalam kartu warna terang atau gelap
+mengikuti tema. Loop-nya dibuat dari klip `docs/brand/kenneth-loop-480.mp4` oleh skrip yang sama, dan setiap piksel
+mobil dan jalannya diambil dari logo asli, jadi bentuknya tidak pernah berubah. Versi loop untuk booth dan media
+sosial (1:1, 9:16, 16:9) ada di [docs/brand](docs/brand).
 
 ## Maskot
 

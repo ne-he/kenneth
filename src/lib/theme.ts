@@ -24,8 +24,12 @@ export function useApplyTheme() {
   const accent = useApp((s) => s.accent)
   useEffect(() => {
     document.documentElement.dataset.theme = theme
-    const meta = document.querySelector('meta[name="theme-color"]')
-    meta?.setAttribute('content', theme === 'dark' ? '#0b0b0e' : '#f6f6f3')
+    // index.html has one colour per system scheme for the splash. From here the app's own theme decides, so both
+    // tags get its colour and stop listening to the system.
+    document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+      meta.setAttribute('content', theme === 'dark' ? '#0b0b0e' : '#f6f6f3')
+      meta.removeAttribute('media')
+    })
   }, [theme])
   useEffect(() => {
     applyAccent(accent)

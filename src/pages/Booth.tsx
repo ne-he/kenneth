@@ -215,11 +215,11 @@ export default function Booth() {
           <Link to="/" className="grid size-9 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink" aria-label={c.back}>
             <ArrowLeft size={16} weight="bold" />
           </Link>
-          {/* The name needs room the two pills take on a narrow phone; the mark alone says KENNETH there. */}
-          <span className="hidden min-[420px]:block">
+          {/* Below 375 px the two pills need the room, and the K alone stands for the name. */}
+          <span className="hidden min-[375px]:block">
             <Wordmark />
           </span>
-          <span className="shrink-0 min-[420px]:hidden">
+          <span className="shrink-0 min-[375px]:hidden">
             <LogoMark size={26} />
           </span>
           <span className="whitespace-nowrap rounded-full bg-brand-100 px-2.5 py-1 text-[11px] font-semibold text-brand-800 dark:bg-brand-500/15 dark:text-brand-200">{c.title}</span>
