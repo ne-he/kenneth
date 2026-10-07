@@ -23,9 +23,45 @@ describe('saved data from the first version', () => {
     expect(activeVehicleOf(v2)).toBe(NO_VEHICLE)
   })
 
-  it('leaves version 2 data without a parked car alone', () => {
+  it('leaves the garage of version 2 data alone', () => {
     const state = { vehicles: [{ id: 'a', kind: 'motor', plate: 'B 1 A', model: '', isEV: false }], activeVehicle: 'a' }
-    expect(migrateApp({ ...state }, 2)).toEqual(state)
+    const out = migrateApp({ ...state }, 2)
+    expect(out.vehicles).toEqual(state.vehicles)
+    expect(out.activeVehicle).toBe('a')
+  })
+})
+
+describe('saved data from version 3', () => {
+  const visit = (id: string, sample?: boolean) => ({ id, venueId: 'neo-soho', at: 1, durationH: 2, minutesSaved: 5, sample })
+
+  it('runs on real time and drops the sample visits, outside team mode', () => {
+    const out = migrateApp({ clock: { mode: 'scenario', anchorSim: 1, anchorReal: 1 }, history: [visit('s', true), visit('own')] }, 3)
+    expect(out.clock.mode).toBe('live')
+    expect(out.history.map((v) => v.id)).toEqual(['own'])
+    expect(out.team).toBe(false)
+  })
+})
+
+describe('team mode', () => {
+  it('puts the clock back on real time when it is switched off', () => {
+    const { setTeam, setClock } = useApp.getState()
+    setTeam(true)
+    setClock('scenario', Date.UTC(2026, 9, 10, 7, 7))
+    expect(useApp.getState().clock.mode).toBe('scenario')
+    setTeam(false)
+    expect(useApp.getState().clock.mode).toBe('live')
+  })
+
+  it('adds the sample month beside your own visits and takes only it away again', () => {
+    const own = { id: 'own', venueId: 'neo-soho' as const, at: Date.now(), durationH: 1, minutesSaved: 3 }
+    useApp.setState({ history: [own] })
+    useApp.getState().setSamples(true)
+    const filled = useApp.getState().history
+    expect(filled.length).toBeGreaterThan(1)
+    expect(filled[0].id).toBe('own')
+    expect(filled.slice(1).every((v) => v.sample)).toBe(true)
+    useApp.getState().setSamples(false)
+    expect(useApp.getState().history).toEqual([own])
   })
 })
 
