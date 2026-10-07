@@ -1,0 +1,9 @@
+Draw one complete image of the character in the attached reference images.
+Character: a chubby baby proboscis monkey built from a few big soft rounded shapes: a big round warm rust-orange head with two small round ears; a soft cream face mask around two big, wide-set, round dark eyes, each with one small white highlight; one big soft pear-shaped rust-orange nose hanging over a tiny smiling mouth; a round rust-orange body with short chubby arms and legs; and one big round soft cream belly.
+Keep it exactly the same character as the references: the same face, eyes, nose, colors, proportions and level of simplicity. Do not redesign it, restyle it or add any detail.
+Pose: standing, holding one simple rounded phone in both hands in front of its belly and looking down at it. The phone is soft cream with a blank screen and no buttons.
+Expression: pleased, as if it just found good news.
+Framing: the whole character, centered, with a small even margin on every side.
+Background: transparent, with nothing behind the character: no backdrop, no ground line, no shadow.
+Style: the same ultra-clean graphic treatment as the references: large soft rounded forms, thick rounded contours, warm rust orange and soft cream in broad masses, dark round eyes with one small white highlight, and the same soft, barely-there depth. Keep the character readable at 64 × 64.
+Constraints: no text, letters, numbers or watermark; no other characters; no props other than the one phone, no clothing or accessories; no scenery, ground or ledge; no outlines; no thin lines or sharp tips; no photorealistic material, no strong three-dimensional rendering, no cast shadow.

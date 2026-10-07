@@ -1,0 +1,8 @@
+Draw the head and shoulders of the character in the attached reference images, facing the viewer.
+Character: a chubby baby proboscis monkey built from a few big soft rounded shapes: a big round warm rust-orange head with two small round ears; a soft cream face mask around two big, wide-set, round dark eyes, each with one small white highlight; one big soft pear-shaped rust-orange nose hanging over a tiny smiling mouth; a round rust-orange body with short chubby arms and legs; and one big round soft cream belly.
+Keep it exactly the same character as the references: the same face, eyes, nose, colors, proportions and level of simplicity. Do not redesign it, restyle it or add any detail.
+Expression: a calm, friendly smile.
+Framing: centered, the head filling about 70% of the width, with even space around it, so a circle cropped from the middle keeps the whole head.
+Background: solid muted cornflower blue, the same color as the reference backgrounds, filling the whole square.
+Style: the same ultra-clean graphic treatment as the references: large soft rounded forms, thick rounded contours, warm rust orange and soft cream in broad masses, dark round eyes with one small white highlight, and the same soft, barely-there depth. Keep the character readable at 64 × 64.
+Constraints: no text, letters, numbers or watermark; no other characters; no props, clothing or accessories; no scenery, ground or ledge; no outlines; no thin lines or sharp tips; no photorealistic material, no strong three-dimensional rendering, no cast shadow.

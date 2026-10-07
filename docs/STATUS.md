@@ -54,6 +54,10 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
     `.btn-primary` / `.btn-tile` di `src/index.css`.
     Aksen bisa diganti di Akun (PR #24, #26): Biru (cornflower, bawaan), Ungu, Pink, Grafit. Merah, oranye, dan
     hijau sengaja tidak ditawarkan supaya aksen tidak terbaca sebagai status.
+11. **Maskotnya bekantan** (pilihan pemilik, 7 Okt 2026). Oranye karat dan krem itu warna karakternya, bukan warna UI.
+    Dia hanya dekorasi di samping teks yang membawa arti: mengintip dari tepi kartu, keadaan kosong, pesanan
+    selesai, layanan yang sudah tutup, dan toast kabar baik. Paling banyak satu per layar. Detail di
+    [brand/mascot](brand/mascot/README.md).
 
 ## 2. Nama yang dipakai (wajib konsisten di layar dan di kode)
 
