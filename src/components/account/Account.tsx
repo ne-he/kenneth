@@ -437,7 +437,7 @@ function Favorites({ now }: { now: number }) {
             }}
             className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-2/60"
           >
-            <VenueGlyph category={v.category} size={36} />
+            <VenueGlyph category={v.category} id={v.id} size={40} />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[14.5px] font-medium">{v.name}</span>
               <span className="mt-0.5 block truncate text-[12px] text-ink-3">

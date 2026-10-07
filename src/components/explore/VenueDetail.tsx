@@ -40,7 +40,7 @@ import { useSharedReports } from '../../store/shared'
 import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
-import { Disclosure, Label, List, StatusPill } from '../ui/Kit'
+import { Disclosure, Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
 import { MascotPeek } from '../ui/Mascot'
 import { buttonClass } from '../ui/buttonStyles'
 import { PlaceCard } from './PlaceCard'
@@ -53,45 +53,48 @@ export function VenueDetailHeader({ venue, snap, onBack }: { venue: Venue; snap?
   const toggleFavorite = useApp((s) => s.toggleFavorite)
   const notify = useUi((s) => s.notify)
   return (
-    <div className="px-5 pt-1 pb-4">
-      {/* The round buttons pull in a little so the title row stays as tall as the name. */}
-      <div className="flex items-center gap-1.5">
-        <h2 className="min-w-0 flex-1 truncate text-[21px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
-        <button
-          type="button"
-          aria-pressed={fav}
-          aria-label={t.venue.favorite}
-          onClick={() => {
-            haptic(fav ? 'tap' : 'success')
-            toggleFavorite(venue.id)
-            notify(fav ? t.venue.unfavorited : t.venue.favorited)
-          }}
-          className={clsx('-my-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors', fav ? 'text-ink' : 'text-ink-3 hover:text-ink')}
-        >
-          <Star size={18} weight={fav ? 'fill' : 'regular'} />
-        </button>
-        <button
-          type="button"
-          onClick={onBack}
-          aria-label={t.common.close}
-          className="-my-1 grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
-        >
-          <X size={15} weight="bold" />
-        </button>
-      </div>
-      <div className="mt-1 flex items-baseline justify-between gap-3 text-[13px] text-ink-3">
-        <div className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
-          <span>{t.venue.category[venue.category]}</span>
-          <span>·</span>
-          <SourceChip venue={venue} />
-          {snap && (
-            <>
-              <span>·</span>
-              <span className="tabular">{snap.travel.km < 0.15 ? t.explore.here : formatKm(snap.travel.km)}</span>
-            </>
-          )}
+    <div className="flex items-center gap-3 px-5 pt-1 pb-4">
+      <VenueGlyph category={venue.category} id={venue.id} size={60} />
+      <div className="min-w-0 flex-1">
+        {/* The round buttons pull in a little so the title row stays as tall as the name. */}
+        <div className="flex items-center gap-1.5">
+          <h2 className="min-w-0 flex-1 truncate text-[21px] leading-tight font-semibold tracking-tight">{venue.name}</h2>
+          <button
+            type="button"
+            aria-pressed={fav}
+            aria-label={t.venue.favorite}
+            onClick={() => {
+              haptic(fav ? 'tap' : 'success')
+              toggleFavorite(venue.id)
+              notify(fav ? t.venue.unfavorited : t.venue.favorited)
+            }}
+            className={clsx('-my-1 grid size-9 shrink-0 place-items-center rounded-full transition-colors', fav ? 'text-ink' : 'text-ink-3 hover:text-ink')}
+          >
+            <Star size={18} weight={fav ? 'fill' : 'regular'} />
+          </button>
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label={t.common.close}
+            className="-my-1 grid size-9 shrink-0 place-items-center rounded-full bg-surface-2 text-ink-2 hover:text-ink"
+          >
+            <X size={15} weight="bold" />
+          </button>
         </div>
-        {snap && <HeaderFact snap={snap} />}
+        <div className="mt-1 flex items-baseline justify-between gap-3 text-[13px] text-ink-3">
+          <div className="flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap">
+            <span>{t.venue.category[venue.category]}</span>
+            <span>·</span>
+            <SourceChip venue={venue} />
+            {snap && (
+              <>
+                <span>·</span>
+                <span className="tabular">{snap.travel.km < 0.15 ? t.explore.here : formatKm(snap.travel.km)}</span>
+              </>
+            )}
+          </div>
+          {snap && <HeaderFact snap={snap} />}
+        </div>
       </div>
     </div>
   )

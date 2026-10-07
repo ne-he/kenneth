@@ -14,7 +14,7 @@ import { formatMin } from '../../lib/status'
 import { clock } from '../../lib/time'
 import { uid, useApp } from '../../store/app'
 import { useUi, type VenueFilter } from '../../store/ui'
-import { StatusPill } from '../ui/Kit'
+import { StatusPill, VenueGlyph } from '../ui/Kit'
 import { Mascot } from '../ui/Mascot'
 import { buttonClass } from '../ui/buttonStyles'
 import { TimeScrubber } from './TimeScrubber'
@@ -85,8 +85,9 @@ export function VenueList({
                   haptic('tap')
                   select(r.venue.id)
                 }}
-                className="flex w-full items-center gap-4 py-4 text-left transition-opacity hover:opacity-80 active:opacity-60"
+                className="flex w-full items-center gap-3 py-3.5 text-left transition-opacity hover:opacity-80 active:opacity-60"
               >
+                <VenueGlyph category={r.venue.category} id={r.venue.id} size={48} />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline gap-2">
                     <span className="truncate text-[15.5px] font-semibold tracking-tight">{r.venue.name}</span>
