@@ -2,6 +2,7 @@ import { GoogleLogo } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
+import { useResolvedTheme } from '../../lib/theme'
 import { useApp } from '../../store/app'
 import { useSignIn } from '../account/useSignIn'
 import { Button } from '../ui/Button'
@@ -72,6 +73,8 @@ export function Onboarding() {
 
 function Welcome() {
   const t = useT()
+  // The loop is rendered on the card's own colour for each theme, so the K never sits in a black box.
+  const theme = useResolvedTheme()
   return (
     <div className="flex min-h-full flex-col">
       <div className="grid flex-1 place-items-center py-2">
@@ -81,18 +84,19 @@ function Welcome() {
         */}
         <div className="relative mt-[78px] w-[min(280px,100%,calc(100dvh_-_460px))]">
           <MascotPeek width={112} className="right-7" />
-          <div className="relative aspect-square w-full overflow-hidden rounded-[32px] bg-black">
+          <div className="relative aspect-square w-full overflow-hidden rounded-[32px] border border-line bg-surface">
             <video
+              key={theme}
               className="size-full object-cover"
               autoPlay
               muted
               loop
               playsInline
-              poster="/brand/loading-poster.jpg"
+              poster={`/brand/poster-${theme}.jpg`}
               aria-hidden="true"
             >
-              <source src="/brand/loop.webm" type="video/webm" />
-              <source src="/brand/loop.mp4" type="video/mp4" />
+              <source src={`/brand/loop-${theme}.webm`} type="video/webm" />
+              <source src={`/brand/loop-${theme}.mp4`} type="video/mp4" />
             </video>
           </div>
         </div>
