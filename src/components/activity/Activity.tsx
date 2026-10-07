@@ -33,6 +33,7 @@ import { useUi } from '../../store/ui'
 import { Button } from '../ui/Button'
 import { CancelConfirm } from '../ui/CancelConfirm'
 import { Label, List } from '../ui/Kit'
+import { Mascot, MascotPeek } from '../ui/Mascot'
 import { useValetActions } from '../sheets/book/useValetActions'
 import { useCancel } from './useCancel'
 
@@ -86,7 +87,12 @@ export function Activity() {
 
       {/* Text above the button on narrow phones, side by side once there is room for both. */}
       {current.length === 0 && upcoming.length === 0 && past.length > 0 && (
-        <motion.section {...rise(i++)} className="mb-7 flex flex-col gap-3 rounded-[20px] border border-line p-3.5 pl-4 min-[360px]:flex-row min-[360px]:items-center">
+        <motion.section
+          {...rise(i++)}
+          className="relative mt-12 mb-7 flex flex-col gap-3 rounded-[20px] border border-line p-3.5 pl-4 min-[360px]:flex-row min-[360px]:items-center"
+        >
+          {/* Nothing running: the bekantan peeks over the card, next to the way to the map. */}
+          <MascotPeek width={84} className="right-5" />
           <span className="min-w-0 flex-1 text-[13px] leading-snug text-ink-2">{t.activity.nothingNow}</span>
           <Button variant="primary" size="sm" onClick={() => setTab('park')}>
             <MapTrifold size={15} weight="bold" /> {t.activity.findParking}
@@ -96,7 +102,7 @@ export function Activity() {
 
       {current.length === 0 && upcoming.length === 0 && past.length === 0 && (
         <motion.section {...rise(i++)} className="mb-7 flex flex-col items-center px-6 pt-16 pb-8 text-center">
-          <Ticket size={30} className="text-ink-3" />
+          <Mascot pose="waiting" size={120} />
           <h2 className="mt-4 text-[17px] font-semibold tracking-tight">{t.activity.emptyTitle}</h2>
           <p className="mt-1.5 max-w-[280px] text-[13.5px] leading-relaxed text-ink-3">{t.activity.emptyHint}</p>
           <Button variant="primary" size="md" className="mt-6" onClick={() => setTab('park')}>

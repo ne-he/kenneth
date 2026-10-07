@@ -9,6 +9,7 @@ import { useVehicle } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { StatusPill, VenueGlyph } from '../ui/Kit'
+import { Mascot } from '../ui/Mascot'
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[^a-z0-9 ]/g, '')
 
@@ -82,7 +83,12 @@ export function SearchSheet() {
             </button>
           </li>
         ))}
-        {rows.length === 0 && <li className="py-8 text-center text-[13px] text-ink-3">{t.activity.empty}</li>}
+        {rows.length === 0 && (
+          <li className="flex flex-col items-center py-8 text-center text-[13px] text-ink-3">
+            <Mascot pose="looking" size={96} className="mb-3" />
+            {t.activity.empty}
+          </li>
+        )}
       </ul>
     </div>
   )

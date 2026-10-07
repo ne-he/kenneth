@@ -15,6 +15,7 @@ import { clock } from '../../lib/time'
 import { uid, useApp } from '../../store/app'
 import { useUi, type VenueFilter } from '../../store/ui'
 import { StatusPill } from '../ui/Kit'
+import { Mascot } from '../ui/Mascot'
 import { buttonClass } from '../ui/buttonStyles'
 import { TimeScrubber } from './TimeScrubber'
 
@@ -53,8 +54,8 @@ export function VenueList({
   if (ranked.length === 0) {
     return (
       <div className="px-8 pt-6 pb-10 text-center">
-        <Star size={28} className="mx-auto text-ink-3" />
-        <p className="mt-2 text-[13.5px] leading-relaxed text-ink-3">
+        <Mascot pose="thinking" size={96} className="mx-auto" />
+        <p className="mt-3 text-[13.5px] leading-relaxed text-ink-3">
           {filter === 'fav' ? t.explore.emptyFav : mode === 'park' ? t.explore.empty : t.modes.emptyList}
         </p>
       </div>
