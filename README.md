@@ -233,6 +233,12 @@ mengikuti tema. Loop-nya dibuat dari klip `docs/brand/kenneth-loop-480.mp4` oleh
 mobil dan jalannya diambil dari logo asli, jadi bentuknya tidak pernah berubah. Versi loop untuk booth dan media
 sosial (1:1, 9:16, 16:9) ada di [docs/brand](docs/brand).
 
+## Ikon gedung
+
+Tiap dari 39 tempat punya ikon gedungnya sendiri, 3D dengan gaya yang sama dengan ikon mobil, tampil di daftar
+tempat, kepala lembar tempat, pencarian, dan favorit. `docs/brand/make_venue_icons.py` memasukkan render-nya ke
+`public/venues/`; render, prompt, dan foto referensinya disimpan di kit media sosial tim.
+
 ## Maskot
 
 Maskotnya bekantan: hidung besarnya buat nyium parkir yang masih lega. Bentuknya beberapa bentuk bulat besar dalam
