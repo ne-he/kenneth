@@ -155,7 +155,6 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
             </motion.span>
           </AnimatePresence>
         </Button>
-        <p className="mt-2 text-center text-[11px] leading-snug text-ink-3">{t.valet.demoNote}</p>
       </div>
     </div>
   )

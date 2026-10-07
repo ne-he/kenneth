@@ -195,7 +195,6 @@ export function PremiumSheet() {
             {p.activate} · {formatRupiah(PREMIUM_MONTHLY, true)}
           </Button>
         )}
-        <p className="mt-2 text-center text-[11px] text-ink-3">{t.book.demoPay}</p>
       </div>
     </div>
   )

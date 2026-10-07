@@ -4,6 +4,7 @@ import {
   Check,
   CircleHalf,
   Clock,
+  ClockCounterClockwise,
   Crown,
   GithubLogo,
   GoogleLogo,
@@ -24,7 +25,7 @@ import {
 } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { VENUE_BY_ID } from '../../data/venues'
 import { plateParity } from '../../engine/gage'
@@ -44,14 +45,15 @@ import { Segmented, Toggle } from '../ui/Controls'
 import { Plate } from '../ui/Display'
 import { Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
 import { LogoMark } from '../ui/Logo'
+import { MascotFace } from '../ui/Mascot'
 import { VehicleIcon } from '../ui/VehicleIcon'
 import { buttonClass } from '../ui/buttonStyles'
 import { useSignIn } from './useSignIn'
 
 /**
  * Settings, the Linear way: one column of grouped rows, grey labels, no
- * cards shouting for attention. The things for the team and the demo sit at
- * the very bottom, out of a normal user's way.
+ * cards shouting for attention. The team's tools only show in team mode,
+ * at the very bottom; tapping the version five times switches it.
  */
 export function Account() {
   const t = useT()
@@ -64,9 +66,11 @@ export function Account() {
   const mapPrefs = useApp((s) => s.mapPrefs)
   const history = useApp((s) => s.history)
   const clockMode = useApp((s) => s.clock.mode)
+  const team = useApp((s) => s.team)
   const isEV = useVehicle().isEV
-  const { setPref, setLang, setTheme, setMapPref } = useApp.getState()
+  const { setPref, setLang, setTheme, setMapPref, setTeam, setSamples } = useApp.getState()
   const open = useUi((s) => s.open)
+  const notify = useUi((s) => s.notify)
 
   const month = history.filter((v) => now - v.at < 31 * 86_400_000)
   const impact = sumImpact(month.map((v) => impactOf(v.minutesSaved, isEV)))
@@ -78,7 +82,6 @@ export function Account() {
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
         <Identity
           trips={month.length}
-          sample={month.length > 0 && month.every((v) => v.sample)}
           minutes={Math.round(impact.minutes)}
           fuel={impact.fuelL.toLocaleString('id-ID', { maximumFractionDigits: 1 })}
         />
@@ -190,43 +193,85 @@ export function Account() {
         <Row icon={<LockKey size={17} weight="fill" />} title={t.profile.privacy} right={<Chevron />} onClick={() => open({ kind: 'privacy' })} />
       </Group>
 
-      <Group title={t.profile.team}>
-        <Row
-          icon={<Lightning size={17} weight="fill" />}
-          title={t.profile.clock}
-          hint={`${clockMode === 'live' ? t.clockSheet.live : t.common.simulated} · ${dayName(now, lang)} ${clock(now)}`}
-          right={<Chevron />}
-          onClick={() => open({ kind: 'clock' })}
-        />
-        <Row icon={<UserFocus size={17} weight="fill" />} title={t.profile.booth} right={<Chevron />} onClick={() => navigate('/booth')} />
-        <Row icon={<PresentationChart size={17} weight="fill" />} title={t.profile.mitra} right={<Chevron />} onClick={() => navigate('/mitra')} />
-      </Group>
+      {team && (
+        <Group title={t.profile.team}>
+          <Row
+            icon={<Lightning size={17} weight="fill" />}
+            title={t.profile.clock}
+            hint={`${clockMode === 'live' ? t.clockSheet.live : t.common.simulated} · ${dayName(now, lang)} ${clock(now)}`}
+            right={<Chevron />}
+            onClick={() => open({ kind: 'clock' })}
+          />
+          <Row
+            icon={<ClockCounterClockwise size={17} weight="fill" />}
+            title={t.profile.samples}
+            hint={t.profile.samplesHint}
+            right={<Toggle checked={history.some((v) => v.sample)} onChange={setSamples} label={t.profile.samples} />}
+          />
+          <Row icon={<UserFocus size={17} weight="fill" />} title={t.profile.booth} right={<Chevron />} onClick={() => navigate('/booth')} />
+          <Row icon={<PresentationChart size={17} weight="fill" />} title={t.profile.mitra} right={<Chevron />} onClick={() => navigate('/mitra')} />
+          <Row
+            icon={<SignOut size={17} weight="bold" />}
+            title={t.profile.teamLeave}
+            onClick={() => {
+              setTeam(false)
+              notify(t.profile.teamOff)
+            }}
+          />
+        </Group>
+      )}
 
       <section className="mt-2 flex flex-col items-center pb-4 text-center">
         <LogoMark size={40} />
-        <p className="mt-3 max-w-[300px] text-[12px] leading-relaxed text-ink-3">{t.source.prototype}</p>
         <a
           href={REPO_URL}
           target="_blank"
           rel="noreferrer"
-          className="mt-3 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-2 hover:text-ink"
+          className="mt-4 flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-2 hover:text-ink"
         >
           <GithubLogo size={15} weight="fill" /> ne-he/kenneth
         </a>
-        <p className="mt-1.5 text-[11px] text-ink-3">
-          {t.profile.version} {__APP_VERSION__}
-        </p>
+        <Version />
       </section>
     </div>
   )
 }
 
 /**
- * Who you are at a glance: your name (a Google account, or a guest whose data
- * never leaves the phone), the car the app plans for, and what KENNETH saved
- * you this month. The car opens its editor, the numbers open how they are counted.
+ * The version, and the way into team mode: five taps within a few seconds switch it on or off. Nothing
+ * says so on screen, so only the team knows to look.
  */
-function Identity({ trips, sample, minutes, fuel }: { trips: number; sample: boolean; minutes: number; fuel: string }) {
+function Version() {
+  const t = useT()
+  const notify = useUi((s) => s.notify)
+  const taps = useRef<number[]>([])
+  return (
+    <button
+      type="button"
+      className="mt-1.5 text-[11px] text-ink-3"
+      onClick={() => {
+        const at = Date.now()
+        taps.current = [...taps.current.filter((x) => at - x < 3000), at]
+        if (taps.current.length < 5) return
+        taps.current = []
+        const { team, setTeam } = useApp.getState()
+        haptic('success')
+        setTeam(!team)
+        notify(team ? t.profile.teamOff : t.profile.teamOn)
+      }}
+    >
+      {t.profile.version} {__APP_VERSION__}
+    </button>
+  )
+}
+
+/**
+ * Who you are at a glance: your name (a Google account, or a guest whose data
+ * never leaves the phone, shown as the bekantan), the car the app plans for,
+ * and what KENNETH saved you this month. The car opens its editor, the numbers
+ * open how they are counted.
+ */
+function Identity({ trips, minutes, fuel }: { trips: number; minutes: number; fuel: string }) {
   const t = useT()
   const name = useApp((s) => s.name)
   const account = useApp((s) => s.account)
@@ -240,10 +285,12 @@ function Identity({ trips, sample, minutes, fuel }: { trips: number; sample: boo
       <div className="flex items-center gap-4">
         {account?.photo ? (
           <img src={account.photo} alt="" referrerPolicy="no-referrer" className="size-16 shrink-0 rounded-full object-cover" />
-        ) : (
+        ) : account ? (
           <span className="grid size-16 shrink-0 place-items-center rounded-full bg-ink text-[26px] font-semibold text-canvas">
-            {(shown || t.profile.guest).slice(0, 1).toUpperCase()}
+            {shown.slice(0, 1).toUpperCase()}
           </span>
+        ) : (
+          <MascotFace size={64} />
         )}
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[20px] leading-tight font-semibold tracking-tight">{shown || t.profile.guest}</span>
@@ -281,7 +328,7 @@ function Identity({ trips, sample, minutes, fuel }: { trips: number; sample: boo
         className="mt-4 block w-full text-left"
       >
         <span className="flex items-center justify-between px-1 text-[12.5px] font-medium text-ink-3">
-          {sample ? t.profile.monthSample : t.profile.month}
+          {t.profile.month}
           <Chevron />
         </span>
         <span className="mt-1.5 grid grid-cols-3 divide-x divide-line rounded-[18px] border border-line">

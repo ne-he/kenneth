@@ -14,7 +14,7 @@ import { MascotPeek } from '../ui/Mascot'
   map. Nothing is asked up front (UX audit #4): the plate is asked at the
   first booking that needs it, the car can be set from the chip on the home
   sheet, favourites come from the star on a place, and the history starts
-  with a few sample visits marked Contoh so a demo has something to show.
+  empty. The team fills it with a sample month from team mode when it presents.
 */
 export function Onboarding() {
   const t = useT()
@@ -28,7 +28,7 @@ export function Onboarding() {
       name: useApp.getState().account?.name.split(' ')[0] ?? '',
       vehicle: { kind: 'mobil', plate: '', model: '', isEV: false },
       favorites: [],
-      withSample: true,
+      withSample: false,
     })
   }
 

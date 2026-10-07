@@ -25,7 +25,8 @@ export function ValetSheet({ id }: { id: string }) {
   const dayLabel = useDayLabel()
   const now = useNow(1000)
   const ticket = useApp((s) => s.valets.find((v) => v.id === id))
-  const demo = useApp((s) => s.clock.mode === 'scenario')
+  // Fast-forwarding the runner is the team's tool for showing the whole valet flow in a minute.
+  const team = useApp((s) => s.team)
   const plate = useVehicle().plate
   const close = useUi((s) => s.close)
   const act = useValetActions()
@@ -122,7 +123,7 @@ export function ValetSheet({ id }: { id: string }) {
           </p>
         </>
       )}
-      {phase === 'fetching' && demo && (
+      {phase === 'fetching' && team && (
         <Button variant="ghost" block onClick={() => act.rush(ticket)}>
           <FastForward size={16} weight="fill" /> {t.valet.rush}
         </Button>

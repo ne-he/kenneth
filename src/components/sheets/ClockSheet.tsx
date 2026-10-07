@@ -42,7 +42,7 @@ export function ClockSheet() {
 
   return (
     <div className="pb-4">
-      <SheetHeader eyebrow={t.profile.demo} title={t.clockSheet.title} onClose={close} closeLabel={t.common.close} />
+      <SheetHeader eyebrow={t.profile.team} title={t.clockSheet.title} onClose={close} closeLabel={t.common.close} />
       <p className="mb-5 text-[13px] leading-relaxed text-ink-2">{t.clockSheet.body}</p>
       <div className="divide-y divide-line overflow-hidden rounded-[20px] border border-line">
         <Option

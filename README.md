@@ -63,8 +63,10 @@ Halaman lain:
 | `/mitra` | Dashboard untuk pengelola gedung (produk B2B): pengunjung yang batal datang, larinya ke mana, beban tiap gerbang, pola seminggu |
 | `/booth` | Mode booth BINUS Festival: form validasi + feedback grid, hasilnya bisa diunduh CSV atau JSON. Di park-kenneth.web.app beberapa HP bisa digabung jadi satu sesi lewat kode QR |
 
-Keduanya ada di Akun, bagian "Untuk tim dan demo". Untuk demo, jam app diset ke **Sabtu 14.07** (mall puncak).
-Ganti lewat Akun, Waktu simulasi. **Selasa 10.00** memperlihatkan kampus yang penuh.
+Keduanya ada di Akun, bagian "Untuk tim", yang hanya muncul di mode tim: ketuk nomor versi di bagian bawah Akun lima kali (ketuk lima kali lagi, atau "Keluar dari mode tim", untuk mematikannya). Di mode tim jam app bisa diset ke momen
+tertentu lewat Waktu simulasi, misalnya **Sabtu 14.07** (mall puncak) atau **Selasa 10.00** (kampus penuh), dan
+riwayat contoh bisa dinyalakan untuk presentasi. Di luar mode tim app selalu memakai waktu nyata, dan tidak ada
+tulisan demo, simulasi, atau prototipe di layar.
 
 ## Lokasi
 
@@ -120,7 +122,8 @@ Tambahan di luar 11 fitur:
 - **Valet pakai armada runner KENNETH.** Mobil diparkir di Zona KENNETH, jadi baliknya cepat. Nol biometrik, cukup kode dan pelat.
 - **Kampus dan kantor ikut menjual layanan.** Zona KENNETH, valet, dan charger dengan aturan yang sama dengan mall
   (keputusan tim 2 Okt 2026).
-- **Jujur soal sumber data.** Tiap lokasi berlabel "Data palang" atau "Estimasi".
+- **Jujur soal sumber data.** Tiap lokasi berlabel "Data langsung" atau "Estimasi".
+- **Tidak ada tulisan demo di app.** Demonya diatur tim dari mode tim, bukan diumumkan ke pengguna.
 - **Data pribadi tinggal di HP.** Login Google hanya mengirim nama, email, dan foto profil. Riwayat, booking, dan lokasi
   parkir tetap di perangkat. Di park-kenneth.web.app, laporan "Kondisi di lokasi beda?" dibagi ke semua pengguna
   lewat Firestore, tanpa identitas pengirim: cuma tempat, pilihan, dan jam server. Jawaban booth yang digabung

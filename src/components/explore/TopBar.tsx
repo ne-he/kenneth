@@ -1,26 +1,22 @@
-import { Crosshair, User } from '@phosphor-icons/react'
+import { Crosshair } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { useState } from 'react'
-import { useT, useLang } from '../../i18n'
+import { useT } from '../../i18n'
 import { haptic } from '../../lib/haptics'
-import { clock, dayName } from '../../lib/time'
 import { useApp } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { IconButton } from '../ui/Button'
+import { MascotFace } from '../ui/Mascot'
 
 // Jabodetabek, so Alam Sutera and Bekasi count as "here" too.
 const AREA = { minLat: -6.45, maxLat: -6.05, minLng: 106.55, maxLng: 107.1 }
 
 /**
- * One quiet row over the map: a small Demo label with the simulated time on
- * the left (nothing at all in live mode), locate and the account on the
- * right. The clock is a tool for the team and is changed in Akun, Untuk tim
- * dan demo (UX audit #7). Search and the services live in the sheet below.
+ * One quiet row over the map: locate and the account, on the right. Search
+ * and the services live in the sheet below. Nothing here says which moment
+ * the app shows: the clock is the team's, in team mode.
  */
-export function TopBar({ now }: { now: number }) {
-  const t = useT()
-  const lang = useLang()
-  const clockMode = useApp((s) => s.clock.mode)
+export function TopBar() {
   return (
     <motion.div
       initial={{ y: -24, opacity: 0 }}
@@ -28,23 +24,7 @@ export function TopBar({ now }: { now: number }) {
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.1 }}
       className="pt-safe pointer-events-none absolute inset-x-0 top-0 z-20 px-3.5"
     >
-      <div className="flex items-center justify-between gap-2">
-        {clockMode === 'live' ? (
-          <span />
-        ) : (
-          // Yellow means ramai on this map, so the label gets a neutral dot.
-          <span
-            role="note"
-            aria-label={`${t.common.demo}, ${dayName(now, lang, false)} ${clock(now)}`}
-            className="glass flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[11.5px] font-medium text-ink-2 shadow-[0_1px_2px_rgb(0_0_0/0.05),0_4px_12px_-6px_rgb(0_0_0/0.16)]"
-          >
-            <span className="size-1.5 rounded-full bg-ink-3" />
-            <span className="font-semibold text-ink">{t.common.demo}</span>
-            <span className="text-ink-3 tabular">
-              {dayName(now, lang)} {clock(now)}
-            </span>
-          </span>
-        )}
+      <div className="flex items-center justify-end gap-2">
         <div className="pointer-events-auto flex items-center gap-2">
           <LocateButton />
           <AvatarButton />
@@ -54,13 +34,11 @@ export function TopBar({ now }: { now: number }) {
   )
 }
 
-/** You, top right of the map: the first letter of your name, or your photo once signed in. Opens Akun. */
+/** You, top right of the map: your photo once signed in, else the bekantan for a guest. Opens Akun. */
 function AvatarButton() {
   const t = useT()
-  const name = useApp((s) => s.name)
-  const photo = useApp((s) => s.account?.photo)
+  const account = useApp((s) => s.account)
   const setTab = useUi((s) => s.setTab)
-  const initial = name.trim().charAt(0).toUpperCase()
   return (
     <motion.button
       type="button"
@@ -73,7 +51,13 @@ function AvatarButton() {
       }}
       className="glass shadow-float grid size-10 place-items-center overflow-hidden rounded-full text-[15px] font-semibold text-ink"
     >
-      {photo ? <img src={photo} alt="" className="size-full object-cover" /> : initial || <User size={18} weight="bold" className="text-ink-2" />}
+      {account?.photo ? (
+        <img src={account.photo} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
+      ) : account ? (
+        account.name.trim().charAt(0).toUpperCase()
+      ) : (
+        <MascotFace size={40} />
+      )}
     </motion.button>
   )
 }

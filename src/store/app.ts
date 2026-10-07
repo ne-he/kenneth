@@ -107,7 +107,7 @@ export interface Visit {
   /** Handed to a KENNETH runner instead of parking yourself. */
   via?: 'valet'
   kind?: VehicleKind
-  /** Made up at onboarding so a fresh install has history to show. Tiket labels it Contoh. */
+  /** Part of the sample month the team turns on in team mode. Never shown as such; removable in one switch. */
   sample?: boolean
 }
 
@@ -171,6 +171,11 @@ interface AppState {
   history: Visit[]
   reports: CommunityReport[]
   clock: ClockState
+  /**
+   * The team's own tools (the clock, sample history, booth, partner dashboard) and nothing about a demo show
+   * outside team mode. Tapping the version in Akun five times switches it.
+   */
+  team: boolean
 
   finishOnboarding: (p: { name: string; vehicle: Omit<Vehicle, 'id'>; favorites: VenueId[]; withSample: boolean }) => void
   setName: (name: string) => void
@@ -202,12 +207,19 @@ interface AppState {
   addVisit: (v: Visit) => void
   addReport: (r: CommunityReport) => void
   setClock: (mode: 'scenario' | 'live', simTs?: number) => void
+  /** Leaving team mode puts the clock back on real time. */
+  setTeam: (on: boolean) => void
+  /** Adds or removes the sample month of visits the team uses in a presentation. */
+  setSamples: (on: boolean) => void
   resetAll: () => void
 }
 
 export const uid = () => Math.random().toString(36).slice(2, 10)
 
 export const DEFAULT_SCENARIO = () => nextSaturdayAt(Date.now(), 14, 7)
+
+/** Real time. The app runs on it unless the team sets a moment in team mode. */
+const LIVE = (): ClockState => ({ mode: 'live', anchorSim: Date.now(), anchorReal: Date.now() })
 
 /** Used when no vehicle is saved, so screens never have to handle "no vehicle". */
 export const NO_VEHICLE: Vehicle = { id: 'none', kind: 'mobil', model: '', plate: '', isEV: false }
@@ -239,9 +251,10 @@ const DEFAULTS = {
   watches: [],
   history: [],
   reports: [],
+  team: false,
 }
 
-/** A plausible month of use so the Tiket tab and the impact line have something to show in demos. */
+/** A plausible month of use, so the Tiket tab and this month's numbers have something to show when the team presents. */
 function sampleHistory(now: number): Visit[] {
   const day = 86_400_000
   const rows: [VenueId, number, number, number, VenueId?][] = [
@@ -269,7 +282,7 @@ export const useApp = create<AppState>()(
   persist(
     (set) => ({
       ...DEFAULTS,
-      clock: { mode: 'scenario', anchorSim: DEFAULT_SCENARIO(), anchorReal: Date.now() },
+      clock: LIVE(),
 
       finishOnboarding: ({ name, vehicle, favorites, withSample }) => {
         const id = uid()
@@ -364,15 +377,17 @@ export const useApp = create<AppState>()(
             anchorReal: Date.now(),
           },
         }),
-      resetAll: () =>
-        set({
-          ...DEFAULTS,
-          clock: { mode: 'scenario', anchorSim: DEFAULT_SCENARIO(), anchorReal: Date.now() },
+      setTeam: (team) => set(team ? { team } : { team, clock: LIVE() }),
+      setSamples: (on) =>
+        set((s) => {
+          const own = s.history.filter((v) => !v.sample)
+          return { history: on ? [...sampleHistory(Date.now()), ...own].sort((a, b) => b.at - a.at) : own }
         }),
+      resetAll: () => set({ ...DEFAULTS, clock: LIVE() }),
     }),
     {
       name: 'kenneth-app',
-      version: 3,
+      version: 4,
       storage: createJSONStorage(() => localStorage),
       migrate: (persisted, version) => migrateApp(persisted as Record<string, unknown>, version),
     },
@@ -403,6 +418,12 @@ export function migrateApp(state: Record<string, unknown>, version: number) {
       parked.section = parked.zone
       delete parked.zone
     }
+  }
+  if (version < 4) {
+    // Nothing in the app may look like a demo any more (owner, 7 Oct): real time, and no sample visits shown as yours.
+    state.team = false
+    state.clock = LIVE()
+    state.history = ((state.history as Visit[] | undefined) ?? []).filter((v) => !v.sample)
   }
   return state as unknown as AppState
 }

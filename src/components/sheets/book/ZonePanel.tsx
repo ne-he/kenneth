@@ -227,7 +227,6 @@ export function ZonePanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: B
             </motion.span>
           </AnimatePresence>
         </Button>
-        <p className="mt-2 text-center text-[11px] text-ink-3">{t.book.demoPay}</p>
       </div>
     </div>
   )
