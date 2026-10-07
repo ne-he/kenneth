@@ -53,7 +53,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // The mascot is 164 KB of WebP and appears on offline screens too, so it is part of the install.
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}', 'mascot/*.webp'],
         // Kept out of the install, fetched on first use instead:
         // - Inter ships seven unicode-range subsets; the app renders Latin only. The others load if a glyph needs them.
         // - three (the 3D floor) and firebase (sign-in, shared reports) are lazy chunks most sessions never reach.
