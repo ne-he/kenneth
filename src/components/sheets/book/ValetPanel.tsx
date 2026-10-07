@@ -15,6 +15,7 @@ import { uid, useApp, useVehicle } from '../../../store/app'
 import { useNow } from '../../../store/clock'
 import { Button } from '../../ui/Button'
 import { Label, List } from '../../ui/Kit'
+import { Mascot } from '../../ui/Mascot'
 import type { Booked } from './BookHub'
 import { PlateField } from './PlateField'
 import { PayMethods, type PayMethod } from './ZonePanel'
@@ -43,7 +44,12 @@ export function ValetPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: 
   const arriveAt = slots.find((s) => s === picked) ?? slots[0]
 
   if (!arriveAt) {
-    return <p className="rounded-[16px] bg-surface-2 p-4 text-[13.5px] leading-relaxed text-ink-2">{t.valet.closedToday}</p>
+    return (
+      <div className="flex items-center gap-3 rounded-[16px] bg-surface-2 py-3 pr-4 pl-3">
+        <Mascot pose="sleepy" size={56} />
+        <p className="text-[13.5px] leading-relaxed text-ink-2">{t.valet.closedToday}</p>
+      </div>
+    )
   }
 
   const occ = occupancyAt(venue, arriveAt)
