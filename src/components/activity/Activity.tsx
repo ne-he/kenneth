@@ -62,7 +62,6 @@ export function Activity() {
   const reminders = useApp((s) => s.reminders)
   const watches = useApp((s) => s.watches)
   const history = useApp((s) => s.history)
-  const clockMode = useApp((s) => s.clock.mode)
   const { setTab, open } = useUi.getState()
   const [all, setAll] = useState(false)
 
@@ -81,7 +80,6 @@ export function Activity() {
         <h1 className="text-[28px] leading-tight font-semibold tracking-tight">{t.activity.title}</h1>
         <p className="mt-0.5 text-[13px] text-ink-3">
           {dayName(now, lang, false)}, {clock(now)}
-          {clockMode === 'scenario' ? ` · ${t.common.simulated}` : ''}
         </p>
       </header>
 
@@ -450,7 +448,6 @@ function PastRow({ p }: { p: Past }) {
   // Plain parking already reads "parkir 2j" below, so only the paid services name themselves.
   const bits = p.service === 'park' ? [shortDate(p.at, lang)] : [shortDate(p.at, lang), t.activity.kind[p.service]]
   // Visits made up at onboarding say so first, where the line never truncates.
-  if (p.visit?.sample) bits.unshift(t.activity.sample)
   if (p.outcome !== 'done') bits.push(t.activity.outcome[p.outcome])
   else if (p.visit) {
     bits.push(t.activity.parkedFor(formatHours(p.visit.durationH, lang)))

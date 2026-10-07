@@ -163,7 +163,7 @@ export function Explore() {
           initialBounds={INITIAL_BOUNDS}
         />
       </Suspense>
-      {!route && <TopBar now={now} />}
+      {!route && <TopBar />}
       <NavBanner route={route} now={now} />
       {/* The sheet runs down to the screen edge under the floating dock, so no map shows between the two. */}
       <div className="pointer-events-none absolute inset-0">

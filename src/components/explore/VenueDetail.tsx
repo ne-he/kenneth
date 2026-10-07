@@ -246,7 +246,7 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
             <p className="mt-4 flex gap-2 text-[11.5px] leading-snug text-ink-3">
               <Info size={14} className="mt-[1px] shrink-0" />
               <span>
-                {venue.source === 'palang' ? t.source.palangNote : t.source.estimasiNote} {t.source.prototype}
+                {venue.source === 'palang' ? t.source.palangNote : t.source.estimasiNote}
               </span>
             </p>
           </Disclosure>
