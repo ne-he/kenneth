@@ -25,7 +25,8 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
 ## 1. Keputusan produk yang sedang berlaku
 
 1. **KENNETH dinilai sebagai ide, bukan harus realistis hari ini** (keputusan 24 Sep 2026). Makin bagus idenya
-   makin baik, tapi app tetap jujur bahwa semuanya simulasi.
+   makin baik. Sejak 7 Okt 2026 (keputusan pemilik) tidak ada tulisan demo, simulasi, atau prototipe di layar:
+   demonya diatur tim dari mode tim: ketuk nomor versi di bagian bawah Akun lima kali (ketuk lima kali lagi, atau "Keluar dari mode tim", untuk mematikannya). Di luar mode tim app memakai waktu nyata dan tanpa riwayat contoh.
 2. **Zona KENNETH menggantikan jalur prioritas.** Seperti zona parkir khusus Lexus di beberapa mall, tapi mereknya
    KENNETH. Jalur prioritas dibuang karena banyak gedung cuma punya satu lajur masuk dan mobil biasa jadi menunggu.
    Mall tetap memakai Zona KENNETH (keputusan 2 Okt 2026).
@@ -85,7 +86,7 @@ Tab tampil sebagai ikon tanpa tulisan; tab yang aktif duduk di pil aksen yang be
 |---|---|
 | **Tiket** (kiri) | Yang sedang berjalan: lokasi parkir tersimpan, runner yang jalan, petak yang sedang ditahan, charger yang mengisi. Kalau kosong, ada tombol "Cari parkir". Nanti: pesanan belum mulai dan pengingat. Riwayat: selesai, dibatalkan, hangus, masing-masing dengan tombol "Lagi". Ringkasan bulan ini (kali parkir, menit dihemat) |
 | **Beranda** (tengah) | Peta MapLibre. Di atas peta: label kecil "Demo" dengan jam simulasi (tidak muncul di mode waktu nyata; jamnya diganti di Akun), tombol lokasiku, dan avatar yang membuka Akun. Lembar bawah "Mau parkir di mana?" dengan chip kendaraan di sebelah judul (ikon 3D mobilnya sesuai model dan warna, ketuk untuk ganti kendaraan), kolom cari, dan tiga pilihan layanan satu baris. Lembar ditarik ke atas memperlihatkan daftar lokasi dengan filter Semua, Favorit, Mall, Kampus, Kantor |
-| **Akun** (kanan) | Kartu profil: nama (Google atau tamu), mobil yang dipakai dengan ikon 3D dan pelatnya, dan angka bulan ini (kali parkir, menit antre dan liter bensin yang dihemat, berlabel "contoh" kalau dari riwayat contoh). Lalu paket Gratis/Premium, tempat favorit dengan kondisinya sekarang (ketuk untuk buka di peta), garasi kendaraan (mobil/motor, pelat, EV), peta dan navigasi, notifikasi dan preferensi, bahasa, tema (ikut sistem, terang, gelap), privasi, "Untuk tim dan demo" (jam simulasi, /booth, /mitra), reset |
+| **Akun** (kanan) | Kartu profil: nama (Google atau tamu), mobil yang dipakai dengan ikon 3D dan pelatnya, dan angka bulan ini (kali parkir, menit antre dan liter bensin yang dihemat). Tamu tampil sebagai wajah bekantan. Lalu paket Gratis/Premium, tempat favorit dengan kondisinya sekarang (ketuk untuk buka di peta), garasi kendaraan (mobil/motor, pelat, EV), peta dan navigasi, notifikasi dan preferensi, bahasa, tema (ikut sistem, terang, gelap), privasi, reset. Di mode tim saja: "Untuk tim" (jam simulasi, riwayat contoh, /booth, /mitra, keluar dari mode tim) |
 
 ### 3.2 Layanan di Beranda
 
@@ -146,7 +147,7 @@ Layout sama. Yang berubah saat layanan dipilih hanya angka di pin, angka di daft
 
 Di laptop, app tampil di bingkai HP dengan QR di pojok. Splash: layar tinta dengan ikon K kecil, memudar setelah peta siap.
 Onboarding pertama kali: satu layar sambutan (Mulai, atau masuk dengan Google kalau tersedia), lalu peta. Pelat ditanya
-saat pertama memesan Zona KENNETH atau valet runner dan disimpan ke kendaraan; riwayat contoh berlabel "Contoh".
+saat pertama memesan Zona KENNETH atau valet runner dan disimpan ke kendaraan; riwayat dimulai kosong (riwayat contoh hanya lewat mode tim).
 
 ## 4. Angka dan aturan yang tertanam di mesin (`src/engine`)
 
@@ -209,7 +210,8 @@ Koordinat dari OpenStreetMap, sisanya (kapasitas, tarif, gerbang, charger, tenan
 - **Login Google** lewat `<project>.firebaseapp.com` (lihat `src/lib/firebase.ts`). Butuh `.env.local` dari
   `.env.example` untuk `kenneth-9339d`, dan `.env.park.local` untuk build park-kenneth.web.app. Tanpa itu app
   jalan sebagai tamu. Provider Google harus di-Enable sekali di Authentication tiap project.
-- **Jam demo**: default Sabtu 14.07 (mall puncak). Selasa 10.00 menunjukkan kampus penuh.
+- **Jam**: waktu nyata. Untuk presentasi, nyalakan mode tim: ketuk nomor versi di bagian bawah Akun lima kali (ketuk lima kali lagi, atau "Keluar dari mode tim", untuk mematikannya), lalu set Sabtu 14.07 (mall puncak) atau Selasa 10.00
+  (kampus penuh) dan nyalakan riwayat contoh.
 
 ## 7. Aturan kerja di repo ini
 
@@ -268,3 +270,4 @@ Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AU
 | v0.5 | 5 sampai 6 Okt 2026 | PR #44 sampai #50: 39 lokasi dengan kantor, situs park-kenneth.web.app, kampus dan kantor menjual layanan, ganjil-genap libur nasional, kartu profil di Akun, denah petak dan kunci di tiket, kabar kalau ada yang batal (Premium) |
 | v0.5 + data bersama | 6 Okt 2026 | PR #51 sampai #53: login Google di park-kenneth.web.app, laporan kondisi dibagi antar HP, sesi booth bersama tanpa kontak (Firestore project `park-kenneth`), 168 test. Live di park-kenneth.web.app |
 | v0.5 + maskot | 7 Okt 2026 | PR #55: maskot bekantan (dipilih dari 16 kandidat, set 17 pose), muncul di onboarding, Tiket, pencarian, daftar tempat, pesanan selesai, layanan yang tutup, toast kabar baik, dan `/booth`. 168 test |
+| v0.5 + tanpa kata demo | 7 Okt 2026 | PR #56 sampai #57: logo tanpa kotak hitam dan nama Kenneth sebagai satu kata; tidak ada tulisan demo, simulasi, atau prototipe di app, alat tim pindah ke mode tim (ketuk versi lima kali), waktu nyata secara bawaan, tamu tampil sebagai bekantan. 171 test |

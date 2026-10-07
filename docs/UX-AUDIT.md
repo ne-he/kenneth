@@ -28,10 +28,10 @@ Dicek ulang 3 Okt 2026 di `main` (`0e1f4b7`), setelah desain ulang Frederick (PR
 | 4 | Onboarding panjang dan minta data di depan | Selesai | Satu layar sambutan lalu peta. Pelat ditanya di form Zona KENNETH dan valet saat belum ada, dan disimpan ke kendaraan; tombol bayar menunggu pelatnya lengkap. Kendaraan lewat chip di Beranda, favorit lewat bintang |
 | 5 | Kartu detail lokasi terlalu padat | Selesai | Di bawah kartu tinggal grafik perkiraan (bagian dari status, cuma digeser), "Masih lega di dekat sini" kalau tidak lega, satu baris "Detail lokasi" (sisa slot, gerbang, biaya, slot khusus, ganjil-genap, tenant, catatan sumber data), dan lapor kondisi. Ganjil-genap keluar dari Detail lokasi hanya kalau pelatmu dilarang hari itu |
 | 6 | "Datang dalam 20:25" terbaca seperti jam | Selesai | Hitung mundur di tiket dan tab Tiket jadi menit ("20 mnt", "1 jam 5 mnt"). Stopwatch parkir dan valet tetap menit:detik karena tidak bersebelahan dengan jam |
-| 7 | Istilah internal dan alat demo di layar utama | Selesai | Tombol "Zona K" yang terpotong sudah hilang bersama dropdown. "Data palang" jadi "Data langsung", dan "booking" di teks app diganti "pesan" atau "pesanan" (dasbor Mitra tetap). Chip "Simulasi" di peta jadi label kecil "Demo" yang tidak bisa diketuk (hilang di mode waktu nyata); jamnya diganti di Akun, Untuk tim dan demo |
+| 7 | Istilah internal dan alat demo di layar utama | Selesai | Tombol "Zona K" yang terpotong sudah hilang bersama dropdown. "Data palang" jadi "Data langsung", dan "booking" di teks app diganti "pesan" atau "pesanan" (dasbor Mitra tetap). Chip "Simulasi" di peta hilang sama sekali, begitu juga semua tulisan demo (7 Okt); jamnya diatur di mode tim |
 | Baru | Ikon tab tanpa tulisan | Belum | Dock Tiket, Beranda, Akun hanya berupa ikon. Tab bar di app Apple selalu memakai label |
 | Kecil | Tombol Rute jadi ikon tanpa tulisan di mode Zona | Selesai | Di semua mode rute berupa baris bertulisan ("Rute ke Gerbang 3, antre 3 mnt") |
-| Kecil | Riwayat contoh tanpa label | Selesai | Kunjungan contoh dari onboarding ditandai: tiap barisnya di Riwayat diawali "Contoh" |
+| Kecil | Riwayat contoh tanpa label | Selesai | Pengguna baru tidak lagi diberi riwayat contoh; tim menyalakannya dari mode tim saat presentasi (7 Okt) |
 
 Warna aksen yang bisa dipilih sendiri (masukan Delon) ada sejak PR #24 dan #26: Biru (cornflower), Ungu, Pink,
 Grafit di Akun, di bawah pilihan tema. Merah, oranye, dan hijau tidak ditawarkan karena itu warna status.

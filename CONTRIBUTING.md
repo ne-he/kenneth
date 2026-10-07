@@ -113,7 +113,8 @@ kejauhan dari gedungnya, dan field yang wajib ada.
 
 ## Tips
 
-- Jam app bisa diganti lewat chip jam di kiri atas peta. Skenario default Sabtu 14.07, Selasa 10.00 untuk kampus penuh.
+- App memakai waktu nyata. Jam demo (Sabtu 14.07 untuk mall puncak, Selasa 10.00 untuk kampus penuh) dan riwayat contoh
+  ada di mode tim: ketuk nomor versi di bagian bawah Akun lima kali (ketuk lima kali lagi, atau "Keluar dari mode tim", untuk mematikannya). Jangan menulis kata demo, simulasi, atau prototipe di teks app.
 - Akun, Privasi dan data, "Hapus data" mengembalikan app ke kondisi awal, termasuk onboarding.
 - Tombol "Masuk dengan Google" baru muncul kalau `.env.local` diisi (lihat `.env.example`).
 - Nggak ada yang boleh pindah tab otomatis. Setelah aksi berhasil, cukup toast dan titik di tab Aktivitas (`markActivity`).
