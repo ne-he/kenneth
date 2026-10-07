@@ -1,4 +1,4 @@
-import { Crosshair, User } from '@phosphor-icons/react'
+import { Crosshair } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { useT } from '../../i18n'
@@ -6,6 +6,7 @@ import { haptic } from '../../lib/haptics'
 import { useApp } from '../../store/app'
 import { useUi } from '../../store/ui'
 import { IconButton } from '../ui/Button'
+import { MascotFace } from '../ui/Mascot'
 
 // Jabodetabek, so Alam Sutera and Bekasi count as "here" too.
 const AREA = { minLat: -6.45, maxLat: -6.05, minLng: 106.55, maxLng: 107.1 }
@@ -33,13 +34,11 @@ export function TopBar() {
   )
 }
 
-/** You, top right of the map: the first letter of your name, or your photo once signed in. Opens Akun. */
+/** You, top right of the map: your photo once signed in, else the bekantan for a guest. Opens Akun. */
 function AvatarButton() {
   const t = useT()
-  const name = useApp((s) => s.name)
-  const photo = useApp((s) => s.account?.photo)
+  const account = useApp((s) => s.account)
   const setTab = useUi((s) => s.setTab)
-  const initial = name.trim().charAt(0).toUpperCase()
   return (
     <motion.button
       type="button"
@@ -52,7 +51,13 @@ function AvatarButton() {
       }}
       className="glass shadow-float grid size-10 place-items-center overflow-hidden rounded-full text-[15px] font-semibold text-ink"
     >
-      {photo ? <img src={photo} alt="" className="size-full object-cover" /> : initial || <User size={18} weight="bold" className="text-ink-2" />}
+      {account?.photo ? (
+        <img src={account.photo} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
+      ) : account ? (
+        account.name.trim().charAt(0).toUpperCase()
+      ) : (
+        <MascotFace size={40} />
+      )}
     </motion.button>
   )
 }

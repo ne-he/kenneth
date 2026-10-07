@@ -45,6 +45,7 @@ import { Segmented, Toggle } from '../ui/Controls'
 import { Plate } from '../ui/Display'
 import { Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
 import { LogoMark } from '../ui/Logo'
+import { MascotFace } from '../ui/Mascot'
 import { VehicleIcon } from '../ui/VehicleIcon'
 import { buttonClass } from '../ui/buttonStyles'
 import { useSignIn } from './useSignIn'
@@ -266,8 +267,9 @@ function Version() {
 
 /**
  * Who you are at a glance: your name (a Google account, or a guest whose data
- * never leaves the phone), the car the app plans for, and what KENNETH saved
- * you this month. The car opens its editor, the numbers open how they are counted.
+ * never leaves the phone, shown as the bekantan), the car the app plans for,
+ * and what KENNETH saved you this month. The car opens its editor, the numbers
+ * open how they are counted.
  */
 function Identity({ trips, minutes, fuel }: { trips: number; minutes: number; fuel: string }) {
   const t = useT()
@@ -283,10 +285,12 @@ function Identity({ trips, minutes, fuel }: { trips: number; minutes: number; fu
       <div className="flex items-center gap-4">
         {account?.photo ? (
           <img src={account.photo} alt="" referrerPolicy="no-referrer" className="size-16 shrink-0 rounded-full object-cover" />
-        ) : (
+        ) : account ? (
           <span className="grid size-16 shrink-0 place-items-center rounded-full bg-ink text-[26px] font-semibold text-canvas">
-            {(shown || t.profile.guest).slice(0, 1).toUpperCase()}
+            {shown.slice(0, 1).toUpperCase()}
           </span>
+        ) : (
+          <MascotFace size={64} />
         )}
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[20px] leading-tight font-semibold tracking-tight">{shown || t.profile.guest}</span>
