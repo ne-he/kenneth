@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { Button } from '../components/ui/Button'
 import { LogoMark, Wordmark } from '../components/ui/Logo'
+import { Mascot } from '../components/ui/Mascot'
 import { useLang } from '../i18n'
 import { haptic } from '../lib/haptics'
 import { shareAnswer, sharedAvailable, watchSession } from '../lib/shared'
@@ -230,7 +231,11 @@ export default function Booth() {
 
       <main className="mx-auto grid max-w-[1180px] gap-6 px-5 pt-6 pb-16 lg:grid-cols-[1.35fr_1fr]">
         <section>
-          <p className="mb-5 max-w-[620px] text-[14.5px] leading-relaxed text-ink-2">{session ? c.subShared : c.sub}</p>
+          {/* The bekantan says hello to each visitor at the stand. */}
+          <div className="mb-5 flex max-w-[680px] items-end gap-4">
+            <p className="min-w-0 flex-1 text-[14.5px] leading-relaxed text-ink-2">{session ? c.subShared : c.sub}</p>
+            <Mascot pose="hello" size={92} />
+          </div>
           <AnimatePresence>
             {joined && (
               <motion.div
@@ -252,7 +257,7 @@ export default function Booth() {
                 className="mb-4 overflow-hidden"
               >
                 <div className="flex items-center gap-2 rounded-[18px] bg-ink p-4 text-[15px] font-semibold text-canvas">
-                  <Check size={20} weight="bold" /> {c.thanks}
+                  <Mascot pose="yay" size={40} className="-my-2" /> {c.thanks}
                 </div>
               </motion.div>
             )}

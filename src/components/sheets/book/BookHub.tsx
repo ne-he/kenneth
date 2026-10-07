@@ -1,4 +1,4 @@
-import { Check, Crown, Ticket } from '@phosphor-icons/react'
+import { Crown, Ticket } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { VENUE_BY_ID } from '../../../data/venues'
@@ -10,6 +10,7 @@ import { useUi } from '../../../store/ui'
 import { useCancel } from '../../activity/useCancel'
 import { Button } from '../../ui/Button'
 import { CancelConfirm } from '../../ui/CancelConfirm'
+import { Mascot } from '../../ui/Mascot'
 import { Segmented } from '../../ui/Controls'
 import { SheetHeader } from '../../ui/Sheet'
 import { EvPanel } from './EvPanel'
@@ -90,16 +91,15 @@ function BookedView({ booked, venueName }: { booked: Booked; venueName: string }
   const policy =
     booked.service === 'zone' ? t.activity.cancelPolicy : booked.service === 'valet' ? t.activity.valetCancelPolicy : t.activity.evCancelPolicy
   return (
-    <div className="flex flex-col items-center pt-8 pb-5 text-center">
-      {/* A booking is the brand moment: a soft cornflower tint, no glow. */}
-      <motion.span
-        initial={{ scale: 0.6, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 420, damping: 22 }}
-        className="grid size-16 place-items-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300"
+    <div className="flex flex-col items-center pt-6 pb-5 text-center">
+      {/* A booking is the brand moment: the bekantan hops for joy. */}
+      <motion.div
+        initial={{ scale: 0.6, y: 16, opacity: 0 }}
+        animate={{ scale: 1, y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 380, damping: 18 }}
       >
-        <Check size={30} weight="bold" />
-      </motion.span>
+        <Mascot pose="yay" size={116} />
+      </motion.div>
       <h2 className="mt-5 text-[21px] font-semibold tracking-tight">{t.book.booked[booked.service]}</h2>
       <p className="mt-1.5 text-[13.5px] text-ink-2">
         {venueName} · {booked.line}

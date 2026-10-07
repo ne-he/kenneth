@@ -54,6 +54,10 @@ Zona KENNETH, valet runner, dan charger EV. Proyek kelompok mata kuliah ENPR6312
     `.btn-primary` / `.btn-tile` di `src/index.css`.
     Aksen bisa diganti di Akun (PR #24, #26): Biru (cornflower, bawaan), Ungu, Pink, Grafit. Merah, oranye, dan
     hijau sengaja tidak ditawarkan supaya aksen tidak terbaca sebagai status.
+11. **Maskotnya bekantan** (pilihan pemilik, 7 Okt 2026). Oranye karat dan krem itu warna karakternya, bukan warna UI.
+    Dia hanya dekorasi di samping teks yang membawa arti: mengintip dari tepi kartu, keadaan kosong, pesanan
+    selesai, layanan yang sudah tutup, dan toast kabar baik. Paling banyak satu per layar. Detail di
+    [brand/mascot](brand/mascot/README.md).
 
 ## 2. Nama yang dipakai (wajib konsisten di layar dan di kode)
 
@@ -263,3 +267,4 @@ Masukan dari presentasi di kelas (1 Okt 2026). Audit UI lengkapnya ada di [UX-AU
 | v0.4 + rapikan | 3 sampai 5 Okt 2026 | PR #27 sampai #43: kendaraan jadi chip di samping pertanyaan, tombol kapsul beraksen, ikon 3D 115 model mobil, tanpa huruf kapital berjarak, toast dan dock baru, dock kaca mengambang, sisa audit UI (menit, "pesan", nama lengkap di pin), grafik garis kepadatan, Select sendiri, kartu lokasi ringkas, onboarding satu layar |
 | v0.5 | 5 sampai 6 Okt 2026 | PR #44 sampai #50: 39 lokasi dengan kantor, situs park-kenneth.web.app, kampus dan kantor menjual layanan, ganjil-genap libur nasional, kartu profil di Akun, denah petak dan kunci di tiket, kabar kalau ada yang batal (Premium) |
 | v0.5 + data bersama | 6 Okt 2026 | PR #51 sampai #53: login Google di park-kenneth.web.app, laporan kondisi dibagi antar HP, sesi booth bersama tanpa kontak (Firestore project `park-kenneth`), 168 test. Live di park-kenneth.web.app |
+| v0.5 + maskot | 7 Okt 2026 | PR #55: maskot bekantan (dipilih dari 16 kandidat, set 17 pose), muncul di onboarding, Tiket, pencarian, daftar tempat, pesanan selesai, layanan yang tutup, toast kabar baik, dan `/booth`. 168 test |

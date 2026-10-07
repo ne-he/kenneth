@@ -211,7 +211,7 @@ src/
   components/  UI per layar: explore (Beranda), activity (Tiket), account, sheets (termasuk sheets/book), onboarding, map, park (3D)
   lib/         login Google, navigasi ke app lain, notifikasi, waktu WIB
   pages/       /mitra dan /booth
-docs/          dokumen produk, model simulasi, screenshot, logo (docs/brand), guide media sosial (docs/social)
+docs/          dokumen produk, model simulasi, screenshot, logo dan maskot (docs/brand), guide media sosial (docs/social)
 ```
 
 ## Logo dan layar pembuka
@@ -230,6 +230,14 @@ Gerakan mobil mengikuti klip hasil generate AI, tapi setiap piksel mobil dan jal
 bentuknya tidak pernah berubah. Klipnya ada di `public/brand/` (MP4, WebM, dan poster frame pertama), begitu juga
 loop 6 detik versi kecil yang dipakai di layar sambutan onboarding. Versi loop untuk booth dan media sosial (1:1, 9:16,
 16:9) ada di [docs/brand](docs/brand).
+
+## Maskot
+
+Maskotnya bekantan: hidung besarnya buat nyium parkir yang masih lega. Bentuknya beberapa bentuk bulat besar dalam
+oranye karat dan krem, tanpa baju atau topi, jadi beda dari bekantan Dufan. Di app dia mengintip dari tepi kartu,
+menunggu di Tiket yang kosong, melompat senang saat pesanan selesai, tertidur saat valet sudah tutup, dan wajahnya
+muncul di toast kabar baik. Cara dibuat, deskripsi karakternya, dan aturannya ada di
+[docs/brand/mascot](docs/brand/mascot/README.md).
 
 Guide desain carousel Instagram (warna, tipografi, jalan yang menyambung antar slide, dan aturan slide video)
 ada di [docs/social/GUIDE.md](docs/social/GUIDE.md), lengkap dengan dua contoh carousel dan generatornya.

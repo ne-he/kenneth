@@ -6,6 +6,7 @@ import { useApp } from '../../store/app'
 import { useSignIn } from '../account/useSignIn'
 import { Button } from '../ui/Button'
 import { Wordmark } from '../ui/Logo'
+import { MascotPeek } from '../ui/Mascot'
 
 /*
   First run, the only time the app talks about itself: one screen, then the
@@ -74,19 +75,26 @@ function Welcome() {
   return (
     <div className="flex min-h-full flex-col">
       <div className="grid flex-1 place-items-center py-2">
-        <div className="relative aspect-square w-full max-w-[280px] overflow-hidden rounded-[32px] bg-black">
-          <video
-            className="size-full object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/brand/loading-poster.jpg"
-            aria-hidden="true"
-          >
-            <source src="/brand/loop.webm" type="video/webm" />
-            <source src="/brand/loop.mp4" type="video/mp4" />
-          </video>
+        {/*
+          The bekantan peeks over the animation; the space above the card is kept for him. On a short phone the
+          card shrinks instead, so the welcome text and the button still fit without scrolling.
+        */}
+        <div className="relative mt-[78px] w-[min(280px,100%,calc(100dvh_-_460px))]">
+          <MascotPeek width={112} className="right-7" />
+          <div className="relative aspect-square w-full overflow-hidden rounded-[32px] bg-black">
+            <video
+              className="size-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster="/brand/loading-poster.jpg"
+              aria-hidden="true"
+            >
+              <source src="/brand/loop.webm" type="video/webm" />
+              <source src="/brand/loop.mp4" type="video/mp4" />
+            </video>
+          </div>
         </div>
       </div>
       <h1 className="mt-6 text-[30px] leading-[1.08] font-semibold tracking-tight text-balance">{t.onboarding.welcomeTitle}</h1>

@@ -41,6 +41,7 @@ import { useUi } from '../../store/ui'
 import { useNavigation } from '../nav/useNavigation'
 import { Stepper } from '../ui/Controls'
 import { Disclosure, Label, List, StatusPill } from '../ui/Kit'
+import { MascotPeek } from '../ui/Mascot'
 import { buttonClass } from '../ui/buttonStyles'
 import { PlaceCard } from './PlaceCard'
 import { SlotsLeft } from './SlotsLeft'
@@ -195,28 +196,32 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
         {alts.length > 0 && (
           <section>
             <Label>{t.venue.alternatives}</Label>
-            <List plain>
-              {alts.map((a) => (
-                <button
-                  key={a.snap.venue.id}
-                  type="button"
-                  onClick={() => {
-                    haptic('tap')
-                    select(a.snap.venue.id)
-                  }}
-                  className="flex w-full items-center gap-3 px-1 py-3.5 text-left transition-opacity hover:opacity-80"
-                >
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14.5px] font-medium">{a.snap.venue.name}</span>
-                    <span className="mt-0.5 flex items-start gap-1 text-[12.5px] leading-snug text-ink-3">
-                      {a.walk ? <PersonSimpleWalk size={13} className="mt-px shrink-0" /> : <CarProfile size={13} className="mt-px shrink-0" />}
-                      <span className="line-clamp-2">{a.walk ? t.venue.walk(a.walk.minutes, a.walk.via) : t.venue.drive(formatKm(a.km))}</span>
+            {/* The bekantan peeks over the list: here is where it is still clear. */}
+            <div className="relative">
+              <MascotPeek width={72} className="right-3" />
+              <List plain>
+                {alts.map((a) => (
+                  <button
+                    key={a.snap.venue.id}
+                    type="button"
+                    onClick={() => {
+                      haptic('tap')
+                      select(a.snap.venue.id)
+                    }}
+                    className="flex w-full items-center gap-3 px-1 py-3.5 text-left transition-opacity hover:opacity-80"
+                  >
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[14.5px] font-medium">{a.snap.venue.name}</span>
+                      <span className="mt-0.5 flex items-start gap-1 text-[12.5px] leading-snug text-ink-3">
+                        {a.walk ? <PersonSimpleWalk size={13} className="mt-px shrink-0" /> : <CarProfile size={13} className="mt-px shrink-0" />}
+                        <span className="line-clamp-2">{a.walk ? t.venue.walk(a.walk.minutes, a.walk.via) : t.venue.drive(formatKm(a.km))}</span>
+                      </span>
                     </span>
-                  </span>
-                  <StatusPill status={a.snap.status} pct={a.snap.pct} label={t.status[a.snap.status]} />
-                </button>
-              ))}
-            </List>
+                    <StatusPill status={a.snap.status} pct={a.snap.pct} label={t.status[a.snap.status]} />
+                  </button>
+                ))}
+              </List>
+            </div>
           </section>
         )}
 
@@ -461,7 +466,7 @@ function ReportRow({ venue, now }: { venue: Venue; now: number }) {
     haptic('success')
     addReport({ venueId: venue.id, kind, at: now })
     if (sharedAvailable) shareReport(venue.id, kind).catch(() => undefined)
-    notify(t.venue.reportThanks)
+    notify(t.venue.reportThanks, 'mascot')
   }
   const chip = 'btn-tile flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full border text-[12.5px] font-medium tracking-[-0.01em] transition-colors duration-150 active:scale-[0.98]'
   const kinds: [CommunityReport['kind'], string][] = [

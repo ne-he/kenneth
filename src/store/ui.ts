@@ -51,7 +51,7 @@ interface UiState {
   origin: LngLat
   originLabel: 'binus' | 'gps'
   travel: TravelLookup
-  toast: { id: number; text: string; icon?: string } | null
+  toast: { id: number; text: string; icon?: 'mascot' } | null
   /** Something new landed in Aktivitas since the user last looked. Drives the dot on the tab. */
   activityBadge: boolean
   /** Bumped when the K is tapped while already home: the map goes back to the overview. */
@@ -70,7 +70,8 @@ interface UiState {
   setRoute: (r: Route | null) => void
   setOrigin: (o: LngLat, label: 'binus' | 'gps') => void
   setTravel: (t: TravelLookup) => void
-  notify: (text: string, icon?: string) => void
+  /** `icon: 'mascot'` shows the bekantan's face instead of the check: for good news the app brings by itself, and thanks. */
+  notify: (text: string, icon?: 'mascot') => void
   markActivity: () => void
 }
 

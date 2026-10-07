@@ -11,6 +11,7 @@ import { useNow } from '../../../store/clock'
 import { Button } from '../../ui/Button'
 import { Segmented } from '../../ui/Controls'
 import { Label } from '../../ui/Kit'
+import { Mascot } from '../../ui/Mascot'
 import type { Booked } from './BookHub'
 
 const HALF_HOUR = 30 * 60_000
@@ -43,7 +44,12 @@ export function EvPanel({ venueId, onDone }: { venueId: VenueId; onDone: (b: Boo
   const [unit, setUnit] = useState(() => units.find((u) => !taken(u, slots[0])) ?? units[0])
 
   if (slots.length === 0) {
-    return <p className="rounded-[16px] bg-surface-2 p-4 text-[13.5px] leading-relaxed text-ink-2">{t.ev.closedToday}</p>
+    return (
+      <div className="flex items-center gap-3 rounded-[16px] bg-surface-2 py-3 pr-4 pl-3">
+        <Mascot pose="sleepy" size={56} />
+        <p className="text-[13.5px] leading-relaxed text-ink-2">{t.ev.closedToday}</p>
+      </div>
+    )
   }
 
   return (
