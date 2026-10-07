@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#f6f6f3" />
+    <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b0e" media="(prefers-color-scheme: dark)" />
     <meta name="description" content="KENNETH: cek kondisi parkir mall di Jakarta sebelum berangkat. Seberapa penuh, antri gerbang berapa menit, dan ke mana kalau penuh." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -22,22 +23,30 @@
     <meta name="twitter:image" content="https://kenneth-9339d.web.app/og.png" />
     <title>KENNETH · Parkir tanpa nebak</title>
     <style>
-      /* Splash: painted before any JavaScript, removed by main.tsx once the first screen has drawn. */
+      /*
+        Splash: painted before any JavaScript, removed by main.tsx once the first screen has drawn. It takes the
+        canvas of the system theme (the app's own setting is not read yet) and shows the K with no box around it.
+      */
       #splash {
         position: fixed;
         inset: 0;
         z-index: 2147483000;
         display: grid;
         place-items: center;
-        background: #121216;
+        background: #f6f6f3;
         transition: opacity 0.3s ease;
+      }
+      @media (prefers-color-scheme: dark) {
+        #splash {
+          background: #0b0b0e;
+        }
       }
       #splash.out {
         opacity: 0;
         pointer-events: none;
       }
       #splash img {
-        width: 72px;
+        width: 63px;
         height: 72px;
         display: block;
       }
@@ -45,7 +54,7 @@
   </head>
   <body>
     <div id="splash" role="presentation">
-      <img src="/pwa-512.png" alt="" width="72" height="72" />
+      <img src="/brand/k-mark.webp" alt="" width="63" height="72" />
     </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
