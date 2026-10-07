@@ -2,6 +2,7 @@ import { CheckCircle } from '@phosphor-icons/react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect } from 'react'
 import { useUi } from '../../store/ui'
+import { MascotFace } from './Mascot'
 
 /** Top of the screen below the notch (or the showcase frame's island), the same inset the top bar uses. */
 const SAFE_TOP = 'max(12px, var(--safe-top, env(safe-area-inset-top)))'
@@ -9,7 +10,9 @@ const SAFE_TOP = 'max(12px, var(--safe-top, env(safe-area-inset-top)))'
 /**
  * A short confirmation in the same glass as the top bar's chips, so it
  * follows the theme. It drops in just below the top bar, or below the turn
- * banner while navigating, never under the notch.
+ * banner while navigating, never under the notch. Good news the app brings
+ * by itself (a bay came free, the car is ready) and its thanks show the
+ * bekantan's face.
  */
 export function Toast() {
   const toast = useUi((s) => s.toast)
@@ -38,7 +41,11 @@ export function Toast() {
             transition={{ type: 'spring', stiffness: 500, damping: 34 }}
             className="glass shadow-float flex max-w-full items-center gap-2 rounded-full py-2 pr-4 pl-2.5 text-[13px] font-semibold text-ink"
           >
-            <CheckCircle size={18} weight="fill" className="shrink-0 text-brand-600 dark:text-brand-400" />
+            {toast.icon === 'mascot' ? (
+              <MascotFace size={22} className="-my-0.5" />
+            ) : (
+              <CheckCircle size={18} weight="fill" className="shrink-0 text-brand-600 dark:text-brand-400" />
+            )}
             <span className="truncate">{toast.text}</span>
           </motion.div>
         )}

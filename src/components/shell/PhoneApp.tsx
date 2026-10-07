@@ -33,7 +33,7 @@ function useReminderAlarm() {
     due.forEach((r) => {
       const name = VENUE_BY_ID[r.venueId].name
       const text = t.explore.reliefNow(name)
-      useUi.getState().notify(text)
+      useUi.getState().notify(text, 'mascot')
       haptic('success')
       void systemNotify('KENNETH', text)
       removeReminder(r.id)
@@ -52,7 +52,7 @@ function useWatchAlarm() {
     const { fireWatch } = useApp.getState()
     due.forEach((w) => {
       const text = t.book.watchFired(VENUE_BY_ID[w.venueId].name, clock(w.slot))
-      useUi.getState().notify(text)
+      useUi.getState().notify(text, 'mascot')
       useUi.getState().markActivity()
       haptic('success')
       void systemNotify('KENNETH', text)
@@ -74,7 +74,7 @@ function useValetAlarm() {
       told.current.add(v.id)
       if (v.readyAt && now - v.readyAt > 60_000) return
       const text = t.valet.readyNow(v.lobby)
-      useUi.getState().notify(text)
+      useUi.getState().notify(text, 'mascot')
       useUi.getState().markActivity()
       haptic('success')
       void systemNotify('KENNETH', text)
