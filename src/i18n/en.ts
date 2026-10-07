@@ -433,6 +433,8 @@ const en: Dict = {
     signOut: 'Sign out',
     signedIn: (name: string) => `Hi, ${name}`,
     signedOut: 'Signed out. The data on this phone is still here.',
+    leaveGuestAsk: 'Leave guest mode?',
+    leaveGuestBody: 'The vehicles, history and bookings on this phone are deleted, and the app goes back to its welcome screen.',
     signInFail: 'Could not sign in. Try again, or carry on as a guest.',
     signInOff: 'Google sign-in is not switched on yet. Use guest mode for now, everything still works.',
     vehicles: 'Vehicles',

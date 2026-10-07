@@ -432,6 +432,8 @@ const id = {
     signOut: 'Keluar',
     signedIn: (name: string) => `Halo, ${name}`,
     signedOut: 'Kamu keluar. Data di HP ini tetap ada.',
+    leaveGuestAsk: 'Keluar dari mode tamu?',
+    leaveGuestBody: 'Kendaraan, riwayat, dan pesanan di HP ini ikut dihapus, lalu app kembali ke layar awal.',
     signInFail: 'Gagal masuk. Coba lagi, atau lanjut sebagai tamu.',
     signInOff: 'Login Google belum aktif. Pakai mode tamu dulu, semua fitur tetap jalan.',
     vehicles: 'Kendaraan',

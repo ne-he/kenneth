@@ -24,7 +24,7 @@ import {
 } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
-import { useRef, type ReactNode } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { VENUE_BY_ID } from '../../data/venues'
 import { plateParity } from '../../engine/gage'
@@ -219,11 +219,62 @@ export function Account() {
         </Group>
       )}
 
+      <Leave />
+
       <section className="mt-2 flex flex-col items-center pb-4 text-center">
         <LogoMark size={40} />
         <Version />
       </section>
     </div>
+  )
+}
+
+/**
+ * Keluar, at the very bottom like in any app. Signed in, it signs out of Google and the data stays on the
+ * phone. A guest has no account to leave: Keluar ends the guest session, which deletes what is on the phone,
+ * so it asks first, then the app is back at its welcome screen.
+ */
+function Leave() {
+  const t = useT()
+  const account = useApp((s) => s.account)
+  const { signOut } = useSignIn()
+  const [ask, setAsk] = useState(false)
+  if (ask) {
+    return (
+      <div role="alertdialog" aria-label={t.profile.leaveGuestAsk} className="mb-6 rounded-[20px] bg-penuh-soft p-3.5 dark:bg-penuh/12">
+        <p className="text-[13.5px] font-semibold text-ink">{t.profile.leaveGuestAsk}</p>
+        <p className="mt-0.5 text-[12px] leading-snug text-ink-2">{t.profile.leaveGuestBody}</p>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <button type="button" onClick={() => setAsk(false)} className={buttonClass('ghost', 'md')}>
+            {t.common.cancel}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              haptic('success')
+              useUi.getState().setTab('park')
+              useApp.getState().resetAll()
+            }}
+            className={buttonClass('destructive', 'md')}
+          >
+            {t.profile.signOut}
+          </button>
+        </div>
+      </div>
+    )
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        haptic('tap')
+        if (account) void signOut()
+        else setAsk(true)
+      }}
+      className={clsx(buttonClass('ghost', 'md'), 'mb-6 w-full')}
+    >
+      <SignOut size={16} weight="bold" /> {t.profile.signOut}
+    </button>
   )
 }
 
@@ -267,7 +318,7 @@ function Identity({ trips, minutes, fuel }: { trips: number; minutes: number; fu
   const account = useApp((s) => s.account)
   const car = useVehicle()
   const open = useUi((s) => s.open)
-  const { available, busy, signIn, signOut } = useSignIn()
+  const { available, busy, signIn } = useSignIn()
   const shown = account?.name ?? name ?? ''
   const parity = plateParity(car.plate)
   return (
@@ -327,28 +378,19 @@ function Identity({ trips, minutes, fuel }: { trips: number; minutes: number; fu
           <Stat value={fuel} unit="L" label={t.profile.statFuel} />
         </span>
       </button>
-      {account ? (
+      {/* Signing out lives at the bottom of Akun, with Keluar for a guest. */}
+      {!account && available && (
         <button
           type="button"
-          onClick={signOut}
-          className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-full bg-surface-2 text-[13.5px] font-semibold text-ink-2 transition-colors hover:bg-surface-3 hover:text-ink"
+          disabled={busy}
+          onClick={() => {
+            haptic('tap')
+            void signIn()
+          }}
+          className={clsx(buttonClass('primary', 'md'), 'mt-4 w-full')}
         >
-          <SignOut size={16} weight="bold" /> {t.profile.signOut}
+          <GoogleLogo size={17} weight="bold" /> {busy ? t.profile.signingIn : t.profile.signIn}
         </button>
-      ) : (
-        available && (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              haptic('tap')
-              void signIn()
-            }}
-            className={clsx(buttonClass('primary', 'md'), 'mt-4 w-full')}
-          >
-            <GoogleLogo size={17} weight="bold" /> {busy ? t.profile.signingIn : t.profile.signIn}
-          </button>
-        )
       )}
     </section>
   )
