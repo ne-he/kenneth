@@ -128,6 +128,14 @@ const en: Dict = {
     mapFail: 'The map could not load. Check your connection.',
     searchField: 'Search a mall, campus or office',
   },
+  promo: {
+    title: 'Offers and events today',
+    count: (n: number) => `${n} today`,
+    now: 'On now',
+    until: (h: string) => `Until ${h}`,
+    from: (h: string) => `From ${h}`,
+    busy: 'The car park usually fills faster during this event',
+  },
   venue: {
     sisaSlot: 'Free bays',
     sisaSlotMotor: 'Free motorbike bays',
