@@ -268,6 +268,16 @@ const en: Dict = {
     bay: 'Bay',
     showQr: 'Open bay ticket',
     qrHint: 'The barrier reads your plate. This QR is the backup if the camera misses.',
+    routeToBay: 'Route to your bay',
+    routeEyebrow: 'Route inside the building',
+    routeSteps: (gate: string, level: string, bay: string, lobby: string) => [
+      `Enter at ${gate}. The barrier reads your plate.`,
+      `Follow the ramp down to ${level}.`,
+      `Turn into the KENNETH Zone aisle, near ${lobby}.`,
+      `Park in bay ${bay}. Its lock drops on its own.`,
+    ],
+    routeDrive: (m: number) => `About ${m} m from the ramp`,
+    ramp: 'Ramp',
     bayWhere: (level: string, lobby: string) => `${level}, by ${lobby}`,
     followSigns: (gate: string) => `Enter at ${gate}, then follow the KENNETH Zone signs.`,
     mapLabel: (level: string, gate: string, bay: string, lobby: string) =>

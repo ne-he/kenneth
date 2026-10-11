@@ -266,6 +266,16 @@ const id = {
     bay: 'Petak',
     showQr: 'Buka tiket petak',
     qrHint: 'Palang baca pelatmu. QR ini cadangan kalau kamera palang gagal.',
+    routeToBay: 'Rute ke petak',
+    routeEyebrow: 'Rute di dalam gedung',
+    routeSteps: (gate: string, level: string, bay: string, lobby: string) => [
+      `Masuk lewat ${gate}. Palang membaca pelatmu.`,
+      `Ikuti ramp turun ke ${level}.`,
+      `Belok ke lorong Zona KENNETH, dekat ${lobby}.`,
+      `Parkir di petak ${bay}. Kuncinya turun sendiri.`,
+    ],
+    routeDrive: (m: number) => `Sekitar ${m} m dari ramp`,
+    ramp: 'Ramp',
     bayWhere: (level: string, lobby: string) => `${level}, dekat ${lobby}`,
     followSigns: (gate: string) => `Masuk lewat ${gate}, lalu ikuti tanda Zona KENNETH.`,
     mapLabel: (level: string, gate: string, bay: string, lobby: string) =>

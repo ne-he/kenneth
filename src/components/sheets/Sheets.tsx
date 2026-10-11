@@ -7,6 +7,7 @@ import { ClockSheet } from './ClockSheet'
 import { FindCarSheet } from './FindCarSheet'
 import { ImpactSheet, PremiumSheet, PrivacySheet, VehiclePickerSheet, VehicleSheet } from './InfoSheets'
 import { PassSheet } from './PassSheet'
+import { RouteSheet } from './RouteSheet'
 import { SaveSpotSheet } from './SaveSpotSheet'
 import { SearchSheet } from './SearchSheet'
 import { ValetSheet } from './ValetSheet'
@@ -40,6 +41,9 @@ export function Sheets() {
       break
     case 'pass':
       body = <PassSheet passId={sheet.id} />
+      break
+    case 'route':
+      body = <RouteSheet passId={sheet.id} />
       break
     case 'valet':
       body = <ValetSheet key={sheet.id} id={sheet.id} />
