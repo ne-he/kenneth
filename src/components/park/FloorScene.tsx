@@ -9,6 +9,8 @@ import { useApp, type ParkedSpot } from '../../store/app'
   have: zones become rows of bays, pillars sit every two bays, other cars fill
   the bays at the venue's occupancy, and the walk from the lift lobby to your
   car glows. One unit is about two metres.
+  With `drive`, the floor shows the way in instead: from the entry ramp, along
+  the aisle, into an empty bay, with a car driving the route.
 */
 
 interface Props {
@@ -17,6 +19,10 @@ interface Props {
   occupancy: number
   dark: boolean
   onWalk?: (metres: number) => void
+  /** Name of the entry ramp: route a car from it into the (empty) bay instead of a walk from the lobby to a parked car. */
+  drive?: string
+  /** Bay name on the floor tag when it is not section-pillar, e.g. K-07. */
+  bayLabel?: string
 }
 
 const BAY_W = 1.25
@@ -99,7 +105,7 @@ function rng(seed: number) {
   return () => (s = (s * 16807) % 2147483647) / 2147483647
 }
 
-export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: Props) {
+export default function FloorScene({ spot, sections, occupancy, dark, onWalk, drive, bayLabel }: Props) {
   const host = useRef<HTMLDivElement>(null)
   // Your car, the lobby and the walk wear the accent the user picked.
   const accent = scaleOf(useApp((s) => s.accent))
@@ -202,12 +208,30 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     lobby.position.copy(lobbyPos)
     scene.add(lobby)
 
-    // Your car, lit up.
-    const mine = makeCar(0x10b981, true)
-    mine.rotation.y = Math.PI / 2
-    mine.position.copy(target)
-    mine.traverse((o) => ((o as THREE.Mesh).castShadow = true))
-    scene.add(mine)
+    // Your car, lit up. When driving in, the bay is still empty: the car drives the route instead.
+    if (!drive) {
+      const mine = makeCar(0x10b981, true)
+      mine.rotation.y = Math.PI / 2
+      mine.position.copy(target)
+      mine.traverse((o) => ((o as THREE.Mesh).castShadow = true))
+      scene.add(mine)
+    }
+
+    // Entry ramp at the front left corner, coming down from the gate.
+    const rampPos = new THREE.Vector3(-floorW / 2 + 1.6, 0, z0 - 4)
+    if (drive) {
+      const ramp = new THREE.Mesh(
+        new THREE.BoxGeometry(3, 0.2, 6),
+        new THREE.MeshStandardMaterial({ color: pal.pillar, roughness: 0.9 }),
+      )
+      ramp.rotation.x = -0.16
+      ramp.position.set(rampPos.x, 0.45, rampPos.z - 2.6)
+      ramp.receiveShadow = true
+      scene.add(ramp)
+      const rampLabel = labelSprite(drive.toUpperCase(), '#ffffff', accent[600], 0.9)
+      rampLabel.position.set(rampPos.x, 2.6, rampPos.z - 1.5)
+      scene.add(rampLabel)
+    }
     const ring = new THREE.Mesh(
       new THREE.RingGeometry(1.2, 1.45, 48),
       new THREE.MeshBasicMaterial({ color: 0x7c9bec, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
@@ -215,18 +239,21 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     ring.rotation.x = -Math.PI / 2
     ring.position.set(target.x, 0.03, target.z)
     scene.add(ring)
-    const tag = labelSprite(`${spot.level} · ${spot.section}-${spot.pillar}`, '#101014', accent[300], 1.1)
+    const tag = labelSprite(`${spot.level} · ${bayLabel ?? `${spot.section}-${spot.pillar}`}`, '#101014', accent[300], 1.1)
     tag.position.set(target.x, 2.6, target.z)
     scene.add(tag)
 
     // Walking path: lobby, along the aisle next to your section, then to the car.
     const aisleX = x0 + zi * sectionW + BAY_D * 2 + AISLE / 2 - 0.05
     const pts = [
-      new THREE.Vector3(lobbyPos.x, 0.06, lobbyPos.z + 0.9),
-      new THREE.Vector3(lobbyPos.x, 0.06, z0 - 0.8),
+      ...(drive
+        ? [new THREE.Vector3(rampPos.x, 0.06, rampPos.z - 2), new THREE.Vector3(rampPos.x, 0.06, z0 - 0.8)]
+        : [new THREE.Vector3(lobbyPos.x, 0.06, lobbyPos.z + 0.9), new THREE.Vector3(lobbyPos.x, 0.06, z0 - 0.8)]),
       new THREE.Vector3(aisleX, 0.06, z0 - 0.8),
       new THREE.Vector3(aisleX, 0.06, target.z),
       new THREE.Vector3(target.x + 1.3, 0.06, target.z),
+      // Driving in ends inside the bay; walking ends beside the car.
+      ...(drive ? [new THREE.Vector3(target.x, 0.06, target.z)] : []),
     ]
     let metres = 0
     for (let i = 1; i < pts.length; i++) metres += pts[i].distanceTo(pts[i - 1]) * 2
@@ -240,8 +267,10 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
     scene.add(path)
     const totalIdx = path.geometry.index ? path.geometry.index.count : 0
 
-    // Moving dot that walks the path on loop.
-    const walker = new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 20), new THREE.MeshBasicMaterial({ color: 0xffffff }))
+    // Moving dot that walks the path on loop, or your car driving it.
+    const walker: THREE.Object3D = drive
+      ? makeCar(0x10b981, true)
+      : new THREE.Mesh(new THREE.SphereGeometry(0.28, 20, 20), new THREE.MeshBasicMaterial({ color: 0xffffff }))
     scene.add(walker)
 
     // Light. ACES tone mapping eats midtones, so light cars need more exposure than it seems.
@@ -263,7 +292,10 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
 
     // Camera: isometric-ish, framed on the walk (lobby to car), not the whole floor.
     const aspect = width / height
-    const focus = new THREE.Box3().setFromPoints([...pts, target, lobbyPos]).expandByScalar(3.5)
+    // The ramp sits on the floor's edge, so its label needs room on the left as well.
+    const focus = new THREE.Box3()
+      .setFromPoints([...pts, target, ...(drive ? [rampPos, rampPos.clone().add(new THREE.Vector3(-3, 0, -2))] : [lobbyPos])])
+      .expandByScalar(3.5)
     const size = focus.getSize(new THREE.Vector3())
     const center = focus.getCenter(new THREE.Vector3()).lerp(target, 0.3)
     const span = Math.max(size.x / aspect, size.z * 0.8, 9) * 0.55
@@ -291,7 +323,11 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
       path.geometry.setDrawRange(0, Math.floor(totalIdx * draw))
       const k = (t * 0.22) % 1
       walker.position.copy(curve.getPointAt(Math.min(0.999, k)))
-      walker.position.y = 0.34
+      walker.position.y = drive ? 0 : 0.34
+      if (drive) {
+        const dir = curve.getTangentAt(Math.min(0.999, k))
+        walker.rotation.y = Math.atan2(dir.x, dir.z)
+      }
       walker.visible = draw >= 1
       const pulse = (Math.sin(t * 3) + 1) / 2
       ring.scale.setScalar(1 + pulse * 0.25)
@@ -328,7 +364,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk }: 
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [spot, sections, occupancy, dark, onWalk, accent])
+  }, [spot, sections, occupancy, dark, onWalk, accent, drive, bayLabel])
 
   return <div ref={host} className="h-full w-full touch-none" />
 }

@@ -20,6 +20,7 @@ export type SheetKey =
   | { kind: 'save-spot'; id: VenueId }
   | { kind: 'find-car' }
   | { kind: 'pass'; id: string }
+  | { kind: 'route'; id: string }
   | { kind: 'valet'; id: string }
   | { kind: 'clock' }
   | { kind: 'search' }

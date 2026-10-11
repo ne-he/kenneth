@@ -1,4 +1,4 @@
-import { Crown, DoorOpen, SunDim } from '@phosphor-icons/react'
+import { Crown, DoorOpen, NavigationArrow, SunDim } from '@phosphor-icons/react'
 import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
@@ -11,6 +11,7 @@ import { useApp, useVehicle } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { useCancel } from '../activity/useCancel'
+import { Button } from '../ui/Button'
 import { CancelConfirm } from '../ui/CancelConfirm'
 import { Plate } from '../ui/Display'
 import { BayMap } from './BayMap'
@@ -30,6 +31,7 @@ export function PassSheet({ passId }: { passId: string }) {
   const plate = useVehicle().plate
   const cancel = useCancel()
   const close = useUi((s) => s.close)
+  const open = useUi((s) => s.open)
   const [qr, setQr] = useState('')
 
   useEffect(() => {
@@ -76,6 +78,11 @@ export function PassSheet({ passId }: { passId: string }) {
       </div>
 
       {zone && <BayMap bay={bay} bays={zone.bays} level={zone.level} gate={gate.name} lobby={zone.lobby} plate={plate} phase={phase} />}
+      {zone && phase !== 'expired' && (
+        <Button variant="secondary" block className="mb-5" onClick={() => open({ kind: 'route', id: pass.id })}>
+          <NavigationArrow size={16} weight="fill" /> {t.activity.routeToBay}
+        </Button>
+      )}
 
       <div className="mx-auto w-full max-w-[260px] rounded-[24px] border border-line bg-white p-3.5 dark:border-transparent">
         {qr ? <img src={qr} alt={pass.token} className="aspect-square w-full" /> : <div className="aspect-square w-full" />}
