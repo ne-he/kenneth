@@ -11,9 +11,9 @@ Seberapa penuh, antri gerbang berapa menit, dan ke mana kalau penuh. Sebelum kam
 Buka di HP untuk app-nya. Di laptop, app yang sama tampil di bingkai HP dengan QR di pojok.</p>
 
 <p align="center">
-  <img src="docs/screens/explore.png" width="200" alt="Beranda: peta dan daftar tempat" />
+  <img src="docs/screens/explore.png" width="200" alt="Beranda: peta dengan persentase terisi dan kolom cari" />
   <img src="docs/screens/modes.png" width="200" alt="Beranda dengan Zona KENNETH dipilih: pin menampilkan harga petak" />
-  <img src="docs/screens/valet-card.png" width="200" alt="Kartu tempat Taman Anggrek dengan Valet runner dipilih" />
+  <img src="docs/screens/valet-card.png" width="200" alt="Kartu tempat Taman Anggrek dengan Valet runner dipilih, ikon gedung di samping nama" />
   <img src="docs/screens/activity.png" width="200" alt="Tab Tiket: sekarang, nanti, riwayat" />
 </p>
 
