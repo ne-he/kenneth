@@ -127,6 +127,14 @@ const id = {
     mapFail: 'Peta gagal dimuat. Cek koneksi internet.',
     searchField: 'Cari mall, kampus, atau kantor',
   },
+  promo: {
+    title: 'Promo dan acara hari ini',
+    count: (n: number) => `${n} hari ini`,
+    now: 'Berlangsung',
+    until: (h: string) => `Sampai ${h}`,
+    from: (h: string) => `Mulai ${h}`,
+    busy: 'Parkiran biasanya lebih cepat penuh saat acara ini',
+  },
   venue: {
     sisaSlot: 'Sisa slot',
     sisaSlotMotor: 'Sisa slot motor',

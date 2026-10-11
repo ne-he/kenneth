@@ -44,6 +44,7 @@ import { Disclosure, Label, List, StatusPill, VenueGlyph } from '../ui/Kit'
 import { MascotPeek } from '../ui/Mascot'
 import { buttonClass } from '../ui/buttonStyles'
 import { PlaceCard } from './PlaceCard'
+import { Promos } from './Promos'
 import { SlotsLeft } from './SlotsLeft'
 import { TimeScrubber } from './TimeScrubber'
 
@@ -195,6 +196,8 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
         <section className="border-t border-line px-1 pt-5">
           <TimeScrubber venues={[venue]} now={now} title={t.venue.forecast} />
         </section>
+
+        <Promos venueId={venue.id} ts={ts} />
 
         {alts.length > 0 && (
           <section>
