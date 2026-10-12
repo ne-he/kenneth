@@ -1,8 +1,9 @@
 import { CalendarStar, Car, Tag, UsersThree } from '@phosphor-icons/react'
 import { useMemo } from 'react'
-import { promosAt } from '../../data/promos'
+import { PROMOS, promosAt } from '../../data/promos'
 import type { VenueId } from '../../data/types'
 import { useLang, useT } from '../../i18n'
+import { useMerchant } from '../../store/merchant'
 import { Label, List } from '../ui/Kit'
 
 const hh = (h: number) => `${String(h).padStart(2, '0')}.00`
@@ -15,7 +16,9 @@ const hh = (h: number) => `${String(h).padStart(2, '0')}.00`
 export function Promos({ venueId, ts }: { venueId: VenueId; ts: number }) {
   const t = useT()
   const lang = useLang()
-  const items = useMemo(() => promosAt(venueId, ts), [venueId, ts])
+  // Promos a merchant made in the dashboard show beside the ones the app ships with.
+  const mine = useMerchant((s) => s.promos)
+  const items = useMemo(() => promosAt(venueId, ts, [...mine, ...PROMOS]), [venueId, ts, mine])
   if (items.length === 0) return null
 
   return (

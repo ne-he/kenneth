@@ -1,14 +1,15 @@
 import { ArrowLeft, Buildings, Car, CaretRight, Info, LockKey, ShieldCheck, TrendDown, UsersThree } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { motion } from 'motion/react'
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { Columns, HBars, Heatmap, OccupancyLine, PairedBars } from '../components/charts/Charts'
 import { SERIES } from '../components/charts/series'
 import { Segmented } from '../components/ui/Controls'
 import { Select } from '../components/ui/Select'
-import { CountUp } from '../components/ui/Display'
 import { Wordmark } from '../components/ui/Logo'
+import { MerchantView, VenuePromos } from './MerchantView'
+import { Card, Kpi } from './mitraKit'
 import type { VenueId } from '../data/types'
 import { VENUE_BY_ID, VENUES } from '../data/venues'
 import { AVG_STAY_H, BUSY_LINE, FULL_LINE, STEERED, diversions, gateBalance, hourlyFlow, zoneDay, weekHeat } from '../engine/mitra'
@@ -22,6 +23,9 @@ import { useNow } from '../store/clock'
 const COPY = {
   id: {
     title: 'Dashboard mitra',
+    roleVenue: 'Pengelola venue',
+    roleMerchant: 'Merchant',
+    subMerchant: 'Yang merchant lihat: berapa orang yang melihat promonya di app sebelum datang, yang mengetuk, dan yang memakai bonus parkirnya. Promo baru langsung tayang di halaman tempat.',
     place: 'Lokasi',
     sub: 'Yang pengelola lihat kalau berlangganan. Sekarang mall cuma tahu berapa mobil yang masuk. Mereka nggak tahu berapa yang batal datang, larinya ke mana, dan jam berapa itu terjadi.',
     sim: 'Agregat dan anonim',
@@ -107,6 +111,9 @@ const COPY = {
     noZone: 'No KENNETH Zone here yet',
     table: 'View as table',
     hour: 'Hour',
+    roleVenue: 'Venue manager',
+    roleMerchant: 'Merchant',
+    subMerchant: 'What a merchant sees: how many people saw the offer in the app before coming, tapped it, and used its parking perk. A new offer goes live on the place page right away.',
   },
 }
 
@@ -119,6 +126,7 @@ export default function Mitra() {
   const now = useNow(30_000)
   const [venueId, setVenueId] = useState<VenueId>('central-park')
   const [dayKey, setDayKey] = useState<DayKey>('today')
+  const [role, setRole] = useState<'venue' | 'merchant'>('venue')
   const venue = VENUE_BY_ID[venueId]
   const colors = SERIES[theme]
 
@@ -162,11 +170,20 @@ export default function Mitra() {
       <main className="mx-auto max-w-[1180px] px-5 pt-8 pb-16">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-[38px] leading-tight font-semibold tracking-tight">{venue.name}</h1>
-          <p className="mt-2 max-w-[720px] text-[15px] leading-relaxed text-ink-2">{c.sub}</p>
+          <p className="mt-2 max-w-[720px] text-[15px] leading-relaxed text-ink-2">{role === 'merchant' ? c.subMerchant : c.sub}</p>
         </motion.div>
 
         {/* Filters: one row, above everything they scope. */}
         <div className="mt-6 flex flex-wrap items-center gap-3">
+          <Segmented
+            className="w-[300px]"
+            value={role}
+            onChange={setRole}
+            options={[
+              { value: 'venue', label: c.roleVenue },
+              { value: 'merchant', label: c.roleMerchant },
+            ]}
+          />
           <Select
             outline
             icon={<Buildings size={16} />}
@@ -188,87 +205,95 @@ export default function Mitra() {
           />
         </div>
 
-        <section className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Kpi icon={<Car size={18} weight="fill" />} label={c.kpiIn} value={totalIn} />
-          <Kpi
-            icon={<UsersThree size={18} weight="fill" />}
-            label={c.kpiPeak}
-            value={Math.round(peak.occ * 100)}
-            unit="%"
-            note={`${c.at} ${String(peak.hour).padStart(2, '0')}.00`}
-          />
-          <Kpi icon={<TrendDown size={18} weight="fill" />} label={c.kpiLost} value={totalLost} note={c.kpiLostNote} tone={totalLost > 0 ? 'bad' : undefined} />
-          <Kpi
-            icon={<ShieldCheck size={18} weight="fill" />}
-            label={c.kpiZone}
-            value={hasZone ? prio.tickets : null}
-            note={!hasZone ? c.noZone : prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
-          />
-        </section>
-
-        <section className="mt-4 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
-          <Card title={c.occ} sub={c.occSub}>
-            <OccupancyLine
-              data={flow}
-              color={colors.mono}
-              nowHour={nowHour}
-              label={c.occ}
-              thresholds={[
-                { value: BUSY_LINE, label: `${lang === 'id' ? 'Ramai' : 'Busy'} 70%` },
-                { value: FULL_LINE, label: `${lang === 'id' ? 'Penuh' : 'Full'} 90%` },
-              ]}
-            />
-            <TableView head={[c.hour, '%']} rows={flow.map((r) => [`${r.hour}.00`, `${Math.round(r.occ * 100)}%`])} label={c.table} />
-          </Card>
-          <Card title={c.lost} sub={c.lostSub}>
-            <Columns
-              data={flow.map((r) => ({ key: `${r.hour}`, value: r.lost }))}
-              color={colors.a}
-              format={(v) => v.toLocaleString('id-ID')}
-              label={c.lost}
-            />
-            <TableView head={[c.hour, c.kpiLost]} rows={flow.map((r) => [`${r.hour}.00`, String(r.lost)])} label={c.table} />
-          </Card>
-        </section>
-
-        <section className="mt-4 grid gap-4 lg:grid-cols-3">
-          <Card title={c.where} sub={c.whereSub}>
-            {div.length ? (
-              <HBars
-                data={div.map((d) => ({ label: VENUE_BY_ID[d.to].name, value: d.count }))}
-                color={colors.b}
-                format={(v) => v.toLocaleString('id-ID')}
+        {role === 'merchant' ? (
+          <MerchantView venue={venue} dayTs={dayTs} lang={lang} />
+        ) : (
+          <>
+            <section className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <Kpi icon={<Car size={18} weight="fill" />} label={c.kpiIn} value={totalIn} />
+              <Kpi
+                icon={<UsersThree size={18} weight="fill" />}
+                label={c.kpiPeak}
+                value={Math.round(peak.occ * 100)}
+                unit="%"
+                note={`${c.at} ${String(peak.hour).padStart(2, '0')}.00`}
               />
-            ) : (
-              <p className="py-6 text-center text-[13px] text-ink-3">-</p>
-            )}
-          </Card>
-          <Card title={c.gates} sub={c.gatesSub(Math.round(STEERED * 100))}>
-            <PairedBars
-              data={gates.map((g) => ({ label: g.name, a: g.without, b: g.with }))}
-              colors={colors}
-              names={{ a: c.without, b: c.with }}
-              format={(v) => `${Math.round(v * 100)}%`}
-            />
-          </Card>
-          <Card title={c.products} sub="">
-            <div className="space-y-2">
-              <Product name={c.p1} price={c.p1p} desc={c.p1d} fit={hasZone && !busyVenue} fitLabel={c.fit} />
-              <Product name={c.p2} price={c.p2p} desc={c.p2d} fit={hasZone && busyVenue} fitLabel={c.fit} />
-              <Product name={c.p3} price={c.p3p} desc={c.p3d} fit fitLabel={c.fit} />
-            </div>
-          </Card>
-        </section>
+              <Kpi icon={<TrendDown size={18} weight="fill" />} label={c.kpiLost} value={totalLost} note={c.kpiLostNote} tone={totalLost > 0 ? 'bad' : undefined} />
+              <Kpi
+                icon={<ShieldCheck size={18} weight="fill" />}
+                label={c.kpiZone}
+                value={hasZone ? prio.tickets : null}
+                note={!hasZone ? c.noZone : prio.gross ? `${formatRupiah(prio.gross, true)} ${c.gross}` : undefined}
+              />
+            </section>
 
-        <section className="mt-4">
-          <Card title={c.week} sub={c.weekSub}>
-            <Heatmap
-              dark={theme === 'dark'}
-              format={(v) => `${Math.round(v * 100)}%`}
-              rows={heat.map((d) => ({ label: dayName(d.ts, lang), cells: d.hours.map((h) => ({ hour: h.hour, value: h.occ })) }))}
-            />
-          </Card>
-        </section>
+            <section className="mt-4 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+              <Card title={c.occ} sub={c.occSub}>
+                <OccupancyLine
+                  data={flow}
+                  color={colors.mono}
+                  nowHour={nowHour}
+                  label={c.occ}
+                  thresholds={[
+                    { value: BUSY_LINE, label: `${lang === 'id' ? 'Ramai' : 'Busy'} 70%` },
+                    { value: FULL_LINE, label: `${lang === 'id' ? 'Penuh' : 'Full'} 90%` },
+                  ]}
+                />
+                <TableView head={[c.hour, '%']} rows={flow.map((r) => [`${r.hour}.00`, `${Math.round(r.occ * 100)}%`])} label={c.table} />
+              </Card>
+              <Card title={c.lost} sub={c.lostSub}>
+                <Columns
+                  data={flow.map((r) => ({ key: `${r.hour}`, value: r.lost }))}
+                  color={colors.a}
+                  format={(v) => v.toLocaleString('id-ID')}
+                  label={c.lost}
+                />
+                <TableView head={[c.hour, c.kpiLost]} rows={flow.map((r) => [`${r.hour}.00`, String(r.lost)])} label={c.table} />
+              </Card>
+            </section>
+
+            <section className="mt-4 grid gap-4 lg:grid-cols-3">
+              <Card title={c.where} sub={c.whereSub}>
+                {div.length ? (
+                  <HBars
+                    data={div.map((d) => ({ label: VENUE_BY_ID[d.to].name, value: d.count }))}
+                    color={colors.b}
+                    format={(v) => v.toLocaleString('id-ID')}
+                  />
+                ) : (
+                  <p className="py-6 text-center text-[13px] text-ink-3">-</p>
+                )}
+              </Card>
+              <Card title={c.gates} sub={c.gatesSub(Math.round(STEERED * 100))}>
+                <PairedBars
+                  data={gates.map((g) => ({ label: g.name, a: g.without, b: g.with }))}
+                  colors={colors}
+                  names={{ a: c.without, b: c.with }}
+                  format={(v) => `${Math.round(v * 100)}%`}
+                />
+              </Card>
+              <Card title={c.products} sub="">
+                <div className="space-y-2">
+                  <Product name={c.p1} price={c.p1p} desc={c.p1d} fit={hasZone && !busyVenue} fitLabel={c.fit} />
+                  <Product name={c.p2} price={c.p2p} desc={c.p2d} fit={hasZone && busyVenue} fitLabel={c.fit} />
+                  <Product name={c.p3} price={c.p3p} desc={c.p3d} fit fitLabel={c.fit} />
+                </div>
+              </Card>
+            </section>
+
+            <section className="mt-4 grid gap-4 lg:grid-cols-[1fr_1.6fr]">
+              <VenuePromos venue={venue} dayTs={dayTs} lang={lang} />
+              <Card title={c.week} sub={c.weekSub}>
+                <Heatmap
+                  dark={theme === 'dark'}
+                  format={(v) => `${Math.round(v * 100)}%`}
+                  rows={heat.map((d) => ({ label: dayName(d.ts, lang), cells: d.hours.map((h) => ({ hour: h.hour, value: h.occ })) }))}
+                />
+              </Card>
+            </section>
+
+          </>
+        )}
 
         <footer className="mt-6 space-y-2 text-[12.5px] leading-relaxed text-ink-3">
           <p className="flex gap-2">
@@ -279,35 +304,6 @@ export default function Mitra() {
           </p>
         </footer>
       </main>
-    </div>
-  )
-}
-
-function Kpi({ icon, label, value, unit, note, tone }: { icon: ReactNode; label: string; value: number | null; unit?: string; note?: string; tone?: 'bad' }) {
-  return (
-    <div className="rounded-[22px] border border-line bg-surface p-4">
-      <div className="flex items-center gap-2 text-[12px] font-semibold text-ink-3">
-        <span className={clsx('grid size-7 place-items-center rounded-full', tone === 'bad' ? 'bg-penuh-soft text-penuh-ink dark:bg-penuh/15 dark:text-led-penuh' : 'bg-surface-2 text-ink-2')}>
-          {icon}
-        </span>
-        {label}
-      </div>
-      <div className="mt-3 text-[34px] leading-none font-semibold tracking-tight">
-        {value === null ? '-' : <CountUp value={value} grouped />}
-        {unit && value !== null && <span className="text-[18px]">{unit}</span>}
-      </div>
-      {note && <div className="mt-1.5 text-[12px] text-ink-3">{note}</div>}
-    </div>
-  )
-}
-
-function Card({ title, sub, children }: { title: string; sub: string; children: ReactNode }) {
-  return (
-    <div className="min-w-0 rounded-[24px] border border-line bg-surface p-5">
-      <h2 className="text-[15px] font-semibold">{title}</h2>
-      {sub && <p className="mt-0.5 mb-4 text-[12px] text-ink-3">{sub}</p>}
-      {!sub && <div className="mb-3" />}
-      {children}
     </div>
   )
 }
