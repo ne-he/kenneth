@@ -2,12 +2,16 @@ import { Car, CheckCircle, Eye, HandTap, Trash } from '@phosphor-icons/react'
 import clsx from 'clsx'
 import { useMemo, useState, type FormEvent } from 'react'
 import { Segmented } from '../components/ui/Controls'
+import { Mascot } from '../components/ui/Mascot'
 import { buttonClass } from '../components/ui/buttonStyles'
 import { PROMOS, type Promo } from '../data/promos'
 import type { Venue } from '../data/types'
 import { promoStats } from '../engine/merchant'
 import { wib } from '../lib/time'
-import { useMerchant } from '../store/merchant'
+import { signInWithGoogle } from '../lib/auth'
+import { removeSharedPromo, sharePromo, sharedAvailable } from '../lib/shared'
+import { useApp } from '../store/app'
+import { useMerchant, useMerchantPromos } from '../store/merchant'
 import { Card, Kpi } from './mitraKit'
 
 type Lang = 'id' | 'en'
@@ -44,6 +48,11 @@ const COPY = {
     errName: 'Isi nama merchant.',
     errDays: 'Pilih minimal satu hari.',
     errHours: 'Jam selesai harus setelah jam mulai.',
+    errSignIn: 'Masuk dengan Google dulu untuk menayangkan.',
+    errSend: 'Belum terkirim. Cek koneksi lalu coba lagi.',
+    signIn: 'Masuk dengan Google untuk menayangkan',
+    whySignIn: 'Promo tampil ke semua pengguna, jadi tiap promo tercatat atas nama akun yang menayangkan.',
+    asWho: (n: string) => `Tayang atas nama ${n}. Hanya akun ini yang bisa menghapusnya.`,
     done: (v: string) => `Tayang di halaman ${v}.`,
     dayNames: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
     all: 'Semua merchant',
@@ -79,6 +88,11 @@ const COPY = {
     errName: 'Add the merchant name.',
     errDays: 'Pick at least one day.',
     errHours: 'The end time must be after the start.',
+    errSignIn: 'Sign in with Google first to publish.',
+    errSend: 'Not sent yet. Check your connection and try again.',
+    signIn: 'Sign in with Google to publish',
+    whySignIn: 'Offers show to every user, so each one is recorded under the account that published it.',
+    asWho: (n: string) => `Published as ${n}. Only this account can delete it.`,
     done: (v: string) => `Live on the ${v} page.`,
     dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     all: 'All merchants',
@@ -92,8 +106,10 @@ const field = 'h-11 w-full rounded-full border border-transparent bg-surface-2 p
 /** The merchant side of /mitra: how your offers do, and a form to publish a new one. */
 export function MerchantView({ venue, dayTs, lang }: { venue: Venue; dayTs: number; lang: Lang }) {
   const c = COPY[lang]
-  const mine = useMerchant((s) => s.promos)
-  const removePromo = useMerchant((s) => s.removePromo)
+  const mine = useMerchantPromos()
+  const removeLocal = useMerchant((s) => s.removePromo)
+  const uid = useApp((s) => s.account?.uid)
+  const remove = (id: string) => (sharedAvailable ? void removeSharedPromo(id).catch(() => undefined) : removeLocal(id))
   const all = useMemo(() => [...mine, ...PROMOS].filter((p) => p.venueId === venue.id), [mine, venue.id])
   const merchants = useMemo(() => [...new Set(all.map((p) => p.merchant))], [all])
   const [who, setWho] = useState<string>('')
@@ -101,7 +117,8 @@ export function MerchantView({ venue, dayTs, lang }: { venue: Venue; dayTs: numb
   const day = wib(dayTs).day
   const rows = useMemo(() => shown.map((p) => ({ p, s: p.days.includes(day) ? promoStats(p, venue, dayTs) : { seen: 0, taps: 0, perks: 0 } })), [shown, day, venue, dayTs])
   const sum = rows.reduce((a, r) => ({ seen: a.seen + r.s.seen, taps: a.taps + r.s.taps, perks: a.perks + r.s.perks }), { seen: 0, taps: 0, perks: 0 })
-  const ownIds = new Set(mine.map((p) => p.id))
+  // Shared offers can only be taken down by whoever published them; on this device, all of them are yours.
+  const ownIds = new Set(mine.filter((p) => !sharedAvailable || (uid && p.owner === uid)).map((p) => p.id))
 
   return (
     <>
@@ -132,7 +149,10 @@ export function MerchantView({ venue, dayTs, lang }: { venue: Venue; dayTs: numb
             </div>
           )}
           {rows.length === 0 ? (
-            <p className="py-6 text-center text-[13px] text-ink-3">{c.none}</p>
+            <div className="grid justify-items-center gap-2 py-6 text-center">
+              <Mascot pose="voucher" size={96} />
+              <p className="text-[13px] text-ink-3">{c.none}</p>
+            </div>
           ) : (
             <div className="-mx-1 overflow-x-auto">
               <table className="w-full min-w-[520px] text-left text-[13px] tabular">
@@ -167,7 +187,7 @@ export function MerchantView({ venue, dayTs, lang }: { venue: Venue; dayTs: numb
                       <td className="px-1 py-2.5 text-right">{p.parking ? s.perks.toLocaleString('id-ID') : '-'}</td>
                       <td className="px-1 py-2">
                         {ownIds.has(p.id) && (
-                          <button type="button" onClick={() => removePromo(p.id)} className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-penuh-soft hover:text-penuh-ink" aria-label={c.remove}>
+                          <button type="button" onClick={() => remove(p.id)} className="grid size-8 place-items-center rounded-full text-ink-3 hover:bg-penuh-soft hover:text-penuh-ink" aria-label={c.remove}>
                             <Trash size={15} />
                           </button>
                         )}
@@ -190,6 +210,9 @@ export function MerchantView({ venue, dayTs, lang }: { venue: Venue; dayTs: numb
 function NewPromo({ venue, lang, defaultName }: { venue: Venue; lang: Lang; defaultName: string }) {
   const c = COPY[lang]
   const addPromo = useMerchant((s) => s.addPromo)
+  const account = useApp((s) => s.account)
+  const setAccount = useApp((s) => s.setAccount)
+  const [sending, setSending] = useState(false)
   const [kind, setKind] = useState<Promo['kind']>('promo')
   const [name, setName] = useState(defaultName)
   const [title, setTitle] = useState('')
@@ -202,13 +225,13 @@ function NewPromo({ venue, lang, defaultName }: { venue: Venue; lang: Lang; defa
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault()
     const err = !name.trim() ? c.errName : !title.trim() ? c.errTitle : days.length === 0 ? c.errDays : to <= from ? c.errHours : ''
     setError(err)
     setDone(false)
     if (err) return
-    addPromo({
+    const promo: Promo = {
       id: `m-${Date.now()}`,
       venueId: venue.id,
       merchant: name.trim(),
@@ -220,7 +243,18 @@ function NewPromo({ venue, lang, defaultName }: { venue: Venue; lang: Lang; defa
       to,
       parking: perk.trim() ? { id: perk.trim(), en: perk.trim() } : undefined,
       busy: kind === 'event' && busy,
-    })
+    }
+    if (sharedAvailable) {
+      setSending(true)
+      const res = await sharePromo(promo).catch(() => 'failed' as const)
+      setSending(false)
+      if (res !== 'ok') {
+        setError(res === 'signed-out' ? c.errSignIn : c.errSend)
+        return
+      }
+    } else {
+      addPromo(promo)
+    }
     setTitle('')
     setPerk('')
     setDone(true)
@@ -294,13 +328,29 @@ function NewPromo({ venue, lang, defaultName }: { venue: Venue; lang: Lang; defa
       )}
       {error && <p className="text-[12.5px] font-medium text-penuh-ink dark:text-led-penuh" role="alert">{error}</p>}
       {done && (
-        <p className="flex items-center gap-1.5 text-[12.5px] font-medium text-lega-ink dark:text-led-lega" role="status">
-          <CheckCircle size={15} weight="fill" /> {c.done(venue.name)}
+        <p className="flex items-center gap-2 rounded-[16px] bg-lega-soft px-3 py-2 text-[12.5px] font-medium text-lega-ink dark:bg-lega/15 dark:text-led-lega" role="status">
+          <Mascot pose="voucher" size={44} className="shrink-0" />
+          <CheckCircle size={15} weight="fill" className="shrink-0" /> {c.done(venue.name)}
         </p>
       )}
-      <button type="submit" className={buttonClass('primary', 'md')}>
-        {c.submit}
-      </button>
+      {sharedAvailable && !account ? (
+        <button
+          type="button"
+          className={buttonClass('primary', 'md')}
+          onClick={async () => {
+            const res = await signInWithGoogle()
+            if ('account' in res) setAccount(res.account)
+            else if ('error' in res && res.error !== 'cancelled') setError(c.errSend)
+          }}
+        >
+          {c.signIn}
+        </button>
+      ) : (
+        <button type="submit" disabled={sending} className={buttonClass('primary', 'md')}>
+          {c.submit}
+        </button>
+      )}
+      {sharedAvailable && <p className="text-center text-[12px] text-ink-3">{account ? c.asWho(account.name) : c.whySignIn}</p>}
     </form>
   )
 }
@@ -308,7 +358,7 @@ function NewPromo({ venue, lang, defaultName }: { venue: Venue; lang: Lang; defa
 /** For the venue manager: every offer and event in the building that day, and which ones bring more cars. */
 export function VenuePromos({ venue, dayTs, lang }: { venue: Venue; dayTs: number; lang: Lang }) {
   const v = VCOPY[lang]
-  const mine = useMerchant((s) => s.promos)
+  const mine = useMerchantPromos()
   const day = wib(dayTs).day
   const rows = useMemo(
     () =>

@@ -30,6 +30,9 @@ POSES = [
     ('sleepy', '07-sleepy'),
     ('thinking', '09-thinking'),
     ('peek', '14-peek-bottom'),
+    # From the second set (set2/, beside set/): the route to a bay and the merchant dashboard.
+    ('arrived', '../set2/21-arrived'),
+    ('voucher', '../set2/23-voucher'),
 ]
 
 
