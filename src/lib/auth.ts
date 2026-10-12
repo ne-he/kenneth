@@ -83,3 +83,15 @@ export async function signOutGoogle() {
   const { auth, instance } = await sdk()
   await auth.signOut(instance).catch(() => undefined)
 }
+
+/**
+ * The signed-in Firebase user's id, once the saved session has been restored,
+ * or null for a guest. Shared writes that belong to someone (a merchant's
+ * offer) need it, and Firestore sends that session's token with them.
+ */
+export async function currentUid(): Promise<string | null> {
+  if (!authAvailable) return null
+  const { instance } = await sdk()
+  await instance.authStateReady()
+  return instance.currentUser?.uid ?? null
+}

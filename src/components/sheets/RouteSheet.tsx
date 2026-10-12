@@ -8,6 +8,7 @@ import { useResolvedTheme } from '../../lib/theme'
 import { useApp, type ParkedSpot } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
+import { Mascot } from '../ui/Mascot'
 import { SheetHeader } from '../ui/Sheet'
 
 const FloorScene = lazy(() => import('../park/FloorScene'))
@@ -73,7 +74,9 @@ export function RouteSheet({ passId }: { passId: string }) {
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
           <Car size={20} weight="fill" />
         </span>
-        <span className="text-[15px] font-semibold">{t.activity.routeDrive(Math.round(metres / 5) * 5)}</span>
+        <span className="flex-1 text-[15px] font-semibold">{t.activity.routeDrive(Math.round(metres / 5) * 5)}</span>
+        {/* The bekantan waits by the car at the end of the route. */}
+        <Mascot pose="arrived" size={52} className="-my-2 shrink-0" />
       </div>
 
       <ol className="mt-3 overflow-hidden rounded-[20px] border border-line bg-surface">

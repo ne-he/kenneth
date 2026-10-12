@@ -1,13 +1,17 @@
 import type { Firestore } from 'firebase/firestore'
+import type { Promo } from '../data/promos'
 import type { VenueId } from '../data/types'
 import type { CommunityReport } from '../store/app'
 import type { BoothResponse } from '../store/booth'
+import { currentUid } from './auth'
 import { firebaseApp, firebaseReady } from './firebase'
 
 /*
   Data every phone shares, in the Firestore of the build's Firebase project.
   Condition reports ("Kondisi di lokasi beda?") go to everyone, so a report
-  from one phone shows on the next. Booth answers go to a booth session
+  from one phone shows on the next. Merchant offers from /mitra go to
+  everyone too; only a signed-in merchant can publish one, and only they can
+  take it down. Booth answers go to a booth session
   whose key only the booth's own phones hold. Shared data is on only when
   the build sets VITE_SHARED=on next to a Firebase config, which
   park-kenneth.web.app does; the team build and forks keep every report and
@@ -115,6 +119,78 @@ export function watchSession(session: string, onChange: (answers: BoothResponse[
       stop = fs.onSnapshot(
         fs.collection(db, 'booths', session, 'answers'),
         (snap) => onChange(snap.docs.map((d) => ({ ...(d.data() as Omit<BoothResponse, 'contact'>), contact: '' }))),
+        onError,
+      )
+    })
+    .catch(onError)
+  return () => {
+    stopped = true
+    stop?.()
+  }
+}
+
+/** A merchant offer as everyone reads it. `owner` is the Firebase user who published it. */
+export type SharedPromo = Promo & { owner: string }
+
+/** Publishes an offer for everyone. Needs Google sign-in; resolves 'signed-out' without it. */
+export async function sharePromo(p: Promo): Promise<'ok' | 'signed-out'> {
+  const owner = await currentUid()
+  if (!owner) return 'signed-out'
+  const { fs, db } = await firestore()
+  await fs.setDoc(fs.doc(db, 'promos', p.id), {
+    venueId: p.venueId,
+    merchant: p.merchant.slice(0, 40),
+    kind: p.kind,
+    title: p.title.id.slice(0, 80),
+    floor: p.floor.slice(0, 20),
+    days: p.days,
+    from: p.from,
+    to: p.to,
+    parking: p.parking?.id.slice(0, 80) ?? '',
+    busy: !!p.busy,
+    owner,
+    at: fs.serverTimestamp(),
+  })
+  return 'ok'
+}
+
+/** Takes down an offer. The rules only let its owner do this. */
+export async function removeSharedPromo(id: string): Promise<void> {
+  const { fs, db } = await firestore()
+  await fs.deleteDoc(fs.doc(db, 'promos', id))
+}
+
+/** Every merchant's offers, kept live. Returns the function that stops listening. */
+export function watchPromos(onChange: (promos: SharedPromo[]) => void, onError: () => void): () => void {
+  let stop: (() => void) | null = null
+  let stopped = false
+  firestore()
+    .then(({ fs, db }) => {
+      if (stopped) return
+      stop = fs.onSnapshot(
+        fs.query(fs.collection(db, 'promos'), fs.limit(500)),
+        (snap) =>
+          onChange(
+            snap.docs.map((d) => {
+              const r = d.data()
+              // One language is typed in the dashboard, so both read the same.
+              const text = (v: string) => ({ id: v, en: v })
+              return {
+                id: d.id,
+                venueId: r.venueId as VenueId,
+                merchant: r.merchant as string,
+                kind: r.kind as Promo['kind'],
+                title: text(r.title as string),
+                floor: r.floor as string,
+                days: r.days as number[],
+                from: r.from as number,
+                to: r.to as number,
+                parking: r.parking ? text(r.parking as string) : undefined,
+                busy: !!r.busy,
+                owner: r.owner as string,
+              }
+            }),
+          ),
         onError,
       )
     })
