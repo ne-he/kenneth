@@ -6,8 +6,12 @@ export type Shade = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
   The accent the user picks in Akun, in the order macOS lists its own. Each one
   is a full brand scale, so every bg-brand-* and text-brand-* in the app follows
   it. Shade 600 carries white text on buttons, so it keeps at least 4.5:1.
-  Green, amber and red are not offered: they are the status colors (lega,
-  ramai, penuh) and an accent in the same hue would read as a status.
+  Amber and red are not offered: they are the status colors ramai and penuh,
+  and an accent in the same hue would read as a status. Green is offered as
+  cornflower green, built the way cornflower is built from pure blue (OKLCH):
+  the same lightness at every shade, chroma cut back, hue nudged 10 degrees
+  toward teal (152). It stays darker and bluer than lega's #2E9E6E, and lega
+  always carries its label, but it is the one accent close to a status color.
 */
 export const ACCENTS: Record<Accent, Record<Shade, string>> = {
   cornflower: {
@@ -46,6 +50,18 @@ export const ACCENTS: Record<Accent, Record<Shade, string>> = {
     800: '#831843',
     900: '#6b1239',
   },
+  green: {
+    50: '#eef7f0',
+    100: '#def0e2',
+    200: '#bce0c5',
+    300: '#90cca0',
+    400: '#5cb477',
+    500: '#079a4e',
+    600: '#057c3e',
+    700: '#016531',
+    800: '#015327',
+    900: '#01451f',
+  },
   graphite: {
     50: '#f5f5f6',
     100: '#ebebed',
@@ -60,7 +76,7 @@ export const ACCENTS: Record<Accent, Record<Shade, string>> = {
   },
 }
 
-export const ACCENT_ORDER: Accent[] = ['cornflower', 'purple', 'pink', 'graphite']
+export const ACCENT_ORDER: Accent[] = ['cornflower', 'purple', 'pink', 'green', 'graphite']
 
 /** The scale of an accent, cornflower for a value saved by an older build that no longer exists. */
 export const scaleOf = (accent: Accent) => ACCENTS[accent] ?? ACCENTS.cornflower

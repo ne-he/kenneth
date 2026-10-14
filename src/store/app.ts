@@ -13,7 +13,7 @@ export type Theme = 'system' | 'light' | 'dark'
  * never follow it, and no accent sits near them: green, amber and red are
  * reserved for lega, ramai and penuh.
  */
-export type Accent = 'cornflower' | 'purple' | 'pink' | 'graphite'
+export type Accent = 'cornflower' | 'purple' | 'pink' | 'green' | 'graphite'
 export type NavApp = 'kenneth' | 'gmaps' | 'waze'
 export type MapStyle = 'calm' | 'detail'
 
