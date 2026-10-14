@@ -6,12 +6,11 @@ export type Shade = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
   The accent the user picks in Akun, in the order macOS lists its own. Each one
   is a full brand scale, so every bg-brand-* and text-brand-* in the app follows
   it. Shade 600 carries white text on buttons, so it keeps at least 4.5:1.
-  Amber and red are not offered: they are the status colors ramai and penuh,
-  and an accent in the same hue would read as a status. Green is offered as
-  cornflower green, built the way cornflower is built from pure blue (OKLCH):
-  the same lightness at every shade, chroma cut back, hue nudged 10 degrees
-  toward teal (152). It stays darker and bluer than lega's #2E9E6E, and lega
-  always carries its label, but it is the one accent close to a status color.
+  Teal, amber and red are not offered: they are the status colors (lega,
+  ramai, penuh) and an accent in the same hue would read as a status. Green
+  is offered as cornflower green, built the way cornflower is built from pure
+  blue (OKLCH): the same lightness at every shade, chroma cut back, hue nudged
+  toward teal (152), still 30 degrees short of lega's teal.
 */
 export const ACCENTS: Record<Accent, Record<Shade, string>> = {
   cornflower: {
