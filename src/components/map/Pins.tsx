@@ -26,8 +26,8 @@ export const LABEL_INSET = 11
  * valet and chargers, red when the bays or chargers are gone. `named` adds
  * the full name when zoomed in, never an abbreviation like PSJ that only the
  * team knows; a label with no room drops as usual. The selected place, or the card in view on
- * the home row, gets one larger white pill above its dot, ringed in the accent like
- * every other picked thing in the app: "Central Park · 94%". A
+ * the home row, gets one larger pill above its dot, filled with the accent like the
+ * app's primary button: "Central Park · 94%". A
  * place that does not offer the service on is a faint grey dot with no label.
  */
 export function VenuePin({
@@ -92,7 +92,7 @@ export function VenuePin({
             'absolute flex cursor-pointer items-center rounded-full whitespace-nowrap tabular',
             !shown && 'pointer-events-none',
             selected
-              ? 'h-8 gap-1.5 px-3.5 text-[13px] font-semibold bg-surface text-ink ring-2 ring-brand-500 shadow-[0_8px_20px_-6px_rgb(0_0_0/0.35)] dark:bg-surface-3 dark:ring-brand-400'
+              ? 'btn-primary h-8 gap-1.5 px-3.5 text-[13px] font-semibold text-white shadow-[0_8px_20px_-6px_rgb(0_0_0/0.35)]'
               : clsx(
                   'h-[22px] gap-1 text-[11.5px] font-semibold bg-surface text-ink ring-1 ring-line shadow-[0_1px_2px_rgb(0_0_0/0.08),0_3px_10px_-4px_rgb(0_0_0/0.2)] dark:bg-surface-3',
                   // The dot sits in the padded end, so the pill hangs off it on either side.
@@ -105,7 +105,7 @@ export function VenuePin({
               <span>{snap.venue.name}</span>
               {value && (
                 <>
-                  <span className="text-ink-3">·</span>
+                  <span className="opacity-60">·</span>
                   <span>{value}</span>
                 </>
               )}
@@ -150,8 +150,8 @@ function gateTag(name: string) {
 /**
  * A small neutral chip on each gate of the selected place, "G3 · 2 mnt": the
  * status dot carries the queue colour, the text stays ink. The gate the route
- * goes to is the one that stands out, ringed in the accent like the picked
- * place; the others step back. `shown` is false
+ * goes to is the one that stands out: solid and bold, while the others step
+ * back. `shown` is false
  * while there is no room for the chip, such as zoomed out over the building.
  */
 export function GatePin({ gate, queueMin, best, shown }: { gate: Gate; queueMin: number; best: boolean; shown: boolean }) {
@@ -167,7 +167,7 @@ export function GatePin({ gate, queueMin, best, shown }: { gate: Gate; queueMin:
       className={clsx(
         'flex h-6 items-center gap-1.5 rounded-full pr-2.5 pl-2 text-[11.5px] whitespace-nowrap tabular',
         best
-          ? 'bg-surface font-semibold text-ink ring-[1.5px] ring-brand-500 dark:ring-brand-400 shadow-[0_1px_2px_rgb(0_0_0/0.08),0_3px_10px_-4px_rgb(0_0_0/0.2)] dark:bg-surface-3'
+          ? 'bg-surface font-semibold text-ink ring-1 ring-line shadow-[0_1px_2px_rgb(0_0_0/0.08),0_3px_10px_-4px_rgb(0_0_0/0.2)] dark:bg-surface-3'
           : 'bg-surface/90 font-medium text-ink-2 ring-1 ring-line dark:bg-surface-3/90',
       )}
     >
