@@ -497,6 +497,7 @@ const id = {
       cornflower: 'Biru',
       purple: 'Ungu',
       pink: 'Pink',
+      green: 'Hijau cornflower',
       graphite: 'Grafit',
     },
     privacy: 'Privasi dan data',

@@ -498,6 +498,7 @@ const en: Dict = {
       cornflower: 'Blue',
       purple: 'Purple',
       pink: 'Pink',
+      green: 'Cornflower green',
       graphite: 'Graphite',
     },
     privacy: 'Privacy and data',
