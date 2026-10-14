@@ -263,7 +263,7 @@ export function MapView({ theme, snapshots, facts, selected, focused = null, onS
     for (const { s } of order) {
       const { x, y } = map.project(s.venue.coords)
       dots.push({ id: s.venue.id, x, y, r: 6 })
-      // The selected place and the focused card both get the accent-ringed name pill, which never drops.
+      // The selected place and the focused card both get the accent name pill, which never drops.
       const picked = s.venue.id === selected || s.venue.id === focused
       if (!picked && facts?.get(s.venue.id)?.kind === 'none') continue
       const { w, h } = size(`v:${s.venue.id}`)
