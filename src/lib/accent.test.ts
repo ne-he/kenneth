@@ -36,20 +36,12 @@ describe('accent colours', () => {
   const apart = (a: number, b: number) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b))
 
   it('keeps every accent away from the status hues, so no accent reads as a status', () => {
-    const status = { lega: '#2e9e6e', ramai: '#e8a317', penuh: '#d64535' }
+    const status = { lega: '#079b9b', ramai: '#e8a317', penuh: '#d64535' }
     for (const a of ACCENT_ORDER) {
       const h = hue(ACCENTS[a][600])
       if (Number.isNaN(h)) continue
-      for (const [name, hex] of Object.entries(status)) {
-        // Cornflower green is the one accent picked knowingly in lega's hue; it is checked on lightness below.
-        if (a === 'green' && name === 'lega') continue
-        expect(apart(h, hue(hex)), `${a} vs ${name}`).toBeGreaterThanOrEqual(30)
-      }
+      for (const [name, hex] of Object.entries(status)) expect(apart(h, hue(hex)), `${a} vs ${name}`).toBeGreaterThanOrEqual(30)
     }
-  })
-
-  it('keeps cornflower green visibly darker than lega, so a button never looks like a status pill', () => {
-    expect(contrast(ACCENTS.green[600], '#2e9e6e')).toBeGreaterThanOrEqual(1.5)
   })
 
   it('starts on cornflower, the brand color', () => {

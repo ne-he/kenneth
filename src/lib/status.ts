@@ -3,8 +3,8 @@ import type { OccupancyStatus } from '../data/types'
 /** Class and color lookups per occupancy status. Keep every status visual in one place. */
 export const STATUS = {
   lega: {
-    hex: '#2e9e6e',
-    led: '#5ed4a0',
+    hex: '#079b9b',
+    led: '#1ad4d4',
     dot: 'bg-lega',
     text: 'text-lega-ink dark:text-led-lega',
     soft: 'bg-lega-soft text-lega-ink dark:bg-lega/15 dark:text-led-lega',

@@ -64,7 +64,7 @@
   --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', Menlo, monospace;
 
   /*
-    Brand: cornflower. Picked so it never reads as a status color: green,
+    Brand: cornflower. Picked so it never reads as a status color: teal,
     yellow and red stay reserved for lega, ramai and penuh.
   */
   --color-brand-50: #f0f4fe;
@@ -79,9 +79,9 @@
   --color-brand-900: #1d3370;
 
   /* Occupancy status. Always paired with a text label, never color alone. */
-  --color-lega: #2e9e6e;
-  --color-lega-ink: #1f7a53;
-  --color-lega-soft: #e4f4ec;
+  --color-lega: #079b9b;
+  --color-lega-ink: #097777;
+  --color-lega-soft: #e1f4f4;
   --color-ramai: #e8a317;
   --color-ramai-ink: #8f5e05;
   --color-ramai-soft: #fcf1da;
@@ -90,7 +90,7 @@
   --color-penuh-soft: #fbe6e3;
 
   /* LED signboard glow colors (the "sisa slot" boards at mall gates) */
-  --color-led-lega: #5ed4a0;
+  --color-led-lega: #1ad4d4;
   --color-led-ramai: #f5c451;
   --color-led-penuh: #ff6b5e;
 
