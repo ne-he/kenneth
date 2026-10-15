@@ -17,7 +17,7 @@ import { factDot } from './pinColor'
 export const LABEL_INSET = 11
 
 /**
- * Every place is a dot with a white ring, right on the spot. Its label, a
+ * Every place is a plain dot, right on the spot. Its label, a
  * small white pill with the number in ink ("titik + angka"), hangs off the
  * dot only when MapView found room for it (`offset`); otherwise the place
  * stays a bare dot until you zoom in. The number follows the mode: percent
@@ -129,7 +129,7 @@ export function VenuePin({
       >
         <span
           className={clsx(
-            'rounded-full border-2 border-white shadow-[0_1px_3px_rgb(0_0_0/0.3)]',
+            'rounded-full shadow-[0_1px_2px_rgb(0_0_0/0.25)]',
             selected ? 'size-3.5' : off ? 'size-2.5' : 'size-3',
             factDot(fact, snap),
           )}
