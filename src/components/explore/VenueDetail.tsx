@@ -45,6 +45,7 @@ import { MascotPeek } from '../ui/Mascot'
 import { buttonClass } from '../ui/buttonStyles'
 import { PlaceCard } from './PlaceCard'
 import { Promos } from './Promos'
+import { Reviews } from './Reviews'
 import { SlotsLeft } from './SlotsLeft'
 import { TimeScrubber } from './TimeScrubber'
 
@@ -230,6 +231,8 @@ export function VenueDetail({ snap, ts, now, previewing }: { snap: Ranked; ts: n
             </div>
           </section>
         )}
+
+        <Reviews venueId={venue.id} now={now} />
 
         <List plain>
           {blocked && <GageRow venue={venue} ts={ts} />}
