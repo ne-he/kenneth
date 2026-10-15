@@ -147,6 +147,13 @@ const id = {
     thanks: 'Makasih, sudah dinilai hari ini',
     sent: 'Penilaianmu masuk',
   },
+  events: {
+    title: 'Acara hari ini',
+    more: (n: number) => `dan ${n} lainnya`,
+    closed: 'jalan ditutup',
+    busy: 'parkiran lebih cepat penuh',
+    none: 'Tidak ada acara yang memengaruhi parkir hari ini.',
+  },
   venue: {
     sisaSlot: 'Sisa slot',
     sisaSlotMotor: 'Sisa slot motor',
