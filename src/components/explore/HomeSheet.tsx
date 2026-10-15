@@ -7,6 +7,7 @@ import { haptic } from '../../lib/haptics'
 import { useApp, useVehicle } from '../../store/app'
 import { useUi, type VenueFilter } from '../../store/ui'
 import { VehicleIcon } from '../ui/VehicleIcon'
+import { EventsLine } from './Events'
 import { LiveStrip } from './LiveStrip'
 
 const FILTERS: VenueFilter[] = ['all', 'fav', 'mall', 'kampus', 'kantor']
@@ -40,6 +41,7 @@ export function HomeHeader() {
           <span className="truncate">{t.explore.searchField}</span>
         </button>
         <ServiceToggles />
+        <EventsLine />
       </div>
     </div>
   )

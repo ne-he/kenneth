@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useT } from '../../i18n'
 import { useUi } from '../../store/ui'
+import { EventsSheet } from '../explore/Events'
 import { Sheet } from '../ui/Sheet'
 import { BookHub } from './book/BookHub'
 import { CheckoutSheet } from './CheckoutSheet'
@@ -42,6 +43,9 @@ export function Sheets() {
       break
     case 'checkout':
       body = <CheckoutSheet />
+      break
+    case 'events':
+      body = <EventsSheet />
       break
     case 'pass':
       body = <PassSheet passId={sheet.id} />

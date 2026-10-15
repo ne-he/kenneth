@@ -148,6 +148,13 @@ const en: Dict = {
     thanks: 'Thanks, rated today',
     sent: 'Rating sent',
   },
+  events: {
+    title: 'Events today',
+    more: (n: number) => `and ${n} more`,
+    closed: 'roads closed',
+    busy: 'car parks fill faster',
+    none: 'Nothing today that changes parking.',
+  },
   venue: {
     sisaSlot: 'Free bays',
     sisaSlotMotor: 'Free motorbike bays',
