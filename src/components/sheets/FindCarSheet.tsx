@@ -19,7 +19,6 @@ export function FindCarSheet() {
   const theme = useResolvedTheme()
   const now = useNow(60_000)
   const spot = useApp((s) => s.parked)
-  const leave = useApp((s) => s.leave)
   const { close, notify } = useUi.getState()
   const [metres, setMetres] = useState(0)
 
@@ -86,10 +85,8 @@ export function FindCarSheet() {
         <Button
           variant="primary"
           onClick={() => {
-            haptic('success')
-            leave()
-            close()
-            notify(t.park.left)
+            haptic('tap')
+            useUi.getState().open({ kind: 'checkout' })
           }}
         >
           <SignOut size={17} weight="bold" /> {t.park.leave}
