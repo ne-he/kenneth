@@ -33,10 +33,12 @@ export function useNavigation() {
     const venue = forKind(VENUE_BY_ID[venueId], activeVehicleOf(useApp.getState()).kind)
     const now = simNowOf(useApp.getState().clock)
     const snap = snapshot(venue, now)
-    const { origin, notify, setRoute, select, mode } = useUi.getState()
+    const { origin, notify, setRoute, select, mode, setTrip } = useUi.getState()
     const gate = venue.gates.find((g) => g.id === gateId) ?? routeGate(snap, mode)
     const app = useApp.getState().mapPrefs.navApp
     haptic('success')
+    // Watched on the way (PhoneApp, useEnRouteAlert), also while Google Maps or Waze drives.
+    setTrip({ venueId, startedAt: now })
     if (app !== 'kenneth') {
       window.open(externalNavUrl(app, gate.coords), '_blank', 'noopener')
       select(venueId)
@@ -51,8 +53,9 @@ export function useNavigation() {
   }
 
   const stop = () => {
-    const { route, setRoute, notify } = useUi.getState()
+    const { route, setRoute, notify, setTrip } = useUi.getState()
     setRoute(null)
+    setTrip(null)
     if (route) flyTo(VENUE_BY_ID[route.venueId].coords, 360, 15.8)
     notify(t.nav.ended)
   }

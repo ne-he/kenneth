@@ -198,6 +198,8 @@ const en: Dict = {
     gageFill: 'Add plate',
   },
   nav: {
+    nowFull: (venue: string, alt: string, how: string) => `${venue} just filled up. ${alt} still has room, ${how}.`,
+    nowFullNoAlt: (venue: string) => `${venue} just filled up. Expect a queue at the gate.`,
     toward: (gate: string) => `To ${gate}`,
     thenQueue: (m: string) => `About ${m} queue`,
     eta: 'Arrive',

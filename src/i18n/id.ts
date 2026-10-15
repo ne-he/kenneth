@@ -196,6 +196,8 @@ const id = {
     gageFill: 'Isi pelat',
   },
   nav: {
+    nowFull: (venue: string, alt: string, how: string) => `${venue} baru saja penuh. ${alt} masih ada tempat, ${how}.`,
+    nowFullNoAlt: (venue: string) => `${venue} baru saja penuh. Siapkan waktu antre di gerbang.`,
     toward: (gate: string) => `Ke ${gate}`,
     thenQueue: (m: string) => `Antri sekitar ${m}`,
     eta: 'Tiba',
