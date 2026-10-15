@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
-import { forKind } from '../../engine/occupancy'
+import { VENUES } from '../../data/venues'
+import { forKind, snapshot } from '../../engine/occupancy'
+import { alternativesFor } from '../../engine/recommend'
 import { formatRupiah } from '../../engine/pricing'
 import { sessionNow } from '../../engine/session'
 import { valetPhase } from '../../engine/valet'
@@ -10,8 +12,9 @@ import { finishRedirect } from '../../lib/auth'
 import { haptic } from '../../lib/haptics'
 import { systemNotify } from '../../lib/notify'
 import { useApplyTheme } from '../../lib/theme'
+import { formatKm } from '../../lib/geo'
 import { clock } from '../../lib/time'
-import { useApp } from '../../store/app'
+import { activeVehicleOf, useApp } from '../../store/app'
 import { useNow } from '../../store/clock'
 import { useUi } from '../../store/ui'
 import { Account } from '../account/Account'
@@ -42,6 +45,39 @@ function useReminderAlarm() {
       removeReminder(r.id)
     })
   }, [now, reminders, enabled, t])
+}
+
+/**
+ * On the way to a place: if it fills before the user arrives, say so once,
+ * with the nearest place that still has room. Ends when they park or after
+ * two hours.
+ */
+function useEnRouteAlert() {
+  const t = useT()
+  const now = useNow(30_000)
+  const trip = useUi((s) => s.trip)
+  const parkedAt = useApp((s) => s.parked?.at)
+  useEffect(() => {
+    if (!trip) return
+    const { setTrip, notify } = useUi.getState()
+    if ((parkedAt && parkedAt >= trip.startedAt) || now - trip.startedAt > 2 * 3_600_000) {
+      setTrip(null)
+      return
+    }
+    if (trip.warnedAt) return
+    const venue = forKind(VENUE_BY_ID[trip.venueId], activeVehicleOf(useApp.getState()).kind)
+    const snap = snapshot(venue, now)
+    if (snap.status !== 'penuh') return
+    setTrip({ ...trip, warnedAt: now })
+    const alt = alternativesFor(venue, VENUES, now, 1)[0]
+    // "Jalan kaki 4 menit ..." reads mid-sentence here, so it starts lower case.
+    const how = alt ? (alt.walk ? t.venue.walk(alt.walk.minutes, alt.walk.via) : t.venue.drive(formatKm(alt.km))) : ''
+    const text = alt ? t.nav.nowFull(venue.name, alt.snap.venue.name, how.charAt(0).toLowerCase() + how.slice(1)) : t.nav.nowFullNoAlt(venue.name)
+    if (alt) useUi.getState().select(alt.snap.venue.id)
+    notify(text, 'mascot')
+    haptic('warn')
+    void systemNotify('KENNETH', text)
+  }, [now, trip, parkedAt, t])
 }
 
 /** Five minutes before a parked car's bill steps up to the next hour, once per step. */
@@ -118,6 +154,7 @@ export function PhoneApp() {
   useValetAlarm()
   useWatchAlarm()
   useTariffAlarm()
+  useEnRouteAlert()
   useRedirectSignIn()
   const tab = useUi((s) => s.tab)
   const driving = useUi((s) => !!s.route)

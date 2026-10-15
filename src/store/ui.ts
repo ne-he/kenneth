@@ -31,6 +31,18 @@ export type SheetKey =
   | { kind: 'vehicle'; id?: string }
   | { kind: 'vehicles' }
 
+/**
+ * Where the user is driving to, from the moment a route starts (in KENNETH or
+ * handed to Google Maps or Waze) until they park, end it, or two hours pass.
+ * The app watches the place on the way and speaks up once if it fills.
+ */
+export interface Trip {
+  venueId: VenueId
+  startedAt: number
+  /** Set once the user has been told the place filled. */
+  warnedAt?: number
+}
+
 export interface Route {
   venueId: VenueId
   gateId: string
@@ -50,6 +62,7 @@ interface UiState {
   /** Forecast scrubber. Null means "now". */
   previewTs: number | null
   route: Route | null
+  trip: Trip | null
   origin: LngLat
   originLabel: 'binus' | 'gps'
   travel: TravelLookup
@@ -70,6 +83,7 @@ interface UiState {
   setFilter: (f: VenueFilter) => void
   setPreview: (ts: number | null) => void
   setRoute: (r: Route | null) => void
+  setTrip: (t: Trip | null) => void
   setOrigin: (o: LngLat, label: 'binus' | 'gps') => void
   setTravel: (t: TravelLookup) => void
   /** `icon: 'mascot'` shows the bekantan's face instead of the check: for good news the app brings by itself, and thanks. */
@@ -85,6 +99,7 @@ export const useUi = create<UiState>()((set) => ({
   filter: 'all',
   previewTs: null,
   route: null,
+  trip: null,
   origin: [106.78117, -6.20194],
   originLabel: 'binus',
   travel: {},
@@ -102,6 +117,7 @@ export const useUi = create<UiState>()((set) => ({
   setFilter: (filter) => set({ filter }),
   setPreview: (previewTs) => set({ previewTs }),
   setRoute: (route) => set({ route }),
+  setTrip: (trip) => set({ trip }),
   setOrigin: (origin, originLabel) => set({ origin, originLabel, travel: {} }),
   setTravel: (travel) => set({ travel }),
   notify: (text, icon) => set({ toast: { id: Date.now(), text, icon } }),
