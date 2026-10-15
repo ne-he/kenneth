@@ -18,6 +18,19 @@ service cloud.firestore {
         && request.resource.data.at == request.time;
     }
 
+    // Drivers' yes/no ratings of a car park. Like reports: anyone may add one and read recent ones,
+    // nobody may change or delete one, and a rating says nothing about who sent it.
+    match /reviews/{id} {
+      allow get: if true;
+      allow list: if request.query.limit <= 2000;
+      allow create: if request.resource.data.keys().hasOnly(['venueId', 'aspect', 'good', 'at'])
+        && request.resource.data.venueId is string
+        && request.resource.data.venueId.matches('[a-z0-9-]{2,40}')
+        && request.resource.data.aspect in ['light', 'wide', 'safe', 'signal']
+        && request.resource.data.good is bool
+        && request.resource.data.at == request.time;
+    }
+
     // Merchant offers from /mitra. Everyone reads them, since they show on the place page. Only a
     // signed-in Google account can publish one, in its own name, with short plain fields; nobody can
     // change one, and only the account that published it can take it down.

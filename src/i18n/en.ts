@@ -136,6 +136,18 @@ const en: Dict = {
     from: (h: string) => `From ${h}`,
     busy: 'The car park usually fills faster during this event',
   },
+  review: {
+    title: 'What drivers say',
+    count: (n: number) => `${n} ${n === 1 ? 'rating' : 'ratings'}`,
+    aspect: { light: 'Lighting', wide: 'Roomy bays', safe: 'Feels safe', signal: 'Phone signal' },
+    ask: { light: 'Well lit?', wide: 'Bays roomy?', safe: 'Feels safe?', signal: 'Got signal?' },
+    share: (pct: number) => `${pct}% say yes`,
+    none: 'Not rated yet',
+    yes: 'Yes',
+    no: 'No',
+    thanks: 'Thanks, rated today',
+    sent: 'Rating sent',
+  },
   venue: {
     sisaSlot: 'Free bays',
     sisaSlotMotor: 'Free motorbike bays',

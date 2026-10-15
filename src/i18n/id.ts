@@ -135,6 +135,18 @@ const id = {
     from: (h: string) => `Mulai ${h}`,
     busy: 'Parkiran biasanya lebih cepat penuh saat acara ini',
   },
+  review: {
+    title: 'Kata pengemudi',
+    count: (n: number) => `${n} penilaian`,
+    aspect: { light: 'Penerangan', wide: 'Petak lega', safe: 'Rasa aman', signal: 'Sinyal HP' },
+    ask: { light: 'Terang?', wide: 'Petaknya lega?', safe: 'Terasa aman?', signal: 'Ada sinyal?' },
+    share: (pct: number) => `${pct}% bilang ya`,
+    none: 'Belum dinilai',
+    yes: 'Ya',
+    no: 'Tidak',
+    thanks: 'Makasih, sudah dinilai hari ini',
+    sent: 'Penilaianmu masuk',
+  },
   venue: {
     sisaSlot: 'Sisa slot',
     sisaSlotMotor: 'Sisa slot motor',

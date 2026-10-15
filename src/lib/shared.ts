@@ -200,3 +200,48 @@ export function watchPromos(onChange: (promos: SharedPromo[]) => void, onError: 
     stop?.()
   }
 }
+
+export type ReviewAspect = 'light' | 'wide' | 'safe' | 'signal'
+export interface Review {
+  venueId: VenueId
+  aspect: ReviewAspect
+  good: boolean
+}
+
+/** Adds one yes/no rating of a place for everyone. Like a report, it carries nothing about who sent it. */
+export async function shareReview(r: Review): Promise<void> {
+  const { fs, db } = await firestore()
+  await fs.addDoc(fs.collection(db, 'reviews'), { ...r, at: fs.serverTimestamp() })
+}
+
+/** Ratings of the last half year from every phone, kept live. Returns the function that stops listening. */
+export function watchReviews(onChange: (reviews: Review[]) => void, onError: () => void): () => void {
+  let stop: (() => void) | null = null
+  let stopped = false
+  firestore()
+    .then(({ fs, db }) => {
+      if (stopped) return
+      const recent = fs.query(
+        fs.collection(db, 'reviews'),
+        fs.where('at', '>=', fs.Timestamp.fromMillis(Date.now() - 182 * 24 * HOUR)),
+        fs.orderBy('at', 'desc'),
+        fs.limit(2000),
+      )
+      stop = fs.onSnapshot(
+        recent,
+        (snap) =>
+          onChange(
+            snap.docs.map((d) => {
+              const r = d.data()
+              return { venueId: r.venueId as VenueId, aspect: r.aspect as ReviewAspect, good: !!r.good }
+            }),
+          ),
+        onError,
+      )
+    })
+    .catch(onError)
+  return () => {
+    stopped = true
+    stop?.()
+  }
+}
