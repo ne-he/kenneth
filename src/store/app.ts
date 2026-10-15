@@ -48,6 +48,8 @@ export interface ParkedSpot {
   savedMin: number
   /** Parked with a motorbike or a car. Missing on spots saved before motorbikes existed. */
   kind?: VehicleKind
+  /** The billed hour whose coming price step the user was already told about. */
+  tariffAlerted?: number
 }
 
 /** A Zona KENNETH booking. Stored under `passes`, the key used since v0.3, so old bookings keep loading. */
@@ -109,6 +111,11 @@ export interface Visit {
   kind?: VehicleKind
   /** Part of the sample month the team turns on in team mode. Never shown as such; removable in one switch. */
   sample?: boolean
+  /** What was paid at the barrier, and what a merchant's parking perk took off. Set when leaving through the receipt. */
+  paid?: number
+  saved?: number
+  /** Merchant whose receipt covered part of the parking. */
+  perk?: string
 }
 
 export interface CommunityReport {
@@ -191,7 +198,7 @@ interface AppState {
   setMapPref: <K extends keyof MapPrefs>(k: K, v: MapPrefs[K]) => void
   setAccount: (a: Account | null) => void
   park: (spot: ParkedSpot) => void
-  leave: () => void
+  leave: (bill?: { paid: number; saved: number; perk?: string }) => void
   addPass: (p: ZonePass) => void
   cancelPass: (id: string, at: number) => void
   addEvBooking: (b: EvBooking) => void
@@ -319,7 +326,7 @@ export const useApp = create<AppState>()(
       setMapPref: (k, v) => set((s) => ({ mapPrefs: { ...s.mapPrefs, [k]: v } })),
       setAccount: (account) => set((s) => ({ account, name: s.name || account?.name.split(' ')[0] || '' })),
       park: (parked) => set({ parked }),
-      leave: () =>
+      leave: (bill) =>
         set((s) => {
           if (!s.parked) return {}
           const durationH = Math.max(0.25, (simNowOf(s.clock) - s.parked.at) / 3_600_000)
@@ -330,6 +337,7 @@ export const useApp = create<AppState>()(
             durationH,
             minutesSaved: s.parked.savedMin,
             kind: s.parked.kind,
+            ...bill,
           }
           return { parked: null, history: [visit, ...s.history] }
         }),

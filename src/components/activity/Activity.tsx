@@ -20,7 +20,8 @@ import type { VenueId } from '../../data/types'
 import { splitActivity, type Past } from '../../engine/activity'
 import { forKind } from '../../engine/occupancy'
 import { passPhase } from '../../engine/pass'
-import { formatRupiah, parkingCost } from '../../engine/pricing'
+import { formatRupiah } from '../../engine/pricing'
+import { sessionNow } from '../../engine/session'
 import { canHandOver, runnerFor, valetPhase, type ValetTicket } from '../../engine/valet'
 import { ZONE_HOLD_MIN, bayOf, zoneOf } from '../../engine/zone'
 import { useDayLabel, useLang, useT } from '../../i18n'
@@ -228,11 +229,13 @@ function Card({
 
 function ParkedCard({ now }: { now: number }) {
   const t = useT()
+  const lang = useLang()
   const spot = useApp((s) => s.parked)!
   const { open, notify } = useUi.getState()
   const venue = forKind(VENUE_BY_ID[spot.venueId], spot.kind ?? 'mobil')
   const elapsed = now - spot.at
-  const cost = parkingCost(venue, elapsed / 3_600_000)
+  const s = sessionNow(venue, elapsed)
+  const cost = s.cost
   return (
     <Card
       icon={spot.kind === 'motor' ? <Motorcycle size={14} weight="fill" /> : <CarProfile size={14} weight="fill" />}
@@ -247,7 +250,14 @@ function ParkedCard({ now }: { now: number }) {
         </span>
       }
     >
-      <div className="mt-4 grid grid-cols-[1.4fr_1fr] gap-2">
+      {/* Where the bill stands: the hour already paid for, and when the next one starts. */}
+      <div className="mt-3">
+        <div className="h-1.5 overflow-hidden rounded-full bg-surface-2">
+          <div className="h-full rounded-full bg-brand-500" style={{ width: `${Math.round(s.hourUsed * 100)}%` }} />
+        </div>
+        <p className="mt-1.5 text-[12px] text-ink-3 tabular">{t.park.nextStep(formatRupiah(s.nextCost, true), minutesLeft(s.msToNext, lang))}</p>
+      </div>
+      <div className="mt-3 grid grid-cols-[1.4fr_1fr] gap-2">
         <Button variant="primary" onClick={() => open({ kind: 'find-car' })}>
           <MapTrifold size={17} weight="bold" /> {t.park.findCar}
         </Button>
@@ -451,6 +461,7 @@ function PastRow({ p }: { p: Past }) {
   if (p.outcome !== 'done') bits.push(t.activity.outcome[p.outcome])
   else if (p.visit) {
     bits.push(t.activity.parkedFor(formatHours(p.visit.durationH, lang)))
+    if (p.visit.paid !== undefined) bits.push(t.park.paidLine(formatRupiah(p.visit.paid, true)))
     if (p.visit.divertedFrom) bits.push(t.activity.diverted(VENUE_BY_ID[p.visit.divertedFrom].name))
   }
   return (

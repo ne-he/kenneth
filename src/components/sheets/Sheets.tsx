@@ -3,6 +3,7 @@ import { useT } from '../../i18n'
 import { useUi } from '../../store/ui'
 import { Sheet } from '../ui/Sheet'
 import { BookHub } from './book/BookHub'
+import { CheckoutSheet } from './CheckoutSheet'
 import { ClockSheet } from './ClockSheet'
 import { FindCarSheet } from './FindCarSheet'
 import { ImpactSheet, PremiumSheet, PrivacySheet, VehiclePickerSheet, VehicleSheet } from './InfoSheets'
@@ -38,6 +39,9 @@ export function Sheets() {
       break
     case 'find-car':
       body = <FindCarSheet />
+      break
+    case 'checkout':
+      body = <CheckoutSheet />
       break
     case 'pass':
       body = <PassSheet passId={sheet.id} />

@@ -1,6 +1,9 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { VENUE_BY_ID } from '../../data/venues'
+import { forKind } from '../../engine/occupancy'
+import { formatRupiah } from '../../engine/pricing'
+import { sessionNow } from '../../engine/session'
 import { valetPhase } from '../../engine/valet'
 import { useT } from '../../i18n'
 import { finishRedirect } from '../../lib/auth'
@@ -39,6 +42,23 @@ function useReminderAlarm() {
       removeReminder(r.id)
     })
   }, [now, reminders, enabled, t])
+}
+
+/** Five minutes before a parked car's bill steps up to the next hour, once per step. */
+function useTariffAlarm() {
+  const t = useT()
+  const now = useNow(30_000)
+  const spot = useApp((s) => s.parked)
+  useEffect(() => {
+    if (!spot) return
+    const venue = forKind(VENUE_BY_ID[spot.venueId], spot.kind ?? 'mobil')
+    const s = sessionNow(venue, now - spot.at)
+    if (s.msToNext > 5 * 60_000 || spot.tariffAlerted === s.billed) return
+    useApp.getState().park({ ...spot, tariffAlerted: s.billed })
+    const text = t.park.tariffSoon(venue.name, formatRupiah(s.nextCost, true))
+    useUi.getState().notify(text, 'mascot')
+    void systemNotify('KENNETH', text)
+  }, [now, spot, t])
 }
 
 /** Premium: tells the user once when a bay comes back in a sold-out slot they asked about. */
@@ -97,6 +117,7 @@ export function PhoneApp() {
   useReminderAlarm()
   useValetAlarm()
   useWatchAlarm()
+  useTariffAlarm()
   useRedirectSignIn()
   const tab = useUi((s) => s.tab)
   const driving = useUi((s) => !!s.route)
