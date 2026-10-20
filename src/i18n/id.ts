@@ -631,6 +631,8 @@ const id = {
     scan: 'Scan buat buka di HP kamu',
     phone: 'HP',
     tablet: 'Tablet',
+    toLandscape: 'Putar ke mendatar',
+    toPortrait: 'Putar ke tegak',
   },
 }
 

@@ -33,7 +33,7 @@ export function Onboarding() {
 
   return (
     <motion.div
-      className="absolute inset-0 z-[60] flex flex-col bg-canvas"
+      className="absolute inset-0 z-[60] flex flex-col bg-canvas @min-[700px]:px-[calc(50%-260px)]"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.03 }}
       transition={{ duration: 0.35 }}

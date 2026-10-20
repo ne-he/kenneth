@@ -7,6 +7,7 @@ import { rankVenues } from '../../engine/recommend'
 import { haversineKm } from '../../lib/geo'
 import { fetchTravelTable } from '../../lib/routing'
 import { useResolvedTheme } from '../../lib/theme'
+import { useWide } from '../../lib/useWide'
 import { useApp, useVehicle } from '../../store/app'
 import { useViewTs } from '../../store/clock'
 import { useUi } from '../../store/ui'
@@ -47,6 +48,8 @@ export function Explore() {
   const plan = useApp((s) => s.plan)
   const kind = useVehicle().kind
   const [snap, setSnap] = useState<Snap>('peek')
+  const root = useRef<HTMLDivElement>(null)
+  const wide = useWide(root)
   // The home sheet at rest, measured by the sheet: the camera keeps the map above it.
   const [homePeek, setHomePeek] = useState(280)
 
@@ -150,7 +153,7 @@ export function Explore() {
   }
 
   return (
-    <div className="absolute inset-0 overflow-hidden" data-map-slot>
+    <div ref={root} className="absolute inset-0 overflow-hidden" data-map-slot>
       <Suspense fallback={<div className="absolute inset-0 bg-canvas" />}>
         <MapView
           theme={theme}
@@ -165,7 +168,16 @@ export function Explore() {
       </Suspense>
       {!route && <TopBar />}
       <NavBanner route={route} now={now} />
-      {/* The sheet runs down to the screen edge under the floating dock, so no map shows between the two. */}
+      {wide ? (
+        // Tablet: the same header and body in a fixed panel on the left, like a map app on a tablet; the map stays whole.
+        <aside className="absolute top-[max(12px,var(--safe-top,env(safe-area-inset-top)))] bottom-[calc(var(--nav-h)+14px)] left-[max(16px,var(--safe-left,env(safe-area-inset-left)))] z-30 flex w-[384px] flex-col overflow-hidden rounded-[24px] border border-line bg-surface shadow-float">
+          <div className="shrink-0 pt-3">{header}</div>
+          <div key={route ? 'route' : (selected ?? `list-${filter}-${mode}`)} className="no-scrollbar min-h-0 flex-1 overflow-y-auto">
+            {body}
+          </div>
+        </aside>
+      ) : (
+      /* The sheet runs down to the screen edge under the floating dock, so no map shows between the two. */
       <div className="pointer-events-none absolute inset-0">
         <DockSheet
           snap={route ? 'peek' : snap}
@@ -179,6 +191,7 @@ export function Explore() {
           {body}
         </DockSheet>
       </div>
+      )}
     </div>
   )
 }
