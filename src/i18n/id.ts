@@ -627,12 +627,23 @@ const id = {
     modelPhMotor: 'Misal: Honda Beat',
     isEv: 'Ini mobil listrik',
   },
+  car: {
+    nearby: 'Parkir terdekat',
+    parkIn: (m: string) => `Sampai parkir sekitar ${m} mnt`,
+    gate: (gate: string, q: string) => `Gerbang tercepat ${gate}, antre ${q} mnt`,
+    route: (gate: string) => `Rute ke ${gate}`,
+    back: 'Kembali',
+    heading: 'Menuju',
+    minutes: (km: string) => `mnt, ${km} km`,
+    end: 'Akhiri rute',
+  },
   stage: {
     scan: 'Scan buat buka di HP kamu',
     phone: 'HP',
     tablet: 'Tablet',
     toLandscape: 'Putar ke mendatar',
     toPortrait: 'Putar ke tegak',
+    car: 'Mobil',
   },
 }
 

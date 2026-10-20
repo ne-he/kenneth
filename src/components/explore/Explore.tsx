@@ -168,17 +168,11 @@ export function Explore() {
       </Suspense>
       {!route && <TopBar />}
       <NavBanner route={route} now={now} />
-      {wide ? (
-        // Tablet: the same header and body in a fixed panel on the left, like a map app on a tablet; the map stays whole.
-        <aside className="absolute top-[max(12px,var(--safe-top,env(safe-area-inset-top)))] bottom-[calc(var(--nav-h)+14px)] left-[max(16px,var(--safe-left,env(safe-area-inset-left)))] z-30 flex w-[384px] flex-col overflow-hidden rounded-[24px] border border-line bg-surface shadow-float">
-          <div className="shrink-0 pt-3">{header}</div>
-          <div key={route ? 'route' : (selected ?? `list-${filter}-${mode}`)} className="no-scrollbar min-h-0 flex-1 overflow-y-auto">
-            {body}
-          </div>
-        </aside>
-      ) : (
-      /* The sheet runs down to the screen edge under the floating dock, so no map shows between the two. */
-      <div className="pointer-events-none absolute inset-0">
+      {/*
+        The sheet runs down to the screen edge under the floating dock, so no map shows between the two.
+        On a tablet it is the same sheet, kept to a centred column the width of a phone sheet.
+      */}
+      <div className={wide ? 'pointer-events-none absolute inset-y-0 left-1/2 w-[560px] max-w-full -translate-x-1/2' : 'pointer-events-none absolute inset-0'}>
         <DockSheet
           snap={route ? 'peek' : snap}
           onSnap={setSnap}
@@ -191,7 +185,6 @@ export function Explore() {
           {body}
         </DockSheet>
       </div>
-      )}
     </div>
   )
 }

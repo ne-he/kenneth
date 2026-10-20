@@ -24,7 +24,8 @@
   color-scheme: light;
 }
 
-:root[data-theme='dark'] {
+:root[data-theme='dark'],
+[data-theme='dark'] {
   --canvas: #0b0b0e;
   --surface: #15151a;
   --surface-2: #101014;

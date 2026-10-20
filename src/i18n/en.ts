@@ -626,12 +626,23 @@ const en: Dict = {
     modelPhMotor: 'For example: Honda Beat',
     isEv: 'This is an electric car',
   },
+  car: {
+    nearby: 'Parking nearby',
+    parkIn: (m: string) => `Parked in about ${m} min`,
+    gate: (gate: string, q: string) => `Quickest gate ${gate}, ${q} min queue`,
+    route: (gate: string) => `Route to ${gate}`,
+    back: 'Back',
+    heading: 'Heading to',
+    minutes: (km: string) => `min, ${km} km`,
+    end: 'End route',
+  },
   stage: {
     scan: 'Scan to open it on your phone',
     phone: 'Phone',
     tablet: 'Tablet',
     toLandscape: 'Turn to landscape',
     toPortrait: 'Turn to portrait',
+    car: 'Car',
   },
 }
 
