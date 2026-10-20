@@ -161,7 +161,7 @@ export function PhoneApp() {
   const onboarded = useApp((s) => s.onboarded)
 
   return (
-    <div className="app-root relative h-full w-full overflow-hidden bg-canvas text-ink">
+    <div className="app-root @container relative h-full w-full overflow-hidden bg-canvas text-ink">
       {/* The map stays mounted so it never reloads when switching tabs. */}
       <Explore />
       <AnimatePresence>

@@ -630,6 +630,8 @@ const en: Dict = {
     scan: 'Scan to open it on your phone',
     phone: 'Phone',
     tablet: 'Tablet',
+    toLandscape: 'Turn to landscape',
+    toPortrait: 'Turn to portrait',
   },
 }
 

@@ -1,3 +1,4 @@
+import { ArrowClockwise } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import QRCode from 'qrcode'
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
@@ -6,6 +7,7 @@ import { Segmented } from '../ui/Controls'
 import { Wordmark } from '../ui/Logo'
 
 type Device = 'phone' | 'tablet'
+type Orient = 'portrait' | 'landscape'
 
 /** Screen size, bezel, corner radii and safe areas of each frame the app can be shown in. */
 const DEVICES: Record<Device, { w: number; h: number; bezel: number; outer: number; inner: number; safeTop: number; safeBottom: number }> = {
@@ -14,38 +16,62 @@ const DEVICES: Record<Device, { w: number; h: number; bezel: number; outer: numb
 }
 
 const KEY = 'kenneth-stage-device'
+const ORIENT_KEY = 'kenneth-stage-orient'
 
-function savedDevice(): Device {
+function saved<T extends string>(key: string, allowed: T[], fallback: T): T {
   try {
-    const v = localStorage.getItem(KEY)
-    return v === 'tablet' ? v : 'phone'
+    const v = localStorage.getItem(key) as T | null
+    return v && allowed.includes(v) ? v : fallback
   } catch {
-    return 'phone'
+    return fallback
   }
 }
+
+function remember(key: string, v: string) {
+  try {
+    localStorage.setItem(key, v)
+  } catch {
+    // Private mode: the choice just is not remembered.
+  }
+}
+
+/** How long the frame takes to turn a quarter, like a phone turned in the hand. */
+const TURN = { duration: 0.6, ease: [0.65, 0, 0.35, 1] as const }
 
 /**
  * Laptop and projector view: the working app in a device frame, and nothing
  * else competing with it. No pitch, no headline, no dashboard. The switch at
- * the top shows the same app on a phone or a tablet. The QR in the corner is
- * for the booth, so visitors can carry the same app away.
+ * the top shows the same app on a phone or a tablet, and the round button turns
+ * it between portrait and landscape: the frame swings a quarter turn with the
+ * app still upright inside, then the app lays itself out for the new shape.
+ * The QR in the corner is for the booth, so visitors can carry the same app away.
  */
 export function Stage({ children }: { children: ReactNode }) {
   const t = useT()
   const [qr, setQr] = useState('')
   const [scale, setScale] = useState(1)
-  const [device, setDevice] = useState<Device>(savedDevice)
+  const [device, setDevice] = useState<Device>(() => saved(KEY, ['phone', 'tablet'], 'phone'))
+  const [orient, setOrient] = useState<Orient>(() => saved(ORIENT_KEY, ['portrait', 'landscape'], 'portrait'))
+  /** Degrees the frame is swinging through right now; 0 at rest. */
+  const [turning, setTurning] = useState(0)
   const d = DEVICES[device]
-  const frameW = d.w + d.bezel * 2
-  const frameH = d.h + d.bezel * 2
+  const land = orient === 'landscape'
+  const screenW = land ? d.h : d.w
+  const screenH = land ? d.w : d.h
+  const frameW = screenW + d.bezel * 2
+  const frameH = screenH + d.bezel * 2
 
   useEffect(() => {
     QRCode.toDataURL(window.location.origin, { margin: 1, width: 240, color: { dark: '#121216', light: '#ffffff' } }).then(setQr)
   }, [])
 
   useEffect(() => {
-    // Room is kept above the frame for the device switch.
-    const fit = () => setScale(Math.min(1, (window.innerHeight - 110) / frameH, (window.innerWidth - 120) / frameW))
+    // Room is kept above the frame for the switch. One scale fits both orientations, so turning never resizes the frame.
+    const fit = () => {
+      const h = window.innerHeight - 110
+      const w = window.innerWidth - 120
+      setScale(Math.min(1, h / frameH, w / frameW, h / frameW, w / frameH))
+    }
     fit()
     window.addEventListener('resize', fit)
     return () => window.removeEventListener('resize', fit)
@@ -53,11 +79,13 @@ export function Stage({ children }: { children: ReactNode }) {
 
   const pick = (v: Device) => {
     setDevice(v)
-    try {
-      localStorage.setItem(KEY, v)
-    } catch {
-      // Private mode: the choice just is not remembered.
-    }
+    remember(KEY, v)
+  }
+
+  const turn = () => {
+    if (turning) return
+    // To landscape the frame turns counter-clockwise, back to portrait clockwise, as a hand would.
+    setTurning(land ? 90 : -90)
   }
 
   return (
@@ -76,8 +104,9 @@ export function Stage({ children }: { children: ReactNode }) {
         <Wordmark />
       </div>
 
-      <div className="absolute top-5 left-1/2 z-20 w-[240px] -translate-x-1/2">
+      <div className="absolute top-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
         <Segmented
+          className="w-[240px]"
           value={device}
           onChange={pick}
           options={[
@@ -85,13 +114,30 @@ export function Stage({ children }: { children: ReactNode }) {
             { value: 'tablet', label: t.stage.tablet },
           ]}
         />
+        <button
+          type="button"
+          onClick={turn}
+          aria-label={land ? t.stage.toPortrait : t.stage.toLandscape}
+          title={land ? t.stage.toPortrait : t.stage.toLandscape}
+          className="grid size-10 place-items-center rounded-full border border-line bg-surface text-ink-2 transition-colors hover:text-ink"
+        >
+          <ArrowClockwise size={18} weight="bold" />
+        </button>
       </div>
 
       <motion.div
         key={device}
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 90, damping: 18 }}
+        initial={{ opacity: 0, y: 30, rotate: 0 }}
+        animate={{ opacity: 1, y: 0, rotate: turning }}
+        transition={turning ? { rotate: TURN } : { type: 'spring', stiffness: 90, damping: 18, rotate: { duration: 0 } }}
+        onAnimationComplete={() => {
+          if (!turning) return
+          // The swing ends on the new shape: swap the frame's sides with no rotation, which looks the same, and let the app relayout.
+          const next: Orient = land ? 'portrait' : 'landscape'
+          setOrient(next)
+          remember(ORIENT_KEY, next)
+          setTurning(0)
+        }}
         className="relative z-10 shrink-0"
         style={{ width: frameW * scale, height: frameH * scale }}
       >
@@ -101,12 +147,15 @@ export function Stage({ children }: { children: ReactNode }) {
         >
           <div
             className="relative h-full w-full overflow-hidden"
-            style={{ borderRadius: d.inner, '--safe-top': `${d.safeTop}px`, '--safe-bottom': `${d.safeBottom}px` } as CSSProperties}
+            style={{ borderRadius: d.inner, '--safe-top': `${land ? 16 : d.safeTop}px`, '--safe-bottom': `${land ? 14 : d.safeBottom}px`, '--safe-left': `${land && device === 'phone' ? 50 : 0}px` } as CSSProperties}
           >
             {children}
-            {device === 'phone' && (
-              <div className="pointer-events-none absolute top-2.5 left-1/2 z-[80] h-[30px] w-[112px] -translate-x-1/2 rounded-full bg-black" />
-            )}
+            {device === 'phone' &&
+              (land ? (
+                <div className="pointer-events-none absolute top-1/2 left-2.5 z-[80] h-[112px] w-[30px] -translate-y-1/2 rounded-full bg-black" />
+              ) : (
+                <div className="pointer-events-none absolute top-2.5 left-1/2 z-[80] h-[30px] w-[112px] -translate-x-1/2 rounded-full bg-black" />
+              ))}
             <div className="pointer-events-none absolute bottom-2 left-1/2 z-[80] h-[5px] w-[130px] -translate-x-1/2 rounded-full bg-ink/70" />
           </div>
         </div>

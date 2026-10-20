@@ -74,7 +74,7 @@ export function Account() {
   const impact = sumImpact(month.map((v) => impactOf(v.minutesSaved, isEV)))
 
   return (
-    <div className="no-scrollbar h-full overflow-y-auto px-4 pt-safe pb-[calc(var(--nav-h)+24px)]">
+    <div className="no-scrollbar h-full overflow-y-auto px-4 pt-safe pb-[calc(var(--nav-h)+24px)] @min-[700px]:px-[calc(50%-280px)]">
       <h1 className="pt-3 pb-5 text-[28px] leading-tight font-semibold tracking-tight">{t.profile.title}</h1>
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>

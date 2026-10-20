@@ -51,7 +51,7 @@ export function Sheet({ open, onClose, children, label, bodyClassName, tone = 'd
             aria-label={label}
             tabIndex={-1}
             className={clsx(
-              'relative flex max-h-[92%] flex-col rounded-t-[28px] outline-none',
+              'relative flex max-h-[92%] flex-col rounded-t-[28px] outline-none @min-[700px]:mx-auto @min-[700px]:w-[560px]',
               tone === 'dark' ? 'bg-[#0b0b0e] text-white' : 'bg-surface',
             )}
             initial={{ y: '100%' }}

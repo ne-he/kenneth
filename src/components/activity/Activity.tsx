@@ -76,7 +76,7 @@ export function Activity() {
 
   let i = 0
   return (
-    <div className="no-scrollbar h-full overflow-y-auto px-4 pt-safe pb-[calc(var(--nav-h)+36px)]">
+    <div className="no-scrollbar h-full overflow-y-auto px-4 pt-safe pb-[calc(var(--nav-h)+36px)] @min-[700px]:px-[calc(50%-280px)]">
       <header className="pt-3 pb-4">
         <h1 className="text-[28px] leading-tight font-semibold tracking-tight">{t.activity.title}</h1>
         <p className="mt-0.5 text-[13px] text-ink-3">
