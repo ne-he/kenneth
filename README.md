@@ -39,7 +39,7 @@ berhenti. App operator parkir baru kepakai setelah kamu masuk. Padahal keputusan
 
 ## Cara pakainya
 
-App-nya cuma tiga tab, selalu di tempat yang sama di bawah layar. Logo K di tengah adalah rumahnya, dibuat lebih
+App-nya cuma tiga tab, selalu di tempat yang sama di bawah layar. Tombol Beranda di tengah adalah rumahnya, dibuat lebih
 menonjol seperti tombol QRIS di app bank. Nggak ada dashboard, dan app nggak pernah pindah tab sendiri.
 
 | Tab | Isi |
@@ -219,19 +219,15 @@ docs/          dokumen produk, model simulasi, screenshot, logo dan maskot (docs
 
 ## Logo dan layar pembuka
 
-Logonya huruf K yang tersusun dari jalan dilihat dari atas, dengan satu mobil di cabang bawah. Batangnya
-jalan yang sedang kamu lewati, dua cabangnya pilihan tempat, dan mobilnya mengambil yang lega.
-Di app K-nya berdiri langsung di atas latar, tanpa kotak hitam, dan namanya ditulis sebagai satu kata, Kenneth,
-dengan K jalan itu sebagai huruf pertama dalam font app (bukan huruf kapital berjarak). File asli, master 1024px,
-dan K tanpa latar ada di [docs/brand](docs/brand). `docs/brand/make_mark.py` membuat ulang semuanya dari logo asli.
+Logonya adalah maskot bekantan: wajahnya di atas lingkaran cornflower, sama dengan avatar tamu di app. Di app,
+namanya ditulis sebagai satu kata, Kenneth, dalam font app, dengan wajah itu di sampingnya. Ikon app, favicon, gambar
+pratinjau tautan (`og.png`), dan tanda bulat di splash dibuat dari satu master, `docs/brand/mascot/avatar-1024.png`,
+oleh `docs/brand/make_assets.py`. Logo lama (huruf K dari jalan) tidak dipakai lagi; filenya masih disimpan di
+[docs/brand](docs/brand) sebagai arsip.
 
-Saat app dibuka muncul layar polos warna kanvas, terang atau gelap mengikuti sistem, dengan K di tengah. Layar itu
-bertahan sampai peta selesai digambar, paling lama 3,2 detik, lalu memudar.
-
-Layar sambutan onboarding memutar loop 6 detik mobil yang melintasi K, di dalam kartu warna terang atau gelap
-mengikuti tema. Loop-nya dibuat dari klip `docs/brand/kenneth-loop-480.mp4` oleh skrip yang sama, dan setiap piksel
-mobil dan jalannya diambil dari logo asli, jadi bentuknya tidak pernah berubah. Versi loop untuk booth dan media
-sosial (1:1, 9:16, 16:9) ada di [docs/brand](docs/brand).
+Saat app dibuka muncul layar polos warna kanvas, terang atau gelap mengikuti sistem, dengan wajah bekantan di tengah.
+Layar itu bertahan sampai peta selesai digambar, paling lama 3,2 detik, lalu memudar. Layar sambutan onboarding
+menampilkan bekantan yang melambai.
 
 ## Ikon gedung
 
