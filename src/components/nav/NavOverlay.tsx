@@ -45,7 +45,7 @@ function BannerBody({ route, now, t }: { route: Route; now: number; t: ReturnTyp
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: -90, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-      className="pt-safe absolute inset-x-0 top-0 z-40 px-3.5"
+      className="pt-safe absolute inset-x-0 top-0 z-40 px-3.5 @min-[700px]:mx-auto @min-[700px]:max-w-[560px]"
     >
       <div className="shadow-float flex items-center gap-3 rounded-[24px] border border-line bg-surface p-3 pr-4 text-ink">
         <span className="btn-primary grid size-12 shrink-0 place-items-center rounded-[16px] text-white">

@@ -1,19 +1,23 @@
 import { ArrowClockwise } from '@phosphor-icons/react'
 import { motion } from 'motion/react'
 import QRCode from 'qrcode'
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { useT } from '../../i18n'
 import { Segmented } from '../ui/Controls'
 import { Wordmark } from '../ui/Logo'
 
-type Device = 'phone' | 'tablet'
+type Device = 'phone' | 'tablet' | 'car'
 type Orient = 'portrait' | 'landscape'
 
 /** Screen size, bezel, corner radii and safe areas of each frame the app can be shown in. */
 const DEVICES: Record<Device, { w: number; h: number; bezel: number; outer: number; inner: number; safeTop: number; safeBottom: number }> = {
   phone: { w: 390, h: 844, bezel: 12, outer: 64, inner: 52, safeTop: 48, safeBottom: 22 },
   tablet: { w: 820, h: 1180, bezel: 18, outer: 46, inner: 30, safeTop: 24, safeBottom: 20 },
+  // A wide dashboard screen, the shape CarPlay uses in most cars. Always landscape.
+  car: { w: 1280, h: 560, bezel: 14, outer: 30, inner: 20, safeTop: 0, safeBottom: 0 },
 }
+
+const CarApp = lazy(() => import('./CarApp'))
 
 const KEY = 'kenneth-stage-device'
 const ORIENT_KEY = 'kenneth-stage-orient'
@@ -50,7 +54,7 @@ export function Stage({ children }: { children: ReactNode }) {
   const t = useT()
   const [qr, setQr] = useState('')
   const [scale, setScale] = useState(1)
-  const [device, setDevice] = useState<Device>(() => saved(KEY, ['phone', 'tablet'], 'phone'))
+  const [device, setDevice] = useState<Device>(() => saved(KEY, ['phone', 'tablet', 'car'], 'phone'))
   const [orient, setOrient] = useState<Orient>(() => saved(ORIENT_KEY, ['portrait', 'landscape'], 'portrait'))
   /** Degrees the frame is swinging through right now; 0 at rest. */
   const [turning, setTurning] = useState(0)
@@ -62,7 +66,8 @@ export function Stage({ children }: { children: ReactNode }) {
    */
   const [covered, setCovered] = useState(false)
   const d = DEVICES[device]
-  const land = orient === 'landscape'
+  const car = device === 'car'
+  const land = !car && orient === 'landscape'
   const screenW = land ? d.h : d.w
   const screenH = land ? d.w : d.h
   const frameW = screenW + d.bezel * 2
@@ -115,20 +120,22 @@ export function Stage({ children }: { children: ReactNode }) {
 
       <div className="absolute top-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2">
         <Segmented
-          className="w-[240px]"
+          className="w-[330px]"
           value={device}
           onChange={pick}
           options={[
             { value: 'phone', label: t.stage.phone },
             { value: 'tablet', label: t.stage.tablet },
+            { value: 'car', label: t.stage.car },
           ]}
         />
         <button
           type="button"
           onClick={turn}
+          disabled={car}
           aria-label={land ? t.stage.toPortrait : t.stage.toLandscape}
           title={land ? t.stage.toPortrait : t.stage.toLandscape}
-          className="grid size-10 place-items-center rounded-full border border-line bg-surface text-ink-2 transition-colors hover:text-ink"
+          className="grid size-10 place-items-center rounded-full border border-line bg-surface text-ink-2 transition-colors hover:text-ink disabled:opacity-30"
         >
           <ArrowClockwise size={18} weight="bold" />
         </button>
@@ -162,7 +169,13 @@ export function Stage({ children }: { children: ReactNode }) {
             style={{ borderRadius: d.inner, '--safe-top': `${land ? 16 : d.safeTop}px`, '--safe-bottom': `${land ? 14 : d.safeBottom}px`, '--safe-left': `${land && device === 'phone' ? 50 : 0}px` } as CSSProperties}
           >
             <div className="h-full w-full" style={{ visibility: covered ? 'hidden' : 'visible' }}>
-              {children}
+              {car ? (
+                <Suspense fallback={<div className="h-full w-full bg-[#0b0b0e]" />}>
+                  <CarApp />
+                </Suspense>
+              ) : (
+                children
+              )}
             </div>
             <motion.div
               aria-hidden="true"
@@ -180,7 +193,7 @@ export function Stage({ children }: { children: ReactNode }) {
               ) : (
                 <div className="pointer-events-none absolute top-2.5 left-1/2 z-[80] h-[30px] w-[112px] -translate-x-1/2 rounded-full bg-black" />
               ))}
-            <div className="pointer-events-none absolute bottom-2 left-1/2 z-[80] h-[5px] w-[130px] -translate-x-1/2 rounded-full bg-ink/70" />
+            {!car && <div className="pointer-events-none absolute bottom-2 left-1/2 z-[80] h-[5px] w-[130px] -translate-x-1/2 rounded-full bg-ink/70" />}
           </div>
         </div>
       </motion.div>
