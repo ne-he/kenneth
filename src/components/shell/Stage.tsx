@@ -36,7 +36,7 @@ function remember(key: string, v: string) {
 }
 
 /** How long the frame takes to turn a quarter, like a phone turned in the hand. */
-const TURN = { duration: 0.6, ease: [0.65, 0, 0.35, 1] as const }
+const TURN = { duration: 0.55, ease: [0.4, 0, 0.2, 1] as const }
 
 /**
  * Laptop and projector view: the working app in a device frame, and nothing
@@ -54,6 +54,13 @@ export function Stage({ children }: { children: ReactNode }) {
   const [orient, setOrient] = useState<Orient>(() => saved(ORIENT_KEY, ['portrait', 'landscape'], 'portrait'))
   /** Degrees the frame is swinging through right now; 0 at rest. */
   const [turning, setTurning] = useState(0)
+  /** A veil of the screen colour that covers the app while it changes shape, so the relayout never shows. */
+  const [veil, setVeil] = useState(false)
+  /**
+   * Once the veil is down the app itself is hidden, so the turning frame does not repaint the map and
+   * the frosted glass on every frame; that repaint is what made the turn stutter.
+   */
+  const [covered, setCovered] = useState(false)
   const d = DEVICES[device]
   const land = orient === 'landscape'
   const screenW = land ? d.h : d.w
@@ -83,9 +90,11 @@ export function Stage({ children }: { children: ReactNode }) {
   }
 
   const turn = () => {
-    if (turning) return
+    if (turning || veil) return
     // To landscape the frame turns counter-clockwise, back to portrait clockwise, as a hand would.
-    setTurning(land ? 90 : -90)
+    setVeil(true)
+    // The frame starts turning just after the veil is down.
+    window.setTimeout(() => setTurning(land ? 90 : -90), 140)
   }
 
   return (
@@ -137,9 +146,12 @@ export function Stage({ children }: { children: ReactNode }) {
           setOrient(next)
           remember(ORIENT_KEY, next)
           setTurning(0)
+          setCovered(false)
+          // Give the map a moment to take its new size, then lift the veil on the new layout.
+          window.setTimeout(() => setVeil(false), 180)
         }}
         className="relative z-10 shrink-0"
-        style={{ width: frameW * scale, height: frameH * scale }}
+        style={{ width: frameW * scale, height: frameH * scale, willChange: 'transform' }}
       >
         <div
           className="origin-top-left bg-[#121216] shadow-[0_60px_120px_-40px_rgb(0_0_0/0.55),0_0_0_1.5px_rgb(255_255_255/0.08)_inset]"
@@ -149,7 +161,19 @@ export function Stage({ children }: { children: ReactNode }) {
             className="relative h-full w-full overflow-hidden"
             style={{ borderRadius: d.inner, '--safe-top': `${land ? 16 : d.safeTop}px`, '--safe-bottom': `${land ? 14 : d.safeBottom}px`, '--safe-left': `${land && device === 'phone' ? 50 : 0}px` } as CSSProperties}
           >
-            {children}
+            <div className="h-full w-full" style={{ visibility: covered ? 'hidden' : 'visible' }}>
+              {children}
+            </div>
+            <motion.div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-[79] bg-canvas"
+              initial={false}
+              animate={{ opacity: veil ? 1 : 0 }}
+              transition={veil ? { duration: 0.14, ease: 'easeOut' } : { duration: 0.34, ease: 'easeOut' }}
+              onAnimationComplete={() => {
+                if (veil) setCovered(true)
+              }}
+            />
             {device === 'phone' &&
               (land ? (
                 <div className="pointer-events-none absolute top-1/2 left-2.5 z-[80] h-[112px] w-[30px] -translate-y-1/2 rounded-full bg-black" />
