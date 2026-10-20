@@ -628,6 +628,8 @@ const en: Dict = {
   },
   stage: {
     scan: 'Scan to open it on your phone',
+    phone: 'Phone',
+    tablet: 'Tablet',
   },
 }
 
