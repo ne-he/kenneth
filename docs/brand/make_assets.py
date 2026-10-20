@@ -1,10 +1,11 @@
-"""Regenerate the KENNETH PWA icons and the OG image on the ink / porcelain / cornflower palette.
+"""Regenerate the KENNETH PWA icons, the round mascot mark and the OG image.
 
 Usage: python docs/brand/make_assets.py <repo root>
 
-The K is read from docs/brand/kenneth-logo-1024.png (K of roads on a pure black field).
-The black field is lifted to ink with a per-channel max: the road body never drops
-below luminance 41, so every K pixel stays exactly as drawn and only the field moves.
+The logo is the bekantan: docs/brand/mascot/avatar-1024.png, the mascot's face on its
+cornflower field (the avatar pose of the mascot set). Icons are that square as it is; the
+maskable one shrinks it onto the same cornflower so the face stays in the safe zone. The
+round mark (app header, splash, about) is the same face cut to a circle.
 """
 import sys
 from pathlib import Path
@@ -24,15 +25,15 @@ INK3_DARK = (110, 110, 119)  # #6e6e77, muted label on a dark card
 TINT = (227, 234, 253)    # #e3eafd cornflower tint
 LED = {'penuh': (255, 107, 94), 'ramai': (245, 196, 81), 'lega': (94, 212, 160)}  # app LED tokens
 
-logo = np.array(Image.open(ROOT / 'docs/brand/kenneth-logo-1024.png').convert('RGB'))
-LOGO_INK = Image.fromarray(np.maximum(logo, np.array(INK, np.uint8)))
+MARK = Image.open(ROOT / 'docs/brand/mascot/avatar-1024.png').convert('RGB')
+FIELD = MARK.getpixel((6, 6))  # the cornflower around the face
 
 
 def icon(size, scale, radius=0):
-    """Square icon on ink. scale = logo frame / icon frame. radius > 0 rounds the corners (RGBA)."""
-    im = Image.new('RGB', (size, size), INK)
+    """Square icon on the cornflower field. scale = face frame / icon frame. radius > 0 rounds the corners (RGBA)."""
+    im = Image.new('RGB', (size, size), FIELD)
     s = round(size * scale)
-    k = LOGO_INK.resize((s, s), Image.Resampling.LANCZOS)
+    k = MARK.resize((s, s), Image.Resampling.LANCZOS)
     im.paste(k, ((size - s) // 2, (size - s) // 2))
     if radius:
         ss = 4
@@ -97,6 +98,16 @@ def led(im, x, y, s, color, pitch=6, block=5):
     im.alpha_composite(layer)
 
 
+def round_mark(size):
+    """The face cut to a circle on transparent, drawn 4x and scaled down for a smooth edge."""
+    ss = 4
+    mask = Image.new('L', (size * ss, size * ss), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, size * ss - 1, size * ss - 1), fill=255)
+    im = MARK.resize((size, size), Image.Resampling.LANCZOS).convert('RGBA')
+    im.putalpha(mask.resize((size, size), Image.Resampling.LANCZOS))
+    return im
+
+
 def og():
     W, H = 1200, 630
     yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
@@ -111,9 +122,9 @@ def og():
             dd.rectangle((x, y, x + 1, y + 1), fill=INK + (33,))
     im.alpha_composite(dots)
 
-    im.alpha_composite(icon(60, 1.03, radius=13), (72, 64))
+    im.alpha_composite(round_mark(60), (72, 64))
     d = ImageDraw.Draw(im)
-    put(d, 'KENNETH', 150, 86, 24, 800, INK, tracking=5)
+    put(d, 'Kenneth', 148, 86, 28, 800, INK)
     put(d, 'Cek parkir\nsemudah cek\ncuaca.', 74, 183, 62, 800, INK, leading=69)
     put(d, 'Seberapa penuh, antri gerbang berapa menit,\ndan ke mana kalau penuh. Sebelum kamu\nberangkat.', 73, 409, 24, 450, INK2, leading=34)
     put(d, 'Prototipe Venture Creation · BINUS 2026 · data simulasi', 73, 548, 18, 500, INK3)
@@ -134,11 +145,13 @@ def og():
 
 
 if __name__ == '__main__':
-    icon(192, 0.92).save(PUB / 'pwa-192.png', optimize=True)
-    icon(512, 0.92).save(PUB / 'pwa-512.png', optimize=True)
-    icon(180, 0.90).save(PUB / 'apple-touch-icon.png', optimize=True)
-    icon(512, 0.72).save(PUB / 'maskable-512.png', optimize=True)  # K inside the inner 56%, well within the 80% safe zone
-    icon(32, 0.96, radius=7).save(PUB / 'favicon-32.png', optimize=True)
-    icon(48, 0.96, radius=11).save(PUB / 'favicon-48.png', optimize=True)
+    icon(192, 1.0).save(PUB / 'pwa-192.png', optimize=True)
+    icon(512, 1.0).save(PUB / 'pwa-512.png', optimize=True)
+    icon(180, 1.0).save(PUB / 'apple-touch-icon.png', optimize=True)
+    icon(512, 0.78).save(PUB / 'maskable-512.png', optimize=True)  # face inside the 80% safe zone
+    icon(32, 1.0, radius=16).save(PUB / 'favicon-32.png', optimize=True)  # round, like the mark
+    icon(48, 1.0, radius=24).save(PUB / 'favicon-48.png', optimize=True)
+    round_mark(256).save(PUB / 'brand' / 'mascot-mark.webp', quality=90)
+    round_mark(256).save(ROOT / 'src' / 'assets' / 'mascot-mark.webp', quality=90)
     og().save(PUB / 'og.png', optimize=True)
     print('done')
