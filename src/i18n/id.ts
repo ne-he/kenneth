@@ -629,6 +629,8 @@ const id = {
   },
   stage: {
     scan: 'Scan buat buka di HP kamu',
+    phone: 'HP',
+    tablet: 'Tablet',
   },
 }
 
