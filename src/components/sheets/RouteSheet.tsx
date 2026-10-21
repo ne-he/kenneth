@@ -28,7 +28,8 @@ export function RouteSheet({ passId }: { passId: string }) {
   const [metres, setMetres] = useState(0)
 
   const venue = pass ? VENUE_BY_ID[pass.venueId] : null
-  const zone = venue ? zoneOf(venue) : null
+  // zoneOf builds a new object each call; without the memo every re-render restarted the 3D route.
+  const zone = useMemo(() => (venue ? zoneOf(venue) : null), [venue])
   const bay = pass && venue ? bayOf(pass, venue) : ''
   // K-07 becomes section K, bay 7, beside the venue's own sections so the floor reads like the real one.
   const spot = useMemo<ParkedSpot | null>(() => {

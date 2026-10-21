@@ -109,6 +109,11 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk, dr
   const host = useRef<HTMLDivElement>(null)
   // Your car, the lobby and the walk wear the accent the user picked.
   const accent = scaleOf(useApp((s) => s.accent))
+  // A new callback each parent render must not rebuild the whole scene.
+  const onWalkRef = useRef(onWalk)
+  useEffect(() => {
+    onWalkRef.current = onWalk
+  }, [onWalk])
 
   useEffect(() => {
     const el = host.current
@@ -257,7 +262,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk, dr
     ]
     let metres = 0
     for (let i = 1; i < pts.length; i++) metres += pts[i].distanceTo(pts[i - 1]) * 2
-    onWalk?.(metres)
+    onWalkRef.current?.(metres)
     // Catmull-Rom with low tension: corners get a slight walking curve, and
     // getPointAt never returns null at the ends (CurvePath can, at u = 1).
     const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', 0.08)
@@ -321,7 +326,9 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk, dr
       const t = Math.max(0, (now - start) / 1000)
       const draw = Math.min(1, t / 1.6)
       path.geometry.setDrawRange(0, Math.floor(totalIdx * draw))
-      const k = (t * 0.22) % 1
+      // Driving: the car goes from the ramp into the bay, stays parked a moment, then shows it again.
+      // Walking: the dot loops.
+      const k = drive ? Math.min(1, (Math.max(0, t - 1.6) % 5.4) / 3.4) : (t * 0.22) % 1
       walker.position.copy(curve.getPointAt(Math.min(0.999, k)))
       walker.position.y = drive ? 0 : 0.34
       if (drive) {
@@ -364,7 +371,7 @@ export default function FloorScene({ spot, sections, occupancy, dark, onWalk, dr
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [spot, sections, occupancy, dark, onWalk, accent, drive, bayLabel])
+  }, [spot, sections, occupancy, dark, accent, drive, bayLabel])
 
   return <div ref={host} className="h-full w-full touch-none" />
 }
