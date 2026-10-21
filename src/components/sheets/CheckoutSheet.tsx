@@ -48,6 +48,10 @@ export function CheckoutSheet() {
     <div className="pb-5">
       <SheetHeader eyebrow={venue.name} title={t.park.receipt} onClose={close} closeLabel={t.common.close} />
 
+      <p className="mb-3 flex gap-2 px-1 text-[13px] leading-snug text-ink-2">
+        <Receipt size={16} className="mt-px shrink-0" /> {t.park.payNote}
+      </p>
+
       <div className="rounded-[20px] border border-line bg-surface">
         <Line label={t.park.duration} value={stopwatch(elapsed)} note={t.park.hoursBilled(bill.billed)} />
         <Line label={t.park.firstHour} value={formatRupiah(venue.tariff.firstHour, true)} />
@@ -97,10 +101,6 @@ export function CheckoutSheet() {
           <p className="mt-2 px-1 text-[12px] text-ink-3">{t.park.perkHint}</p>
         </div>
       )}
-
-      <p className="mt-4 flex gap-2 px-1 text-[12px] leading-snug text-ink-3">
-        <Receipt size={15} className="mt-px shrink-0" /> {t.park.payNote}
-      </p>
 
       <Button
         variant="primary"
